@@ -2,6 +2,8 @@
 /**
  * Minify - Combines, minifies, and caches JavaScript and CSS files on demand.
  *
+ * See http://code.google.com/p/minify/ for usage instructions.
+ *
  * This library was inspired by jscsscomp by Maxim Martynyuk <flashkot@mail.ru>
  * and by the article "Supercharged JavaScript" by Patrick Hunlock
  * <wb@hunlock.com>.
@@ -16,7 +18,7 @@
  * @author Ryan Grove <ryan@wonko.com>
  * @copyright 2007 Ryan Grove. All rights reserved.
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
- * @version 1.0.0 (2007-05-01)
+ * @version 1.0.0 (2007-05-02)
  * @link http://code.google.com/p/minify/
  */
 
@@ -43,6 +45,27 @@ if (!defined('MINIFY_MAX_FILES')) {
   define('MINIFY_MAX_FILES', 16);
 }
 
+if (!defined('MINIFY_REWRITE_CSS_URLS')) {
+  /** 
+   * Whether or not Minify should attempt to rewrite relative URLs used in CSS
+   * files so that they continue to point to the correct location after the file
+   * is combined and minified.
+   *
+   * Minify is pretty good at getting this right, but occasionally it can make
+   * mistakes. If you find that URL rewriting results in problems, you should
+   * disable it.
+   */
+  define('MINIFY_REWRITE_CSS_URLS', true);
+}
+
+if (!defined('MINIFY_USE_CACHE')) {
+  /**
+   * Whether or not Minify should use a disk-based cache to increase
+   * performance.
+   */
+  define('MINIFY_USE_CACHE', true);
+}
+
 /**
  * Minify is a library for combining, minifying, and caching JavaScript and CSS
  * files on demand before sending them to a web browser.
@@ -51,16 +74,15 @@ if (!defined('MINIFY_MAX_FILES')) {
  * @author Ryan Grove <ryan@wonko.com>
  * @copyright 2007 Ryan Grove. All rights reserved.
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
- * @version 1.0.0 (2007-05-01)
+ * @version 1.0.0 (2007-05-02)
  * @link http://code.google.com/p/minify/
  */
 class Minify {
   const TYPE_CSS = 'text/css';
   const TYPE_JS  = 'text/javascript';
 
-  protected $files      = array();
-  protected $type       = TYPE_JS;
-  protected $useCache   = true;
+  protected $files = array();
+  protected $type  = TYPE_JS;
 
   // -- Public Static Methods --------------------------------------------------
 
@@ -124,36 +146,59 @@ class Minify {
   /**
    * Minifies the specified CSS string and returns it.
    *
-   * @param string $string CSS string
+   * @param string $css CSS string
    * @return string minified string
    * @see minify()
    * @see minifyJS()
    */
-  protected static function minifyCSS($string) {
+  protected static function minifyCSS($css) {
     // Compress whitespace.
-    $string = preg_replace('/\s+/', ' ', $string);
+    $css = preg_replace('/\s+/', ' ', $css);
 
     // Remove comments.
-    $string = preg_replace('/\/\*.*?\*\//', '', $string);
+    $css = preg_replace('/\/\*.*?\*\//', '', $css);
 
-    return trim($string);
+    return trim($css);
   }
 
   /**
    * Minifies the specified JavaScript string and returns it.
    *
-   * @param string $string JavaScript string
+   * @param string $js JavaScript string
    * @return string minified string
    * @see minify()
    * @see minifyCSS()
    */
-  protected static function minifyJS($string) {
+  protected static function minifyJS($js) {
     define('JSMIN_AS_LIB', true);
 
     require_once dirname(__FILE__).'/lib/JSMin_lib.php';
 
-    $jsMin = new JSMin($string, false);
-    return $jsMin->minify();
+    $jsMin = new JSMin($js, false);
+    return trim($jsMin->minify());
+  }
+  
+  /**
+   * Rewrites relative URLs in the specified CSS string to point to the correct
+   * location. URLs are assumed to be relative to the absolute path specified in
+   * the $path parameter.
+   *
+   * @param string $css CSS string
+   * @param string $path absolute path to which URLs are relative (should be a
+   *   directory, not a file)
+   * @return string CSS string with rewritten URLs
+   */
+  protected static function rewriteCSSUrls($css, $path) {
+    /*
+    Parentheses, commas, whitespace chars, single quotes, and double quotes are
+    escaped with a backslash as described in the CSS spec:
+    http://www.w3.org/TR/REC-CSS1#url
+    */
+    $relativePath = preg_replace('/([\(\),\s\'"])/', '\\\$1',
+        str_replace(MINIFY_BASE_DIR, '', $path));
+
+    return preg_replace('/url\(\s*[\'"]?\/?(.+?)[\'"]?\s*\)/i', 'url('.
+        $relativePath.'/$1)', $css);
   }
 
   // -- Public Instance Methods ------------------------------------------------
@@ -165,18 +210,15 @@ class Minify {
    * @param array|string $files filename or array of filenames to be minified
    * @param string $type content type of the specified files (either
    *   Minify::TYPE_CSS or Minify::TYPE_JS)
-   * @param bool $useCache whether or not to use the disk-based cache
    */
-  public function __construct($files = array(), $type = self::TYPE_JS,
-      $useCache = true) {
+  public function __construct($files = array(), $type = self::TYPE_JS) {
 
     if ($type !== self::TYPE_JS && $type !== self::TYPE_CSS) {
       throw new MinifyInvalidArgumentException('Invalid argument ($type): '.
           $type);
     }
 
-    $this->type     = $type;
-    $this->useCache = (bool) $useCache;
+    $this->type = $type;
 
     if (count((array) $files)) {
       $this->addFile($files);
@@ -196,7 +238,7 @@ class Minify {
     $files = @array_map(array($this, 'resolveFilePath'), (array) $files);
     $this->files = array_unique(array_merge($this->files, $files));
   }
-  
+
   /**
    * Attempts to serve the combined, minified files from the cache if possible.
    *
@@ -249,7 +291,7 @@ class Minify {
     header("Last-Modified: $lastModifiedGMT");
 
     // Check the server-side cache.
-    if ($this->useCache) {
+    if (MINIFY_USE_CACHE) {
       $cacheFile = MINIFY_CACHE_DIR.'/minify_'.$hash;
   
       if (is_file($cacheFile) && $lastModified <= filemtime($cacheFile)) {
@@ -273,14 +315,21 @@ class Minify {
     $combined = array();
 
     foreach($this->files as $file) {
-      $combined[] = file_get_contents($file);
+      if ($this->type === self::TYPE_CSS && MINIFY_REWRITE_CSS_URLS) {
+        // Rewrite relative CSS URLs.
+        $combined[] = self::rewriteCSSUrls(file_get_contents($file),
+            dirname($file));
+      }
+      else {
+        $combined[] = file_get_contents($file);
+      }
     }
 
     $combined = $minify ? self::minify(implode("\n", $combined), $this->type) :
         implode("\n", $combined);
-
+    
     // Save combined contents to the cache.
-    if ($this->useCache) {
+    if (MINIFY_USE_CACHE) {
       $cacheFile = MINIFY_CACHE_DIR.'/minify_'.$this->getHash();
       @file_put_contents($cacheFile, $combined, LOCK_EX);
     }
