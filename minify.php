@@ -113,11 +113,11 @@ class Minify {
 
     // Minify and spit out the result.
     try {
-      $minify = new Minify($files, $type);
+      $minify = new Minify($type, $files);
   
       header("Content-Type: $type;charset=".MINIFY_ENCODING);
-      
-      $minify->cache();
+
+      $minify->browserCache();
       echo $minify->combine();
       exit;
     }
@@ -207,12 +207,11 @@ class Minify {
    * Instantiates a new Minify object. A filename can be in the form of a
    * relative path or a URL that resolves to the same site that hosts Minify.
    *
-   * @param array|string $files filename or array of filenames to be minified
    * @param string $type content type of the specified files (either
    *   Minify::TYPE_CSS or Minify::TYPE_JS)
+   * @param array|string $files filename or array of filenames to be minified
    */
-  public function __construct($files = array(), $type = self::TYPE_JS) {
-
+  public function __construct($type = self::TYPE_JS, $files = array()) {
     if ($type !== self::TYPE_JS && $type !== self::TYPE_CSS) {
       throw new MinifyInvalidArgumentException('Invalid argument ($type): '.
           $type);
@@ -252,8 +251,10 @@ class Minify {
    *
    * If neither the client nor the server has the content in its cache, we don't
    * do anything.
+   *
+   * @return bool
    */
-  public function cache() {
+  public function browserCache() {
     $hash         = $this->getHash();
     $lastModified = 0;
 
@@ -289,29 +290,30 @@ class Minify {
     }
 
     header("Last-Modified: $lastModifiedGMT");
-
-    // Check the server-side cache.
-    if (MINIFY_USE_CACHE) {
-      $cacheFile = MINIFY_CACHE_DIR.'/minify_'.$hash;
-  
-      if (is_file($cacheFile) && $lastModified <= filemtime($cacheFile)) {
-        echo file_get_contents($cacheFile);
-        exit;
-      }
-    }
+    
+    return false;
   }
-
+  
   /**
    * Combines and returns the contents of all files that have been added with
    * addFile() or via this class's constructor.
    *
-   * If Minify->useCache is true, the results will be saved to the on-disk
-   * cache.
+   * If MINIFY_USE_CACHE is true, the content will be returned from the server's
+   * cache if the cache is up to date; otherwise the new content will be saved
+   * to the cache for future use.
    *
    * @param bool $minify minify the combined contents before returning them
    * @return string combined file contents
    */
   public function combine($minify = true) {
+    // Return contents from server cache if possible.
+    if (MINIFY_USE_CACHE) {
+      if ($cacheResult = $this->serverCache()) {
+        return $cacheResult;
+      }
+    }
+
+    // Combine contents.
     $combined = array();
 
     foreach($this->files as $file) {
@@ -327,7 +329,7 @@ class Minify {
 
     $combined = $minify ? self::minify(implode("\n", $combined), $this->type) :
         implode("\n", $combined);
-    
+
     // Save combined contents to the cache.
     if (MINIFY_USE_CACHE) {
       $cacheFile = MINIFY_CACHE_DIR.'/minify_'.$this->getHash();
@@ -368,6 +370,30 @@ class Minify {
   public function removeFile($files) {
     $files = @array_map(array($this, 'resolveFilePath'), (array) $files);
     $this->files = array_diff($this->files, $files);
+  }
+
+  /**
+   * Attempts to serve the combined, minified files from the server's disk-based
+   * cache if possible.
+   *
+   * @param bool $return return cached content as a string instead of outputting
+   *   it to the client
+   * @return bool|string
+   */
+  public function serverCache($return = false) {
+    $cacheFile = MINIFY_CACHE_DIR.'/minify_'.$hash;
+
+    if (is_file($cacheFile) && $lastModified <= filemtime($cacheFile)) {
+      if ($return) {
+        return file_get_contents($cacheFile);
+      }
+      else {
+        echo file_get_contents($cacheFile);
+        exit;
+      }
+    }
+
+    return false;
   }
 
   // -- Protected Instance Methods ---------------------------------------------
