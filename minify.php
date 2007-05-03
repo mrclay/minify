@@ -299,7 +299,7 @@ class Minify {
   public function combine($minify = true) {
     // Return contents from server cache if possible.
     if (MINIFY_USE_CACHE) {
-      if ($cacheResult = $this->serverCache()) {
+      if ($cacheResult = $this->serverCache(true)) {
         return $cacheResult;
       }
     }
