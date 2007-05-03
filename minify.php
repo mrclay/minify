@@ -177,7 +177,7 @@ class Minify {
     $jsMin = new JSMin($js, false);
     return trim($jsMin->minify());
   }
-  
+
   /**
    * Rewrites relative URLs in the specified CSS string to point to the correct
    * location. URLs are assumed to be relative to the absolute path specified in
@@ -202,7 +202,7 @@ class Minify {
   }
 
   // -- Public Instance Methods ------------------------------------------------
-  
+
   /**
    * Instantiates a new Minify object. A filename can be in the form of a
    * relative path or a URL that resolves to the same site that hosts Minify.
@@ -256,16 +256,7 @@ class Minify {
    */
   public function browserCache() {
     $hash         = $this->getHash();
-    $lastModified = 0;
-
-    // Get the timestamp of the most recently modified file.
-    foreach($this->files as $file) {
-      $modified = filemtime($file);
-      
-      if ($modified !== false && $modified > $lastModified) {
-        $lastModified = $modified;
-      }
-    }
+    $lastModified = $this->getLastModified();
 
     $lastModifiedGMT = gmdate('D, d M Y H:i:s', $lastModified).' GMT';
 
@@ -290,7 +281,7 @@ class Minify {
     }
 
     header("Last-Modified: $lastModifiedGMT");
-    
+
     return false;
   }
   
@@ -358,6 +349,26 @@ class Minify {
   public function getHash() {
     return hash('md5', implode('', $this->files));
   }
+  
+  /**
+   * Gets the timestamp of the most recently modified file.
+   *
+   * @return int timestamp
+   */
+  public function getLastModified() {
+    $lastModified = 0;
+
+    // Get the timestamp of the most recently modified file.
+    foreach($this->files as $file) {
+      $modified = filemtime($file);
+      
+      if ($modified !== false && $modified > $lastModified) {
+        $lastModified = $modified;
+      }
+    }
+
+    return $lastModified;
+  }
 
   /**
    * Removes the specified filename or array of filenames from the list of files
@@ -381,7 +392,8 @@ class Minify {
    * @return bool|string
    */
   public function serverCache($return = false) {
-    $cacheFile = MINIFY_CACHE_DIR.'/minify_'.$hash;
+    $cacheFile    = MINIFY_CACHE_DIR.'/minify_'.$this->getHash();
+    $lastModified = $this->getLastModified();
 
     if (is_file($cacheFile) && $lastModified <= filemtime($cacheFile)) {
       if ($return) {
