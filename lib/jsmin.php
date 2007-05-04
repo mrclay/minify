@@ -39,9 +39,10 @@
  * @package JSMin
  * @author Ryan Grove <ryan@wonko.com>
  * @copyright 2002 Douglas Crockford <douglas@crockford.com> (jsmin.c)
- * @copyright 2007 Ryan Grove <ryan@wonko.com>
- * @version 1.0.0 (?)
- * @link http://code.google.com/p/minify/
+ * @copyright 2007 Ryan Grove <ryan@wonko.com> (PHP port)
+ * @license http://opensource.org/licenses/mit-license.php MIT License
+ * @version 1.0.0 (2007-05-04)
+ * @link http://code.google.com/p/jsmin-php/
  */
 
 class JSMin {
