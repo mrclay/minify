@@ -40,18 +40,21 @@
  * @author Ryan Grove <ryan@wonko.com>
  * @copyright 2002 Douglas Crockford <douglas@crockford.com> (jsmin.c)
  * @copyright 2007 Ryan Grove <ryan@wonko.com>
- * @version 1.0.0 (2007-05-03)
+ * @version 1.0.0 (?)
  * @link http://code.google.com/p/minify/
  */
+
 class JSMin {
   const ORD_LF    = 10;
   const ORD_SPACE = 32;
 
-  protected $a         = '';
-  protected $b         = '';
-  protected $input     = array();
-  protected $lookAhead = null;
-  protected $output    = array();
+  protected $a           = '';
+  protected $b           = '';
+  protected $input       = '';
+  protected $inputIndex  = 0;
+  protected $inputLength = 0;
+  protected $lookAhead   = null;
+  protected $output      = array();
 
   // -- Public Static Methods --------------------------------------------------
   
@@ -63,7 +66,8 @@ class JSMin {
   // -- Public Instance Methods ------------------------------------------------
 
   public function __construct($input) {
-    $this->input = str_split($input);
+    $this->input       = $input;
+    $this->inputLength = strlen($input);
   }
 
   // -- Protected Instance Methods ---------------------------------------------
@@ -89,7 +93,7 @@ class JSMin {
               throw new JSMinException('Unterminated string literal.');
             }
 
-            if ($this->a === "\\") {
+            if ($this->a === '\\') {
               $this->output[] = $this->a;
               $this->a        = $this->get();
             }
@@ -113,7 +117,7 @@ class JSMin {
             if ($this->a === '/') {
               break;
             }
-            elseif ($this->a === "\\") {
+            elseif ($this->a === '\\') {
               $this->output[] = $this->a;
               $this->a        = $this->get();
             }
@@ -121,10 +125,10 @@ class JSMin {
               throw new JSMinException('Unterminated regular expression '.
                   'literal.');
             }
-            
+
             $this->output[] = $this->a;
           }
-          
+
           $this->b = $this->next();
         }
     }
@@ -134,14 +138,10 @@ class JSMin {
     $c = $this->lookAhead;
     $this->lookAhead = null;
 
-    if (is_null($c)) {
-      // Believe it or not, the following weirdness is MUCH faster than using
-      // array_shift(). 
-      $i = key($this->input);
-
-      if (!is_null($i)) {
-        $c = $this->input[$i];
-        unset($this->input[$i]);
+    if ($c === null) {
+      if ($this->inputIndex < $this->inputLength) {
+        $c = $this->input[$this->inputIndex];
+        $this->inputIndex += 1;
       }
       else {
         $c = null;
@@ -152,7 +152,7 @@ class JSMin {
       return "\n";
     }
 
-    if (is_null($c) || $c === "\n" || ord($c) >= self::ORD_SPACE) {
+    if ($c === null || $c === "\n" || ord($c) >= self::ORD_SPACE) {
       return $c;
     }
 
@@ -160,14 +160,14 @@ class JSMin {
   }
 
   protected function isAlphaNum($c) {
-    return ord($c) > 126 || $c === "\\" || preg_match('/^[\w\$]$/', $c) === 1;
+    return ord($c) > 126 || $c === '\\' || preg_match('/^[\w\$]$/', $c) === 1;
   }
 
   protected function jsmin() {
     $this->a = "\n";
     $this->action(3);
 
-    while (!is_null($this->a)) {
+    while ($this->a !== null) {
       switch ($this->a) {
         case ' ':
           if ($this->isAlphaNum($this->b)) {
