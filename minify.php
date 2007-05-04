@@ -18,7 +18,7 @@
  * @author Ryan Grove <ryan@wonko.com>
  * @copyright 2007 Ryan Grove. All rights reserved.
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
- * @version 1.0.0 (2007-05-02)
+ * @version 1.0.1 (?)
  * @link http://code.google.com/p/minify/
  */
 
@@ -74,7 +74,7 @@ if (!defined('MINIFY_USE_CACHE')) {
  * @author Ryan Grove <ryan@wonko.com>
  * @copyright 2007 Ryan Grove. All rights reserved.
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
- * @version 1.0.0 (2007-05-02)
+ * @version 1.0.1 (?)
  * @link http://code.google.com/p/minify/
  */
 class Minify {
@@ -170,12 +170,8 @@ class Minify {
    * @see minifyCSS()
    */
   protected static function minifyJS($js) {
-    define('JSMIN_AS_LIB', true);
-
-    require_once dirname(__FILE__).'/lib/JSMin_lib.php';
-
-    $jsMin = new JSMin($js, false);
-    return trim($jsMin->minify());
+    require_once dirname(__FILE__).'/lib/jsmin.php';
+    return JSMin::minify($js);
   }
 
   /**
