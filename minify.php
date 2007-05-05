@@ -25,7 +25,7 @@ if (!defined('MINIFY_BASE_DIR')) {
    * Base path from which all relative file paths should be resolved. By default
    * this is set to the document root.
    */
-  define('MINIFY_BASE_DIR', $_SERVER['DOCUMENT_ROOT']);
+  define('MINIFY_BASE_DIR', realpath($_SERVER['DOCUMENT_ROOT']));
 }
 
 if (!defined('MINIFY_CACHE_DIR')) {
@@ -459,7 +459,7 @@ class MinifyInvalidArgumentException extends MinifyException {}
 class MinifyInvalidUrlException extends MinifyException {}
 
 // -- Global Scope -------------------------------------------------------------
-if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
+if (realpath(__FILE__) == realpath($_SERVER['SCRIPT_FILENAME'])) {
   Minify::handleRequest();
 }
 ?>
