@@ -16,9 +16,13 @@
  * @author Ryan Grove <ryan@wonko.com>
  * @copyright 2007 Ryan Grove. All rights reserved.
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
- * @version 1.0.1 (?)
+ * @version 1.0.1 (2007-05-05)
  * @link http://code.google.com/p/minify/
  */
+
+// Uncomment when debugging.
+// error_reporting(E_ALL | E_STRICT);
+// ini_set('display_errors', 'on');
 
 if (!defined('MINIFY_BASE_DIR')) {
   /** 
@@ -72,7 +76,7 @@ if (!defined('MINIFY_USE_CACHE')) {
  * @author Ryan Grove <ryan@wonko.com>
  * @copyright 2007 Ryan Grove. All rights reserved.
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
- * @version 1.0.1 (?)
+ * @version 1.0.1 (2007-05-05)
  * @link http://code.google.com/p/minify/
  */
 class Minify {
@@ -278,7 +282,7 @@ class Minify {
 
     return false;
   }
-  
+
   /**
    * Combines and returns the contents of all files that have been added with
    * addFile() or via this class's constructor.
