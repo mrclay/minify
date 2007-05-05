@@ -80,7 +80,7 @@ class Minify {
   const TYPE_JS  = 'text/javascript';
 
   protected $files = array();
-  protected $type  = TYPE_JS;
+  protected $type  = self::TYPE_JS;
 
   // -- Public Static Methods --------------------------------------------------
 
