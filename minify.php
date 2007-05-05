@@ -8,9 +8,7 @@
  * and by the article "Supercharged JavaScript" by Patrick Hunlock
  * <wb@hunlock.com>.
  *
- * The JSMin library used for JavaScript minification was originally written by
- * Douglas Crockford <douglas@crockford.com> and was ported to PHP by
- * David Holmes <dholmes@cfdsoftware.net>.
+ * JSMin was originally written by Douglas Crockford <douglas@crockford.com>.
  *
  * Requires PHP 5.2.1+.
  *
