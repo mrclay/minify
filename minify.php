@@ -16,7 +16,7 @@
  * @author Ryan Grove <ryan@wonko.com>
  * @copyright 2007 Ryan Grove. All rights reserved.
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
- * @version 1.0.1 (2007-05-05)
+ * @version 1.0.2 (?)
  * @link http://code.google.com/p/minify/
  */
 
@@ -76,12 +76,13 @@ if (!defined('MINIFY_USE_CACHE')) {
  * @author Ryan Grove <ryan@wonko.com>
  * @copyright 2007 Ryan Grove. All rights reserved.
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
- * @version 1.0.1 (2007-05-05)
+ * @version 1.0.2 (?)
  * @link http://code.google.com/p/minify/
  */
 class Minify {
-  const TYPE_CSS = 'text/css';
-  const TYPE_JS  = 'text/javascript';
+  const TYPE_CSS  = 'text/css';
+  const TYPE_HTML = 'text/html';
+  const TYPE_JS   = 'text/javascript';
 
   protected $files = array();
   protected $type  = self::TYPE_JS;
@@ -139,8 +140,22 @@ class Minify {
    * @return string minified string
    */
   public static function minify($string, $type = self::TYPE_JS) {
-    return $type === self::TYPE_JS ? self::minifyJS($string) :
-        self::minifyCSS($string);
+    switch($type) {
+      case self::TYPE_CSS:
+        return self::minifyCSS($string);
+        break;
+      
+      case self::TYPE_HTML:
+        return self::minifyHTML($string);
+        break;
+      
+      case self::TYPE_JS:
+        return self::minifyJS($string);
+        break;
+      
+      default:
+        throw new MinifyInvalidArgumentException('Invalid content type');
+    }
   }
 
   // -- Protected Static Methods -----------------------------------------------
@@ -150,8 +165,6 @@ class Minify {
    *
    * @param string $css CSS string
    * @return string minified string
-   * @see minify()
-   * @see minifyJS()
    */
   protected static function minifyCSS($css) {
     // Compress whitespace.
@@ -162,14 +175,21 @@ class Minify {
 
     return trim($css);
   }
+  
+  /**
+   * Minifies the specified HTML string and returns it.
+   *
+   * @param string $html HTML string
+   * @return string minified string
+   */
+  protected static function minifyHTML($html) {
+  }
 
   /**
    * Minifies the specified JavaScript string and returns it.
    *
    * @param string $js JavaScript string
    * @return string minified string
-   * @see minify()
-   * @see minifyCSS()
    */
   protected static function minifyJS($js) {
     require_once dirname(__FILE__).'/lib/jsmin.php';
@@ -392,7 +412,7 @@ class Minify {
   public function serverCache($return = false) {
     $cacheFile    = MINIFY_CACHE_DIR.'/minify_'.$this->getHash();
     $lastModified = $this->getLastModified();
-
+    
     if (is_file($cacheFile) && $lastModified <= filemtime($cacheFile)) {
       if ($return) {
         return file_get_contents($cacheFile);
