@@ -139,24 +139,8 @@ class Minify {
    * @return string minified string
    */
   public static function minify($string, $type = self::TYPE_JS) {
-<<<<<<< .working
-    switch($type) {
-      case self::TYPE_CSS:
-        return self::minifyCSS($string);
-     
-      case self::TYPE_HTML:
-        return self::minifyHTML($string);
-      
-      case self::TYPE_JS:
-        return self::minifyJS($string);
-      
-      default:
-        throw new MinifyInvalidArgumentException('Invalid content type.');
-    }
-=======
     return $type === self::TYPE_JS ? self::minifyJS($string) :
         self::minifyCSS($string);
->>>>>>> .merge-right.r41
   }
 
   // -- Protected Static Methods -----------------------------------------------
@@ -178,20 +162,6 @@ class Minify {
 
     return trim($css);
   }
-<<<<<<< .working
-  
-  /**
-   * Minifies the specified HTML string and returns it.
-   *
-   * @param string $html HTML string
-   * @return string minified string
-   */
-  protected static function minifyHTML($html) {
-    require_once dirname(__FILE__).'/lib/htmlmin.php';
-    return HTMLMin::minify($html);
-  }
-=======
->>>>>>> .merge-right.r41
 
   /**
    * Minifies the specified JavaScript string and returns it.
