@@ -16,13 +16,9 @@
  * @author Ryan Grove <ryan@wonko.com>
  * @copyright 2007 Ryan Grove. All rights reserved.
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
- * @version 1.0.1 (2007-05-05)
+ * @version 1.1.0 (?)
  * @link http://code.google.com/p/minify/
  */
-
-// Uncomment when debugging.
-// error_reporting(E_ALL | E_STRICT);
-// ini_set('display_errors', 'on');
 
 if (!defined('MINIFY_BASE_DIR')) {
   /** 
@@ -76,12 +72,13 @@ if (!defined('MINIFY_USE_CACHE')) {
  * @author Ryan Grove <ryan@wonko.com>
  * @copyright 2007 Ryan Grove. All rights reserved.
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
- * @version 1.0.1 (2007-05-05)
+ * @version 1.1.0 (?)
  * @link http://code.google.com/p/minify/
  */
 class Minify {
-  const TYPE_CSS = 'text/css';
-  const TYPE_JS  = 'text/javascript';
+  const TYPE_CSS  = 'text/css';
+  const TYPE_HTML = 'text/html';
+  const TYPE_JS   = 'text/javascript';
 
   protected $files = array();
   protected $type  = self::TYPE_JS;
@@ -111,7 +108,13 @@ class Minify {
 
     // Determine the content type based on the extension of the first file
     // requested.
-    $type = preg_match('/\.js$/iD', $files[0]) ? self::TYPE_JS : self::TYPE_CSS;
+    if (preg_match('/\.js$/iD', $files[0])) {
+      $type = self::TYPE_JS;
+    } else if (preg_match('/\.css$/iD', $files[0])) {
+      $type = self::TYPE_CSS;
+    } else {
+      $type = self::TYPE_HTML;
+    }
 
     // Minify and spit out the result.
     try {
@@ -133,14 +136,27 @@ class Minify {
   /**
    * Minifies the specified string and returns it.
    *
-   * @param string $string JavaScript or CSS string to minify
+   * @param string $string JavaScript, CSS, or HTML string to minify
    * @param string $type content type of the string (Minify::TYPE_CSS,
    *   Minify::TYPE_HTML, or Minify::TYPE_JS)
    * @return string minified string
    */
-  public static function minify($string, $type = self::TYPE_JS) {
-    return $type === self::TYPE_JS ? self::minifyJS($string) :
-        self::minifyCSS($string);
+  public static function min($string, $type = self::TYPE_JS) {
+    switch ($type) {
+      case self::TYPE_CSS:
+        return self::minifyCSS($string);
+        break;
+      
+      case self::TYPE_HTML:
+        return self::minifyHTML($string);
+        break;
+        
+      case self::TYPE_JS:
+        return self::minifyJS($string);
+        break;
+    }
+    
+    return $string;
   }
 
   // -- Protected Static Methods -----------------------------------------------
@@ -163,6 +179,11 @@ class Minify {
     return trim($css);
   }
 
+  protected static function minifyHTML($html) {
+    require_once dirname(__FILE__).'/lib/htmlmin.php';
+    return HTMLMin::minify($html);
+  }
+  
   /**
    * Minifies the specified JavaScript string and returns it.
    *
