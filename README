@@ -1,5 +1,40 @@
-Note: Current trunk is progress on V2 and should be considered "alpha".
+Note: This is early work on version 2 of Minify and should be considered "alpha". You may wish to choose an earlier release from http://code.google.com/p/minify/downloads/list . The documentation at http://code.google.com/p/minify/ applies to those releases.
 
-Documentation at http://code.google.com/p/minify/ needs updating.
+SETUP
 
-For example usage, see files in /examples/1/
+Minify is a library of files inside the "lib" directory. Wherever you place "lib", it needs to be in your include_path, and should be access-protected or outside of DOCUMENT_ROOT.
+
+TESTING
+
+1. Place the "web" directory somewhere in DOCUMENT_ROOT.
+2. Edit "config.php" to manually add "lib" to the include_path.
+3. To enable server-side caching, set $minifyCachePath to a PHP-writeable directory
+4. visit http://yourdomain.com/path/to/web/example/1/
+5. call each "test_*.php" file in http://yourdomain.com/path/to/web/test/
+
+MINIFY OVERVIEW
+
+Minify is an HTTP content server. It combines sources of content (usually files), compresses the result and serves it with appropriate HTTP headers. These headers can usually allow clients to perform conditional GETs (serving content only when clients do not have a valid cache) or tell clients to cache the file until a given date/time.
+
+Minify works with Minify_Source objects. These usually represent a file on disk, but a source can also be content on hand or from a database. Sources with known "last modified" timestamps allow Minify to implement conditional GETs.
+
+You configure Minify via a Minify_Controller object. The controller supplies the sources and some other information about a request, determining how it's to be responded to. Several controllers are supplied with Minify, but it's also fairly easy to write your own. E.g. a controller could emulate v1.x of minify.php.
+
+To use an existing controller, you call Minify::serve(), passing it the name of your controller of choice (without the "Minify_Controller" prefix), an array of options for the controller, and an array of general Minify options (optional). Eg.:
+
+// serve a minified javascript file and tell clients to cache it for a year
+Minify::serve(
+    'Files'
+    ,array('/path/to/file1.js', '/path/to/file2.js')
+    ,array('cacheUntil' => (time() + 86400 * 365))
+);
+
+The above creates an instance of Minify_Controller_Files, passing the two arrays to its constructor. 
+
+The first array depends on the controller. In this case, Minify_Controller_Files needs a list of file paths.
+
+The second array (optional) has options for Minify. (Since this is passed through the controller, some controllers may use/alter this data).
+
+MINIFY USAGE
+
+Example 1 shows an example of using Minify to serve both the HTML and external CSS and JS files.
