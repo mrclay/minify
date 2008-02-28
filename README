@@ -1,1 +1,5 @@
-Please see http://code.google.com/p/minify/ for documentation.
+Note: Current trunk is progress on V2 and should be considered "alpha".
+
+Documentation at http://code.google.com/p/minify/ needs updating.
+
+For example usage, see files in /examples/1/

@@ -1,0 +1,1 @@
+/*\*/a{}.foo{color:red}/**//*\*//*/@import "ie5mac.css";/**//*/*/.foo{display:block}/**//*/*//*/.foo{display:crazy}/**/div{width:140px;width/**/:/**/100px;width:/**/100px}html>/**/body{}

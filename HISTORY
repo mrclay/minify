@@ -1,5 +1,10 @@
 Minify Release History
 
+Version 1.9.0 (2008-02-28)
+  * Complete overhaul! Minify is now a PEAR-style class and toolkit for building
+    customized minifying file servers.
+  * Utility classes HTTP_Encoder and HTTP_ConditionalGet
+
 Version 1.0.1 (2007-05-05)
   * Fixed various problems resolving pathnames when hosted on an NFS mount.
   * Fixed 'undefined constant' notice.

@@ -1,0 +1,6 @@
+
+/* block comments get removed */
+
+/* comments containing the word "copyright" are left in, though */
+
+/* but all other comments are removed */

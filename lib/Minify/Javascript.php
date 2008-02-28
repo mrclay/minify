@@ -1,16 +1,16 @@
 <?php
 /**
- * jsmin.php - PHP implementation of Douglas Crockford's JSMin.
+ * Minify_Javascript - PHP implementation of Douglas Crockford's JSMin.
  *
- * This is pretty much a direct port of jsmin.c to PHP with just a few
- * PHP-specific performance tweaks. Also, whereas jsmin.c reads from stdin and
+ * This is pretty much a direct port of JSMin.c to PHP with just a few
+ * PHP-specific performance tweaks. Also, whereas JSMin.c reads from stdin and
  * outputs to stdout, this library accepts a string as input and returns another
  * string as output.
  *
  * PHP 5 or higher is required.
  *
  * Permission is hereby granted to use this version of the library under the
- * same terms as jsmin.c, which has the following license:
+ * same terms as JSMin.c, which has the following license:
  *
  * --
  * Copyright (c) 2002 Douglas Crockford  (www.crockford.com)
@@ -36,44 +36,42 @@
  * SOFTWARE.
  * --
  *
- * @package JSMin
+ * @package Minify_Javascript
  * @author Ryan Grove <ryan@wonko.com>
- * @copyright 2002 Douglas Crockford <douglas@crockford.com> (jsmin.c)
+ * @copyright 2002 Douglas Crockford <douglas@crockford.com> (JSMin.c)
  * @copyright 2007 Ryan Grove <ryan@wonko.com> (PHP port)
  * @license http://opensource.org/licenses/mit-license.php MIT License
  * @version 1.1.0 (2007-06-01)
  * @link http://code.google.com/p/jsmin-php/
  */
 
-class JSMin {
+class Minify_Javascript {
   const ORD_LF    = 10;
   const ORD_SPACE = 32;
 
-  protected $a           = '';
-  protected $b           = '';
-  protected $input       = '';
-  protected $inputIndex  = 0;
-  protected $inputLength = 0;
-  protected $lookAhead   = null;
-  protected $output      = array();
+  private $a           = '';
+  private $b           = '';
+  private $input       = '';
+  private $inputIndex  = 0;
+  private $inputLength = 0;
+  private $lookAhead   = null;
+  private $output      = array();
 
   // -- Public Static Methods --------------------------------------------------
 
-  public static function minify($js) {
-    $jsmin = new JSMin($js);
-    return $jsmin->min();
+  public static function minify($js, $options = array()) {
+    $js = new Minify_Javascript($js);
+    return trim($js->min());
   }
 
-  // -- Public Instance Methods ------------------------------------------------
+  // -- Private Instance Methods ---------------------------------------------
 
-  public function __construct($input) {
+  private function __construct($input) {
     $this->input       = str_replace("\r\n", "\n", $input);
     $this->inputLength = strlen($this->input);
   }
 
-  // -- Protected Instance Methods ---------------------------------------------
-
-  protected function action($d) {
+  private function action($d) {
     switch($d) {
       case 1:
         $this->output[] = $this->a;
@@ -91,7 +89,7 @@ class JSMin {
             }
 
             if (ord($this->a) <= self::ORD_LF) {
-              throw new JSMinException('Unterminated string literal.');
+              throw new Minify_JavascriptException('Unterminated string literal.');
             }
 
             if ($this->a === '\\') {
@@ -123,7 +121,7 @@ class JSMin {
               $this->a        = $this->get();
             }
             elseif (ord($this->a) <= self::ORD_LF) {
-              throw new JSMinException('Unterminated regular expression '.
+              throw new Minify_JavascriptException('Unterminated regular expression '.
                   'literal.');
             }
 
@@ -135,7 +133,7 @@ class JSMin {
     }
   }
 
-  protected function get() {
+  private function get() {
     $c = $this->lookAhead;
     $this->lookAhead = null;
 
@@ -160,18 +158,14 @@ class JSMin {
     return ' ';
   }
 
-  protected function isAlphaNum($c) {
-    return ord($c) > 126 || $c === '\\' || preg_match('/^[\w\$]$/', $c) === 1;
-  }
-
-  protected function min() {
+  private function min() {
     $this->a = "\n";
     $this->action(3);
 
     while ($this->a !== null) {
       switch ($this->a) {
         case ' ':
-          if ($this->isAlphaNum($this->b)) {
+          if (self::isAlphaNum($this->b)) {
             $this->action(1);
           }
           else {
@@ -194,7 +188,7 @@ class JSMin {
               break;
 
             default:
-              if ($this->isAlphaNum($this->b)) {
+              if (self::isAlphaNum($this->b)) {
                 $this->action(1);
               }
               else {
@@ -206,7 +200,7 @@ class JSMin {
         default:
           switch ($this->b) {
             case ' ':
-              if ($this->isAlphaNum($this->a)) {
+              if (self::isAlphaNum($this->a)) {
                 $this->action(1);
                 break;
               }
@@ -227,7 +221,7 @@ class JSMin {
                   break;
 
                 default:
-                  if ($this->isAlphaNum($this->a)) {
+                  if (self::isAlphaNum($this->a)) {
                     $this->action(1);
                   }
                   else {
@@ -246,7 +240,7 @@ class JSMin {
     return implode('', $this->output);
   }
 
-  protected function next() {
+  private function next() {
     $c = $this->get();
 
     if ($c === '/') {
@@ -273,7 +267,7 @@ class JSMin {
                 break;
 
               case null:
-                throw new JSMinException('Unterminated comment.');
+                throw new Minify_JavascriptException('Unterminated comment.');
             }
           }
 
@@ -285,12 +279,18 @@ class JSMin {
     return $c;
   }
 
-  protected function peek() {
+  private function peek() {
     $this->lookAhead = $this->get();
     return $this->lookAhead;
+  }
+
+  // Private static functions --------------------------------------------------
+
+  private static function isAlphaNum($c) {
+    return ord($c) > 126 || $c === '\\' || preg_match('/^[\w\$]$/', $c) === 1;
   }
 }
 
 // -- Exceptions ---------------------------------------------------------------
-class JSMinException extends Exception {}
-?>
+class Minify_JavascriptException extends Exception {}
+

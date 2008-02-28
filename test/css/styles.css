@@ -1,0 +1,21 @@
+/* some CSS to try to exercise things in general */
+
+@import     url( more.css );
+
+    body, td, th {
+        font-family: Verdana, "Bitstream Vera Sans", sans-serif;
+
+	font-size  : 12px;
+}
+
+.nav {
+    margin-left: 20%;
+}
+#main-nav {
+    background-color: red;
+    border: 1px solid #00ff77;
+}
+div#content h1 + p {
+    padding-top: 0;
+    margin-top: 0;
+}
