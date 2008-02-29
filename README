@@ -15,11 +15,18 @@ access-protected or outside of DOCUMENT_ROOT.
 
 TESTING 
 
-1. Place the "web" directory somewhere in DOCUMENT_ROOT. 2. Edit 
-"config.php" to manually add "lib" to the include_path. 3. To enable 
-server-side caching, set $minifyCachePath to a PHP-writeable directory 
-4. visit http://yourdomain.com/path/to/web/example/1/ 5. call each 
-"test_*.php" file in http://yourdomain.com/path/to/web/test/ 
+1. Place the "web" directory somewhere in DOCUMENT_ROOT. 
+
+2. Edit "config.php" to manually add "lib" to the include_path.
+
+3. To enable server-side caching, set $minifyCachePath to a PHP-writeable directory
+
+4. Visit http://yourdomain.com/path/to/web/examples/1/
+   This page should contain 3 "PASS"es. It may take a few seconds to minify jQuery!
+
+5. Call each "test_*.php" file in http://yourdomain.com/path/to/web/test/
+   Each test should "PASS", except test_Minify.php. This script should output a 
+   single minified Javascript file sent as "application/x-javascript".
 
 MINIFY OVERVIEW 
 
