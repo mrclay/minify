@@ -58,6 +58,9 @@ class Minify_Controller_Base {
      * an HTTP Expires header instead of checking for conditional GET. 
      * E.g. (time() + 86400 * 365) for 1yr (default null)
      * This has nothing to do with server-side caching.
+     * 
+     * 'quiet' : set to true to have Minify not output any content/headers
+     * (bool, default = false)
      *
      */
     public $options = array();

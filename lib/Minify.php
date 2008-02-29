@@ -61,7 +61,7 @@ class Minify {
      * 
      * @param array $options options passed on to Minify
      *
-     * @return mixed a Minify controller object
+     * @return mixed false on failure or array of content and headers sent
      */
     public static function serve($type, $spec = array(), $options = array()) {
         $class = 'Minify_Controller_' . $type;
@@ -69,10 +69,14 @@ class Minify {
             require_once "Minify/Controller/{$type}.php";    
         }
         $ctrl = new $class($spec, $options);
-        if (! self::handleRequest($ctrl)) {
-            header("HTTP/1.0 400 Bad Request");
-            exit('400 Bad Request');    
+        $ret = self::handleRequest($ctrl);
+        if (false === $ret) {
+            if (! isset($ctrl->options['quiet']) || ! $ctrl->options['quiet']) {
+                header("HTTP/1.0 400 Bad Request");
+                exit('400 Bad Request');      
+            }
         }
+        return $ret;
     }
     
     /**
@@ -83,12 +87,13 @@ class Minify {
      * 
      * @param Minify_Controller $controller
      * 
-     * @return bool successfully sent a 304 or 200 with content
+     * @return mixed false on failure or array of content and headers sent
      */
     public static function handleRequest($controller) {
         if (! $controller->requestIsValid) {
             return false;
         }
+        
         self::$_controller = $controller;
         self::_setOptions();
         
@@ -105,8 +110,14 @@ class Minify {
         $cg = new HTTP_ConditionalGet($cgOptions);
         if ($cg->cacheIsValid) {
             // client's cache is valid
-            $cg->sendHeaders();
-            return true;
+            if (self::$_options['quiet']) {
+                return array(
+                    'content' => ''
+                    ,'headers' => $cg->getHeaders()                
+                );
+            } else {
+                $cg->sendHeaders();    
+            } 
         }
         // client will need output
         $headers = $cg->getHeaders();
@@ -149,12 +160,17 @@ class Minify {
             $headers['Vary'] = 'Accept-Encoding';
         }
 
-        // output headers & content
-        foreach ($headers as $name => $val) {
-            header($name . ': ' . $val);
+        if (! self::$_options['quiet']) {
+            // output headers & content
+            foreach ($headers as $name => $val) {
+                header($name . ': ' . $val);
+            }
+            echo $content;    
         }
-        echo $content;
-        return true;
+        return array(
+            'content' => $content
+            ,'headers' => $headers                
+        );
     }
     
     /**
@@ -194,6 +210,7 @@ class Minify {
             ,'perType' => array() // per-type minifier options
             ,'contentTypeCharset' => null // leave out of Content-Type header
             ,'setExpires' => null // send Expires header
+            ,'quiet' => false
         ), $given);
         $defaultMinifiers = array(
             'text/css' => array('Minify_CSS', 'minify')
