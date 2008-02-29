@@ -3,23 +3,20 @@
 require_once 'Minify/Controller/Base.php';
 
 /**
- * Controller class for minifying a set of files
+ * Controller class for serving a single HTML page
  * 
- * E.g. the following would serve minified Javascript for a site
- * <code>
- * $dr = $_SERVER['DOCUMENT_ROOT'];
- * Minify::minify('Files', array(
- *    $dr . '/js/jquery.js'
- *     ,$dr . '/js/plugins.js'
- *     ,$dr . '/js/site.js'
- * ));
- * </code>
+ * @link http://code.google.com/p/minify/source/browse/trunk/web/examples/1/index.php#59
  * 
  */
 class Minify_Controller_Page extends Minify_Controller_Base {
     
     /**
+     * @param array $spec array of options. You *must* set 'content' and 'id',
+     * but setting 'lastModifiedTime' is recommeded in order to allow server
+     * and client-side caching.
      * 
+     * If you set <code>'minifyAll' => 1</code>, all CSS and Javascript blocks
+     * will be individually minified. 
      * 
      * @param array $options optional options to pass to Minify
      * 
@@ -49,13 +46,18 @@ class Minify_Controller_Page extends Minify_Controller_Base {
     
     private $_loadCssJsMinifiers = false;
     
+    /**
+     * @see Minify_Controller_Base::loadMinifier()
+     */
     public function loadMinifier($minifierCallback)
     {
         if ($this->_loadCssJsMinifiers) {
+            // Minify will not call for these so we must manually load
+            // them when Minify/HTML.php is called for.
             require 'Minify/CSS.php';
             require 'Minify/Javascript.php';
         }
-        parent::loadMinifier($minifierCallback);
+        parent::loadMinifier($minifierCallback); // load Minify/HTML.php
     }
 }
 

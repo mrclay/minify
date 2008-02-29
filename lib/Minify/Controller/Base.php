@@ -24,7 +24,12 @@ class Minify_Controller_Base {
      * 
      * 'minifiers': this is an array with content-types as keys and callbacks as
      * values. Specify a custom minifier by setting this option. E.g.:
-     * $this->options['minifiers']['application/x-javascript'] = 'myJsPacker';
+     * 
+     * <code>
+     * $this->options['minifiers']['application/x-javascript'] = 
+     *     array('Minify_Packer', 'minify'); // callback
+     * </code>
+     * 
      * Note that, when providing your own minifier, the controller must be able
      * to load its code on demand. @see loadMinifier()
      * 
@@ -68,19 +73,22 @@ class Minify_Controller_Base {
     /**
      * Parent constructor for a controller class
      * 
-     * Generally you'll call this at the end of your child class constructor:
+     * If your subclass controller is not happy with the request, it can simply return
+     * without setting $this->requestIsValid. Minify will not check any other member.
+     * 
+     * If the request is valid, you must set $this->requestIsValid = true and also call
+     * the parent constructor, passing along an array of source objects and any Minify 
+     * options:
      * <code>
      * parent::__construct($sources, $options);
      * </code>
      * 
-     * This function sets the sources and determines the 'contentType' and 
-     * 'lastModifiedTime', if not given.
+     * This function sets $this->sources and determines $this->options 'contentType' and 
+     * 'lastModifiedTime'.
      * 
-     * If no sources are provided, $this->requestIsValid will be set to false.
+     * @param array $sources array of Minify_Source instances
      * 
-     * @param array $sources array of instances of Minify_Source
-     * 
-     * @param array $options
+     * @param array $options options for Minify
      * 
      * @return null
      */

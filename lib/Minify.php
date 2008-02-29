@@ -3,7 +3,7 @@
 /**
  * Minify - Combines, minifies, and caches JavaScript and CSS files on demand.
  *
- * See http://code.google.com/p/minify/ for usage instructions.
+ * See README for usage instructions (for now).
  *
  * This library was inspired by jscsscomp by Maxim Martynyuk <flashkot@mail.ru>
  * and by the article "Supercharged JavaScript" by Patrick Hunlock
@@ -58,6 +58,8 @@ class Minify {
      * extension. e.g. 'Group'
      * 
      * @param array $spec options for the controller's constructor
+     * 
+     * @param array $options options passed on to Minify
      *
      * @return mixed a Minify controller object
      */
@@ -191,7 +193,9 @@ class Minify {
             ,'encodeLevel' => 9
             ,'perType' => array() // per-type minifier options
             ,'contentTypeCharset' => null // leave out of Content-Type header
-            ,'cacheUntil' => null
+            
+            // @todo: rename option "setExpires" ?
+            ,'cacheUntil' => null // send Expires header
         ), $given);
         $defaultMinifiers = array(
             'text/css' => array('Minify_CSS', 'minify')

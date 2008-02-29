@@ -8,7 +8,7 @@ require_once 'Minify/Controller/Base.php';
  * 
  * <code>
  * $dr = $_SERVER['DOCUMENT_ROOT'];
- * Minify::minify('Groups', array(
+ * Minify::serve('Groups', array(
  *   'css' => array(
  *     $dr . '/css/type.css'
  *     ,$dr . '/css/layout.css'
@@ -47,6 +47,7 @@ class Minify_Controller_Groups extends Minify_Controller_Base {
                     'filepath' => $file
                 ));    
             } else {
+                // file doesn't exist
                 return;
             }
         }

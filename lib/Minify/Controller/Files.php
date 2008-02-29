@@ -5,10 +5,10 @@ require_once 'Minify/Controller/Base.php';
 /**
  * Controller class for minifying a set of files
  * 
- * E.g. the following would serve minified Javascript for a site
+ * E.g. the following would serve the minified Javascript for a site
  * <code>
  * $dr = $_SERVER['DOCUMENT_ROOT'];
- * Minify::minify('Files', array(
+ * Minify::serve('Files', array(
  *    $dr . '/js/jquery.js'
  *     ,$dr . '/js/plugins.js'
  *     ,$dr . '/js/site.js'
@@ -19,9 +19,9 @@ require_once 'Minify/Controller/Base.php';
 class Minify_Controller_Files extends Minify_Controller_Base {
     
     /**
-     * @param array $spec array or full paths of files to be minified
+     * @param array $spec array of full paths of files to be minified
      * 
-     * @param array $options optional options to pass to Minify
+     * @param array $options options to pass to Minify
      * 
      * @return null 
      */
