@@ -96,8 +96,8 @@ class Minify {
             'lastModifiedTime' => self::$_options['lastModifiedTime']
             ,'isPublic' => self::$_options['isPublic']
         );
-        if (null !== self::$_options['cacheUntil']) {
-            $cgOptions['cacheUntil'] = self::$_options['cacheUntil'];
+        if (null !== self::$_options['setExpires']) {
+            $cgOptions['setExpires'] = self::$_options['setExpires'];
         }
         
         // check client cache
@@ -193,9 +193,7 @@ class Minify {
             ,'encodeLevel' => 9
             ,'perType' => array() // per-type minifier options
             ,'contentTypeCharset' => null // leave out of Content-Type header
-            
-            // @todo: rename option "setExpires" ?
-            ,'cacheUntil' => null // send Expires header
+            ,'setExpires' => null // send Expires header
         ), $given);
         $defaultMinifiers = array(
             'text/css' => array('Minify_CSS', 'minify')
@@ -282,9 +280,10 @@ class Minify {
         $defaultOptions = isset(self::$_options['perType'][$type])
             ? self::$_options['perType'][$type]
             : array();
+        // if minifier not set, default is no minification
         $defaultMinifier = isset(self::$_options['minifiers'][$type])
             ? self::$_options['minifiers'][$type]
-            : array('Minify', '_trim');
+            : false;
        
         if (Minify_Source::haveNoMinifyPrefs(self::$_controller->sources)) {
             // all source have same options/minifier, better performance
@@ -292,8 +291,10 @@ class Minify {
                 $pieces[] = $source->getContent();
             }
             $content = implode($implodeSeparator, $pieces);
-            self::$_controller->loadMinifier($defaultMinifier);
-            $content = call_user_func($defaultMinifier, $content, $defaultOptions);
+            if ($defaultMinifier) {
+                self::$_controller->loadMinifier($defaultMinifier);
+                $content = call_user_func($defaultMinifier, $content, $defaultOptions);    
+            }
         } else {
             // minify each source with its own options and minifier
             foreach (self::$_controller->sources as $source) {
@@ -304,9 +305,13 @@ class Minify {
                 $options = (null !== $source->minifyOptions)
                     ? array_merge($defaultOptions, $source->minifyOptions)
                     : $defaultOptions;
-                self::$_controller->loadMinifier($minifier);
-                // get source content and minify it
-                $pieces[] = call_user_func($minifier, $source->getContent(), $options); 
+                if ($defaultMinifier) {
+                    self::$_controller->loadMinifier($minifier);
+                    // get source content and minify it
+                    $pieces[] = call_user_func($minifier, $source->getContent(), $options);     
+                } else {
+                    $pieces[] = $source->getContent();     
+                }
             }
             $content = implode($implodeSeparator, $pieces);
         }
@@ -349,20 +354,5 @@ class Minify {
             ,self::$_options['minifiers'] 
             ,self::$_options['perType']
         )));
-    }
-    
-    /**
-     * The default minifier if content-type has no minifier
-     * 
-     * This is necessary because trim() throws notices when you send in options
-     * as a 2nd arg.
-     *
-     * @param string $content
-     * 
-     * @return string
-     */
-    private static function _trim($content, $options)
-    {
-        return trim($content);
     }
 }

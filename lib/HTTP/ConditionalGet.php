@@ -80,13 +80,13 @@ class HTTP_ConditionalGet {
             ? 'public'
             : 'private';
         // allow far-expires header
-        if (isset($spec['cacheUntil'])) {
-            if (is_numeric($spec['cacheUntil'])) {
-                $spec['cacheUntil'] = self::gmtdate($spec['cacheUntil']); 
+        if (isset($spec['setExpires'])) {
+            if (is_numeric($spec['setExpires'])) {
+                $spec['setExpires'] = self::gmtdate($spec['setExpires']); 
             }
             $this->headers = array(
                 'Cache-Control' => $scope
-                ,'Expires' => $spec['cacheUntil']
+                ,'Expires' => $spec['setExpires']
             );
             $this->cacheIsValid = false;
             return;

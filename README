@@ -30,8 +30,8 @@ TESTING
 
 MINIFY OVERVIEW 
 
-Minify is an HTTP content server. It combines sources of content 
-(usually files), compresses the result and serves it with appropriate 
+Minify is an HTTP content server. It compresses sources of content 
+(usually files), combines the result and serves it with appropriate 
 HTTP headers. These headers can usually allow clients to perform 
 conditional GETs (serving content only when clients do not have a valid 
 cache) or tell clients to cache the file until a given date/time. 
@@ -57,7 +57,7 @@ Minify options (optional). Eg.:
 Minify::serve(
     'Files'
     ,array('/path/to/file1.js', '/path/to/file2.js')
-    ,array('cacheUntil' => (time() + 86400 * 365))
+    ,array('setExpires' => (time() + 86400 * 365))
 ); 
 
 The above creates an instance of Minify_Controller_Files, passing the 

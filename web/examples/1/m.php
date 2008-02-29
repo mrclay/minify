@@ -16,7 +16,7 @@ require '../../config.php';
 $serveExtensions = array('css', 'js');
 
 // set HTTP Expires header if GET 'v' is sent
-$cacheUntil = isset($_GET['v'])
+$setExpires = isset($_GET['v'])
     ? (time() + 86400 * 30)
     : null;
 
@@ -40,7 +40,7 @@ if (isset($_GET['f'])) {
         Minify::serve('Files', array(
             dirname(__FILE__) . '/' . $filename
         ), array(
-            'cacheUntil' => $cacheUntil
+            'setExpires' => $setExpires
         ));
         exit();
     }

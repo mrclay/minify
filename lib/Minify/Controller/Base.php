@@ -54,7 +54,7 @@ class Minify_Controller_Base {
      * 'contentTypeCharset' : if given, this will be appended to the Content-Type
      * header sent, useful mainly for HTML docs.  
      * 
-     * 'cacheUntil' : set this to a timestamp or GMT date to have Minify send
+     * 'setExpires' : set this to a timestamp or GMT date to have Minify send
      * an HTTP Expires header instead of checking for conditional GET. 
      * E.g. (time() + 86400 * 365) for 1yr (default null)
      * This has nothing to do with server-side caching.
@@ -100,7 +100,7 @@ class Minify_Controller_Base {
         if (! isset($options['contentType'])) {
             $options['contentType'] = Minify_Source::getContentType($this->sources);
         }
-        // last modified is needed for caching, even if cacheUntil is set
+        // last modified is needed for caching, even if setExpires is set
         if (! isset($options['lastModifiedTime'])) {
             $max = 0;
             foreach ($sources as $source) {
