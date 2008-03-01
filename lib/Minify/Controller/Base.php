@@ -18,7 +18,7 @@ class Minify_Controller_Base {
     public $sources = array();
     
     /**
-     * @var array options to be read by read by Minify
+     * @var array options to be read by Minify
      * 
      * Any unspecified options will use the default values.
      * 
@@ -63,7 +63,7 @@ class Minify_Controller_Base {
      * (bool, default = false)
      *
      */
-    public $options = array();
+    public $minOptions = array();
 
     /**
      * @var bool was the user request valid
@@ -111,7 +111,7 @@ class Minify_Controller_Base {
             }
             $options['lastModifiedTime'] = $max;
         }    
-        $this->options = $options;
+        $this->minOptions = $options;
     }
     
     /**

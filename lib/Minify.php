@@ -57,21 +57,21 @@ class Minify {
      * @param string type This should be the filename of the controller without
      * extension. e.g. 'Group'
      * 
-     * @param array $spec options for the controller's constructor
+     * @param array $ctrlOptions options for the controller's constructor
      * 
-     * @param array $options options passed on to Minify
+     * @param array $minOptions options passed on to Minify
      *
      * @return mixed false on failure or array of content and headers sent
      */
-    public static function serve($type, $spec = array(), $options = array()) {
+    public static function serve($type, $ctrlOptions = array(), $minOptions = array()) {
         $class = 'Minify_Controller_' . $type;
         if (! class_exists($class, false)) {
             require_once "Minify/Controller/{$type}.php";    
         }
-        $ctrl = new $class($spec, $options);
+        $ctrl = new $class($ctrlOptions, $minOptions);
         $ret = self::handleRequest($ctrl);
         if (false === $ret) {
-            if (! isset($ctrl->options['quiet']) || ! $ctrl->options['quiet']) {
+            if (! isset($ctrl->minOptions['quiet']) || ! $ctrl->minOptions['quiet']) {
                 header("HTTP/1.0 400 Bad Request");
                 exit('400 Bad Request');      
             }
@@ -95,7 +95,7 @@ class Minify {
         }
         
         self::$_controller = $controller;
-        self::_setOptions();
+        self::_resolveOptions($controller->minOptions);
         
         $cgOptions = array(
             'lastModifiedTime' => self::$_options['lastModifiedTime']
@@ -194,13 +194,12 @@ class Minify {
     private static $_cache = null;
     
     /**
-     * Set class options based on controller's options and defaults
+     * Resolve Minify options based on those passed from controller and Minify's defaults
      * 
      * @return null
      */
-    private static function _setOptions()
+    private static function _resolveOptions($ctrlOptions)
     {
-        $given = self::$_controller->options;
         self::$_options = array_merge(array(
             // default options
             'isPublic' => true
@@ -211,16 +210,16 @@ class Minify {
             ,'contentTypeCharset' => null // leave out of Content-Type header
             ,'setExpires' => null // send Expires header
             ,'quiet' => false
-        ), $given);
+        ), $ctrlOptions);
         $defaultMinifiers = array(
             'text/css' => array('Minify_CSS', 'minify')
             ,'application/x-javascript' => array('Minify_Javascript', 'minify')
             ,'text/html' => array('Minify_HTML', 'minify')
         );
-        if (! isset($given['minifiers'])) {
-            $given['minifiers'] = array();
+        if (! isset($ctrlOptions['minifiers'])) {
+            $ctrlOptions['minifiers'] = array();
         }
-        self::$_options['minifiers'] = array_merge($defaultMinifiers, $given['minifiers']); 
+        self::$_options['minifiers'] = array_merge($defaultMinifiers, $ctrlOptions['minifiers']); 
     }
     
     /**
@@ -238,7 +237,7 @@ class Minify {
     private static function _fetchContent($encodeMethod)
     {
         $cacheId = self::_getCacheId(self::$_controller->sources, self::$_options) 
-            . $encodeMethod;    
+            . $encodeMethod;
         $content = self::$_cache->get($cacheId, 'Minify');
         if (false === $content) {
             // must generate
