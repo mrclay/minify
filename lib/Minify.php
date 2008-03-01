@@ -56,34 +56,6 @@ class Minify {
     }
 
     /**
-     * Create a controller instance and handle the request
-     * 
-     * @param string type This should be the filename of the controller without
-     * extension. e.g. 'Group'
-     * 
-     * @param array $ctrlOptions options for the controller's constructor
-     * 
-     * @param array $minOptions options passed on to Minify
-     *
-     * @return mixed false on failure or array of content and headers sent
-     */
-    public static function serveold($type, $ctrlOptions = array(), $minOptions = array()) {
-        $class = 'Minify_Controller_' . $type;
-        if (! class_exists($class, false)) {
-            require_once "Minify/Controller/{$type}.php";    
-        }
-        $ctrl = new $class($ctrlOptions, $minOptions);
-        $ret = self::handleRequest($ctrl);
-        if (false === $ret) {
-            if (! isset($ctrl->minOptions['quiet']) || ! $ctrl->minOptions['quiet']) {
-                header("HTTP/1.0 400 Bad Request");
-                exit('400 Bad Request');      
-            }
-        }
-        return $ret;
-    }
-    
-    /**
      * Serve a request for a minified file. 
      * 
      * @param mixed instance of subclass of Minify_Controller_Base or string name of controller. E.g. 'Files'
@@ -219,7 +191,7 @@ class Minify {
         // add headers to those from ConditionalGet
         //$headers['Content-Length'] = strlen($content);
         $headers['Content-Type'] = (null !== self::$_options['contentTypeCharset'])
-            ? self::$_options['contentType'] . ';charset=' . self::$_options['contentTypeCharset']
+            ? self::$_options['contentType'] . '; charset=' . self::$_options['contentTypeCharset']
             : self::$_options['contentType'];
         if (self::$_options['encodeMethod'] !== '') {
             $headers['Content-Encoding'] = $contentEncoding;

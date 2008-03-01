@@ -25,8 +25,8 @@ foreach ($list as $item) {
     
     if ($minExpected !== $minOutput) {
         echo "\n---Source\n\n{$src}";
-        echo "\n---Expected\n\n{$minExpected}";
-        echo "\n---Output\n\n{$minOutput}\n\n\n\n";
+        echo "\n\n---Expected\n\n{$minExpected}";
+        echo "\n\n---Output\n\n{$minOutput}\n\n\n\n";
     }
 }
 

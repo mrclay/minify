@@ -113,9 +113,9 @@ class Minify_Source {
     public static function getContentType($sources)
     {
         $exts = array(
-            'css' => 'text/css'
-            ,'js' => 'application/x-javascript'
-            ,'html' => 'text/html'
+            'css' => Minify::TYPE_CSS
+            ,'js' => Minify::TYPE_JS
+            ,'html' => Minify::TYPE_HTML
         );
         foreach ($sources as $source) {
             if (null !== $source->_filepath) {

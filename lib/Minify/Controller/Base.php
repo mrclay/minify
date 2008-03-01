@@ -89,6 +89,32 @@ abstract class Minify_Controller_Base {
     }
     
     /**
+     * Is a user-given file within document root, existing,
+     * and having an extension js/css/html/txt
+     * 
+     * This is a convenience function for controllers that have to accept
+     * user-given paths
+     *
+     * @param string $file full file path (already processed by realpath())
+     * @param string $docRoot root where files are safe to serve
+     * @return bool file is safe
+     */
+    public static function _fileIsSafe($file, $docRoot)
+    {
+        if (strpos($file, $docRoot) !== 0 || ! file_exists($file)) {
+            return false;
+        }
+        $base = basename($file);
+        if ($base[0] === '.') {
+            return false;
+        }
+        list($revExt) = explode('.', strrev($base));
+        return in_array(strrev($revExt), array('js', 'css', 'html', 'txt'));
+    }
+    
+    /*public static function _haveSameExt
+    
+    /**
      * @var array instances of Minify_Source, which provide content and
      * any individual minification needs.
      * 
@@ -125,7 +151,8 @@ abstract class Minify_Controller_Base {
      * 
      * @return array options for Minify
      */
-    public final function analyzeSources($options = array()) {
+    public final function analyzeSources($options = array()) 
+    {
         if ($this->sources) {
             if (! isset($options['contentType'])) {
                 $options['contentType'] = Minify_Source::getContentType($this->sources);
