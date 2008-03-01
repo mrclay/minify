@@ -8,16 +8,11 @@ require_once 'Minify/Controller/Base.php';
  * 
  * <code>
  * $dr = $_SERVER['DOCUMENT_ROOT'];
- * Minify::serve('Groups', array(
- *   'css' => array(
- *     $dr . '/css/type.css'
- *     ,$dr . '/css/layout.css'
- *   )
- *   ,'js' => array(
- *     $dr . '/js/jquery.js'
- *     ,$dr . '/js/plugins.js'
- *     ,$dr . '/js/site.js'
- *   )
+ * Minify::serve('Groups', array( 
+ *     'groups' => array(
+ *         'css' => array($dr . '/css/type.css', $dr . '/css/layout.css')
+ *        ,'js' => array($dr . '/js/jquery.js', $dr . '/js/site.js')
+ *     )
  * ));
  * </code>
  * 
@@ -27,20 +22,28 @@ require_once 'Minify/Controller/Base.php';
 class Minify_Controller_Groups extends Minify_Controller_Base {
     
     /**
-     * @param array $spec associative array of keys to arrays of file paths.
+     * Set up groups of files as sources
      * 
-     * @param array $options optional options to pass to Minify
+     * @param array $options controller and Minify options
+     * @return array Minify options
      * 
-     * @return null 
+     * Controller options:
+     * 
+     * 'groups': (required) array mapping PATH_INFO strings to arrays
+     * of complete file paths. @see Minify_Controller_Groups 
      */
-    public function __construct($spec, $options = array()) {
+    public function setupSources($options) {
+        // strip controller options
+        $groups = $options['groups'];
+        unset($options['groups']);
+        
         $pi = substr($_SERVER['PATH_INFO'], 1);
-        if (! isset($spec[$pi])) {
+        if (! isset($groups[$pi])) {
             // not a valid group
-            return;
+            return $options;
         }
         $sources = array();
-        foreach ($spec[$pi] as $file) {
+        foreach ($groups[$pi] as $file) {
             $file = realpath($file);
             if (file_exists($file)) {
                 $sources[] = new Minify_Source(array(
@@ -48,13 +51,13 @@ class Minify_Controller_Groups extends Minify_Controller_Base {
                 ));    
             } else {
                 // file doesn't exist
-                return;
+                return $options;
             }
         }
         if ($sources) {
-            $this->requestIsValid = true;
+            $this->sources = $sources;
         }
-        parent::__construct($sources, $options);
+        return $options;
     }
 }
 

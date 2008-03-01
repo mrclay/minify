@@ -26,6 +26,10 @@ require_once 'Minify/Source.php';
 
 class Minify {
 
+    const TYPE_CSS = 'text/css';
+    const TYPE_JS = 'application/x-javascript';
+    const TYPE_HTML = 'text/html';
+    
     /**
      * @var bool Should the un-encoded version be cached? 
      * 
@@ -63,7 +67,7 @@ class Minify {
      *
      * @return mixed false on failure or array of content and headers sent
      */
-    public static function serve($type, $ctrlOptions = array(), $minOptions = array()) {
+    public static function serveold($type, $ctrlOptions = array(), $minOptions = array()) {
         $class = 'Minify_Controller_' . $type;
         if (! class_exists($class, false)) {
             require_once "Minify/Controller/{$type}.php";    
@@ -80,22 +84,82 @@ class Minify {
     }
     
     /**
-     * Handle a request for a minified file. 
+     * Serve a request for a minified file. 
      * 
-     * You must supply a controller object which has the same public API
-     * as Minify_Controller.
+     * @param mixed instance of subclass of Minify_Controller_Base or string name of controller. E.g. 'Files'
      * 
-     * @param Minify_Controller $controller
+     * @param array $options controller/serve options
      * 
-     * @return mixed false on failure or array of content and headers sent
+     * @return array success, statusCode, content, and headers generated
+     * 
+     * Here are the available options and defaults in the base controller:
+     * 
+     * 'isPublic' : send "public" instead of "private" in Cache-Control 
+     * headers, allowing shared caches to cache the output. (default true)
+     * 
+     * 'quiet' : set to true to have no content/headers sent (default false)
+     * 
+     * 'encodeOutput' : to disable content encoding, set this to false (default true)
+     * 
+     * 'encodeMethod' : generally you should let this be determined by 
+     * HTTP_Encoder (leave null), but you can force a particular encoding
+     * to be returned, by setting this to 'gzip', 'deflate', 'compress', or '' 
+     * (no encoding)
+     * 
+     * 'encodeLevel' : level of encoding compression (0 to 9, default 9)
+     * 
+     * 'contentTypeCharset' : if given, this will be appended to the Content-Type
+     * header sent (needed mainly for HTML docs)  
+     * 
+     * 'setExpires' : set this to a timestamp or GMT date to have Minify send
+     * an HTTP Expires header instead of checking for conditional GET (default null). 
+     * E.g. (time() + 86400 * 365) for 1yr 
+     * Note this has nothing to do with server-side caching.
+     * 
+     * 'perType' : this is an array of options to send to a particular minifier 
+     * function using the content-type as key. E.g. To send the CSS minifier an 
+     * option: 
+     * <code>
+     * $options['perType'][Minify::TYPE_CSS]['optionName'] = 'optionValue';
+     * </code>
+     * When the CSS minifier is called, the 2nd argument will be
+     * array('optionName' => 'optionValue').
+     * 
+     * Any controller options are documented in that controller's setupSources() method.
+     * 
      */
-    public static function handleRequest($controller) {
-        if (! $controller->requestIsValid) {
-            return false;
+    public static function serve($controller, $options = array()) {
+        if (is_string($controller)) {
+            // make $controller into object
+            $class = 'Minify_Controller_' . $controller;
+            if (! class_exists($class, false)) {
+                require_once "Minify/Controller/{$controller}.php";    
+            }
+            $controller = new $class();
+        }
+        
+        // set up controller sources and mix remaining options with
+        // controller defaults
+        $options = $controller->setupSources($options);
+        $options = $controller->analyzeSources($options);
+        self::$_options = $controller->mixInDefaultOptions($options);
+        
+        if (! $controller->sources) {
+            // invalid request!
+            if (! self::$_options['quiet']) {
+                header(self::$_options['badRequestHeader']);
+                echo self::$_options['badRequestHeader'];
+            }
+            list(,$statusCode) = explode(' ', self::$_options['badRequestHeader']);
+            return array(
+                'success' => false
+                ,'statusCode' => (int)$statusCode
+                ,'content' => ''
+                ,'headers' => array()
+            );
         }
         
         self::$_controller = $controller;
-        self::_resolveOptions($controller->minOptions);
         
         $cgOptions = array(
             'lastModifiedTime' => self::$_options['lastModifiedTime']
@@ -112,11 +176,13 @@ class Minify {
             // client's cache is valid
             if (self::$_options['quiet']) {
                 return array(
-                    'content' => ''
-                    ,'headers' => $cg->getHeaders()                
+                    'success' => true
+                    ,'statusCode' => 304 
+                    ,'content' => ''
+                    ,'headers' => array()
                 );
             } else {
-                $cg->sendHeaders();    
+                $cg->sendHeaders();
             } 
         }
         // client will need output
@@ -165,10 +231,12 @@ class Minify {
             foreach ($headers as $name => $val) {
                 header($name . ': ' . $val);
             }
-            echo $content;    
+            echo $content;   
         }
         return array(
-            'content' => $content
+            'success' => true
+            ,'statusCode' => 200
+            ,'content' => $content
             ,'headers' => $headers                
         );
     }
@@ -193,34 +261,7 @@ class Minify {
      */
     private static $_cache = null;
     
-    /**
-     * Resolve Minify options based on those passed from controller and Minify's defaults
-     * 
-     * @return null
-     */
-    private static function _resolveOptions($ctrlOptions)
-    {
-        self::$_options = array_merge(array(
-            // default options
-            'isPublic' => true
-            ,'encodeOutput' => true
-            ,'encodeMethod' => null // determine later
-            ,'encodeLevel' => 9
-            ,'perType' => array() // per-type minifier options
-            ,'contentTypeCharset' => null // leave out of Content-Type header
-            ,'setExpires' => null // send Expires header
-            ,'quiet' => false
-        ), $ctrlOptions);
-        $defaultMinifiers = array(
-            'text/css' => array('Minify_CSS', 'minify')
-            ,'application/x-javascript' => array('Minify_Javascript', 'minify')
-            ,'text/html' => array('Minify_HTML', 'minify')
-        );
-        if (! isset($ctrlOptions['minifiers'])) {
-            $ctrlOptions['minifiers'] = array();
-        }
-        self::$_options['minifiers'] = array_merge($defaultMinifiers, $ctrlOptions['minifiers']); 
-    }
+    
     
     /**
      * Fetch encoded content from cache (or generate and store it).
@@ -288,21 +329,25 @@ class Minify {
         $type = self::$_options['contentType']; // ease readability
         
         // when combining scripts, make sure all statements separated
-        $implodeSeparator = ($type === 'application/x-javascript')
+        $implodeSeparator = ($type === self::TYPE_JS)
             ? ';'
             : '';
         
-        // default options and minifier function for all sources
+        // allow the user to pass a particular array of options to each
+        // minifier (designated by type). source objects may still override
+        // these
         $defaultOptions = isset(self::$_options['perType'][$type])
             ? self::$_options['perType'][$type]
             : array();
-        // if minifier not set, default is no minification
+        // if minifier not set, default is no minification. source objects
+        // may still override this
         $defaultMinifier = isset(self::$_options['minifiers'][$type])
             ? self::$_options['minifiers'][$type]
             : false;
        
         if (Minify_Source::haveNoMinifyPrefs(self::$_controller->sources)) {
             // all source have same options/minifier, better performance
+            // to combine, then minify once
             foreach (self::$_controller->sources as $source) {
                 $pieces[] = $source->getContent();
             }
@@ -312,7 +357,7 @@ class Minify {
                 $content = call_user_func($defaultMinifier, $content, $defaultOptions);    
             }
         } else {
-            // minify each source with its own options and minifier
+            // minify each source with its own options and minifier, then combine
             foreach (self::$_controller->sources as $source) {
                 // allow the source to override our minifier and options
                 $minifier = (null !== $source->minifier)

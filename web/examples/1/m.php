@@ -38,9 +38,8 @@ if (isset($_GET['f'])) {
         // The Files controller serves an array of files, but here we just
         // need one.
         Minify::serve('Files', array(
-            dirname(__FILE__) . '/' . $filename
-        ), array(
-            'setExpires' => $setExpires
+            'files' => array(dirname(__FILE__) . '/' . $filename)
+            ,'setExpires' => $setExpires
         ));
         exit();
     }

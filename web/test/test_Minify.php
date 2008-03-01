@@ -14,8 +14,10 @@ $lastModified = time() - 86400;
 // Test minifying JS and serving with Expires header
 
 $expected = array(
+	'success' => true
+    ,'statusCode' => 200
     // Minify_Javascript always converts to \n line endings
-	'content' => preg_replace('/\\r\\n?/', "\n", file_get_contents($thisDir . '/minify/minified.js'))
+    ,'content' => preg_replace('/\\r\\n?/', "\n", file_get_contents($thisDir . '/minify/minified.js'))
     ,'headers' => array (
         'Cache-Control' => 'public',
         'Expires' => gmdate('D, d M Y H:i:s \G\M\T', $tomorrow),
@@ -23,10 +25,11 @@ $expected = array(
     )
 );
 $output = Minify::serve('Files', array(
-    $thisDir . '/minify/email.js'
-    ,$thisDir . '/minify/QueryString.js'
-), array(
-    'quiet' => true
+    'files' => array(
+        $thisDir . '/minify/email.js'
+        ,$thisDir . '/minify/QueryString.js'
+    )
+    ,'quiet' => true
     ,'setExpires' => $tomorrow
     ,'encodeOutput' => false
 ));
@@ -44,7 +47,9 @@ if (! $passed) {
 unset($_SERVER['HTTP_IF_NONE_MATCH'], $_SERVER['HTTP_IF_MODIFIED_SINCE']);
 
 $expected = array(
-	'content' => file_get_contents($thisDir . '/minify/minified.css')
+	'success' => true
+    ,'statusCode' => 200	
+	,'content' => file_get_contents($thisDir . '/minify/minified.css')
     ,'headers' => array (
         'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
         'ETag' => "\"{$lastModified}pub\"",
@@ -53,13 +58,14 @@ $expected = array(
     ) 
 );
 $output = Minify::serve('Files', array(
-    $thisDir . '/css/styles.css'
-    ,$thisDir . '/css/subsilver.css'
-), array(
-    'quiet' => true
+    'files' => array(
+        $thisDir . '/css/styles.css'
+        ,$thisDir . '/css/subsilver.css'
+    )
+    ,'quiet' => true
     ,'lastModifiedTime' => $lastModified
     ,'encodeOutput' => false
-));
+)); 
 $passed = assertTrue($expected === $output, 'Minify - CSS and Etag/Last-Modified');
 echo "\nOutput: " .var_export($output, 1). "\n\n";
 if (! $passed) {
@@ -74,15 +80,16 @@ $_SERVER['HTTP_IF_NONE_MATCH'] = "\"{$lastModified}pub\"";
 $_SERVER['HTTP_IF_MODIFIED_SINCE'] = gmdate('D, d M Y H:i:s \G\M\T', $lastModified);
 
 $expected = array (
-    'content' => '',
-    'headers' => array (
-    	'_responseCode' => 'HTTP/1.0 304 Not Modified',
-    ),
+	'success' => true
+    ,'statusCode' => 304    
+    ,'content' => '',
+    'headers' => array()
 );
 $output = Minify::serve('Files', array(
-    $thisDir . '/css/styles.css'
-), array(
-    'quiet' => true
+    'files' => array(
+        $thisDir . '/css/styles.css'
+    )
+    ,'quiet' => true
     ,'lastModifiedTime' => $lastModified
     ,'encodeOutput' => false
 ));

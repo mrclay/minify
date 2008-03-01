@@ -42,33 +42,25 @@ Sources with known "last modified" timestamps allow Minify to implement
 conditional GETs. 
 
 You configure Minify via a Minify_Controller object. The controller 
-supplies the sources and some other information about a request, 
+supplies the sources and default options to serve a request, 
 determining how it's to be responded to. Several controllers are 
 supplied with Minify, but it's also fairly easy to write your own. E.g. 
 a controller could emulate v1.x of minify.php. 
 
-To use an existing controller, you call Minify::serve(), passing it the 
-name of your controller of choice (without the "Minify_Controller" 
-prefix), an array of options for the controller, and an array of general 
-Minify options (optional). Eg.: 
+To use an existing controller, you call Minify::serve(), passing it:
+1. the name of your controller of choice (without the "Minify_Controller" 
+   prefix) or a custom controller object subclassed from Minify_Controller_Base.
+2. a combined array of controller and Minify options. Eg.: 
 
 // serve a minified javascript file and tell clients to cache it for a 
 // year 
-Minify::serve(
-    'Files'
-    ,array('/path/to/file1.js', '/path/to/file2.js')
-    ,array('setExpires' => (time() + 86400 * 365))
-); 
+Minify::serve('Files', array(
+	'files' => array('/path/to/file1.js', '/path/to/file2.js')
+	,'setExpires' => (time() + 86400 * 365)
+));
 
-The above creates an instance of Minify_Controller_Files, passing the 
-two arrays to its constructor. 
-
-The first array depends on the controller. In this case, 
-Minify_Controller_Files needs a list of file paths. 
-
-The second array (optional) has options for Minify. (Since this is 
-passed through the controller, some controllers may use/alter this 
-data). 
+The above creates an instance of Minify_Controller_Files, which creates 
+source objects from the 'files' option, and supplies other default options. 
 
 MINIFY USAGE 
 

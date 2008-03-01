@@ -11,37 +11,47 @@ require_once 'Minify/Controller/Base.php';
 class Minify_Controller_Page extends Minify_Controller_Base {
     
     /**
-     * @param array $spec array of options. You *must* set 'content' and 'id',
-     * but setting 'lastModifiedTime' is recommeded in order to allow server
-     * and client-side caching.
+     * Set up source of HTML content
      * 
-     * If you set <code>'minifyAll' => 1</code>, all CSS and Javascript blocks
-     * will be individually minified. 
+     * @param array $options controller and Minify options
+     * @return array Minify options
      * 
-     * @param array $options optional options to pass to Minify
+     * Controller options:
      * 
-     * @return null 
+     * 'content': (required) HTML markup
+     * 
+     * 'id': (required) id of page (string for use in server-side caching)
+     * 
+     * 'lastModifiedTime': timestamp of when this content changed. This
+     * is recommended to allow both server and client-side caching.
+     * 
+     * 'minifyAll': should all CSS and Javascript blocks be individually 
+     * minified? (default false) 
      */
-    public function __construct($spec, $options = array()) {
+    public function setupSources($options) {
+        // strip controller options
         $sourceSpec = array(
-            'content' => $spec['content']
-            ,'id' => $spec['id']
-            ,'minifier' => array('Minify_HTML', 'minify')
+            'content' => $options['content']
+            ,'id' => $options['id']
         );
-        if (isset($spec['minifyAll'])) {
+        unset($options['content'], $options['id']);
+        
+        if (isset($options['minifyAll'])) {
+            // this will be the 2nd argument passed to Minify_HTML::minify()
             $sourceSpec['minifyOptions'] = array(
                 'cssMinifier' => array('Minify_CSS', 'minify')
                 ,'jsMinifier' => array('Minify_Javascript', 'minify')
             );
             $this->_loadCssJsMinifiers = true;
+            unset($options['minifyAll']);
         }
-        $sources[] = new Minify_Source($sourceSpec);
-        if (isset($spec['lastModifiedTime'])) {
-            $options['lastModifiedTime'] = $spec['lastModifiedTime'];
-        }
-        $options['contentType'] = 'text/html';
-        $this->requestIsValid = true;
-        parent::__construct($sources, $options);
+        $this->sources[] = new Minify_Source($sourceSpec);
+        
+        // may not be needed
+        //$options['minifier'] = array('Minify_HTML', 'minify');
+        
+        $options['contentType'] = Minify::TYPE_HTML;
+        return $options;
     }
     
     private $_loadCssJsMinifiers = false;

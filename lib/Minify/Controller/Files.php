@@ -9,9 +9,11 @@ require_once 'Minify/Controller/Base.php';
  * <code>
  * $dr = $_SERVER['DOCUMENT_ROOT'];
  * Minify::serve('Files', array(
- *    $dr . '/js/jquery.js'
- *     ,$dr . '/js/plugins.js'
- *     ,$dr . '/js/site.js'
+ *     'files' => array(
+ *         $dr . '/js/jquery.js'
+ *         ,$dr . '/js/plugins.js'
+ *         ,$dr . '/js/site.js'
+ *     )
  * ));
  * </code>
  * 
@@ -19,28 +21,36 @@ require_once 'Minify/Controller/Base.php';
 class Minify_Controller_Files extends Minify_Controller_Base {
     
     /**
-     * @param array $spec array of full paths of files to be minified
+     * Set up file sources
      * 
-     * @param array $options options to pass to Minify
+     * @param array $options controller and Minify options
+     * @return array Minify options
      * 
-     * @return null 
+     * Controller options:
+     * 
+     * 'files': (required) array of complete file paths 
      */
-    public function __construct($spec, $options = array()) {
+    public function setupSources($options) {
+        // strip controller options
+        $files = $options['files'];
+        unset($options['files']);
+        
         $sources = array();
-        foreach ($spec as $file) {
+        foreach ($files as $file) {
             $file = realpath($file);
             if (file_exists($file)) {
                 $sources[] = new Minify_Source(array(
                     'filepath' => $file
                 ));    
             } else {
-                return;
+                // file not found
+                return $options;
             }
         }
         if ($sources) {
-            $this->requestIsValid = true;
+            $this->sources = $sources;
         }
-        parent::__construct($sources, $options);
+        return $options;
     }
 }
 
