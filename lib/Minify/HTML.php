@@ -21,7 +21,7 @@ class Minify_HTML {
         
         self::$_isXhtml = (false !== strpos($html, '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML'));
         
-        self::$_replacementHash = 'HTTPMINIFY' . md5(time());
+        self::$_replacementHash = 'MINIFYHTML' . md5(time());
         
         // remove SCRIPTs (and minify)
         $html = preg_replace_callback('/\\s*(<script\\b[^>]*?>)([\\s\\S]*?)<\\/script>\\s*/i',

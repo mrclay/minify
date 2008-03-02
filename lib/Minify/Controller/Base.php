@@ -44,6 +44,11 @@ abstract class Minify_Controller_Base {
             // if you override this, the response code MUST be directly after 
             // the first space.
             ,'badRequestHeader' => 'HTTP/1.0 400 Bad Request'
+            
+            // callback function to see/modify content of all sources
+            ,'postprocessor' => null
+            // file to require to load preprocessor
+            ,'postprocessorRequire' => null
         );
     }  
 

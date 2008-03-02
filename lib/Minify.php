@@ -348,6 +348,14 @@ class Minify {
             }
             $content = implode($implodeSeparator, $pieces);
         }
+        
+        // do any post-processing (esp. for editing build URIs)
+        if (self::$_options['postprocessorRequire']) {
+            require_once self::$_options['postprocessorRequire'];
+        }
+        if (self::$_options['postprocessor']) {
+            $content = call_user_func(self::$_options['postprocessor'], $content, $type);
+        }
         return $content;
     }
     

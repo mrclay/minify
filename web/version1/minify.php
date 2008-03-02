@@ -92,8 +92,7 @@ class V1Controller extends Minify_Controller_Base {
     }
 }
 
-$v1 = new V1Controller();
 if (MINIFY_USE_CACHE) {
     Minify::useServerCache(MINIFY_CACHE_DIR);
 }
-Minify::serve($v1);
+Minify::serve(new V1Controller());
