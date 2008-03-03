@@ -54,7 +54,7 @@ class Minify_Controller_Page extends Minify_Controller_Base {
         return $options;
     }
     
-    private $_loadCssJsMinifiers = false;
+    protected $_loadCssJsMinifiers = false;
     
     /**
      * @see Minify_Controller_Base::loadMinifier()

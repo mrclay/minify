@@ -129,8 +129,8 @@ class Minify_Source {
         return 'text/plain';
     }
     
-    private $_content = null;
-    private $_filepath = null;
-    private $_id = null;
+    protected $_content = null;
+    protected $_filepath = null;
+    protected $_id = null;
 }
 

@@ -32,49 +32,43 @@
  */
 class HTTP_ConditionalGet {
 
-    private $headers = array();
-    private $lmTime = null;
-    private $etag = null;
+    /**
+     * Does the client have a valid copy of the requested resource?
+     * 
+     * You'll want to check this after instantiating the object. If true, do
+     * not send content, just call sendHeaders() if you haven't already.
+     *
+     * @var bool
+     */
     public $cacheIsValid = null;
 
-    public function getHeaders() {
-        return $this->headers;
-    }
-
     /**
-     * Depending on the PHP config, PHP will buffer all output and set
-     * Content-Length for you. If it doesn't, or you flush() while sending data,
-     * you'll want to call this to let the client know up front.
+     * @param array $spec options
+     * 
+     * 'isPublic': (bool) if true, the Cache-Control header will contain 
+     * "public", allowing proxy caches to cache the content. Otherwise
+     * "private" will be sent, allowing only browsers to cache. (default false)
+     * 
+     * 'lastModifiedTime': (int) if given, both ETag AND Last-Modified headers
+     * will be sent with content. This is recommended.
+     * 
+     * 'contentHash': (string) if given, only the ETag header can be sent with
+     * content (only HTTP1.1 clients can conditionally GET). The given string 
+     * should be short with no quote characters and always change when the 
+     * resource changes (recommend md5()). This is not needed/used if 
+     * lastModifiedTime is given.
+     * 
+     * 'invalidate': (bool) if true, the client cache will be considered invalid
+     * without testing. Effectively this disables conditional GET. 
+     * (default false)
+     * 
+     * 'setExpires': (mixed) set this to a timestamp or GMT date to send an
+     * Expires header with the content instead of ETag/Last-Modified. If given,
+     * Conditional GETs will not be performed, but the public/private 
+     * Cache-Control header will still be sent. (default null)
+     * 
+     * @return null  
      */
-    public function setContentLength($bytes) {
-        return $this->headers['Content-Length'] = $bytes;
-    }
-
-    public function sendHeaders() {
-        $headers = $this->headers;
-        if (array_key_exists('_responseCode', $headers)) {
-            header($headers['_responseCode']);
-            unset($headers['_responseCode']);
-        }
-        foreach ($headers as $name => $val) {
-            header($name . ': ' . $val);
-        }
-    }
-
-    private function setEtag($hash, $scope) {
-        $this->etag = '"' . $hash
-            . substr($scope, 0, 3)
-            . '"';
-        $this->headers['ETag'] = $this->etag;
-    }
-
-    private function setLastModified($time) {
-        $this->lmTime = (int)$time;
-        $this->headers['Last-Modified'] = self::gmtdate($time);
-    }
-
-    // TODO: allow custom Cache-Control directives, but offer pre-configured
-    // "modes" for common cache models
     public function __construct($spec) {
         $scope = (isset($spec['isPublic']) && $spec['isPublic'])
             ? 'public'
@@ -84,7 +78,7 @@ class HTTP_ConditionalGet {
             if (is_numeric($spec['setExpires'])) {
                 $spec['setExpires'] = self::gmtdate($spec['setExpires']); 
             }
-            $this->headers = array(
+            $this->_headers = array(
                 'Cache-Control' => $scope
                 ,'Expires' => $spec['setExpires']
             );
@@ -93,41 +87,114 @@ class HTTP_ConditionalGet {
         }
         if (isset($spec['lastModifiedTime'])) {
             // base both headers on time
-            $this->setLastModified($spec['lastModifiedTime']);
-            $this->setEtag($spec['lastModifiedTime'], $scope);
+            $this->_setLastModified($spec['lastModifiedTime']);
+            $this->_setEtag($spec['lastModifiedTime'], $scope);
         } else {
             // hope to use ETag
             if (isset($spec['contentHash'])) {
-                $this->setEtag($spec['contentHash'], $scope);
+                $this->_setEtag($spec['contentHash'], $scope);
             }
         }
-        $this->headers['Cache-Control'] = "max-age=0, {$scope}, must-revalidate";
+        $this->_headers['Cache-Control'] = "max-age=0, {$scope}, must-revalidate";
         // invalidate cache if disabled, otherwise check
         $this->cacheIsValid = (isset($spec['invalidate']) && $spec['invalidate'])
             ? false
-            : $this->isCacheValid();
+            : $this->_isCacheValid();
+    }
+    
+    /**
+     * Get array of output headers to be sent
+     * 
+     * In the case of 304 responses, this array will only contain the response
+     * code header: array('_responseCode' => 'HTTP/1.0 304 Not Modified')
+     * 
+     * Otherwise something like: 
+     * <code>
+     * array(
+     *     'Cache-Control' => 'max-age=0, public, must-revalidate'
+     *     ,'ETag' => '"foobar"'
+     * )
+     * </code>
+     *
+     * @return array 
+     */
+    public function getHeaders() {
+        return $this->_headers;
+    }
+
+    /**
+     * Set the Content-Length header in bytes
+     * 
+     * With most PHP configs, as long as you don't flush() output, this method
+     * is not needed and PHP will buffer all output and set Content-Length for 
+     * you. Otherwise you'll want to call this to let the client know up front.
+     * 
+     * @param int $bytes
+     * 
+     * @return int copy of input $bytes
+     */
+    public function setContentLength($bytes) {
+        return $this->_headers['Content-Length'] = $bytes;
+    }
+
+    /**
+     * Send headers
+     * 
+     * @see getHeaders()
+     * 
+     * Note this doesn't "clear" the headers. Calling sendHeaders() will
+     * call header() again (but probably have not effect) and getHeaders() will
+     * still return the headers.
+     *
+     * @return null
+     */
+    public function sendHeaders() {
+        $headers = $this->_headers;
+        if (array_key_exists('_responseCode', $headers)) {
+            header($headers['_responseCode']);
+            unset($headers['_responseCode']);
+        }
+        foreach ($headers as $name => $val) {
+            header($name . ': ' . $val);
+        }
+    }
+    
+    protected $_headers = array();
+    protected $_lmTime = null;
+    protected $_etag = null;
+    
+    protected function _setEtag($hash, $scope) {
+        $this->_etag = '"' . $hash
+            . substr($scope, 0, 3)
+            . '"';
+        $this->_headers['ETag'] = $this->_etag;
+    }
+
+    protected function _setLastModified($time) {
+        $this->_lmTime = (int)$time;
+        $this->_headers['Last-Modified'] = self::gmtdate($time);
     }
 
     /**
      * Determine validity of client cache and queue 304 header if valid
      */
-    private function isCacheValid()
+    protected function _isCacheValid()
     {
-        if (null === $this->etag) {
+        if (null === $this->_etag) {
             // ETag was our backup, so we know we don't have lmTime either
             return false;
         }
         $isValid = ($this->resourceMatchedEtag() || $this->resourceNotModified());
         if ($isValid) {
             // overwrite headers, only need 304
-            $this->headers = array(
+            $this->_headers = array(
                 '_responseCode' => 'HTTP/1.0 304 Not Modified'
             );
         }
         return $isValid;
     }
 
-    private function resourceMatchedEtag() {
+    protected function resourceMatchedEtag() {
         if (!isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
             return false;
         }
@@ -136,14 +203,14 @@ class HTTP_ConditionalGet {
             : $_SERVER['HTTP_IF_NONE_MATCH'];
         $cachedEtags = split(',', $cachedEtagList);
         foreach ($cachedEtags as $cachedEtag) {
-            if (trim($cachedEtag) == $this->etag) {
+            if (trim($cachedEtag) == $this->_etag) {
                 return true;
             }
         }
         return false;
     }
 
-    private function resourceNotModified() {
+    protected function resourceNotModified() {
         if (!isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
             return false;
         }
@@ -154,11 +221,10 @@ class HTTP_ConditionalGet {
             // IE has tacked on extra data to this header, strip it
             $ifModifiedSince = substr($ifModifiedSince, 0, $semicolon);
         }
-        return ($ifModifiedSince == self::gmtdate($this->lmTime));
+        return ($ifModifiedSince == self::gmtdate($this->_lmTime));
     }
 
-    private static function gmtdate($ts) {
+    protected static function gmtdate($ts) {
         return gmdate('D, d M Y H:i:s \G\M\T', $ts);
     }
 }
-

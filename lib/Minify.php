@@ -146,16 +146,15 @@ class Minify {
         $cg = new HTTP_ConditionalGet($cgOptions);
         if ($cg->cacheIsValid) {
             // client's cache is valid
-            if (self::$_options['quiet']) {
-                return array(
-                    'success' => true
-                    ,'statusCode' => 304 
-                    ,'content' => ''
-                    ,'headers' => array()
-                );
-            } else {
+            if (! self::$_options['quiet']) {
                 $cg->sendHeaders();
-            } 
+            }
+            return array(
+                'success' => true
+                ,'statusCode' => 304 
+                ,'content' => ''
+                ,'headers' => array()
+            );
         }
         // client will need output
         $headers = $cg->getHeaders();
@@ -216,22 +215,22 @@ class Minify {
     /**
      * @var mixed null if disk cache is not to be used
      */
-    private static $_cachePath = null;
+    protected static $_cachePath = null;
 
     /**
      * @var Minify_Controller active controller for current request
      */
-    private static $_controller = null;
+    protected static $_controller = null;
     
     /**
      * @var array options for current request
      */
-    private static $_options = null;
+    protected static $_options = null;
     
     /**
      * @var Cache_Lite_File cache obj for current request
      */
-    private static $_cache = null;
+    protected static $_cache = null;
     
     
     
@@ -247,7 +246,7 @@ class Minify {
      * 
      * @return string minified, encoded content
      */
-    private static function _fetchContent($encodeMethod)
+    protected static function _fetchContent($encodeMethod)
     {
         $cacheId = self::_getCacheId(self::$_controller->sources, self::$_options) 
             . $encodeMethod;
@@ -278,7 +277,7 @@ class Minify {
      * 
      * @return null
      */
-    private static function _setupCache() {
+    protected static function _setupCache() {
         // until the patch is rolled into PEAR, we'll provide the
         // class in our package
         require_once dirname(__FILE__) . '/Cache/Lite/File.php';
@@ -297,7 +296,7 @@ class Minify {
      *
      * @return string
      */
-    private static function _combineMinify() {
+    protected static function _combineMinify() {
         $type = self::$_options['contentType']; // ease readability
         
         // when combining scripts, make sure all statements separated
@@ -366,7 +365,7 @@ class Minify {
      * 
      * @return string
      */
-    private static function _encode($content)
+    protected static function _encode($content)
     {
         if (self::$_options['encodeMethod'] === '' 
             || ! self::$_options['encodeOutput']) {
@@ -389,7 +388,7 @@ class Minify {
      *
      * @return string
      */
-    private static function _getCacheId() {
+    protected static function _getCacheId() {
         return md5(serialize(array(
             Minify_Source::getDigest(self::$_controller->sources)
             ,self::$_options['minifiers'] 

@@ -23,70 +23,134 @@
  */
 class HTTP_Encoder {
 
+    /**
+     * Default compression level for zlib operations
+     * 
+     * This level is used if encode() is not given a $compressionLevel
+     * 
+     * @var int
+     */
     public static $compressionLevel = 6;
-    private static $clientEncodeMethod = null;
 
-    private $content = '';
-    private $headers = array();
-
-    private $encodeMethod = array('', '');
-
+    /**
+     * Get an HTTP Encoder object
+     * 
+     * @param array $spec options
+     * 
+     * 'content': (string required) content to be encoded
+     * 
+     * 'type': (string) if set, the Content-Type header will have this value.
+     * 
+     * 'method: (string) only set this if you are forcing a particular encoding
+     * method. If not set, the best method will be chosen by getAcceptedEncoding()
+     * The available methods are 'gzip', 'deflate', 'compress', and '' (no
+     * encoding)
+     * 
+     * @return null
+     */
     public function __construct($spec) {
-        if (isset($spec['content'])) {
-            $this->content = $spec['content'];
-        }
-        $this->headers['Content-Length'] = strlen($this->content);
+        $this->_content = $spec['content'];
+        $this->_headers['Content-Length'] = (string)strlen($this->_content);
         if (isset($spec['type'])) {
-            $this->headers['Content-Type'] = $spec['type'];
+            $this->_headers['Content-Type'] = $spec['type'];
         }
-        if (self::$clientEncodeMethod === null) {
-            self::$clientEncodeMethod = self::getAcceptedEncoding();
+        if (self::$_clientEncodeMethod === null) {
+            self::$_clientEncodeMethod = self::getAcceptedEncoding();
         }
         if (isset($spec['method'])
             && in_array($spec['method'], array('gzip', 'deflate', 'compress', '')))
         {
-            $this->encodeMethod = array($spec['method'], $spec['method']);
+            $this->_encodeMethod = array($spec['method'], $spec['method']);
         } else {
-            $this->encodeMethod = self::$clientEncodeMethod;
+            $this->_encodeMethod = self::$_clientEncodeMethod;
         }
     }
 
+    /**
+     * Get content in current form
+     * 
+     * Call after encode() for encoded content.
+     * 
+     * return string
+     */
     public function getContent() {
-        return $this->content;
+        return $this->_content;
     }
+    
+    /**
+     * Get array of output headers to be sent
+     * 
+     * E.g.
+     * <code>
+     * array(
+     *     'Content-Length' => '615'
+     *     ,'Content-Encoding' => 'x-gzip'
+     *     ,'Vary' => 'Accept-Encoding'
+     * )
+     * </code>
+     *
+     * @return array 
+     */
     public function getHeaders() {
-        return $this->headers;
+        return $this->_headers;
     }
 
     /**
-     * Send the file and headers (encoded or not)
+     * Send output headers
+     * 
+     * You must call this before headers are sent and it probably cannot be
+     * used in conjunction with zlib output buffering / mod_gzip. Errors are
+     * not handled purposefully.
+     * 
+     * @see getHeaders()
+     * 
+     * @return null
+     */
+    public function sendHeaders() {
+        foreach ($this->_headers as $name => $val) {
+            header($name . ': ' . $val);
+        }
+    }
+    
+    /**
+     * Send output headers and content
+     * 
+     * A shortcut for sendHeaders() and echo getContent()
      *
      * You must call this before headers are sent and it probably cannot be
      * used in conjunction with zlib output buffering / mod_gzip. Errors are
      * not handled purposefully.
+     * 
+     * @return null
      */
     public function sendAll() {
         $this->sendHeaders();
-        echo $this->content;
+        echo $this->_content;
     }
 
     /**
-     * Send just the headers
+     * Determine the client's best encoding method from the HTTP Accept-Encoding 
+     * header.
+     * 
+     * If no Accept-Encoding header is set, or the browser is IE before v6 SP2,
+     * this will return ('', ''), the "identity" encoding.
+     * 
+     * A syntax-aware scan is done of the Accept-Encoding, so the method must
+     * be non 0. The methods are favored in order of gzip, deflate, then 
+     * compress.
+     * 
+     * Note: this value is cached internally for the entire PHP execution
+     * 
+     * @return array two values, 1st is the actual encoding method, 2nd is the
+     * alias of that method to use in the Content-Encoding header (some browsers
+     * call gzip "x-gzip" etc.)
      */
-    public function sendHeaders() {
-        foreach ($this->headers as $name => $val) {
-            header($name . ': ' . $val);
-        }
-    }
-
-    // returns array(encoding, encoding to use in Content-Encoding header)
-    // eg. array('gzip', 'x-gzip')
     public static function getAcceptedEncoding() {
-        if (self::$clientEncodeMethod !== null) {
-            return self::$clientEncodeMethod;
+        if (self::$_clientEncodeMethod !== null) {
+            return self::$_clientEncodeMethod;
         }
         if (! isset($_SERVER['HTTP_ACCEPT_ENCODING'])
-            || self::isBuggyIe())
+            || self::_isBuggyIe())
         {
             return array('', '');
         }
@@ -104,37 +168,55 @@ class HTTP_Encoder {
     }
 
     /**
-     * If conditionsEncode the content
-     * @return bool success
+     * Encode (compress) the content
+     * 
+     * If the encode method is '' (none) or compression level is 0, or the 'zlib'
+     * extension isn't loaded, we return false.
+     * 
+     * Then the appropriate gz_* function is called to compress the content. If
+     * this fails, false is returned.
+     * 
+     * If successful, the Content-Length header is updated, and Content-Encoding
+     * and Vary headers are added.
+     * 
+     * @param int $compressionLevel given to zlib functions. If not given, the
+     * class default will be used.
+     * 
+     * @return bool success true if the content was actually compressed
      */
     public function encode($compressionLevel = null) {
         if (null === $compressionLevel) {
             $compressionLevel = self::$compressionLevel;
         }
-        if ('' === $this->encodeMethod[0]
+        if ('' === $this->_encodeMethod[0]
             || ($compressionLevel == 0)
             || !extension_loaded('zlib'))
         {
             return false;
         }
-        if ($this->encodeMethod[0] === 'gzip') {
-            $encoded = gzencode($this->content, $compressionLevel);
-        } elseif ($this->encodeMethod[0] === 'deflate') {
-            $encoded = gzdeflate($this->content, $compressionLevel);
+        if ($this->_encodeMethod[0] === 'gzip') {
+            $encoded = gzencode($this->_content, $compressionLevel);
+        } elseif ($this->_encodeMethod[0] === 'deflate') {
+            $encoded = gzdeflate($this->_content, $compressionLevel);
         } else {
-            $encoded = gzcompress($this->content, $compressionLevel);
+            $encoded = gzcompress($this->_content, $compressionLevel);
         }
         if (false === $encoded) {
             return false;
         }
-        $this->headers['Content-Length'] = strlen($encoded);
-        $this->headers['Content-Encoding'] = $this->encodeMethod[1];
-        $this->headers['Vary'] = 'Accept-Encoding';
-        $this->content = $encoded;
+        $this->_headers['Content-Length'] = strlen($encoded);
+        $this->_headers['Content-Encoding'] = $this->_encodeMethod[1];
+        $this->_headers['Vary'] = 'Accept-Encoding';
+        $this->_content = $encoded;
         return true;
     }
 
-    private static function isBuggyIe()
+    protected static $_clientEncodeMethod = null;
+    protected $content = '';
+    protected $headers = array();
+    protected $encodeMethod = array('', '');
+
+    protected static function _isBuggyIe()
     {
         if (strstr($_SERVER['HTTP_USER_AGENT'], 'Opera')
             || !preg_match('/^Mozilla\/4\.0 \(compatible; MSIE ([0-9]\.[0-9])/i', $_SERVER['HTTP_USER_AGENT'], $m))

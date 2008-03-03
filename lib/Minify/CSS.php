@@ -87,17 +87,17 @@ class Minify_CSS {
      * 
      * I.e. are some browsers targetted until the next comment?   
      */
-    private static $_inHack = false;
+    protected static $_inHack = false;
     
     /**
      * @var string string to be prepended to relative URIs   
      */
-    private static $_tempPrepend = '';
+    protected static $_tempPrepend = '';
     
     /**
      * @var string path of this stylesheet for rewriting purposes   
      */
-    private static $_tempCurrentPath = '';
+    protected static $_tempCurrentPath = '';
     
     /**
      * Process what looks like a comment and return a replacement
@@ -106,7 +106,7 @@ class Minify_CSS {
      * 
      * @return string   
      */
-    private static function _commentCB($m)
+    protected static function _commentCB($m)
     {
         $m = $m[1]; 
         // $m is everything after the opening tokens and before the closing tokens
@@ -148,12 +148,12 @@ class Minify_CSS {
      * 
      * @return string
      */
-    private static function _selectorsCB($m)
+    protected static function _selectorsCB($m)
     {
         return preg_replace('/\\s*([,>+~])\\s*/', '$1', $m[0]);
     }
     
-    private static function _urlCB($m)
+    protected static function _urlCB($m)
     {
         $isImport = (0 === strpos($m[0], '@import'));
         if ($isImport) {

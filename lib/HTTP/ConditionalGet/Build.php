@@ -104,7 +104,7 @@ class HTTP_ConditionalGet_Build {
         file_put_contents($file, "{$this->lastModified}|{$nextCheck}");
     }
     
-    private static function _scan($max, $path, $options)
+    protected static function _scan($max, $path, $options)
     {
         $d = dir($path);
         while (false !== ($entry = $d->read())) {

@@ -39,9 +39,9 @@
  * @package Minify_Javascript
  * @author Ryan Grove <ryan@wonko.com>
  * @copyright 2002 Douglas Crockford <douglas@crockford.com> (JSMin.c)
- * @copyright 2007 Ryan Grove <ryan@wonko.com> (PHP port)
+ * @copyright 2008 Ryan Grove <ryan@wonko.com> (PHP port)
  * @license http://opensource.org/licenses/mit-license.php MIT License
- * @version 1.1.0 (2007-06-01)
+ * @version 1.1.1 (2008-03-03)
  * @link http://code.google.com/p/jsmin-php/
  */
 
@@ -55,7 +55,7 @@ class Minify_Javascript {
   private $inputIndex  = 0;
   private $inputLength = 0;
   private $lookAhead   = null;
-  private $output      = array();
+  private $output      = '';
 
   // -- Public Static Methods --------------------------------------------------
 
@@ -74,15 +74,15 @@ class Minify_Javascript {
   private function action($d) {
     switch($d) {
       case 1:
-        $this->output[] = $this->a;
+        $this->output .= $this->a;
 
       case 2:
         $this->a = $this->b;
 
         if ($this->a === "'" || $this->a === '"') {
           for (;;) {
-            $this->output[] = $this->a;
-            $this->a        = $this->get();
+            $this->output .= $this->a;
+            $this->a       = $this->get();
 
             if ($this->a === $this->b) {
               break;
@@ -93,8 +93,8 @@ class Minify_Javascript {
             }
 
             if ($this->a === '\\') {
-              $this->output[] = $this->a;
-              $this->a        = $this->get();
+              $this->output .= $this->a;
+              $this->a       = $this->get();
             }
           }
         }
@@ -107,25 +107,23 @@ class Minify_Javascript {
             $this->a === ':' || $this->a === '[' || $this->a === '!' ||
             $this->a === '&' || $this->a === '|' || $this->a === '?')) {
 
-          $this->output[] = $this->a;
-          $this->output[] = $this->b;
+          $this->output .= $this->a;
+          $this->output .= $this->b;
 
           for (;;) {
             $this->a = $this->get();
 
             if ($this->a === '/') {
               break;
-            }
-            elseif ($this->a === '\\') {
-              $this->output[] = $this->a;
-              $this->a        = $this->get();
-            }
-            elseif (ord($this->a) <= self::ORD_LF) {
+            } elseif ($this->a === '\\') {
+              $this->output .= $this->a;
+              $this->a       = $this->get();
+            } elseif (ord($this->a) <= self::ORD_LF) {
               throw new Minify_JavascriptException('Unterminated regular expression '.
                   'literal.');
             }
 
-            $this->output[] = $this->a;
+            $this->output .= $this->a;
           }
 
           $this->b = $this->next();
@@ -141,8 +139,7 @@ class Minify_Javascript {
       if ($this->inputIndex < $this->inputLength) {
         $c = $this->input[$this->inputIndex];
         $this->inputIndex += 1;
-      }
-      else {
+      } else {
         $c = null;
       }
     }
@@ -167,8 +164,7 @@ class Minify_Javascript {
         case ' ':
           if (self::isAlphaNum($this->b)) {
             $this->action(1);
-          }
-          else {
+          } else {
             $this->action(2);
           }
           break;
@@ -237,7 +233,7 @@ class Minify_Javascript {
       }
     }
 
-    return implode('', $this->output);
+    return $this->output;
   }
 
   private function next() {

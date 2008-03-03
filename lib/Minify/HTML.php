@@ -84,21 +84,21 @@ class Minify_HTML {
         return $html;
     }
 
-    private static $_isXhtml = false;
-    private static $_replacementHash = null;
-    private static $_pres = array();
-    private static $_scripts = array();
-    private static $_styles = array();
-    private static $_cssMinifier = null;
-    private static $_jsMinifier = null;
+    protected static $_isXhtml = false;
+    protected static $_replacementHash = null;
+    protected static $_pres = array();
+    protected static $_scripts = array();
+    protected static $_styles = array();
+    protected static $_cssMinifier = null;
+    protected static $_jsMinifier = null;
 
-    private static function _removePreCB($m)
+    protected static function _removePreCB($m)
     {
         self::$_pres[] = $m[1];
         return self::$_replacementHash . 'PRE' . count(self::$_pres);
     }
 
-    private static function _removeStyleCB($m)
+    protected static function _removeStyleCB($m)
     {
         $openStyle = $m[1];
         $css = $m[2];
@@ -123,7 +123,7 @@ class Minify_HTML {
         return self::$_replacementHash . 'STYLE' . count(self::$_styles);
     }
 
-    private static function _removeScriptCB($m)
+    protected static function _removeScriptCB($m)
     {
         $openScript = $m[1];
         $js = $m[2];
@@ -147,14 +147,14 @@ class Minify_HTML {
         return self::$_replacementHash . 'SCRIPT' . count(self::$_scripts);
     }
 
-    private static function _removeCdata($str)
+    protected static function _removeCdata($str)
     {
         return (false !== strpos($str, '<![CDATA['))
             ? str_replace(array('<![CDATA[', ']]>'), '', $str)
             : $str;
     }
     
-    private static function _needsCdata($str)
+    protected static function _needsCdata($str)
     {
         return (self::$_isXhtml && preg_match('/(?:[<&]|\\-\\-|\\]\\]>)/', $str));
     }
