@@ -3,31 +3,46 @@
 /**
  * Implement conditional GET via a timestamp or hash of content
  *
+ * E.g. Content from DB with update time:
  * <code>
- * // easiest usage
+ * list($updateTime, $content) = getDbUpdateAndContent();
  * $cg = new HTTP_ConditionalGet(array(
- *     'lastModifiedTime' => filemtime(__FILE__)
+ *     'lastModifiedTime' => $updateTime
  * ));
  * $cg->sendHeaders();
  * if ($cg->cacheIsValid) {
- *     exit(); // done
- * }
- * // echo content
- * </code>
- *
- *
- * <code>
- * // better to add content length once it's known
- * $cg = new HTTP_ConditionalGet(array(
- *     'lastModifiedTime' => filemtime(__FILE__)
- * ));
- * if ($cg->cacheIsValid) {
- *     $cg->sendHeaders();
  *     exit();
  * }
- * $content = get_content();
- * $cg->setContentLength(strlen($content));
+ * echo $content;
+ * </code>
+ *
+ * E.g. Content from DB with no update time:
+ * <code>
+ * $content = getContentFromDB();
+ * $cg = new HTTP_ConditionalGet(array(
+ *     'contentHash' => md5($content)
+ * ));
  * $cg->sendHeaders();
+ * if ($cg->cacheIsValid) {
+ *     exit();
+ * }
+ * echo $content;
+ * </code>
+ * 
+ * E.g. Static content with some static includes:
+ * <code>
+ * // before content
+ * $cg = new HTTP_ConditionalGet(array(
+ *     'lastUpdateTime' => max(
+ *         filemtime(__FILE__)
+ *         ,filemtime('/path/to/header.inc')
+ *         ,filemtime('/path/to/footer.inc')
+ *     )
+ * ));
+ * $cg->sendHeaders();
+ * if ($cg->cacheIsValid) {
+ *     exit();
+ * }
  * </code>
  */
 class HTTP_ConditionalGet {
@@ -76,7 +91,7 @@ class HTTP_ConditionalGet {
         // allow far-expires header
         if (isset($spec['setExpires'])) {
             if (is_numeric($spec['setExpires'])) {
-                $spec['setExpires'] = self::gmtdate($spec['setExpires']); 
+                $spec['setExpires'] = self::gmtDate($spec['setExpires']); 
             }
             $this->_headers = array(
                 'Cache-Control' => $scope
@@ -159,6 +174,21 @@ class HTTP_ConditionalGet {
         }
     }
     
+    /**
+     * Get a GMT formatted date for use in HTTP headers
+     * 
+     * <code>
+     * header('Expires: ' . HTTP_ConditionalGet::gmtdate($time));
+     * </code>  
+     *
+     * @param int $time unix timestamp
+     * 
+     * @return string
+     */
+    public static function gmtDate($time) {
+        return gmdate('D, d M Y H:i:s \G\M\T', $time);
+    }
+    
     protected $_headers = array();
     protected $_lmTime = null;
     protected $_etag = null;
@@ -172,7 +202,7 @@ class HTTP_ConditionalGet {
 
     protected function _setLastModified($time) {
         $this->_lmTime = (int)$time;
-        $this->_headers['Last-Modified'] = self::gmtdate($time);
+        $this->_headers['Last-Modified'] = self::gmtDate($time);
     }
 
     /**
@@ -221,10 +251,6 @@ class HTTP_ConditionalGet {
             // IE has tacked on extra data to this header, strip it
             $ifModifiedSince = substr($ifModifiedSince, 0, $semicolon);
         }
-        return ($ifModifiedSince == self::gmtdate($this->_lmTime));
-    }
-
-    protected static function gmtdate($ts) {
-        return gmdate('D, d M Y H:i:s \G\M\T', $ts);
+        return ($ifModifiedSince == self::gmtDate($this->_lmTime));
     }
 }

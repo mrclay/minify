@@ -52,9 +52,7 @@ to verify headers and content being sent.</p>
 	<dt>Safari</dt>
 	<dd>ETag validation is unsupported, but Safari supports HTTP/1.0 validation via
 		 If-Modified-Since headers as long as the cache is explicitly marked
-		&quot;public&quot; or &quot;private&quot;. ConditionalGet can send one of these
-        values determined by cookies/session data, but it's best to explicitly
-        set the option 'isPublic' to true or false.</dd>
+		"public" or "private" ("private" is default in ConditionalGet).</dd>
 </dl>
 </body>
 </html>

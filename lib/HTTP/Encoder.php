@@ -54,15 +54,12 @@ class HTTP_Encoder {
         if (isset($spec['type'])) {
             $this->_headers['Content-Type'] = $spec['type'];
         }
-        if (self::$_clientEncodeMethod === null) {
-            self::$_clientEncodeMethod = self::getAcceptedEncoding();
-        }
         if (isset($spec['method'])
             && in_array($spec['method'], array('gzip', 'deflate', 'compress', '')))
         {
             $this->_encodeMethod = array($spec['method'], $spec['method']);
         } else {
-            $this->_encodeMethod = self::$_clientEncodeMethod;
+            $this->_encodeMethod = self::getAcceptedEncoding();
         }
     }
 
@@ -136,32 +133,41 @@ class HTTP_Encoder {
      * this will return ('', ''), the "identity" encoding.
      * 
      * A syntax-aware scan is done of the Accept-Encoding, so the method must
-     * be non 0. The methods are favored in order of gzip, deflate, then 
-     * compress.
-     * 
-     * Note: this value is cached internally for the entire PHP execution
+     * be non 0. The methods are favored in order of deflate, gzip, then 
+     * compress. Yes, deflate is always smaller and faster!
      * 
      * @return array two values, 1st is the actual encoding method, 2nd is the
      * alias of that method to use in the Content-Encoding header (some browsers
      * call gzip "x-gzip" etc.)
      */
     public static function getAcceptedEncoding() {
-        if (self::$_clientEncodeMethod !== null) {
-            return self::$_clientEncodeMethod;
-        }
         if (! isset($_SERVER['HTTP_ACCEPT_ENCODING'])
             || self::_isBuggyIe())
         {
             return array('', '');
         }
+        // @link http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
         // test for (x-)gzip, if q is specified, can't be "0"
-        if (preg_match('@(?:^|,)\s*((?:x-)?gzip)\s*(?:$|,|;\s*q=(?:0\.|1))@', $_SERVER['HTTP_ACCEPT_ENCODING'], $m)) {
-            return array('gzip', $m[1]);
-        }
-        if (preg_match('@(?:^|,)\s*deflate\s*(?:$|,|;\s*q=(?:0\.|1))@', $_SERVER['HTTP_ACCEPT_ENCODING'])) {
+        // faster test for most common "gzip, deflate"
+        if (preg_match('@(?:,| )deflate$@', $_SERVER['HTTP_ACCEPT_ENCODING'])
+            || preg_match(
+            '@(?:^|,)\\s*deflate\\s*(?:$|,|;\\s*q=(?:0\\.|1))@'
+            ,$_SERVER['HTTP_ACCEPT_ENCODING'])
+        ) {
             return array('deflate', 'deflate');
         }
-        if (preg_match('@(?:^|,)\s*((?:x-)?compress)\s*(?:$|,|;\s*q=(?:0\.|1))@', $_SERVER['HTTP_ACCEPT_ENCODING'], $m)) {
+        if (preg_match(
+                '@(?:^|,)\\s*((?:x-)?gzip)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@'
+                ,$_SERVER['HTTP_ACCEPT_ENCODING']
+                ,$m)
+        ) {
+            return array('gzip', $m[1]);
+        }
+        if (preg_match(
+            '@(?:^|,)\\s*((?:x-)?compress)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@'
+            ,$_SERVER['HTTP_ACCEPT_ENCODING']
+            ,$m)
+        ) {
             return array('compress', $m[1]);
         }
         return array('', '');
@@ -211,21 +217,27 @@ class HTTP_Encoder {
         return true;
     }
 
-    protected static $_clientEncodeMethod = null;
-    protected $content = '';
-    protected $headers = array();
-    protected $encodeMethod = array('', '');
+    protected $_content = '';
+    protected $_headers = array();
+    protected $_encodeMethod = array('', '');
 
+    /**
+     * Is the browser an IE version earlier than 6 SP2?  
+     */
     protected static function _isBuggyIe()
     {
-        if (strstr($_SERVER['HTTP_USER_AGENT'], 'Opera')
-            || !preg_match('/^Mozilla\/4\.0 \(compatible; MSIE ([0-9]\.[0-9])/i', $_SERVER['HTTP_USER_AGENT'], $m))
-        {
+        if (false !== strpos($_SERVER['HTTP_USER_AGENT'], 'Opera')
+            || !preg_match(
+                '/^Mozilla\/4\.0 \(compatible; MSIE ([0-9]\.[0-9])/i'
+                ,$_SERVER['HTTP_USER_AGENT']
+                ,$m
+            )
+        ) {
             return false;
         }
         $version = floatval($m[1]);
         if ($version < 6) return true;
-        if ($version == 6 && !strstr($_SERVER['HTTP_USER_AGENT'], 'SV1')) {
+        if ($version == 6 && false === strpos($_SERVER['HTTP_USER_AGENT'], 'SV1')) {
             return true;
         }
         return false;

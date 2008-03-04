@@ -16,7 +16,7 @@
  * @package Minify
  * @author Ryan Grove <ryan@wonko.com>
  * @author Stephen Clay <steve@mrclay.org>
- * @copyright 2007 Ryan Grove. All rights reserved.
+ * @copyright 2008 Ryan Grove, Stephen Clay. All rights reserved.
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
  * @version 1.9.0
  * @link http://code.google.com/p/minify/
@@ -27,8 +27,10 @@ require_once 'Minify/Source.php';
 class Minify {
 
     const TYPE_CSS = 'text/css';
-    const TYPE_JS = 'application/x-javascript';
     const TYPE_HTML = 'text/html';
+    // there is some debate over the ideal JS Content-Type, but this is the
+    // Apache default and what Yahoo! uses..
+    const TYPE_JS = 'application/x-javascript';
     
     /**
      * @var bool Should the un-encoded version be cached? 

@@ -46,8 +46,7 @@ window.onload = function(){
     document.getElementById("js").className = "green";
 };
     ';
-    $type = 'text/javascript';
-
+    $type = 'application/x-javascript';
 }
 
 $he = new HTTP_Encoder(array(

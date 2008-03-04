@@ -1,32 +1,42 @@
 <?php
-require '_inc.php';
+require_once '_inc.php';
 
-require 'Minify/CSS.php';
+require_once 'Minify/CSS.php';
 
-// build test file list
-$d = dir(dirname(__FILE__) . '/css');
-while (false !== ($entry = $d->read())) {
-    if (preg_match('/^([\w\\-]+)\.css$/', $entry, $m)) {
-        $list[] = $m[1];
-    }
-}
-$d->close();
-
-foreach ($list as $item) {
-
-    $options = ($item === 'paths') 
-        ? array('prependRelativePath' => '../')
-        : array();
+function test_CSS()
+{
+    global $thisDir;
     
-    $src = file_get_contents($thisDir . '/css/' . $item . '.css');
-    $minExpected = file_get_contents($thisDir . '/css/' . $item . '.min.css');
-    $minOutput = Minify_CSS::minify($src, $options);
-    assertTrue($minExpected === $minOutput, 'Minify_CSS : ' . $item);
+    $cssPath = dirname(__FILE__) . '/_test_files/css';
     
-    if ($minExpected !== $minOutput) {
-        echo "\n---Source\n\n{$src}";
-        echo "\n\n---Expected\n\n{$minExpected}";
-        echo "\n\n---Output\n\n{$minOutput}\n\n\n\n";
+    // build test file list
+    $d = dir($cssPath);
+    while (false !== ($entry = $d->read())) {
+        if (preg_match('/^([\w\\-]+)\.css$/', $entry, $m)) {
+            $list[] = $m[1];
+        }
     }
+    $d->close();
+    
+    foreach ($list as $item) {
+    
+        $options = ($item === 'paths') 
+            ? array('prependRelativePath' => '../')
+            : array();
+        
+        $src = file_get_contents($cssPath . "/{$item}.css");
+        $minExpected = file_get_contents($cssPath . "/{$item}.min.css");
+        $minOutput = Minify_CSS::minify($src, $options);
+        $passed = assertTrue($minExpected === $minOutput, 'Minify_CSS : ' . $item);
+        
+        if (__FILE__ === $_SERVER['SCRIPT_FILENAME']) {
+            echo "\n---Output: " .strlen($minOutput). " bytes\n\n{$minOutput}\n\n";
+            if (!$passed) {
+                echo "---Expected: " .strlen($minExpected). " bytes\n\n{$minExpected}\n\n";
+                echo "---Source: " .strlen($src). " bytes\n\n{$src}\n\n\n";    
+            }
+        }
+    }    
 }
 
+test_CSS();
