@@ -20,8 +20,9 @@ function assertTrue($test, $message)
 	if (!isset($count)) $count = array('pass'=>0, 'fail'=>0, 'total'=>0);
 
 	$mode = $test ? 'pass' : 'fail';
+	$outMode = $test ? 'PASS' : '!FAIL';
 	printf("%s: %s (%d of %d tests run so far have %sed)\n",
-		strtoupper($mode), $message, ++$count[$mode], ++$count['total'], $mode);
+		$outMode, $message, ++$count[$mode], ++$count['total'], $mode);
 	
 	return (bool)$test;
 }

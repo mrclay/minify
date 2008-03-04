@@ -69,10 +69,11 @@ function test_HTTP_Encoder()
     $variedContent = file_get_contents($thisDir . '/_test_files/html/before.html')
         . file_get_contents($thisDir . '/_test_files/css/subsilver.css')
         . file_get_contents($thisDir . '/../examples/1/jquery-1.2.3.js');
+    $variedLength = strlen($variedContent);
     
     $encodingTests = array(
-        array('method' => 'gzip', 'exp' => 32174)
-        ,array('method' => 'deflate', 'exp' => 32156)
+        array('method' => 'deflate', 'exp' => 32156)
+        ,array('method' => 'gzip', 'exp' => 32174)
         ,array('method' => 'compress', 'exp' => 32210)
     );
     
@@ -83,9 +84,11 @@ function test_HTTP_Encoder()
         ));
         $e->encode(9);
         $ret = strlen($e->getContent());
+    
+        $desc = "HTTP_Encoder : {$test['method']} -> "
+            . sprintf('%4.2f%%', $ret/$variedLength*100);
         
-        $passed = assertTrue($ret == $test['exp']
-            ,"HTTP_Encoder : {$test['method']} compression");
+        $passed = assertTrue($ret == $test['exp'], $desc);
         
         if (__FILE__ === $_SERVER['SCRIPT_FILENAME']) {
             echo "\n--- {$test['method']}: expected bytes: "
