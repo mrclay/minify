@@ -1,4 +1,9 @@
 <?php
+/**
+ * Class HTTP_ConditionalGet  
+ * @package Minify
+ * @subpackage HTTP
+ */
 
 /**
  * Implement conditional GET via a timestamp or hash of content
@@ -44,6 +49,9 @@
  *     exit();
  * }
  * </code>
+ * @package Minify
+ * @subpackage HTTP
+ * @author Stephen Clay <steve@mrclay.org>
  */
 class HTTP_ConditionalGet {
 

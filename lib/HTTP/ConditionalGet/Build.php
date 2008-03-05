@@ -1,5 +1,20 @@
 <?php
-
+/**
+ * Class HTTP_ConditionalGet_Build  
+ * @package Minify
+ * @subpackage HTTP
+ */
+ 
+/**
+ * Maintain a single last modification time for 1 or more directories of files
+ * 
+ * Since scanning many files may be slower, the value is cached for a given 
+ * number of seconds.
+ *
+ * @package Minify
+ * @subpackage HTTP
+ * @author Stephen Clay <steve@mrclay.org>
+ */
 class HTTP_ConditionalGet_Build {
     
     /**

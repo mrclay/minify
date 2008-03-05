@@ -1,4 +1,8 @@
 <?php
+/**
+ * Class Minify_Controller_Base  
+ * @package Minify
+ */
 
 /**
  * Base class for Minify controller
@@ -6,6 +10,9 @@
  * The controller class validates a request and uses it to create sources
  * for minification and set options like contentType. It's also responsible
  * for loading minifier code upon request.
+ * 
+ * @package Minify
+ * @author Stephen Clay <steve@mrclay.org>
  */
 abstract class Minify_Controller_Base {
     

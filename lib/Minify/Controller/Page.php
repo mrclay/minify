@@ -1,4 +1,8 @@
 <?php
+/**
+ * Class Minify_Controller_Page  
+ * @package Minify
+ */
 
 require_once 'Minify/Controller/Base.php';
 
@@ -6,7 +10,8 @@ require_once 'Minify/Controller/Base.php';
  * Controller class for serving a single HTML page
  * 
  * @link http://code.google.com/p/minify/source/browse/trunk/web/examples/1/index.php#59
- * 
+ * @package Minify
+ * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_Controller_Page extends Minify_Controller_Base {
     

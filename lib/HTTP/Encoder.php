@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Class HTTP_Encoder  
+ * @package Minify
+ * @subpackage HTTP
+ */
+ 
 /**
  * Encode and send gzipped/deflated content
  *
@@ -20,6 +25,9 @@
  *
  * For more control over headers, use getHeaders() and getData() and send your
  * own output.
+ * @package Minify
+ * @subpackage HTTP
+ * @author Stephen Clay <steve@mrclay.org>
  */
 class HTTP_Encoder {
 

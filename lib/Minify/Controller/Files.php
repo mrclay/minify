@@ -1,4 +1,8 @@
 <?php
+/**
+ * Class Minify_Controller_Files  
+ * @package Minify
+ */
 
 require_once 'Minify/Controller/Base.php';
 
@@ -17,6 +21,8 @@ require_once 'Minify/Controller/Base.php';
  * ));
  * </code>
  * 
+ * @package Minify
+ * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_Controller_Files extends Minify_Controller_Base {
     

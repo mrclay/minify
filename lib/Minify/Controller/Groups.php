@@ -1,4 +1,8 @@
 <?php
+/**
+ * Class Minify_Controller_Groups  
+ * @package Minify
+ */
 
 require_once 'Minify/Controller/Base.php';
 
@@ -18,6 +22,9 @@ require_once 'Minify/Controller/Base.php';
  * 
  * If the above code were placed in /serve.php, it would enable the URLs
  * /serve.php/js and /serve.php/css
+ * 
+ * @package Minify
+ * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_Controller_Groups extends Minify_Controller_Base {
     

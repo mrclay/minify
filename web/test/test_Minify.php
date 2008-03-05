@@ -15,6 +15,41 @@ function test_Minify()
     $tomorrow = time() + 86400;
     $lastModified = time() - 86400;
     
+    // Test 304 response
+    
+    // simulate conditional headers
+    $_SERVER['HTTP_IF_NONE_MATCH'] = "\"{$lastModified}pub\"";
+    $_SERVER['HTTP_IF_MODIFIED_SINCE'] = gmdate('D, d M Y H:i:s \G\M\T', $lastModified);
+    
+    $expected = array (
+    	'success' => true
+        ,'statusCode' => 304    
+        ,'content' => '',
+        'headers' => array()
+    );
+    $output = Minify::serve('Files', array(
+        'files' => array(
+            $thisDir . '/_test_files/css/styles.css'
+        )
+        ,'quiet' => true
+        ,'lastModifiedTime' => $lastModified
+        ,'encodeOutput' => false
+    ));
+    $passed = assertTrue($expected === $output, 'Minify : 304 response');
+    if (__FILE__ === $_SERVER['SCRIPT_FILENAME']) {
+        echo "\nOutput: " .var_export($output, 1). "\n\n";
+        if (! $passed) {
+            echo "\n\n\n\n---Expected: " .var_export($expected, 1). "\n\n";    
+        }
+    }
+    
+    assertTrue(
+        ! class_exists('Cache_Lite_File', false)
+        && ! class_exists('HTTP_Encoder', false)
+        && ! class_exists('Minify_CSS', false)
+        ,'File.php, Encoder.php, CSS.php not loaded'
+    );
+    
     // Test minifying JS and serving with Expires header
     
     $expected = array(
@@ -70,36 +105,9 @@ function test_Minify()
         ,'quiet' => true
         ,'lastModifiedTime' => $lastModified
         ,'encodeOutput' => false
-    )); 
-    $passed = assertTrue($expected === $output, 'Minify : CSS and Etag/Last-Modified');
-    if (__FILE__ === $_SERVER['SCRIPT_FILENAME']) {
-        echo "\nOutput: " .var_export($output, 1). "\n\n";
-        if (! $passed) {
-            echo "\n\n\n\n---Expected: " .var_export($expected, 1). "\n\n";    
-        }
-    }
-    
-    // Test 304 response
-    
-    // simulate conditional headers
-    $_SERVER['HTTP_IF_NONE_MATCH'] = "\"{$lastModified}pub\"";
-    $_SERVER['HTTP_IF_MODIFIED_SINCE'] = gmdate('D, d M Y H:i:s \G\M\T', $lastModified);
-    
-    $expected = array (
-    	'success' => true
-        ,'statusCode' => 304    
-        ,'content' => '',
-        'headers' => array()
-    );
-    $output = Minify::serve('Files', array(
-        'files' => array(
-            $thisDir . '/_test_files/css/styles.css'
-        )
-        ,'quiet' => true
-        ,'lastModifiedTime' => $lastModified
-        ,'encodeOutput' => false
     ));
-    $passed = assertTrue($expected === $output, 'Minify : 304 response');
+    
+    $passed = assertTrue($expected === $output, 'Minify : CSS and Etag/Last-Modified');
     if (__FILE__ === $_SERVER['SCRIPT_FILENAME']) {
         echo "\nOutput: " .var_export($output, 1). "\n\n";
         if (! $passed) {
