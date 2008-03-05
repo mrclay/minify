@@ -24,9 +24,9 @@ TESTING
 4. Visit http://yourdomain.com/path/to/web/examples/1/
    This page should contain 3 "PASS"es. It may take a few seconds to minify jQuery!
 
-5. Call each "test_*.php" file in http://yourdomain.com/path/to/web/test/
-   Each test should "PASS", except test_Minify.php. This script should output a 
-   single minified Javascript file sent as "application/x-javascript".
+5. Visit http://yourdomain.com/path/to/web/test/test_all.php
+   This will run all unit tests. You can call the tests individually to see
+   more details.
 
 MINIFY OVERVIEW 
 

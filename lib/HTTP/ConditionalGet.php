@@ -244,9 +244,7 @@ class HTTP_ConditionalGet {
         if (!isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
             return false;
         }
-        $ifModifiedSince = get_magic_quotes_gpc()
-            ? stripslashes($_SERVER['HTTP_IF_MODIFIED_SINCE'])
-            : $_SERVER['HTTP_IF_MODIFIED_SINCE'];
+        $ifModifiedSince = $_SERVER['HTTP_IF_MODIFIED_SINCE'];
         if (false !== ($semicolon = strrpos($ifModifiedSince, ';'))) {
             // IE has tacked on extra data to this header, strip it
             $ifModifiedSince = substr($ifModifiedSince, 0, $semicolon);

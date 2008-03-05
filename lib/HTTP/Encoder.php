@@ -141,33 +141,35 @@ class HTTP_Encoder {
      * call gzip "x-gzip" etc.)
      */
     public static function getAcceptedEncoding() {
+        // @link http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+        
         if (! isset($_SERVER['HTTP_ACCEPT_ENCODING'])
             || self::_isBuggyIe())
         {
             return array('', '');
         }
-        // @link http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-        // test for (x-)gzip, if q is specified, can't be "0"
-        // faster test for most common "gzip, deflate"
-        if (preg_match('@(?:,| )deflate$@', $_SERVER['HTTP_ACCEPT_ENCODING'])
+        $ae = $_SERVER['HTTP_ACCEPT_ENCODING'];
+        $aeRev = strrev($ae);
+        // Fast tests for common AEs. If these don't pass we have to do 
+        // slow regex parsing
+        if (0 === strpos($aeRev, 'etalfed ,') // ie, webkit
+            || 0 === strpos($aeRev, 'etalfed,') // gecko
+            || 0 === strpos($ae, 'deflate,') // opera 9.5b
+            // slow parsing
             || preg_match(
-            '@(?:^|,)\\s*deflate\\s*(?:$|,|;\\s*q=(?:0\\.|1))@'
-            ,$_SERVER['HTTP_ACCEPT_ENCODING'])
-        ) {
+                '@(?:^|,)\\s*deflate\\s*(?:$|,|;\\s*q=(?:0\\.|1))@', $ae)) {
             return array('deflate', 'deflate');
         }
         if (preg_match(
                 '@(?:^|,)\\s*((?:x-)?gzip)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@'
-                ,$_SERVER['HTTP_ACCEPT_ENCODING']
-                ,$m)
-        ) {
+                ,$ae
+                ,$m)) {
             return array('gzip', $m[1]);
         }
         if (preg_match(
-            '@(?:^|,)\\s*((?:x-)?compress)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@'
-            ,$_SERVER['HTTP_ACCEPT_ENCODING']
-            ,$m)
-        ) {
+                '@(?:^|,)\\s*((?:x-)?compress)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@'
+                ,$ae
+                ,$m)) {
             return array('compress', $m[1]);
         }
         return array('', '');
@@ -226,20 +228,17 @@ class HTTP_Encoder {
      */
     protected static function _isBuggyIe()
     {
-        if (false !== strpos($_SERVER['HTTP_USER_AGENT'], 'Opera')
-            || !preg_match(
-                '/^Mozilla\/4\.0 \(compatible; MSIE ([0-9]\.[0-9])/i'
-                ,$_SERVER['HTTP_USER_AGENT']
-                ,$m
-            )
-        ) {
+        $ua = $_SERVER['HTTP_USER_AGENT'];
+        // quick escape for non-IEs
+        if (0 !== strpos($ua, 'Mozilla/4.0 (compatible; MSIE ')
+            || false !== strpos($ua, 'Opera')) {
             return false;
         }
-        $version = floatval($m[1]);
-        if ($version < 6) return true;
-        if ($version == 6 && false === strpos($_SERVER['HTTP_USER_AGENT'], 'SV1')) {
-            return true;
-        }
-        return false;
+        // no regex = faaast
+        $version = (float)substr($ua, 30); 
+        return (
+            $version < 6
+            || ($version == 6  && false === strpos($ua, 'SV1'))
+        );
     }
 }
