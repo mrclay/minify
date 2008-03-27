@@ -13,9 +13,8 @@
  * and by the article "Supercharged JavaScript" by Patrick Hunlock
  * <wb@hunlock.com>.
  *
- * JSMin was originally written by Douglas Crockford <douglas@crockford.com>.
- *
- * Requires PHP 5.2.1+.
+ * Requires PHP 5.1.0.
+ * Tested on PHP 5.1.6.
  *
  * @package Minify
  * @author Ryan Grove <ryan@wonko.com>
@@ -56,9 +55,12 @@ class Minify {
      * @return null
      */
     public static function useServerCache($path = null) {
-        self::$_cachePath = (null === $path)
-            ? sys_get_temp_dir()
-            : $path;
+        if (null !== $path) {
+            self::$_cachePath = $path;    
+        } else {
+            require_once 'Solar/Dir.php';
+            self::$_cachePath = rtrim(Solar_Dir::tmp(), DIRECTORY_SEPARATOR);
+        }
     }
 
     /**

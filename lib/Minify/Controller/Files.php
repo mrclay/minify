@@ -43,6 +43,10 @@ class Minify_Controller_Files extends Minify_Controller_Base {
         
         $sources = array();
         foreach ($files as $file) {
+            if ($file instanceof Minify_Source) {
+                $sources[] = $file;
+                continue;
+            }
             $file = realpath($file);
             if (file_exists($file)) {
                 $sources[] = new Minify_Source(array(

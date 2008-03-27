@@ -18,4 +18,3 @@ class Minify_Javascript {
     }
 }
 
-?>

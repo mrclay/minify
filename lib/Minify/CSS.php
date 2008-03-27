@@ -10,9 +10,9 @@
  * This is a heavy regex-based removal of whitespace, unnecessary
  * comments and tokens, and some CSS value minimization, where practical.
  * Many steps have been taken to avoid breaking comment-based hacks, 
- * including the ie5/mac filter (and its inversion), but expect hacks 
- * involving comment tokens in 'content' value strings to break minimization
- * badly. A test suite is available.
+ * including the ie5/mac filter (and its inversion), but expect tricky
+ * hacks involving comment tokens in 'content' value strings to break
+ * minimization badly. A test suite is available.
  * 
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
