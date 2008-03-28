@@ -11,16 +11,18 @@ require_once 'Minify/Controller/Base.php';
  * 
  * E.g. the following would serve the minified Javascript for a site
  * <code>
- * $dr = $_SERVER['DOCUMENT_ROOT'];
  * Minify::serve('Files', array(
  *     'files' => array(
- *         $dr . '/js/jquery.js'
- *         ,$dr . '/js/plugins.js'
- *         ,$dr . '/js/site.js'
+ *         '//js/jquery.js'
+ *         ,'//js/plugins.js'
+ *         ,'/home/username/file.js'
  *     )
  * ));
  * </code>
  * 
+ * As a shortcut, the controller will replace "//" at the beginning
+ * of a filename with $_SERVER['DOCUMENT_ROOT'] . '/'.
+ *
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
@@ -46,6 +48,9 @@ class Minify_Controller_Files extends Minify_Controller_Base {
             if ($file instanceof Minify_Source) {
                 $sources[] = $file;
                 continue;
+            }
+            if (0 === strpos($file, '//')) {
+                $file = $_SERVER['DOCUMENT_ROOT'] . substr($file, 1);
             }
             $file = realpath($file);
             if (file_exists($file)) {

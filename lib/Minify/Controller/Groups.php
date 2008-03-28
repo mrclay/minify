@@ -11,17 +11,19 @@ require_once 'Minify/Controller/Base.php';
  * by PATH_INFO
  * 
  * <code>
- * $dr = $_SERVER['DOCUMENT_ROOT'];
  * Minify::serve('Groups', array( 
  *     'groups' => array(
- *         'css' => array($dr . '/css/type.css', $dr . '/css/layout.css')
- *        ,'js' => array($dr . '/js/jquery.js', $dr . '/js/site.js')
+ *         'css' => array('//css/type.css', '//css/layout.css')
+ *        ,'js' => array('//js/jquery.js', '//js/site.js')
  *     )
  * ));
  * </code>
  * 
  * If the above code were placed in /serve.php, it would enable the URLs
  * /serve.php/js and /serve.php/css
+ * 
+ * As a shortcut, the controller will replace "//" at the beginning
+ * of a filename with $_SERVER['DOCUMENT_ROOT'] . '/'.
  * 
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
@@ -54,6 +56,9 @@ class Minify_Controller_Groups extends Minify_Controller_Base {
             if ($file instanceof Minify_Source) {
                 $sources[] = $file;
                 continue;
+            }
+            if (0 === strpos($file, '//')) {
+                $file = $_SERVER['DOCUMENT_ROOT'] . substr($file, 1);
             }
             $file = realpath($file);
             if (file_exists($file)) {
