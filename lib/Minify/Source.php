@@ -37,12 +37,18 @@ class Minify_Source {
      * file (existence will not be checked!) or give 'id' (unique string for 
      * the content), 'content' (the string content) and 'lastModified' 
      * (unixtime of last update).
+     * 
+     * As a shortcut, the controller will replace "//" at the beginning
+     * of a filepath with $_SERVER['DOCUMENT_ROOT'] . '/'.
      *
      * @param array $spec options
      */
     public function __construct($spec)
     {
         if (isset($spec['filepath'])) {
+            if (0 === strpos($spec['filepath'], '//')) {
+                $spec['filepath'] = $_SERVER['DOCUMENT_ROOT'] . substr($spec['filepath'], 1);
+            }
             $this->_filepath = $spec['filepath'];
             $this->_id = $spec['filepath'];
             $this->lastModified = filemtime($spec['filepath']);
