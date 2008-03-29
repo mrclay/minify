@@ -54,7 +54,11 @@ class Minify_Source {
             $this->lastModified = filemtime($spec['filepath']);
         } elseif (isset($spec['id'])) {
             $this->_id = 'id::' . $spec['id'];
-            $this->_content = $spec['content'];
+            if (isset($spec['content'])) {
+				$this->_content = $spec['content'];
+			} else {
+				$this->_getContentFunc = $spec['getContentFunc'];
+			}
             $this->lastModified = isset($spec['lastModified'])
                 ? $spec['lastModified']
                 : time();
@@ -74,9 +78,12 @@ class Minify_Source {
      */
     public function getContent()
     {
-        return (null !== $this->_content)
-            ? $this->_content
-            : file_get_contents($this->_filepath);
+        return (null !== $this->_filepath)
+			? file_get_contents($this->_filepath)
+			: ((null !== $this->_content)
+				? $this->_content
+				: call_user_func($this->_getContentFunc, $this->_id)
+			);
     }
     
     /**
@@ -143,6 +150,7 @@ class Minify_Source {
     }
     
     protected $_content = null;
+	protected $_getContentFunc = null;
     protected $_filepath = null;
     protected $_id = null;
 }

@@ -86,8 +86,13 @@ class Minify_Build {
         foreach ((array)$sources as $source) {
             if ($source instanceof Minify_Source) {
                 $max = max($max, $source->lastModified);
-            } elseif (is_string($source) && is_file($source)) {
-                $max = max($max, filemtime($source));
+            } elseif (is_string($source)) {
+                if (0 === strpos($source, '//')) {
+                    $source = $_SERVER['DOCUMENT_ROOT'] . substr($source, 1);
+                }
+                if (is_file($source)) {
+                    $max = max($max, filemtime($source));
+                }
             }
         }
         $this->lastModified = $max;
