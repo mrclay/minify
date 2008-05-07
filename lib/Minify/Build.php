@@ -29,6 +29,7 @@ require_once 'Minify/Source.php';
  * // in min.php
  * Minify::serve('Groups', array(
  *   'groups' => $groupSources
+ *   ,'setExpires' => (time() + 86400 * 365)
  * ));
  * </code>
  * 
