@@ -1,8 +1,8 @@
-// is.js
+/*! is.js
 
-// (c) 2001 Douglas Crockford
-// 2001 June 3
-
+ (c) 2001 Douglas Crockford
+ 2001 June 3
+*/
 
 // is
 
@@ -21,6 +21,9 @@ var is = {
              parseFloat(navigator.appVersion),
     win:     navigator.platform == 'Win32'
 }
+/*!*
+ * preserve this comment, too
+ */
 is.mac = is.ua.indexOf('mac') >= 0;
 if (is.ua.indexOf('opera') >= 0) {
     is.ie = is.ns = false;
