@@ -24,12 +24,70 @@ class Minify_CSS {
      * 
      * @param string $css
      * 
-     * @param array $options optional. To enable URL rewriting, set the value
+     * @param array $options available options:
+     * 
+     * 'preserveComments': (default true) multi-line comments that begin
+     * with "/*!" will be preserved with newlines before and after to
+     * enhance readability.
+     * 
+     * @return string
+     */
+    public static function minify($css, $options = array()) 
+    {
+        if (isset($options['preserveComments']) 
+            && !$options['preserveComments']) {
+            return self::_minify($css, $options);    
+        }
+        $ret = '';
+        while (1) {
+            list($beforeComment, $comment, $afterComment)
+                = self::_nextYuiComment($css);
+            $ret .= self::_minify($beforeComment, $options);
+            if (false === $comment) {
+                break;
+            }
+            $ret .= $comment;
+            $css = $afterComment;
+        }
+        return $ret;
+    }
+
+    /**
+     * Extract comments that YUI Compressor preserves.
+     * 
+     * @param string $in input
+     * 
+     * @return array 3 elements are returned. If a YUI comment is found, the
+     * 2nd element is the comment and the 1st and 2nd are the surrounding
+     * strings. If no comment is found, the entire string is returned as the 
+     * 1st element and the other two are false.
+     */
+    private static function _nextYuiComment($in)
+    {
+        return (
+            (false !== ($start = strpos($in, '/*!')))
+            && (false !== ($end = strpos($in, '*/', $start + 3)))
+        )
+            ? array(
+                substr($in, 0, $start)
+                ,"\n/*" . substr($in, $start + 3, $end - $start - 1) . "\n"
+                ,substr($in, -(strlen($in) - $end - 2))
+            )
+            : array($in, false, false);
+    }
+    
+    /**
+     * Minify a CSS string
+     * 
+     * @param string $css
+     * 
+     * @param array $options To enable URL rewriting, set the value
      * for key 'prependRelativePath'.
      * 
      * @return string
      */
-    public static function minify($css, $options = array()) {
+    protected static function _minify($css, $options) 
+    {
         // preserve empty comment after '>'
         // http://www.webdevout.net/css-hacks#in_css-selectors
         $css = preg_replace('/>\\/\\*\\s*\\*\\//', '>/*keep*/', $css);
@@ -44,7 +102,7 @@ class Minify_CSS {
         $css = preg_replace_callback('/\\s*\\/\\*([\\s\\S]*?)\\*\\/\\s*/'
             ,array('Minify_CSS', '_commentCB'), $css);
 
-        // compress whitespace. Yes, this will affect "copyright" comments.
+        // compress whitespace.
         $css = preg_replace('/\s+/', ' ', $css);
 
         // leave needed comments
@@ -116,15 +174,10 @@ class Minify_CSS {
     protected static function _commentCB($m)
     {
         $m = $m[1]; 
-        // $m is everything after the opening tokens and before the closing tokens
-        // but return will replace the entire comment.
+        // $m is everything after the opening tokens and before the closing 
+        // tokens but return will replace the entire comment.
         if ($m === 'keep') {
             return '/*keep*/';
-        }
-        if (false !== strpos($m, 'copyright')) {
-            // contains copyright, preserve
-            self::$_inHack = false;
-            return "/*{$m}*/";
         }
         if (self::$_inHack) {
             // inversion: feeding only to one browser
@@ -137,7 +190,7 @@ class Minify_CSS {
             self::$_inHack = true;
             return '/*\\*/';
         }
-        if (substr($m, 0, 1) === '/') {
+        if ($m[0] === '/') {
             self::$_inHack = true;
             return '/*/*/';
         }

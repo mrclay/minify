@@ -72,8 +72,8 @@ function test_HTTP_Encoder()
     $variedLength = strlen($variedContent);
     
     $encodingTests = array(
-        array('method' => 'deflate', 'exp' => 32156)
-        ,array('method' => 'gzip', 'exp' => 32174)
+        array('method' => 'deflate', 'exp' => 32157)
+        ,array('method' => 'gzip', 'exp' => 32175)
         ,array('method' => 'compress', 'exp' => 32210)
     );
     
@@ -86,7 +86,7 @@ function test_HTTP_Encoder()
         $ret = strlen($e->getContent());
     
         $desc = "HTTP_Encoder : {$test['method']} -> "
-            . sprintf('%4.2f%%', $ret/$variedLength*100);
+            . sprintf('%d(%4.2f%%)', $ret, $ret/$variedLength*100);
         
         $passed = assertTrue($ret == $test['exp'], $desc);
         
