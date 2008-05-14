@@ -126,8 +126,8 @@ class Minify_CSS {
             ,array('Minify_CSS', '_selectorsCB'), $css);
         
         // minimize hex colors
-        $css = preg_replace('/#([a-f\\d])\\1([a-f\\d])\\2([a-f\\d])\\3([\\s;\\}])/i'
-            , '#$1$2$3$4', $css);
+        $css = preg_replace('/([^=])#([a-f\\d])\\2([a-f\\d])\\3([a-f\\d])\\4([\\s;\\}])/i'
+            , '$1#$2$3$4$5', $css);
         
         $rewrite = false;
         if (isset($options['prependRelativePath'])) {
