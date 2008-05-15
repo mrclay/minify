@@ -1,0 +1,41 @@
+/* Test file to minify */
+
+/*! copyright notice here... */
+
+html {
+    margin:0;
+    padding:0;
+    background:#aaa;
+}
+body {
+    margin:0 auto;
+    padding:1em;
+    width:550px;
+    background:#fff;
+}
+body > *:first-child {margin-top:0;}
+
+h1 {
+    color: #00cc00;
+    font-size: 20px;
+}
+h2 {
+    color: #009900;
+    font-size: 17px;
+}
+h1, h2 {margin:1.3em 0 .3em;}
+
+p {
+    margin:0 0 1em;
+}
+
+ul, li {
+    padding:0; 
+    margin:0; 
+    display:block;
+    font-family: monospace;
+}
+
+#cssFail span {
+    display: none;
+}

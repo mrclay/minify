@@ -15,11 +15,12 @@ ob_start();
     <title>Minify Example 2</title>
     <link rel="stylesheet" type="text/css" href="<?php echo $cssBuild->uri('m.php/css'); ?>" />
      <style type="text/css">
+
 #cssFail {
-    width:2.8em; 
+    width:2.8em;
     overflow:hidden;
 }
-     </style>
+    </style>
 </head>
 <body>
 
@@ -29,26 +30,35 @@ ob_start();
 <code>config.php</code>. Notice that minifying jQuery takes several seconds!.</p>
 <?php endif; ?>
 
-<h1>Minify Example 2</h1>
+<h1>Minify Example 2: Minifying <em>Everything</em></h1>
 
-<p>This is an example using Minify_Build and the Groups controller to 
-automatically create versioned minify URLs</p>
+<p>In this example, external Javascript and CSS minification is identical to
+example 1, but here Minify is also used to minify and serve the HTML, including
+the contents of all <code>&lt;style&gt;</code> and <code>&lt;script&gt;</code> 
+elements.</p>
 
+<p>As the document is XHTML, Minify_HTML places the 2nd <code>&lt;script&gt;</code>
+element in a CDATA section because it contains "&lt;". The output is valid XHTML.</p>
+
+<h2>Minify tests</h2>
 <ul>
     <li id="cssFail"><span>FAIL</span>PASS</li>
     <li id="jsFail1">FAIL</li>
     <li id="jsFail2">FAIL</li>
 </ul>
 
-<p><a href="">Link to this page (F5 can trigger no-cache headers)</a></p>
+<h2>Test client cache</h2>
+<p><a href="">Reload page</a> <small>(F5 can trigger no-cache headers)</small></p>
 
 <script type="text/javascript" src="<?php echo $jsBuild->uri('m.php/js'); ?>"></script>
 <script type="text/javascript">
+
 $(function () {
     if ( 1 < 2 ) {
         $('#jsFail2').html('PASS');
     }
 });
+
 </script>
 </body>
 </html>
