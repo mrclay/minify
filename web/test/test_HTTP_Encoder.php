@@ -68,13 +68,13 @@ function test_HTTP_Encoder()
     
     $variedContent = file_get_contents($thisDir . '/_test_files/html/before.html')
         . file_get_contents($thisDir . '/_test_files/css/subsilver.css')
-        . file_get_contents($thisDir . '/../examples/1/jquery-1.2.3.js');
+        . file_get_contents($thisDir . '/../examples/jquery-1.2.3.js');
     $variedLength = strlen($variedContent);
     
     $encodingTests = array(
         array('method' => 'deflate', 'exp' => 32157)
         ,array('method' => 'gzip', 'exp' => 32175)
-        ,array('method' => 'compress', 'exp' => 32210)
+        ,array('method' => 'compress', 'exp' => 32211)
     );
     
     foreach ($encodingTests as $test) {
