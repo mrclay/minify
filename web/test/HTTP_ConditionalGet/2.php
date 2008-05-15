@@ -1,6 +1,7 @@
 <?php
 
-require '../../ConditionalGet.php';
+require '../../config.php';
+require 'HTTP/ConditionalGet.php';
 
 // emulate regularly updating document
 $every = 20;

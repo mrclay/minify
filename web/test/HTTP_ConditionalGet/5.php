@@ -1,6 +1,7 @@
 <?php
 
-require '../../ConditionalGet.php';
+require '../../config.php';
+require 'HTTP/ConditionalGet.php';
 
 // far expires
 $cg = new HTTP_ConditionalGet(array(

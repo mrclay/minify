@@ -1,7 +1,8 @@
 <?php
 ini_set('display_errors', 'on');
 
-require '../../Encoder.php';
+require '../../config.php';
+require 'HTTP/Encoder.php';
 
 if (!isset($_GET['test'])) {
     $type = 'text/html';
