@@ -4,7 +4,7 @@
  * @package Minify
  */
 
-require dirname(__FILE__) . '/3rd_party/jsmin.php';
+require 'JSMin.php';
 
 /**
  * Compress Javascript using Ryan Grove's JSMin class

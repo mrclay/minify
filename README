@@ -1,19 +1,16 @@
-WARNING!
+WELCOME TO MINIFY 2.0!
 
-SVN contains early work on version 2 of Minify and should be considered
-"alpha" quality. For production-tested code, please choose an 
-earlier release from: http://code.google.com/p/minify/downloads/list 
-
-The documentation at http://code.google.com/p/minify/ applies to those 
-releases.
+Currently the documentation at http://code.google.com/p/minify/ applies to 
+the earlier 1.x release, but this will be updated in due time.
 
 SETUP 
 
 Minify is a library of files inside the "lib" directory. Wherever you 
 place "lib", it needs to be in your include_path, and should be 
-access-protected or outside of DOCUMENT_ROOT. 
+access-protected or outside of DOCUMENT_ROOT. Alternately you can dump
+the contents of "lib" into an existing directory in your include_path.
 
-TESTING 
+TESTING
 
 1. Place the "web" directory somewhere in DOCUMENT_ROOT. 
 
@@ -22,7 +19,8 @@ TESTING
 3. To enable server-side caching, set $minifyCachePath to a PHP-writeable directory
 
 4. Visit http://yourdomain.com/path/to/web/examples/1/
-   This page should contain 3 "PASS"es. It may take a few seconds to minify jQuery!
+   This page should contain 2 "PASS"es. It may take a few seconds to minify 
+   jQuery. If you've enabled caching this wait will no longer be needed.
 
 5. Visit http://yourdomain.com/path/to/web/test/test_all.php
    This will run all unit tests. You can call the tests individually to see
@@ -32,20 +30,20 @@ MINIFY OVERVIEW
 
 Minify is an HTTP content server. It compresses sources of content 
 (usually files), combines the result and serves it with appropriate 
-HTTP headers. These headers can usually allow clients to perform 
-conditional GETs (serving content only when clients do not have a valid 
-cache) or tell clients to cache the file until a given date/time. 
+HTTP headers. These headers can allow clients to perform conditional 
+GETs (serving content only when clients do not have a valid cache) 
+or tell clients to cache the file until a given date/time. 
 
 Minify works with Minify_Source objects. These usually represent a file 
 on disk, but a source can also be content on hand or from a database. 
 Sources with known "last modified" timestamps allow Minify to implement 
-conditional GETs. 
+server-side caching and conditional GETs.
 
 You configure Minify via a Minify_Controller object. The controller 
 supplies the sources and default options to serve a request, 
 determining how it's to be responded to. Several controllers are 
-supplied with Minify, but it's also fairly easy to write your own. E.g. 
-a controller could emulate v1.x of minify.php. 
+supplied with Minify, but it's also fairly easy to write your own. See
+the files in /lib/Minify/Controller for examples.
 
 To use an existing controller, you call Minify::serve(), passing it:
 1. the name of your controller of choice (without the "Minify_Controller" 
@@ -64,5 +62,6 @@ source objects from the 'files' option, and supplies other default options.
 
 MINIFY USAGE 
 
-Example 1 shows an example of using Minify to serve both the HTML and 
-external CSS and JS files. 
+Example 1 shows an example of using Minify to serve external CSS and JS files
+with far-off Expires headers. Clients will always have up-to-date versions
+because Minify_Build is used to time stamp the URLs.
