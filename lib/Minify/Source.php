@@ -78,12 +78,16 @@ class Minify_Source {
      */
     public function getContent()
     {
-        return (null !== $this->_filepath)
+        $content = (null !== $this->_filepath)
 			? file_get_contents($this->_filepath)
 			: ((null !== $this->_content)
 				? $this->_content
 				: call_user_func($this->_getContentFunc, $this->_id)
 			);
+		// remove UTF-8 BOM if present
+		return (pack("CCC",0xef,0xbb,0xbf) === substr($content, 0, 3))
+		    ? substr($content, 3)
+		    : $content;
     }
     
     /**

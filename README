@@ -65,3 +65,9 @@ MINIFY USAGE
 Example 1 shows an example of using Minify to serve external CSS and JS files
 with far-off Expires headers. Clients will always have up-to-date versions
 because Minify_Build is used to time stamp the URLs.
+
+FILE ENCODINGS
+
+Minify *should* work fine with files encoded in UTF-8 or other 8-bit 
+encodings like ISO 8859/Windows-1252. Leading UTF-8 BOMs are stripped from
+all sources to prevent duplication in output files.
