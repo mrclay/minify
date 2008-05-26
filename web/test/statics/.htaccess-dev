@@ -1,0 +1,41 @@
+# turn off MultiViews if enabled
+#
+Options -MultiViews
+
+# For *.var requests, negotiate using type-map
+#
+AddHandler type-map .var
+
+# use custom extensions so existing handlers for .gz/.Z
+# do not interfere
+#
+AddEncoding x-gzip .zg
+AddEncoding x-compress .zc
+AddEncoding deflate .zd
+
+# Necessary to add charset while using type-map
+#
+AddType application/x-javascript;charset=utf-8 js
+AddType text/css;charset=utf-8 css
+
+# Below we remove the ETag header and set a far-off Expires
+# header. Since clients will aggressively cache, make sure 
+# to modify the URL (querystring or via mod_rewrite) when 
+# the resource changes
+
+# remove ETag
+FileETag None
+
+# requires mod_expires
+#
+ExpiresActive On
+#
+# sets Expires and Cache-Control: max-age, but not "public"
+#
+ExpiresDefault "access plus 1 year"
+
+# requires mod_headers
+#
+# adds the "public" to Cache-Control.
+#
+Header set Cache-Control "public, max-age=31536000"
