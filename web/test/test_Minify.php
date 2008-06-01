@@ -1,10 +1,6 @@
 <?php
 
 require_once '_inc.php';
-/**
- * Note: All Minify classes are E_STRICT except for Cache_Lite_File.
- */
-error_reporting(E_ALL);
 require_once 'Minify.php';
 
 function test_Minify()
@@ -82,6 +78,9 @@ function test_Minify()
     }
     
     // Test minifying CSS and responding with Etag/Last-Modified
+    
+    // needed to expose E_STRICT warning in Cache_Lite_File 
+    Minify::useServerCache();
     
     // don't allow conditional headers
     unset($_SERVER['HTTP_IF_NONE_MATCH'], $_SERVER['HTTP_IF_MODIFIED_SINCE']);

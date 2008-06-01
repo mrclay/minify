@@ -1,5 +1,8 @@
 Minify Release History
 
+Version 2.0.1 (2008-05-31)
+    * E_STRICT compliance (Cache_Lite_File).
+
 Version 2.0.0 (2008-05-22)
     * Complete code overhaul. Minify is now a PEAR-style class and toolkit 
       for building customized minifying file servers.

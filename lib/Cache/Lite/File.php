@@ -903,13 +903,15 @@ class Cache_Lite_File extends Cache_Lite
     
     /**
     * Test if a cache is available and (if yes) return it
+    * 
+    * The third param is just to suppress PHP5's E_STRICT warning
     *
     * @param string $id cache id
     * @param string $group name of the cache group
     * @return string data of the cache (or false if no cache available)
     * @access public
     */
-    function get($id, $group = 'default') 
+    function get($id, $group = 'default', $thisValueIgnored = false)
     {
         if ($data = parent::get($id, $group, true)) {
             if ($filemtime = $this->lastModified()) {
@@ -920,6 +922,4 @@ class Cache_Lite_File extends Cache_Lite
         }
         return false;
     }
-
 }
-

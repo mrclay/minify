@@ -21,7 +21,6 @@
  * @author Stephen Clay <steve@mrclay.org>
  * @copyright 2008 Ryan Grove, Stephen Clay. All rights reserved.
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
- * @version 1.9.0
  * @link http://code.google.com/p/minify/
  */
 
