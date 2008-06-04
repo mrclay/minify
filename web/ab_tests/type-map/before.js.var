@@ -1,0 +1,14 @@
+URI: before.js.zd
+Content-Type: application/x-javascript; qs=0.9
+Content-Encoding: deflate
+
+URI: before.js.zg
+Content-Type: application/x-javascript; qs=0.8
+Content-Encoding: x-gzip
+
+URI: before.js.zc
+Content-Type: application/x-javascript; qs=0.7
+Content-Encoding: x-compress
+
+URI: before.js
+Content-Type: application/x-javascript; qs=0.6
