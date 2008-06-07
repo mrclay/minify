@@ -1,0 +1,43 @@
+This is ApacheBench, Version 2.0.40-dev <$Revision: 1.146 $> apache-2.0
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Copyright 2006 The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking mc.dev (be patient)
+
+
+Server Software:        Apache/2.2.4
+Server Hostname:        mc.dev
+Server Port:            80
+
+Document Path:          /_3rd_party/minify/web/ab_tests/minify/before.js.php
+Document Length:        15993 bytes
+
+Concurrency Level:      100
+Time taken for tests:   17.312500 seconds
+Complete requests:      2000
+Failed requests:        0
+Write errors:           0
+Total transferred:      32736000 bytes
+HTML transferred:       31986000 bytes
+Requests per second:    115.52 [#/sec] (mean)
+Time per request:       865.625 [ms] (mean)
+Time per request:       8.656 [ms] (mean, across all concurrent requests)
+Transfer rate:          1846.53 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   2.1      0      15
+Processing:   125  853 150.1    844    1296
+Waiting:      125  852 150.1    843    1281
+Total:        125  854 150.1    859    1296
+
+Percentage of the requests served within a certain time (ms)
+  50%    859
+  66%    906
+  75%    953
+  80%    984
+  90%   1046
+  95%   1109
+  98%   1156
+  99%   1187
+ 100%   1296 (longest request)
