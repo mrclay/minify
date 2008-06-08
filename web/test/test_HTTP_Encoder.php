@@ -59,7 +59,7 @@ function test_HTTP_Encoder()
         $ret = HTTP_Encoder::getAcceptedEncoding();
         $passed = assertTrue($exp == $ret, 'HTTP_Encoder : ' . $test['desc']);
         
-        if (__FILE__ === $_SERVER['SCRIPT_FILENAME']) {
+        if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
             echo "\n--- AE | UA = {$test['ae']} | {$test['ua']}\n";
             echo "Expected = " . preg_replace('/\\s+/', ' ', var_export($exp, 1)) . "\n";
             echo "Returned = " . preg_replace('/\\s+/', ' ', var_export($ret, 1)) . "\n\n";
@@ -90,7 +90,7 @@ function test_HTTP_Encoder()
         
         $passed = assertTrue($ret == $test['exp'], $desc);
         
-        if (__FILE__ === $_SERVER['SCRIPT_FILENAME']) {
+        if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
             echo "\n--- {$test['method']}: expected bytes: "
                 , "{$test['exp']}. Returned: {$ret}\n\n";
         }

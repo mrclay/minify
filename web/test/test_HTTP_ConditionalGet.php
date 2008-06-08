@@ -97,7 +97,7 @@ function test_HTTP_ConditionalGet()
         
         $passed = assertTrue($exp == $ret, 'HTTP_ConditionalGet : ' . $test['desc']);
         
-        if (__FILE__ === $_SERVER['SCRIPT_FILENAME']) {
+        if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
             echo "\n--- INM = {$test['inm']} / IMS = {$test['ims']}\n";
             echo "Expected = " . preg_replace('/\\s+/', ' ', var_export($exp, 1)) . "\n";
             echo "Returned = " . preg_replace('/\\s+/', ' ', var_export($ret, 1)) . "\n\n";

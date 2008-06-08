@@ -1,5 +1,7 @@
 <?php
 
+// currently these only test serve() when passed the 'quiet' options
+
 require_once '_inc.php';
 require_once 'Minify.php';
 
@@ -32,7 +34,7 @@ function test_Minify()
         ,'encodeOutput' => false
     ));
     $passed = assertTrue($expected === $output, 'Minify : 304 response');
-    if (__FILE__ === $_SERVER['SCRIPT_FILENAME']) {
+        if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         echo "\nOutput: " .var_export($output, 1). "\n\n";
         if (! $passed) {
             echo "\n\n\n\n---Expected: " .var_export($expected, 1). "\n\n";    
@@ -40,22 +42,24 @@ function test_Minify()
     }
     
     assertTrue(
-        ! class_exists('Cache_Lite_File', false)
-        && ! class_exists('HTTP_Encoder', false)
+        //! class_exists('Cache_Lite_File', false)
+        ! class_exists('HTTP_Encoder', false)
         && ! class_exists('Minify_CSS', false)
-        ,'File.php, Encoder.php, CSS.php not loaded'
+        ,'Encoder.php, CSS.php not loaded'
     );
     
     // Test minifying JS and serving with Expires header
     
+    $content = preg_replace('/\\r\\n?/', "\n", file_get_contents($minifyTestPath . '/minified.js'));
     $expected = array(
     	'success' => true
         ,'statusCode' => 200
         // Minify_Javascript always converts to \n line endings
-        ,'content' => preg_replace('/\\r\\n?/', "\n", file_get_contents($minifyTestPath . '/minified.js'))
+        ,'content' => $content
         ,'headers' => array (
-            'Cache-Control' => 'public',
+            'Cache-Control' => 'public, max-age=86400',
             'Expires' => gmdate('D, d M Y H:i:s \G\M\T', $tomorrow),
+            'Content-Length' => strlen($content),
             'Content-Type' => 'application/x-javascript',
         )
     );
@@ -70,7 +74,7 @@ function test_Minify()
     ));
     $passed = assertTrue($expected === $output, 'Minify : JS and Expires');
     
-    if (__FILE__ === $_SERVER['SCRIPT_FILENAME']) {
+        if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         echo "\nOutput: " .var_export($output, 1). "\n\n";
         if (! $passed) {
             echo "\n\n\n\n---Expected: " .var_export($expected, 1). "\n\n";    
@@ -93,8 +97,9 @@ function test_Minify()
             'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
             'ETag' => "\"{$lastModified}pub\"",
             'Cache-Control' => 'max-age=0, public, must-revalidate',
+            'Content-Length' => filesize($minifyTestPath . '/minified.css'),
             'Content-Type' => 'text/css',
-        ) 
+        )
     );
     $output = Minify::serve('Files', array(
         'files' => array(
@@ -107,7 +112,7 @@ function test_Minify()
     ));
     
     $passed = assertTrue($expected === $output, 'Minify : CSS and Etag/Last-Modified');
-    if (__FILE__ === $_SERVER['SCRIPT_FILENAME']) {
+    if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         echo "\nOutput: " .var_export($output, 1). "\n\n";
         if (! $passed) {
             echo "\n\n\n\n---Expected: " .var_export($expected, 1). "\n\n";    

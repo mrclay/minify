@@ -35,14 +35,6 @@ class Minify {
     const TYPE_JS = 'application/x-javascript';
     
     /**
-     * @var bool Should the un-encoded version be cached? 
-     * 
-     * True results in more cache files, but lower PHP load if different 
-     * encodings are commonly requested.
-     */
-    public static $cacheUnencodedVersion = true;
-
-    /**
      * Specify a writeable directory for cache files. If not called, Minify
      * will not use a disk cache and, for each 200 response, will need to
      * recombine files, minify and encode the output.
@@ -65,34 +57,37 @@ class Minify {
     /**
      * Serve a request for a minified file. 
      * 
-     * @param mixed instance of subclass of Minify_Controller_Base or string name of controller. E.g. 'Files'
+     * @param mixed instance of subclass of Minify_Controller_Base or string name of
+     * controller. E.g. 'Files'
      * 
      * @param array $options controller/serve options
      * 
-     * @return array success, statusCode, content, and headers generated
+     * @return mixed null, or, if the 'quiet' option is set to true, an array
+     * with keys "success" (bool), "statusCode" (int), "content" (string), and
+     * "headers" (array).
      * 
      * Here are the available options and defaults in the base controller:
      * 
      * 'isPublic' : send "public" instead of "private" in Cache-Control 
      * headers, allowing shared caches to cache the output. (default true)
      * 
-     * 'quiet' : set to true to have no content/headers sent (default false)
+     * 'quiet' : set to true to have serve() return an array rather than sending
+     * any headers/output (default false)
      * 
      * 'encodeOutput' : to disable content encoding, set this to false (default true)
      * 
      * 'encodeMethod' : generally you should let this be determined by 
      * HTTP_Encoder (leave null), but you can force a particular encoding
-     * to be returned, by setting this to 'gzip', 'deflate', 'compress', or '' 
-     * (no encoding)
+     * to be returned, by setting this to 'gzip', 'deflate', or '' (no encoding)
      * 
      * 'encodeLevel' : level of encoding compression (0 to 9, default 9)
      * 
      * 'contentTypeCharset' : if given, this will be appended to the Content-Type
      * header sent (needed mainly for HTML docs)  
      * 
-     * 'setExpires' : set this to a timestamp or GMT date to have Minify send
-     * an HTTP Expires header instead of checking for conditional GET (default null). 
-     * E.g. (time() + 86400 * 365) for 1yr 
+     * 'setExpires' : set this to a timestamp to have Minify send an HTTP Expires
+     * header instead of checking for conditional GET (default null). 
+     * E.g. ($_SERVER['REQUEST_TIME'] + 86400 * 365) for 1yr 
      * Note this has nothing to do with server-side caching.
      * 
      * 'perType' : this is an array of options to send to a particular minifier 
@@ -128,45 +123,57 @@ class Minify {
             if (! self::$_options['quiet']) {
                 header(self::$_options['badRequestHeader']);
                 echo self::$_options['badRequestHeader'];
+                return;
+            } else {
+                list(,$statusCode) = explode(' ', self::$_options['badRequestHeader']);
+                return array(
+                    'success' => false
+                    ,'statusCode' => (int)$statusCode
+                    ,'content' => ''
+                    ,'headers' => array()
+                );
             }
-            list(,$statusCode) = explode(' ', self::$_options['badRequestHeader']);
-            return array(
-                'success' => false
-                ,'statusCode' => (int)$statusCode
-                ,'content' => ''
-                ,'headers' => array()
-            );
         }
         
         self::$_controller = $controller;
-        
-        $cgOptions = array(
-            'lastModifiedTime' => self::$_options['lastModifiedTime']
-            ,'isPublic' => self::$_options['isPublic']
-        );
-        if (null !== self::$_options['setExpires']) {
-            $cgOptions['setExpires'] = self::$_options['setExpires'];
-        }
-        
-        // check client cache
-        require_once 'HTTP/ConditionalGet.php';
-        $cg = new HTTP_ConditionalGet($cgOptions);
-        if ($cg->cacheIsValid) {
-            // client's cache is valid
-            if (! self::$_options['quiet']) {
-                $cg->sendHeaders();
+
+        if (null === self::$_options['setExpires']) {
+            // conditional GET
+            require_once 'HTTP/ConditionalGet.php';
+            $cg = new HTTP_ConditionalGet(array(
+                'lastModifiedTime' => self::$_options['lastModifiedTime']
+                ,'isPublic' => self::$_options['isPublic']
+            ));
+            if ($cg->cacheIsValid) {
+                // client's cache is valid
+                if (! self::$_options['quiet']) {
+                    $cg->sendHeaders();
+                    return;
+                } else {
+                    return array(
+                        'success' => true
+                        ,'statusCode' => 304 
+                        ,'content' => ''
+                        ,'headers' => array()
+                    );    
+                }
+            } else {
+                // client will need output
+                $headers = $cg->getHeaders();
+                unset($cg);
             }
-            return array(
-                'success' => true
-                ,'statusCode' => 304 
-                ,'content' => ''
-                ,'headers' => array()
+        } else {
+            // don't need conditional GET
+            $privacy = self::$_options['isPublic']
+                ? 'public'
+                : 'private';
+            $headers = array(
+                'Cache-Control' => $privacy . ', max-age=' 
+                    . (self::$_options['setExpires'] - $_SERVER['REQUEST_TIME'])
+                ,'Expires' => gmdate('D, d M Y H:i:s \G\M\T', self::$_options['setExpires'])
             );
         }
-        // client will need output
-        $headers = $cg->getHeaders();
-        unset($cg);
-
+        
         // determine encoding
         if (self::$_options['encodeOutput']) {
             if (self::$_options['encodeMethod'] !== null) {
@@ -176,26 +183,52 @@ class Minify {
                 // sniff request header
                 require_once 'HTTP/Encoder.php';
                 // depending on what the client accepts, $contentEncoding may be 
-                // 'x-gzip' while our internal encodeMethod is 'gzip'
-                list(self::$_options['encodeMethod'], $contentEncoding) = HTTP_Encoder::getAcceptedEncoding();
+                // 'x-gzip' while our internal encodeMethod is 'gzip'. Calling
+                // getAcceptedEncoding() with false leaves out compress as an option.
+                list(self::$_options['encodeMethod'], $contentEncoding) = HTTP_Encoder::getAcceptedEncoding(false);
             }
         } else {
             self::$_options['encodeMethod'] = ''; // identity (no encoding)
         }
         
         if (null !== self::$_cachePath) {
-            self::_setupCache();
-            // fetch content from cache file(s).
-            $content = self::_fetchContent(self::$_options['encodeMethod']);
-            self::$_cache = null;
+            // using cache
+            // the goal is to use only the cache methods to sniff the length and 
+            // output the content, as they do not require ever loading the file into
+            // memory.
+            $cacheId = self::_getCacheId();
+            $encodingExtension = self::$_options['encodeMethod']
+                ? ('deflate' === self::$_options['encodeMethod']
+                    ? '.zd'
+                    : '.zg')
+                : '';
+            $fullCacheId = $cacheId . $encodingExtension;
+            // check cache for valid entry
+            $cacheContentLength = self::getCacheSize($fullCacheId, self::$_options['lastModifiedTime']);
+            $cacheIsReady = (false !== $cacheContentLength);
+            if (! $cacheIsReady) {
+                // generate & cache content
+                $content = self::_combineMinify();
+                self::writeCache($cacheId, $content);
+                self::writeCache($cacheId . '.zd', gzdeflate($content, self::$_options['encodeLevel']));
+                self::writeCache($cacheId . '.zg', gzencode($content, self::$_options['encodeLevel']));
+            }
         } else {
-            // no cache, just combine, minify, encode
+            // no cache
+            $cacheIsReady = false;
             $content = self::_combineMinify();
-            $content = self::_encode($content);
         }
-
-        // add headers to those from ConditionalGet
-        //$headers['Content-Length'] = strlen($content);
+        if (! $cacheIsReady && self::$_options['encodeMethod']) {
+            // still need to encode
+            $content = ('deflate' === self::$_options['encodeMethod'])
+                ? gzdeflate($content, self::$_options['encodeLevel'])
+                : gzencode($content, self::$_options['encodeLevel']);
+        }
+        
+        // add headers
+        $headers['Content-Length'] = $cacheIsReady
+            ? $cacheContentLength
+            : strlen($content);
         $headers['Content-Type'] = (null !== self::$_options['contentTypeCharset'])
             ? self::$_options['contentType'] . '; charset=' . self::$_options['contentTypeCharset']
             : self::$_options['contentType'];
@@ -209,20 +242,27 @@ class Minify {
             foreach ($headers as $name => $val) {
                 header($name . ': ' . $val);
             }
-            echo $content;   
+            if ($cacheIsReady) {
+                self::outputCache($fullCacheId);
+            } else {
+                echo $content;
+            }
+        } else {
+            return array(
+                'success' => true
+                ,'statusCode' => 200
+                ,'content' => $cacheIsReady
+                    ? self::getCache($fullCacheId)
+                    : $content
+                ,'headers' => $headers                
+            );
         }
-        return array(
-            'success' => true
-            ,'statusCode' => 200
-            ,'content' => $content
-            ,'headers' => $headers                
-        );
     }
     
     /**
      * @var mixed null if disk cache is not to be used
      */
-    protected static $_cachePath = null;
+    private static $_cachePath = null;
 
     /**
      * @var Minify_Controller active controller for current request
@@ -233,70 +273,6 @@ class Minify {
      * @var array options for current request
      */
     protected static $_options = null;
-    
-    /**
-     * @var Cache_Lite_File cache obj for current request
-     */
-    protected static $_cache = null;
-    
-    
-    
-    /**
-     * Fetch encoded content from cache (or generate and store it).
-     * 
-     * If self::$cacheUnencodedVersion is true and encoded content must be 
-     * generated, this function will call itself recursively to fetch (or 
-     * generate) the minified content. Otherwise, it will always recombine
-     * and reminify files to generate different encodings.  
-     * 
-     * @param string $encodeMethod
-     * 
-     * @return string minified, encoded content
-     */
-    protected static function _fetchContent($encodeMethod)
-    {
-        $cacheId = self::_getCacheId(self::$_controller->sources, self::$_options) 
-            . $encodeMethod;
-        $content = self::$_cache->get($cacheId, 'Minify');
-        if (false === $content) {
-            // must generate
-            if ($encodeMethod === '') {
-                // generate identity cache to store
-                $content = self::_combineMinify();
-            } else {
-                // fetch identity cache & encode it to store
-                if (self::$cacheUnencodedVersion) {
-                    // double layer cache
-                    $content = self::_fetchContent('');
-                } else {
-                    // recombine
-                    $content = self::_combineMinify();
-                }
-                $content = self::_encode($content);
-            }
-            self::$_cache->save($content, $cacheId, 'Minify');
-        }
-        return $content;
-    }
-    
-    /**
-     * Set self::$_cache to a new instance of Cache_Lite_File (patched 2007-10-03)
-     * 
-     * @return null
-     */
-    protected static function _setupCache() {
-        // until the patch is rolled into PEAR, we'll provide the
-        // class in our package
-        require_once dirname(__FILE__) . '/Cache/Lite/File.php';
-
-        self::$_cache = new Cache_Lite_File(array(
-            'cacheDir' => self::$_cachePath . '/'
-            ,'fileNameProtection' => false
-
-            // currently only available in patched Cache_Lite_File
-            ,'masterTime' => self::$_options['lastModifiedTime']
-        ));
-    }
     
     /**
      * Combines sources and minifies the result.
@@ -366,29 +342,6 @@ class Minify {
     }
     
     /**
-     * Applies HTTP encoding
-     *
-     * @param string $content
-     * 
-     * @return string
-     */
-    protected static function _encode($content)
-    {
-        if (self::$_options['encodeMethod'] === '' 
-            || ! self::$_options['encodeOutput']) {
-            // "identity" encoding
-            return $content;
-        }
-        require_once 'HTTP/Encoder.php';
-        $encoder = new HTTP_Encoder(array(
-            'content' => $content
-            ,'method' => self::$_options['encodeMethod']
-        ));
-        $encoder->encode(self::$_options['encodeLevel']);
-        return $encoder->getContent();
-    }
-
-    /**
      * Make a unique cache id for for this request.
      * 
      * Any settings that could affect output are taken into consideration  
@@ -401,5 +354,75 @@ class Minify {
             ,self::$_options['minifiers'] 
             ,self::$_options['perType']
         )));
+    }
+    
+    /**
+     * Write data to file and verify its contents
+     *
+     * @param string $file full file path
+     * 
+     * @param string $data
+     * 
+     * @return bool success
+     */
+    protected static function _verifiedWrite($file, $data)
+    {
+        return (file_put_contents($file, $data, LOCK_EX)
+            && (md5($data) === md5_file($file))
+        );
+    }
+    
+    /**
+     * Write data to cache.
+     *
+     * @param string $id cache id (e.g. a filename)
+     * 
+     * @param string $data
+     * 
+     * @return bool success
+     */
+    protected static function writeCache($id, $data)
+    {
+        return self::_verifiedWrite(self::$_cachePath . '/' . $id, $data);
+    }
+    
+    /**
+     * Get the size of a valid cache entry (if exists)
+     *
+     * @param string $id cache id (e.g. a filename)
+     * 
+     * @param int $srcMtime mtime of the original source file(s)
+     * 
+     * @return mixed number of bytes on success, false if file doesn't
+     * exist or is stale
+     */
+    protected static function getCacheSize($id, $srcMtime)
+    {
+        $file = self::$_cachePath . '/' . $id;
+        return (file_exists($file) && (filemtime($file) >= $srcMtime))
+            ? filesize($file)
+            : false;
+    }
+    
+    /**
+     * Send the cached content to output
+     *
+     * @param string $id cache id (e.g. a filename)
+     */
+    protected static function outputCache($id)
+    {
+        readfile(self::$_cachePath . '/' . $id);
+    }
+    
+	/**
+     * Fetch the cached content
+     *
+     * @param string $id cache id (e.g. a filename)
+     * 
+     * @return string
+     */
+    protected static function getCache($id)
+    {
+        return file_get_contents(self::$_cachePath . '/' . $id);
     }
 }

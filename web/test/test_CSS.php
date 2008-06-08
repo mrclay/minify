@@ -29,7 +29,7 @@ function test_CSS()
         $minOutput = Minify_CSS::minify($src, $options);
         $passed = assertTrue($minExpected === $minOutput, 'Minify_CSS : ' . $item);
         
-        if (__FILE__ === $_SERVER['SCRIPT_FILENAME']) {
+        if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
             echo "\n---Output: " .strlen($minOutput). " bytes\n\n{$minOutput}\n\n";
             if (!$passed) {
                 echo "---Expected: " .strlen($minExpected). " bytes\n\n{$minExpected}\n\n";

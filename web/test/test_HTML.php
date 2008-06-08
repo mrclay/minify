@@ -19,7 +19,7 @@ function test_HTML()
     
     $passed = assertTrue($minExpected === $minOutput, 'Minify_HTML');
     
-    if (__FILE__ === $_SERVER['SCRIPT_FILENAME']) {
+    if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         echo "\n---Output: " .strlen($minOutput). " bytes\n\n{$minOutput}\n\n";
         echo "---Expected: " .strlen($minExpected). " bytes\n\n{$minExpected}\n\n";
         echo "---Source: " .strlen($src). " bytes\n\n{$src}\n\n\n";

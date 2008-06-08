@@ -20,5 +20,6 @@ header('Expires: '. gmdate('D, d M Y H:i:s \G\M\T', $_SERVER['REQUEST_TIME'] + (
 header('Content-Type: application/x-javascript; charset=utf-8');
 header('Content-Encoding: deflate');
 header('Content-Length: ' . filesize($cached));
+header('Vary: Accept-Encoding');
 
 readfile($cached);

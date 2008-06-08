@@ -13,31 +13,31 @@ Document Path:          /_3rd_party/minify/web/ab_tests/ideal_php/before.php
 Document Length:        15993 bytes
 
 Concurrency Level:      100
-Time taken for tests:   4.531250 seconds
+Time taken for tests:   4.437500 seconds
 Complete requests:      2000
 Failed requests:        0
 Write errors:           0
-Total transferred:      32802000 bytes
+Total transferred:      32848000 bytes
 HTML transferred:       31986000 bytes
-Requests per second:    441.38 [#/sec] (mean)
-Time per request:       226.563 [ms] (mean)
-Time per request:       2.266 [ms] (mean, across all concurrent requests)
-Transfer rate:          7069.35 [Kbytes/sec] received
+Requests per second:    450.70 [#/sec] (mean)
+Time per request:       221.875 [ms] (mean)
+Time per request:       2.219 [ms] (mean, across all concurrent requests)
+Transfer rate:          7228.85 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
-Connect:        0    0   2.7      0      31
-Processing:    62  217  50.0    218     671
-Waiting:       31  216  50.7    218     671
-Total:         62  218  49.9    218     671
+Connect:        0    0   2.6      0      15
+Processing:    31  214  37.5    218     359
+Waiting:       31  209  32.7    218     281
+Total:         31  215  37.5    218     359
 
 Percentage of the requests served within a certain time (ms)
   50%    218
   66%    218
-  75%    218
+  75%    234
   80%    234
   90%    234
-  95%    265
+  95%    250
   98%    296
-  99%    500
- 100%    671 (longest request)
+  99%    343
+ 100%    359 (longest request)

@@ -25,6 +25,11 @@
  *
  * For more control over headers, use getHeaders() and getData() and send your
  * own output.
+ * 
+ * Note: If you don't need header mgmt, use PHP's native gzencode, gzdeflate, 
+ * and gzcompress functions for gzip, deflate, and compress-encoding
+ * respectively.
+ * 
  * @package Minify
  * @subpackage HTTP
  * @author Stephen Clay <steve@mrclay.org>
@@ -56,7 +61,8 @@ class HTTP_Encoder {
      * 
      * @return null
      */
-    public function __construct($spec) {
+    public function __construct($spec) 
+    {
         $this->_content = $spec['content'];
         $this->_headers['Content-Length'] = (string)strlen($this->_content);
         if (isset($spec['type'])) {
@@ -78,7 +84,8 @@ class HTTP_Encoder {
      * 
      * return string
      */
-    public function getContent() {
+    public function getContent() 
+    {
         return $this->_content;
     }
     
@@ -96,7 +103,8 @@ class HTTP_Encoder {
      *
      * @return array 
      */
-    public function getHeaders() {
+    public function getHeaders()
+    {
         return $this->_headers;
     }
 
@@ -111,7 +119,8 @@ class HTTP_Encoder {
      * 
      * @return null
      */
-    public function sendHeaders() {
+    public function sendHeaders()
+    {
         foreach ($this->_headers as $name => $val) {
             header($name . ': ' . $val);
         }
@@ -128,7 +137,8 @@ class HTTP_Encoder {
      * 
      * @return null
      */
-    public function sendAll() {
+    public function sendAll()
+    {
         $this->sendHeaders();
         echo $this->_content;
     }
@@ -144,11 +154,14 @@ class HTTP_Encoder {
      * be non 0. The methods are favored in order of deflate, gzip, then 
      * compress. Yes, deflate is always smaller and faster!
      * 
+     * @param bool $allowCompress allow the older compress encoding
+     * 
      * @return array two values, 1st is the actual encoding method, 2nd is the
      * alias of that method to use in the Content-Encoding header (some browsers
      * call gzip "x-gzip" etc.)
      */
-    public static function getAcceptedEncoding() {
+    public static function getAcceptedEncoding($allowCompress = true)
+    {
         // @link http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
         
         if (! isset($_SERVER['HTTP_ACCEPT_ENCODING'])
@@ -174,7 +187,7 @@ class HTTP_Encoder {
                 ,$m)) {
             return array('gzip', $m[1]);
         }
-        if (preg_match(
+        if ($allowCompress && preg_match(
                 '@(?:^|,)\\s*((?:x-)?compress)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@'
                 ,$ae
                 ,$m)) {
@@ -200,7 +213,8 @@ class HTTP_Encoder {
      * 
      * @return bool success true if the content was actually compressed
      */
-    public function encode($compressionLevel = null) {
+    public function encode($compressionLevel = null)
+    {
         if (null === $compressionLevel) {
             $compressionLevel = self::$compressionLevel;
         }
@@ -210,10 +224,10 @@ class HTTP_Encoder {
         {
             return false;
         }
-        if ($this->_encodeMethod[0] === 'gzip') {
-            $encoded = gzencode($this->_content, $compressionLevel);
-        } elseif ($this->_encodeMethod[0] === 'deflate') {
+        if ($this->_encodeMethod[0] === 'deflate') {
             $encoded = gzdeflate($this->_content, $compressionLevel);
+        } elseif ($this->_encodeMethod[0] === 'gzip') {
+            $encoded = gzencode($this->_content, $compressionLevel);
         } else {
             $encoded = gzcompress($this->_content, $compressionLevel);
         }
@@ -226,7 +240,7 @@ class HTTP_Encoder {
         $this->_content = $encoded;
         return true;
     }
-
+    
     protected $_content = '';
     protected $_headers = array();
     protected $_encodeMethod = array('', '');

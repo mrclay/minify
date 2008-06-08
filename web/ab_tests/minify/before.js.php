@@ -14,5 +14,5 @@ Minify::serve('Files', array(
     'files' => array(
         dirname(__FILE__) . '/before.js'
     )
-    ,'setExpires' => 31536000 // 1 yr
+    ,'setExpires' => $_SERVER['REQUEST_TIME'] + 31536000 // 1 yr
 ));
