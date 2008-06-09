@@ -196,7 +196,7 @@ class Minify {
             // the goal is to use only the cache methods to sniff the length and 
             // output the content, as they do not require ever loading the file into
             // memory.
-            $cacheId = self::_getCacheId();
+            $cacheId = 'minify_' . self::_getCacheId();
             $encodingExtension = self::$_options['encodeMethod']
                 ? ('deflate' === self::$_options['encodeMethod']
                     ? '.zd'
