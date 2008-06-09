@@ -44,7 +44,7 @@ abstract class Minify_Controller_Base {
             ,'encodeMethod' => null // determine later
             ,'encodeLevel' => 9
             ,'perType' => array() // no per-type minifier options
-            ,'contentTypeCharset' => null // leave out of Content-Type header
+            ,'contentTypeCharset' => 'UTF-8'
             ,'setExpires' => null // use conditional GET
             ,'quiet' => false // serve() will send headers and output
             

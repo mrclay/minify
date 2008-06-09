@@ -60,7 +60,7 @@ function test_Minify()
             'Cache-Control' => 'public, max-age=86400',
             'Expires' => gmdate('D, d M Y H:i:s \G\M\T', $tomorrow),
             'Content-Length' => strlen($content),
-            'Content-Type' => 'application/x-javascript',
+            'Content-Type' => 'application/x-javascript; charset=UTF-8',
         )
     );
     $output = Minify::serve('Files', array(
@@ -98,7 +98,7 @@ function test_Minify()
             'ETag' => "\"{$lastModified}pub\"",
             'Cache-Control' => 'max-age=0, public, must-revalidate',
             'Content-Length' => filesize($minifyTestPath . '/minified.css'),
-            'Content-Type' => 'text/css',
+            'Content-Type' => 'text/css; charset=UTF-8',
         )
     );
     $output = Minify::serve('Files', array(

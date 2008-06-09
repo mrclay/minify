@@ -1,5 +1,8 @@
 @SET PATH=%PATH%;C:\xampp\apache\bin
-@SET ABCALL=ab -d -S -c 100 -n 2000 -H "Accept-Encoding: deflate, gzip" http://localhost
+
+@REM SET ABCALL=ab -d -S -c 100 -n 2000 -H "Accept-Encoding: deflate, gzip" http://localhost
+@SET ABCALL=ab -d -S -c 100 -n 2000 -H "Accept-Encoding: deflate, gzip" http://mc.dev/_3rd_party
+
 @SET DELIM=TYPE _delimiter
 
 DEL results.txt

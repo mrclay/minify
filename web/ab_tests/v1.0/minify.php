@@ -1,10 +1,12 @@
 <?php
 // ab test of Minify 1.0, mostly to see how fast it can serve server-cached files.
 
+require '../../config.php';
+
 define('MINIFY_BASE_DIR', realpath(
     dirname(__FILE__) . '/../minify'
 ));
-define('MINIFY_CACHE_DIR', 'C:/xampp/tmp');
+define('MINIFY_CACHE_DIR', $minifyCachePath);
 
 /**
 * Minify - Combines, minifies, and caches JavaScript and CSS files on demand.

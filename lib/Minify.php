@@ -82,8 +82,8 @@ class Minify {
      * 
      * 'encodeLevel' : level of encoding compression (0 to 9, default 9)
      * 
-     * 'contentTypeCharset' : if given, this will be appended to the Content-Type
-     * header sent (needed mainly for HTML docs)  
+     * 'contentTypeCharset' : appended to the Content-Type header sent. Set to a falsey
+     * value to remove. (default 'UTF-8')  
      * 
      * 'setExpires' : set this to a timestamp to have Minify send an HTTP Expires
      * header instead of checking for conditional GET (default null). 
@@ -229,7 +229,7 @@ class Minify {
         $headers['Content-Length'] = $cacheIsReady
             ? $cacheContentLength
             : strlen($content);
-        $headers['Content-Type'] = (null !== self::$_options['contentTypeCharset'])
+        $headers['Content-Type'] = self::$_options['contentTypeCharset']
             ? self::$_options['contentType'] . '; charset=' . self::$_options['contentTypeCharset']
             : self::$_options['contentType'];
         if (self::$_options['encodeMethod'] !== '') {
