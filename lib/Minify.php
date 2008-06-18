@@ -3,15 +3,19 @@
  * Class Minify  
  * @package Minify
  */
+
+/**
+ * Minify_Source
+ */
+require_once 'Minify/Source.php';
  
 /**
  * Minify - Combines, minifies, and caches JavaScript and CSS files on demand.
  *
  * See README for usage instructions (for now).
  *
- * This library was inspired by jscsscomp by Maxim Martynyuk <flashkot@mail.ru>
- * and by the article "Supercharged JavaScript" by Patrick Hunlock
- * <wb@hunlock.com>.
+ * This library was inspired by {@link mailto:flashkot@mail.ru jscsscomp by Maxim Martynyuk}
+ * and by the article {@link http://www.hunlock.com/blogs/Supercharged_Javascript "Supercharged JavaScript" by Patrick Hunlock}.
  *
  * Requires PHP 5.1.0.
  * Tested on PHP 5.1.6.
@@ -23,9 +27,6 @@
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
  * @link http://code.google.com/p/minify/
  */
-
-require_once 'Minify/Source.php';
-
 class Minify {
 
     const TYPE_CSS = 'text/css';
@@ -56,15 +57,6 @@ class Minify {
 
     /**
      * Serve a request for a minified file. 
-     * 
-     * @param mixed instance of subclass of Minify_Controller_Base or string name of
-     * controller. E.g. 'Files'
-     * 
-     * @param array $options controller/serve options
-     * 
-     * @return mixed null, or, if the 'quiet' option is set to true, an array
-     * with keys "success" (bool), "statusCode" (int), "content" (string), and
-     * "headers" (array).
      * 
      * Here are the available options and defaults in the base controller:
      * 
@@ -101,6 +93,14 @@ class Minify {
      * 
      * Any controller options are documented in that controller's setupSources() method.
      * 
+     * @param mixed instance of subclass of Minify_Controller_Base or string name of
+     * controller. E.g. 'Files'
+     * 
+     * @param array $options controller/serve options
+     * 
+     * @return mixed null, or, if the 'quiet' option is set to true, an array
+     * with keys "success" (bool), "statusCode" (int), "content" (string), and
+     * "headers" (array).
      */
     public static function serve($controller, $options = array()) {
         if (is_string($controller)) {

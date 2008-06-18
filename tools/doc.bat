@@ -1,3 +1,3 @@
-; Generates Minify documentation using PhpDocumentor.
+:: Generates Minify documentation using PhpDocumentor.
 @echo off
-phpdoc -f ../minify.php,../lib/jslib.php -t ../docs -o html:smarty:php
+phpdoc -ti "Minify docs" -p on -d ../lib -t ../docs -o html:smarty:php
