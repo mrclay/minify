@@ -46,6 +46,10 @@ class Minify_Controller_Groups extends Minify_Controller_Base {
         $groups = $options['groups'];
         unset($options['groups']);
         
+        if (! isset($_SERVER['PATH_INFO'])) {
+            // no PATH_INFO
+            return $options;
+        }
         $pi = substr($_SERVER['PATH_INFO'], 1);
         if (! isset($groups[$pi])) {
             // not a valid group

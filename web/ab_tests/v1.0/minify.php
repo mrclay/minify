@@ -498,4 +498,3 @@ class MinifyInvalidUrlException extends MinifyException {}
 if (realpath(__FILE__) == realpath($_SERVER['SCRIPT_FILENAME'])) {
  Minify::handleRequest();
 }
-?>

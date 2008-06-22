@@ -5,7 +5,7 @@ require '_groupsSources.php';
 require 'Minify.php';
 
 if ($minifyCachePath) {
-    Minify::useServerCache($minifyCachePath);
+    Minify::setCache($minifyCachePath);
 }
 
 Minify::serve('Groups', array(

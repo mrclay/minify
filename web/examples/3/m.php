@@ -27,7 +27,7 @@ if (isset($_GET['f'])) {
         require 'Minify.php';
         
         if ($minifyCachePath) {
-            Minify::useServerCache($minifyCachePath);
+            Minify::setCache($minifyCachePath);
         }
         
         // The Files controller can serve an array of files, but here we just

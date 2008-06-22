@@ -84,7 +84,7 @@ function test_Minify()
     // Test minifying CSS and responding with Etag/Last-Modified
     
     // needed to expose E_STRICT warning in Cache_Lite_File 
-    Minify::useServerCache();
+    Minify::setCache();
     
     // don't allow conditional headers
     unset($_SERVER['HTTP_IF_NONE_MATCH'], $_SERVER['HTTP_IF_MODIFIED_SINCE']);

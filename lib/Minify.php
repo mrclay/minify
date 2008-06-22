@@ -36,24 +36,40 @@ class Minify {
     const TYPE_JS = 'application/x-javascript';
     
     /**
-     * Specify a writeable directory for cache files. If not called, Minify
-     * will not use a disk cache and, for each 200 response, will need to
-     * recombine files, minify and encode the output.
+     * @see setCache()
+     * @param mixed $cache object with identical interface as Minify_Cache_File or
+     * a directory path. (default = '')
+     * @return null
+     * @deprecated
+     */
+    public static function useServerCache($path = null) 
+    {
+        self::setCache($path);
+    }
+    
+    /**
+     * Specify a cache object (with identical interface as Minify_Cache_File) or
+     * a path to use with Minify_Cache_File.
+     * 
+     * If not called, Minify will not use a cache and, for each 200 response, will 
+     * need to recombine files, minify and encode the output.
      *
-     * @param string $path Full directory path for cache files (should not end
-     * in directory separator character). If not provided, Minify will attempt to
-     * write to the path returned by sys_get_temp_dir().
+     * @param mixed $cache object with identical interface as Minify_Cache_File or
+     * a directory path. (default = '')
      *
      * @return null
      */
-    public static function useServerCache($path = null) {
-        if (null !== $path) {
-            self::$_cachePath = $path;    
+    public static function setCache($cache = '')
+    {
+        if (is_string($cache)) {
+            require_once 'Minify/Cache/File.php';
+            self::$_cache = new Minify_Cache_File($cache);
         } else {
-            require_once 'Solar/Dir.php';
-            self::$_cachePath = rtrim(Solar_Dir::tmp(), DIRECTORY_SEPARATOR);
+            self::$_cache = $cache;
         }
     }
+    
+    private static $_cache = null;
 
     /**
      * Serve a request for a minified file. 
@@ -82,14 +98,23 @@ class Minify {
      * E.g. ($_SERVER['REQUEST_TIME'] + 86400 * 365) for 1yr 
      * Note this has nothing to do with server-side caching.
      * 
-     * 'perType' : this is an array of options to send to a particular minifier 
-     * function using the content-type as key. E.g. To send the CSS minifier an 
-     * option: 
+     * 'minifiers' : to override Minify's default choice of minifier function for 
+     * a particular content-type, specify your callback under the key of the 
+     * content-type:
      * <code>
-     * $options['perType'][Minify::TYPE_CSS]['optionName'] = 'optionValue';
+     * // call customCssMinifier($css) for all CSS minification
+     * $options['minifiers'][Minify::TYPE_CSS] = 'customCssMinifier';
+     * 
+     * // don't minify Javascript at all
+     * $options['minifiers'][Minify::TYPE_JS] = '';
      * </code>
-     * When the CSS minifier is called, the 2nd argument will be
-     * array('optionName' => 'optionValue').
+     * 
+     * 'minifierOptions' : to send options to the minifier function, specify your options
+     * under the key of the content-type. E.g. To send the CSS minifier an option: 
+     * <code>
+     * // give CSS minifier array('optionName' => 'optionValue') as 2nd argument 
+     * $options['minifierOptions'][Minify::TYPE_CSS]['optionName'] = 'optionValue';
+     * </code>
      * 
      * Any controller options are documented in that controller's setupSources() method.
      * 
@@ -191,7 +216,7 @@ class Minify {
             self::$_options['encodeMethod'] = ''; // identity (no encoding)
         }
         
-        if (null !== self::$_cachePath) {
+        if (null !== self::$_cache) {
             // using cache
             // the goal is to use only the cache methods to sniff the length and 
             // output the content, as they do not require ever loading the file into
@@ -204,14 +229,15 @@ class Minify {
                 : '';
             $fullCacheId = $cacheId . $encodingExtension;
             // check cache for valid entry
-            $cacheContentLength = self::getCacheSize($fullCacheId, self::$_options['lastModifiedTime']);
-            $cacheIsReady = (false !== $cacheContentLength);
-            if (! $cacheIsReady) {
+            $cacheIsReady = self::$_cache->isValid($fullCacheId, self::$_options['lastModifiedTime']); 
+            if ($cacheIsReady) {
+                $cacheContentLength = self::$_cache->getSize($fullCacheId);    
+            } else {
                 // generate & cache content
                 $content = self::_combineMinify();
-                self::writeCache($cacheId, $content);
-                self::writeCache($cacheId . '.zd', gzdeflate($content, self::$_options['encodeLevel']));
-                self::writeCache($cacheId . '.zg', gzencode($content, self::$_options['encodeLevel']));
+                self::$_cache->store($cacheId, $content);
+                self::$_cache->store($cacheId . '.zd', gzdeflate($content, self::$_options['encodeLevel']));
+                self::$_cache->store($cacheId . '.zg', gzencode($content, self::$_options['encodeLevel']));
             }
         } else {
             // no cache
@@ -243,7 +269,7 @@ class Minify {
                 header($name . ': ' . $val);
             }
             if ($cacheIsReady) {
-                self::outputCache($fullCacheId);
+                self::$_cache->display($fullCacheId);
             } else {
                 echo $content;
             }
@@ -252,18 +278,13 @@ class Minify {
                 'success' => true
                 ,'statusCode' => 200
                 ,'content' => $cacheIsReady
-                    ? self::getCache($fullCacheId)
+                    ? self::$_cache->fetch($fullCacheId)
                     : $content
                 ,'headers' => $headers                
             );
         }
     }
     
-    /**
-     * @var mixed null if disk cache is not to be used
-     */
-    private static $_cachePath = null;
-
     /**
      * @var Minify_Controller active controller for current request
      */
@@ -290,8 +311,8 @@ class Minify {
         // allow the user to pass a particular array of options to each
         // minifier (designated by type). source objects may still override
         // these
-        $defaultOptions = isset(self::$_options['perType'][$type])
-            ? self::$_options['perType'][$type]
+        $defaultOptions = isset(self::$_options['minifierOptions'][$type])
+            ? self::$_options['minifierOptions'][$type]
             : array();
         // if minifier not set, default is no minification. source objects
         // may still override this
@@ -352,77 +373,7 @@ class Minify {
         return md5(serialize(array(
             Minify_Source::getDigest(self::$_controller->sources)
             ,self::$_options['minifiers'] 
-            ,self::$_options['perType']
+            ,self::$_options['minifierOptions']
         )));
-    }
-    
-    /**
-     * Write data to file and verify its contents
-     *
-     * @param string $file full file path
-     * 
-     * @param string $data
-     * 
-     * @return bool success
-     */
-    protected static function _verifiedWrite($file, $data)
-    {
-        return (file_put_contents($file, $data, LOCK_EX)
-            && (md5($data) === md5_file($file))
-        );
-    }
-    
-    /**
-     * Write data to cache.
-     *
-     * @param string $id cache id (e.g. a filename)
-     * 
-     * @param string $data
-     * 
-     * @return bool success
-     */
-    protected static function writeCache($id, $data)
-    {
-        return self::_verifiedWrite(self::$_cachePath . '/' . $id, $data);
-    }
-    
-    /**
-     * Get the size of a valid cache entry (if exists)
-     *
-     * @param string $id cache id (e.g. a filename)
-     * 
-     * @param int $srcMtime mtime of the original source file(s)
-     * 
-     * @return mixed number of bytes on success, false if file doesn't
-     * exist or is stale
-     */
-    protected static function getCacheSize($id, $srcMtime)
-    {
-        $file = self::$_cachePath . '/' . $id;
-        return (file_exists($file) && (filemtime($file) >= $srcMtime))
-            ? filesize($file)
-            : false;
-    }
-    
-    /**
-     * Send the cached content to output
-     *
-     * @param string $id cache id (e.g. a filename)
-     */
-    protected static function outputCache($id)
-    {
-        readfile(self::$_cachePath . '/' . $id);
-    }
-    
-	/**
-     * Fetch the cached content
-     *
-     * @param string $id cache id (e.g. a filename)
-     * 
-     * @return string
-     */
-    protected static function getCache($id)
-    {
-        return file_get_contents(self::$_cachePath . '/' . $id);
-    }
+    }    
 }
