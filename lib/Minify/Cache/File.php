@@ -82,7 +82,7 @@ class Minify_Cache_File {
     
 	/**
      * Write data to file and verify its contents
-     *
+     * 
      * @param string $file path
      * 
      * @param string $data
@@ -91,8 +91,13 @@ class Minify_Cache_File {
      */
     private static function _verifiedWrite($file, $data)
     {
-        return (file_put_contents($file, $data, LOCK_EX)
-            && (md5($data) === md5_file($file))
-        );
+        if (! @file_put_contents($file, $data, LOCK_EX)) {
+            return false;
+        }
+        if (md5($data) !== md5_file($file)) {
+            @unlink($file);
+            return false;
+        }
+        return true;
     }
 }
