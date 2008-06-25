@@ -1,5 +1,9 @@
 Minify Release History
 
+Version 2.0.2 beta (2008-06-24)
+    * Fast new cache system. Cached files served almost 3x as fast.
+    * Dropped support of compress encoding (though HTTP_Encoder still supports it)
+
 Version 2.0.1 (2008-05-31)
     * E_STRICT compliance (Cache_Lite_File).
 
