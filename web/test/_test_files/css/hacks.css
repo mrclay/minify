@@ -42,3 +42,11 @@ div {
   filter:chroma(color=#aabbcc);
   filter:mask(color=#000000) shadow(color=#9BAD71, direction=135) chroma(color=#000000);
 }
+
+@media screen {
+    /* for IE 5.x-6, hidden from IE 5 Mac */ /*\*/
+    * html div#page {
+        height: 1%;
+    }
+    /**/ /* end hidden from IE 5 Mac */
+}

@@ -190,7 +190,7 @@ class Minify_CSS {
             self::$_inHack = true;
             return '/*\\*/';
         }
-        if ($m[0] === '/') {
+        if ($m !== '' && $m[0] === '/') {
             self::$_inHack = true;
             return '/*/*/';
         }
