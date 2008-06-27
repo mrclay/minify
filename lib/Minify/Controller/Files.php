@@ -36,11 +36,11 @@ class Minify_Controller_Files extends Minify_Controller_Base {
      * 
      * Controller options:
      * 
-     * 'files': (required) array of complete file paths 
+     * 'files': (required) array of complete file paths, or a single path
      */
     public function setupSources($options) {
         // strip controller options
-        $files = $options['files'];
+        $files = (array)$options['files'];
         unset($options['files']);
         
         $sources = array();

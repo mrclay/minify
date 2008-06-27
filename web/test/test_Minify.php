@@ -26,9 +26,7 @@ function test_Minify()
         'headers' => array()
     );
     $output = Minify::serve('Files', array(
-        'files' => array(
-            $thisDir . '/_test_files/css/styles.css'
-        )
+        'files' => $thisDir . '/_test_files/css/styles.css' // controller casts to array
         ,'quiet' => true
         ,'lastModifiedTime' => $lastModified
         ,'encodeOutput' => false

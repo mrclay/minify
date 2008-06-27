@@ -33,7 +33,8 @@ if (isset($_GET['f'])) {
         // The Files controller can serve an array of files, but here we just
         // need one.
         Minify::serve('Files', array(
-            'files' => array(dirname(__FILE__) . '/../' . $filename)
+            //  controller will cast a string to an array for you
+            'files' => dirname(__FILE__) . '/../' . $filename
         ));
         exit();
     }

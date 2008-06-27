@@ -56,7 +56,7 @@ class Minify_Controller_Groups extends Minify_Controller_Base {
             return $options;
         }
         $sources = array();
-        foreach ($groups[$pi] as $file) {
+        foreach ((array)$groups[$pi] as $file) {
             if ($file instanceof Minify_Source) {
                 $sources[] = $file;
                 continue;

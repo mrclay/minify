@@ -32,6 +32,8 @@ class Minify_Controller_Page extends Minify_Controller_Base {
      * 
      * 'minifyAll': should all CSS and Javascript blocks be individually 
      * minified? (default false) 
+     *
+     * @todo Add 'file' option to read HTML file.
      */
     public function setupSources($options) {
         // strip controller options
