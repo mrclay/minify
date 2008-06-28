@@ -132,7 +132,8 @@ class Minify {
             // make $controller into object
             $class = 'Minify_Controller_' . $controller;
             if (! class_exists($class, false)) {
-                require_once "Minify/Controller/{$controller}.php";    
+                require_once "Minify/Controller/" 
+                    . str_replace('_', '/', $controller) . ".php";    
             }
             $controller = new $class();
         }
@@ -161,6 +162,11 @@ class Minify {
         }
         
         self::$_controller = $controller;
+        
+        if (self::$_options['debug']) {
+            self::_setupDebug($controller->sources);
+            self::$_options['setExpires'] = time();
+        }
 
         if (null === self::$_options['setExpires']) {
             // conditional GET
@@ -296,6 +302,21 @@ class Minify {
     protected static $_options = null;
     
     /**
+     * Set up sources to use Minify_Lines
+     *
+     * @param array $sources Minify_Source instances
+     */
+    protected static function _setupDebug($sources)
+    {
+        foreach ($sources as $source) {
+            $source->minifier = array('Minify_Lines', 'minify');
+            $source->minifyOptions = array(
+                'id' => $source->getId()
+            );
+        }
+    }
+    
+    /**
      * Combines sources and minifies the result.
      *
      * @return string
@@ -307,7 +328,6 @@ class Minify {
         $implodeSeparator = ($type === self::TYPE_JS)
             ? ';'
             : '';
-        
         // allow the user to pass a particular array of options to each
         // minifier (designated by type). source objects may still override
         // these

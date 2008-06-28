@@ -91,6 +91,16 @@ class Minify_Source {
     }
     
     /**
+     * Get id
+     *
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->_id;
+    }
+    
+    /**
      * Verifies a single minification call can handle all sources
      *
      * @param array $sources Minify_Source instances

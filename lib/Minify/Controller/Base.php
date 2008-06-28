@@ -47,6 +47,7 @@ abstract class Minify_Controller_Base {
             ,'contentTypeCharset' => 'UTF-8'
             ,'setExpires' => null // use conditional GET
             ,'quiet' => false // serve() will send headers and output
+            ,'debug' => false
             
             // if you override this, the response code MUST be directly after 
             // the first space.

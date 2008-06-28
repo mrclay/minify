@@ -34,18 +34,20 @@ class Minify_Lines {
         $lines = explode($eol, $content);
         $numLines = count($lines);
         // determine left padding
-        $padTo = max(strlen($numLines), strlen($id));
+        $padTo = strlen($numLines);
         $inComment = false;
-        for ($i = 0; $i < $numLines; ++$i) {
-            $n = $i + 1;
-            $line = $lines[$i];
-            $note = (('' !== $id) && (1 == $n % 30))
-                ? $id
-                : $n;
-            $lines[$i] = self::_addNote($line, $note, $inComment, $padTo);
+        $i = 0;
+        while (null !== ($line = array_shift($lines))) {
+            if (('' !== $id) && (0 == $i % 50)) {
+                $newLines[] = '';
+                $newLines[] = "/* {$id} */";
+                $newLines[] = '';
+            }
+            ++$i;
+            $newLines[] = self::_addNote($line, $i, $inComment, $padTo);
             $inComment = self::_eolInComment($line, $inComment);
         }
-        return implode($eol, $lines) . $eol;
+        return implode($eol, $newLines) . $eol;
     }
     
     /**
@@ -89,7 +91,7 @@ class Minify_Lines {
     private static function _addNote($line, $note, $inComment, $padTo)
     {
         return $inComment
-            ? '/* ' . str_pad($note, $padTo, ' ', STR_PAD_RIGHT) . ' *  ' . $line
+            ? '/* ' . str_pad($note, $padTo, ' ', STR_PAD_RIGHT) . ' *| ' . $line
             : '/* ' . str_pad($note, $padTo, ' ', STR_PAD_RIGHT) . ' */ ' . $line;
     }
 }
