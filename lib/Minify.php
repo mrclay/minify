@@ -98,6 +98,10 @@ class Minify {
      * E.g. ($_SERVER['REQUEST_TIME'] + 86400 * 365) for 1yr 
      * Note this has nothing to do with server-side caching.
      * 
+     * 'debug' : set to true to minify all sources with the 'Lines' controller, which
+     * eases the debugging of combined files. This also prevents 304 responses.
+     * @see Minify_Lines::minify()
+     * 
      * 'minifiers' : to override Minify's default choice of minifier function for 
      * a particular content-type, specify your callback under the key of the 
      * content-type:
@@ -305,13 +309,16 @@ class Minify {
      * Set up sources to use Minify_Lines
      *
      * @param array $sources Minify_Source instances
+     *
+     * @return null
      */
     protected static function _setupDebug($sources)
     {
         foreach ($sources as $source) {
             $source->minifier = array('Minify_Lines', 'minify');
+            $id = $source->getId();
             $source->minifyOptions = array(
-                'id' => $source->getId()
+                'id' => (is_file($id) ? basename($id) : $id)
             );
         }
     }
