@@ -85,28 +85,29 @@ class HTTP_ConditionalGet {
      * without testing. Effectively this disables conditional GET. 
      * (default false)
      * 
-     * 'setExpires': (mixed) set this to a timestamp or GMT date to send an
-     * Expires header with the content instead of ETag/Last-Modified. If given,
-     * Conditional GETs will not be performed, but the public/private 
-     * Cache-Control header will still be sent. (default null)
+     * 'maxAge': (int) if given, this will set the Cache-Control max-age in 
+     * seconds, and also set the Expires header to the equivalent GMT date. 
+     * After the max-age period has passed, the browser will again send a 
+     * conditional GET to revalidate its cache.
      * 
-     * @return null  
+     * @return null
      */
     public function __construct($spec) {
         $scope = (isset($spec['isPublic']) && $spec['isPublic'])
             ? 'public'
             : 'private';
-        // allow far-expires header
-        if (isset($spec['setExpires'])) {
-            if (is_numeric($spec['setExpires'])) {
-                $spec['setExpires'] = self::gmtDate($spec['setExpires']); 
-            }
-            $this->_headers = array(
-                'Cache-Control' => $scope
-                ,'Expires' => $spec['setExpires']
+        $maxAge = 0;
+        // backwards compatibility (can be removed later)
+        if (isset($spec['setExpires']) 
+            && is_numeric($spec['setExpires'])
+            && ! isset($spec['maxAge'])) {
+            $spec['maxAge'] = $spec['setExpires'] - $_SERVER['REQUEST_TIME'];
+        }
+        if (isset($spec['maxAge'])) {
+            $maxAge = $spec['maxAge'];
+            $this->_headers['Expires'] = self::gmtDate(
+                $_SERVER['REQUEST_TIME'] + $spec['maxAge'] 
             );
-            $this->cacheIsValid = false;
-            return;
         }
         if (isset($spec['lastModifiedTime'])) {
             // base both headers on time
@@ -118,7 +119,7 @@ class HTTP_ConditionalGet {
                 $this->_setEtag($spec['contentHash'], $scope);
             }
         }
-        $this->_headers['Cache-Control'] = "max-age=0, {$scope}, must-revalidate";
+        $this->_headers['Cache-Control'] = "max-age={$maxAge}, {$scope}, must-revalidate";
         // invalidate cache if disabled, otherwise check
         $this->cacheIsValid = (isset($spec['invalidate']) && $spec['invalidate'])
             ? false
