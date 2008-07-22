@@ -93,10 +93,10 @@ class Minify {
      * 'contentTypeCharset' : appended to the Content-Type header sent. Set to a falsey
      * value to remove. (default 'UTF-8')  
      * 
-     * 'setExpires' : set this to a timestamp to have Minify send an HTTP Expires
-     * header instead of checking for conditional GET (default null). 
-     * E.g. ($_SERVER['REQUEST_TIME'] + 86400 * 365) for 1yr 
-     * Note this has nothing to do with server-side caching.
+     * 'maxAge' : set this to the number of seconds the client should use its cache
+     * before revalidating with the server. This sets Cache-Control: max-age and the
+     * Expires header. Unlike the old 'setExpires' setting, this setting will NOT
+     * prevent conditional GETs. Note this has nothing to do with server-side caching.
      * 
      * 'debug' : set to true to minify all sources with the 'Lines' controller, which
      * eases the debugging of combined files. This also prevents 304 responses.
@@ -148,6 +148,7 @@ class Minify {
         $options = $controller->analyzeSources($options);
         self::$_options = $controller->mixInDefaultOptions($options);
         
+        // check request validity
         if (! $controller->sources) {
             // invalid request!
             if (! self::$_options['quiet']) {
@@ -169,44 +170,36 @@ class Minify {
         
         if (self::$_options['debug']) {
             self::_setupDebug($controller->sources);
-            self::$_options['setExpires'] = time();
+            self::$_options['maxAge'] = 0;
         }
-
-        if (null === self::$_options['setExpires']) {
-            // conditional GET
-            require_once 'HTTP/ConditionalGet.php';
-            $cg = new HTTP_ConditionalGet(array(
-                'lastModifiedTime' => self::$_options['lastModifiedTime']
-                ,'isPublic' => self::$_options['isPublic']
-            ));
-            if ($cg->cacheIsValid) {
-                // client's cache is valid
-                if (! self::$_options['quiet']) {
-                    $cg->sendHeaders();
-                    return;
-                } else {
-                    return array(
-                        'success' => true
-                        ,'statusCode' => 304 
-                        ,'content' => ''
-                        ,'headers' => array()
-                    );    
-                }
+        
+        // check client cache
+        require_once 'HTTP/ConditionalGet.php';
+        $cgOptions = array(
+        	'lastModifiedTime' => self::$_options['lastModifiedTime']
+            ,'isPublic' => self::$_options['isPublic']
+        );
+        if (null !== self::$_options['maxAge']) {
+            $cgOptions['maxAge'] = self::$_options['maxAge'];
+        }
+        $cg = new HTTP_ConditionalGet($cgOptions);
+        if ($cg->cacheIsValid) {
+            // client's cache is valid
+            if (! self::$_options['quiet']) {
+                $cg->sendHeaders();
+                return;
             } else {
-                // client will need output
-                $headers = $cg->getHeaders();
-                unset($cg);
+                return array(
+                    'success' => true
+                    ,'statusCode' => 304 
+                    ,'content' => ''
+                    ,'headers' => $cg->getHeaders()
+                );
             }
         } else {
-            // don't need conditional GET
-            $privacy = self::$_options['isPublic']
-                ? 'public'
-                : 'private';
-            $headers = array(
-                'Cache-Control' => $privacy . ', max-age=' 
-                    . (self::$_options['setExpires'] - $_SERVER['REQUEST_TIME'])
-                ,'Expires' => gmdate('D, d M Y H:i:s \G\M\T', self::$_options['setExpires'])
-            );
+            // client will need output
+            $headers = $cg->getHeaders();
+            unset($cg);
         }
         
         // determine encoding
@@ -226,6 +219,7 @@ class Minify {
             self::$_options['encodeMethod'] = ''; // identity (no encoding)
         }
         
+        // check server cache
         if (null !== self::$_cache) {
             // using cache
             // the goal is to use only the cache methods to sniff the length and 

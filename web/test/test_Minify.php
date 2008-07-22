@@ -23,7 +23,12 @@ function test_Minify()
     	'success' => true
         ,'statusCode' => 304    
         ,'content' => '',
-        'headers' => array()
+        'headers' => array(
+        	'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
+            'ETag' => "\"{$lastModified}pub\"",	
+        	'Cache-Control' => 'max-age=0, public, must-revalidate',
+        	'_responseCode' => 'HTTP/1.0 304 Not Modified',
+        )
     );
     $output = Minify::serve('Files', array(
         'files' => $thisDir . '/_test_files/css/styles.css' // controller casts to array
@@ -43,20 +48,24 @@ function test_Minify()
         //! class_exists('Cache_Lite_File', false)
         ! class_exists('HTTP_Encoder', false)
         && ! class_exists('Minify_CSS', false)
-        ,'Encoder.php, CSS.php not loaded'
+        && ! class_exists('Minify_Cache', false)
+        ,'Encoder.php, CSS.php, Cache.php not loaded'
     );
     
     // Test minifying JS and serving with Expires header
     
     $content = preg_replace('/\\r\\n?/', "\n", file_get_contents($minifyTestPath . '/minified.js'));
+    $lastModified = filemtime($minifyTestPath . '/minified.js');
     $expected = array(
     	'success' => true
         ,'statusCode' => 200
         // Minify_Javascript always converts to \n line endings
         ,'content' => $content
         ,'headers' => array (
-            'Cache-Control' => 'public, max-age=86400',
-            'Expires' => gmdate('D, d M Y H:i:s \G\M\T', $tomorrow),
+        	'Expires' => gmdate('D, d M Y H:i:s \G\M\T', $tomorrow),
+        	'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
+        	'ETag' => "\"{$lastModified}pub\"",	
+        	'Cache-Control' => 'max-age=86400, public, must-revalidate',
             'Content-Length' => strlen($content),
             'Content-Type' => 'application/x-javascript; charset=UTF-8',
         )
@@ -67,7 +76,7 @@ function test_Minify()
             ,$minifyTestPath . '/QueryString.js'
         )
         ,'quiet' => true
-        ,'setExpires' => $tomorrow
+        ,'maxAge' => 86400
         ,'encodeOutput' => false
     ));
     $passed = assertTrue($expected === $output, 'Minify : JS and Expires');

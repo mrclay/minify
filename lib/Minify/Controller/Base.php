@@ -45,7 +45,7 @@ abstract class Minify_Controller_Base {
             ,'encodeLevel' => 9
             ,'minifierOptions' => array() // no minifier options
             ,'contentTypeCharset' => 'UTF-8'
-            ,'setExpires' => null // use conditional GET
+            ,'maxAge' => null // no Expires/max-age
             ,'quiet' => false // serve() will send headers and output
             ,'debug' => false
             
