@@ -16,7 +16,10 @@ function test_HTTP_ConditionalGet()
             ,'inm' => null
             ,'ims' => $gmtTime
             ,'exp' => array(
-                '_responseCode' => 'HTTP/1.0 304 Not Modified'
+            	'Last-Modified' => $gmtTime
+                ,'ETag' => "\"{$lmTime}pri\""
+                ,'Cache-Control' => 'max-age=0, private, must-revalidate'
+                ,'_responseCode' => 'HTTP/1.0 304 Not Modified'
                 ,'isValid' => true
             )
         )
@@ -25,7 +28,10 @@ function test_HTTP_ConditionalGet()
             ,'inm' => null
             ,'ims' => $gmtTime . ';'
             ,'exp' => array(
-                '_responseCode' => 'HTTP/1.0 304 Not Modified'
+            	'Last-Modified' => $gmtTime
+                ,'ETag' => "\"{$lmTime}pri\""
+                ,'Cache-Control' => 'max-age=0, private, must-revalidate'
+                ,'_responseCode' => 'HTTP/1.0 304 Not Modified'
                 ,'isValid' => true
             )
         )
@@ -34,7 +40,10 @@ function test_HTTP_ConditionalGet()
             ,'inm' => "\"badEtagFoo\", \"{$lmTime}pri\""
             ,'ims' => null
             ,'exp' => array(
-                '_responseCode' => 'HTTP/1.0 304 Not Modified'
+                'Last-Modified' => $gmtTime
+                ,'ETag' => "\"{$lmTime}pri\""
+                ,'Cache-Control' => 'max-age=0, private, must-revalidate'
+                ,'_responseCode' => 'HTTP/1.0 304 Not Modified'
                 ,'isValid' => true
             )
         )

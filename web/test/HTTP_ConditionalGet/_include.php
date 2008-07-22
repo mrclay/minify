@@ -7,7 +7,7 @@ function send_slowly($content)
     while ($chunk = array_shift($content)) {
         sleep(1);
         echo $chunk;
-        ob_flush();
+        ob_get_level() && ob_flush();
         flush();
     }
 }
@@ -31,7 +31,7 @@ function get_content($data)
 	<li><a href="2.php">Last-Modified is known : add Content-Length</a></li>
 	<li><a href="3.php">Last-Modified is unknown : use hash of content for ETag</a></li>
 	<li><a href="4.php">ConditionalGet + Encoder</a></li>
-	<li><a href="5.php">Expires date is known</a></li>
+	<li><a href="5.php">Last-Modified + Expires</a></li>
 </ul>
 <h2>Notes</h2>
 <h3>How to distinguish 200 and 304 responses</h3>
@@ -62,4 +62,3 @@ to verify headers and content being sent.</p>
     return $content;
 }
 
-?>

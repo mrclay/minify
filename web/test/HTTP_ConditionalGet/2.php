@@ -42,4 +42,3 @@ $cg->setContentLength(strlen($content));
 $cg->sendHeaders();
 send_slowly($content);
 
-?>

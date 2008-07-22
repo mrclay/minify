@@ -34,4 +34,3 @@ echo send_slowly(get_content(array(
     ,'explain' => $explain
 )));
 
-?>

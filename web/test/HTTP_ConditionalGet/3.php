@@ -38,4 +38,3 @@ $cg->sendHeaders();
 
 send_slowly($content);
 
-?>

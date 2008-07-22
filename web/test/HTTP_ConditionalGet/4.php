@@ -31,7 +31,7 @@ $content = get_content(array(
     ,'explain' => $explain
 ));
 
-require '../../Encoder.php';
+require 'HTTP/Encoder.php';
 $he = new HTTP_Encoder(array(
     'content' => get_content(array(
         'title' => $title
@@ -44,5 +44,3 @@ $he->encode();
 // connection
 $he->sendHeaders();
 send_slowly($he->getContent());
-
-?>

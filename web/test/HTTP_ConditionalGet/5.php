@@ -5,18 +5,18 @@ require 'HTTP/ConditionalGet.php';
 
 // far expires
 $cg = new HTTP_ConditionalGet(array(
-    'setExpires' => (time() + 86400 * 365) // 1 yr
+    'maxAge' => 20
+    ,'lastModifiedTime' => filemtime(__FILE__)
 ));
 $cg->sendHeaders();
 
 // generate, send content
-$title = 'Expires date is known';
+$title = 'Last-Modified + Expires';
 $explain = '
-<p>Here we set "setExpires" to a timestamp or GMT date string. This results in
-<code>$cacheIsValid</code> always being false, so content is always served, but
-with an Expires header.
-<p><strong>Note:</strong> This isn\'t a conditional GET, but is useful if you\'re
-used to the HTTP_ConditionalGet workflow already.</p>
+<p>Here we set a static "lastModifiedTime" and "maxAge" to 20. The browser
+will consider this document fresh for 20 seconds, then revalidate its cache. After
+the 304 response, the cache will be good for another 20 seconds. Unless you force
+a reload, there will only be 304 responses for this page after the initial download.
 ';
 
 require '_include.php';
@@ -25,4 +25,3 @@ echo get_content(array(
     ,'explain' => $explain
 ));
 
-?>
