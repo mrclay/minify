@@ -30,6 +30,15 @@ class Minify_CSS {
      * with "/*!" will be preserved with newlines before and after to
      * enhance readability.
      * 
+     * 'prependRelativePath': (default null) if given, this string will be
+     * prepended to all relative URIs in import/url declarations
+     * 
+     * 'currentPath': (default null) if given, this is assumed to be the
+     * file path of the current CSS file. Using this, minify will rewrite
+     * all relative URIs in import/url declarations to correctly point to
+     * the desired files. For this to work, the files *must* exist and be
+     * visible by the PHP process.
+     * 
      * @return string
      */
     public static function minify($css, $options = array()) 
@@ -221,7 +230,7 @@ class Minify_CSS {
             $url = $m[2];
         } else {
             // $m[1] is surrounded by quotes or not
-            $quote = ($m[1][0] === '\'' || $m[1][0] === '"')
+            $quote = ($m[1][0] === "'" || $m[1][0] === '"')
                 ? $m[1][0]
                 : '';
             $url = ($quote === '')
