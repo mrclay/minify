@@ -91,7 +91,7 @@ class Minify_Cache_File {
      */
     private static function _verifiedWrite($file, $data)
     {
-        if (! @file_put_contents($file, $data, LOCK_EX)) {
+        if (! @file_put_contents($file, $data)) {
             return false;
         }
         if (md5($data) !== md5_file($file)) {
