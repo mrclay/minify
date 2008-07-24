@@ -220,7 +220,9 @@ class HTTP_ConditionalGet {
     protected function _isCacheValid()
     {
         if (null === $this->_etag) {
-            // ETag was our backup, so we know we don't have lmTime either
+            // lmTime is copied to ETag, so this condition implies that the
+            // client received neither ETag nor Last-Modified, so can't 
+            // possibly has a valid cache.
             return false;
         }
         $isValid = ($this->resourceMatchedEtag() || $this->resourceNotModified());
