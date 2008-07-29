@@ -99,20 +99,20 @@ class Minify_CSS {
     {
         // preserve empty comment after '>'
         // http://www.webdevout.net/css-hacks#in_css-selectors
-        $css = preg_replace('/>\\/\\*\\s*\\*\\//', '>/*keep*/', $css);
+        $css = preg_replace('@>/\\*\\s*\\*/@', '>/*keep*/', $css);
         
         // preserve empty comment between property and value
         // http://css-discuss.incutio.com/?page=BoxModelHack
-        $css = preg_replace('/\\/\\*\\s*\\*\\/\\s*:/', '/*keep*/:', $css);
-        $css = preg_replace('/:\\s*\\/\\*\\s*\\*\\//', ':/*keep*/', $css);
+        $css = preg_replace('@/\\*\\s*\\*/\\s*:@', '/*keep*/:', $css);
+        $css = preg_replace('@:\\s*/\\*\\s*\\*/@', ':/*keep*/', $css);
         
         // apply callback to all valid comments (and strip out surrounding ws
         self::$_inHack = false;
-        $css = preg_replace_callback('/\\s*\\/\\*([\\s\\S]*?)\\*\\/\\s*/'
+        $css = preg_replace_callback('@\\s*/\\*([\\s\\S]*?)\\*/\\s*@'
             ,array('Minify_CSS', '_commentCB'), $css);
 
         // compress whitespace.
-        $css = preg_replace('/\s+/', ' ', $css);
+        $css = preg_replace('/\\s+/', ' ', $css);
 
         // leave needed comments
         $css = str_replace('/*keep*/', '/**/', $css);
@@ -128,7 +128,7 @@ class Minify_CSS {
         $css = preg_replace('/url\\([\\s]*([^\\)]+?)[\\s]*\\)/', 'url($1)', $css);
         
         // remove ws between rules and colons
-        $css = preg_replace('/\\s*([{;])\\s*([\\w\\-]+)\\s*:\\s*\\b/', '$1$2:', $css);
+        $css = preg_replace('/\\s*([{;])\\s*([\\w\\-]+)\\s*:\\s*(\\b|[#\'"])/', '$1$2:$3', $css);
         
         // remove ws in selectors
         $css = preg_replace_callback('/(?:\\s*[^~>+,\\s]+\\s*[,>+~])+\\s*[^~>+,\\s]+{/'
@@ -137,6 +137,10 @@ class Minify_CSS {
         // minimize hex colors
         $css = preg_replace('/([^=])#([a-f\\d])\\2([a-f\\d])\\3([a-f\\d])\\4([\\s;\\}])/i'
             , '$1#$2$3$4$5', $css);
+        
+        // remove spaces between font families
+        $css = preg_replace_callback('/font-family:([^;}]+)([;}])/'
+            ,array('Minify_CSS', '_fontFamilyCB'), $css);
         
         $rewrite = false;
         if (isset($options['prependRelativePath'])) {
@@ -190,7 +194,7 @@ class Minify_CSS {
         }
         if (self::$_inHack) {
             // inversion: feeding only to one browser
-            if (preg_match('/^\\/\\s*(\\S[\\s\\S]+?)\\s*\\/\\*/', $m, $n)) {
+            if (preg_match('@^/\\s*(\\S[\\s\\S]+?)\\s*/\\*@', $m, $n)) {
                 self::$_inHack = false;
                 return "/*/{$n[1]}/*keep*/";
             }
@@ -263,5 +267,17 @@ class Minify_CSS {
             return "url({$quote}{$url}{$quote})";
         }
     }
+    
+    /**
+     * Process a font-family listing and return a replacement
+     * 
+     * @param array $m regex matches
+     * 
+     * @return string   
+     */
+    protected static function _fontFamilyCB($m)
+    {
+        $m[1] = preg_replace('/\\s*("[^"]+"|\'[^\']+\'|[\\w\\-]+)\\s*/', '$1', $m[1]);        
+        return 'font-family:' . $m[1] . $m[2];
+    }
 }
-
