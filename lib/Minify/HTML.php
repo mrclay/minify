@@ -56,15 +56,15 @@ class Minify_HTML {
             ,array('Minify_HTML', '_removePreCB')
             , $html);
         
-        // remove leading and trailing ws from each line.
+        // trim each line.
         // @todo take into account attribute values that span multiple lines.
-        $html = preg_replace('/^\\s*(.*?)\\s*$/m', "$1", $html);
+        $html = preg_replace('/^\\s+|\\s+$/m', '', $html);
         
         // remove ws around block/undisplayed elements
         $html = preg_replace('/\\s*(<\\/?(?:area|base(?:font)?|blockquote|body'
             .'|caption|center|cite|col(?:group)?|dd|dir|div|dl|dt|fieldset|form'
             .'|frame(?:set)?|h[1-6]|head|hr|html|legend|li|link|map|menu|meta'
-            .'|ol|opt(?:group|ion)|p|param|t(?:able|body|head|d|h||r|foot)|title'
+            .'|ol|opt(?:group|ion)|p|param|t(?:able|body|head|d|h||r|foot|itle)'
             .'|ul)\\b[^>]*>)/i', '$1', $html);
         
         // remove ws between and inside elements.

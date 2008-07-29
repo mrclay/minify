@@ -10,8 +10,8 @@ function test_Minify()
     global $thisDir;
     
     $minifyTestPath = dirname(__FILE__) . '/_test_files/minify';
-    $tomorrow = time() + 86400;
-    $lastModified = time() - 86400;
+    $tomorrow = $_SERVER['REQUEST_TIME'] + 86400;
+    $lastModified = $_SERVER['REQUEST_TIME'] - 86400;
     
     // Test 304 response
     
@@ -24,9 +24,10 @@ function test_Minify()
         ,'statusCode' => 304    
         ,'content' => '',
         'headers' => array(
-        	'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
-            'ETag' => "\"{$lastModified}pub\"",	
-        	'Cache-Control' => 'max-age=0, public, must-revalidate',
+            'Expires' => gmdate('D, d M Y H:i:s \G\M\T', $_SERVER['REQUEST_TIME'] + 1800),
+            'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
+            'ETag' => "\"{$lastModified}pub\"",
+        	'Cache-Control' => 'max-age=1800, public, must-revalidate',
         	'_responseCode' => 'HTTP/1.0 304 Not Modified',
         )
     );
@@ -101,7 +102,7 @@ function test_Minify()
         ,'statusCode' => 200	
     	,'content' => file_get_contents($minifyTestPath . '/minified.css')
         ,'headers' => array (
-            'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
+        	'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
             'ETag' => "\"{$lastModified}pub\"",
             'Cache-Control' => 'max-age=0, public, must-revalidate',
             'Content-Length' => filesize($minifyTestPath . '/minified.css'),
@@ -116,6 +117,7 @@ function test_Minify()
         ,'quiet' => true
         ,'lastModifiedTime' => $lastModified
         ,'encodeOutput' => false
+        ,'maxAge' => false
     ));
     
     $passed = assertTrue($expected === $output, 'Minify : CSS and Etag/Last-Modified');

@@ -51,7 +51,9 @@ class Minify_Source {
             }
             $this->_filepath = $spec['filepath'];
             $this->_id = $spec['filepath'];
-            $this->lastModified = filemtime($spec['filepath']);
+            $this->lastModified = filemtime($spec['filepath'])
+                // offset for Windows uploaders with out of sync clocks
+                + round(Minify::$uploaderHoursBehind * 3600);
         } elseif (isset($spec['id'])) {
             $this->_id = 'id::' . $spec['id'];
             if (isset($spec['content'])) {

@@ -36,6 +36,19 @@ class Minify {
     const TYPE_JS = 'application/x-javascript';
     
     /**
+     * How many hours behind are the file modification times of uploaded files?
+     * 
+     * The mtime of files on Windows can behind what they should be on the server.
+     * Immediately after modifying and uploading a file, use the touch command 
+     * to update the mtime on the server. If the mtime jumps ahead by a
+     * number of hours, set this variable to that number. If the mtime moves back,
+     * this should not be needed.
+     *
+     * @var int $uploaderHoursBehind
+     */
+    public static $uploaderHoursBehind = 0;
+    
+    /**
      * @see setCache()
      * @param mixed $cache object with identical interface as Minify_Cache_File or
      * a directory path. (default = '')
@@ -179,7 +192,7 @@ class Minify {
         	'lastModifiedTime' => self::$_options['lastModifiedTime']
             ,'isPublic' => self::$_options['isPublic']
         );
-        if (null !== self::$_options['maxAge']) {
+        if (self::$_options['maxAge'] > 0) {
             $cgOptions['maxAge'] = self::$_options['maxAge'];
         }
         $cg = new HTTP_ConditionalGet($cgOptions);
