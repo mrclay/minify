@@ -7,11 +7,11 @@
 /**
  * Compress HTML
  *
- * This is a heavy regex-based removal of whitespace, unnecessary
- * comments and tokens.
+ * This is a heavy regex-based removal of whitespace, unnecessary comments and 
+ * tokens. IE conditional comments are preserved. There are also options to have
+ * STYLE and SCRIPT blocks compressed by callback functions. 
  * 
- * IE conditional comments are preserved. There are also options to have STYLE
- * and SCRIPT blocks compressed by callback functions. A test suite is available.
+ * A test suite is available.
  * 
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
@@ -21,10 +21,11 @@ class Minify_HTML {
     /**
      * "Minify" an HTML page
      *
-     * @todo: To also minify embedded Javascript/CSS, you must...
-     * 
+     * @param string $html
+     * @param array $options
+     * @return string
      */
-    public static function minify($string, $options = array()) {
+    public static function minify($html, $options = array()) {
         
         if (isset($options['cssMinifier'])) {
             self::$_cssMinifier = $options['cssMinifier'];
@@ -33,32 +34,35 @@ class Minify_HTML {
             self::$_jsMinifier = $options['jsMinifier'];
         }
         
-        $html = trim($string);
+        $html = trim($html);
         
         self::$_isXhtml = (false !== strpos($html, '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML'));
         
         self::$_replacementHash = 'MINIFYHTML' . md5(time());
         
-        // remove SCRIPTs (and minify)
-        $html = preg_replace_callback('/\\s*(<script\\b[^>]*?>)([\\s\\S]*?)<\\/script>\\s*/i',
-            array('Minify_HTML', '_removeScriptCB'), $html);
+        // replace SCRIPTs (and minify) with placeholders
+        $html = preg_replace_callback(
+            '/\\s*(<script\\b[^>]*?>)([\\s\\S]*?)<\\/script>\\s*/i'
+            ,array('Minify_HTML', '_removeScriptCB')
+            ,$html);
         
-        // remove STYLEs (and minify)
-        $html = preg_replace_callback('/\\s*(<style\\b[^>]*?>)([\\s\\S]*?)<\\/style>\\s*/i',
-            array('Minify_HTML', '_removeStyleCB'), $html);
+        // replace STYLEs (and minify) with placeholders
+        $html = preg_replace_callback(
+            '/\\s*(<style\\b[^>]*?>)([\\s\\S]*?)<\\/style>\\s*/i'
+            ,array('Minify_HTML', '_removeStyleCB')
+            ,$html);
         
         // remove HTML comments (but not IE conditional comments).
         $html = preg_replace('/<!--[^\\[][\\s\\S]*?-->/', '', $html);
         
-        // replace PREs with token text
-        self::$_pres = array();
+        // replace PREs with placeholders
         $html = preg_replace_callback('/\\s*(<pre\\b[^>]*?>[\\s\\S]*?<\\/pre>)\\s*/i'
             ,array('Minify_HTML', '_removePreCB')
             , $html);
         
-        // replace TEXTAREAs with token text
-        self::$_tas = array();
-        $html = preg_replace_callback('/\\s*(<textarea\\b[^>]*?>[\\s\\S]*?<\\/textarea>)\\s*/i'
+        // replace TEXTAREAs with placeholders
+        $html = preg_replace_callback(
+            '/\\s*(<textarea\\b[^>]*?>[\\s\\S]*?<\\/textarea>)\\s*/i'
             ,array('Minify_HTML', '_removeTaCB')
             , $html);
         
@@ -78,40 +82,26 @@ class Minify_HTML {
         $html = preg_replace('/>(\\S[\\s\\S]*?)?\\s+</', ">$1 <", $html);
         $html = preg_replace('/>\\s+</', "> <", $html);
         
-        // replace PREs
-        $i = count(self::$_pres);
-        while ($i > 0) {
-            $rep = array_pop(self::$_pres);
-            $html = str_replace(self::$_replacementHash . 'PRE' . $i, $rep, $html);
-            $i--;
-        }
-        
-        // replace TEXTAREAs
-        $i = count(self::$_tas);
-        while ($i > 0) {
-            $rep = array_pop(self::$_tas);
-            $html = str_replace(self::$_replacementHash . 'TEXTAREA' . $i, $rep, $html);
-            $i--;
-        }
-        
-        // replace SCRIPTs
-        $i = count(self::$_scripts);
-        while ($i > 0) {
-            $rep = array_pop(self::$_scripts);
-            $html = str_replace(self::$_replacementHash . 'SCRIPT' . $i, $rep, $html);
-            $i--;
-        }
-        
-        // replace STYLEs
-        $i = count(self::$_styles);
-        while ($i > 0) {
-            $rep = array_pop(self::$_styles);
-            $html = str_replace(self::$_replacementHash . 'STYLE' . $i, $rep, $html);
-            $i--;
-        }
+        // fill placeholders
+        self::_fillPlaceholders($html, self::$_pres, 'PRE');
+        self::_fillPlaceholders($html, self::$_tas, 'TEXTAREA');
+        self::_fillPlaceholders($html, self::$_scripts, 'SCRIPT');
+        self::_fillPlaceholders($html, self::$_styles, 'STYLE');
         
         self::$_cssMinifier = self::$_jsMinifier = null;
         return $html;
+    }
+    
+    protected static function _fillPlaceholders(&$html, &$placeholderArray, $id)
+    {
+        $i = count($placeholderArray);
+        while ($i) {
+            $html = str_replace(
+                self::$_replacementHash . $id . $i
+                ,array_pop($placeholderArray)
+                ,$html);
+            $i--;
+        }
     }
 
     protected static $_isXhtml = false;
@@ -196,4 +186,3 @@ class Minify_HTML {
         return (self::$_isXhtml && preg_match('/(?:[<&]|\\-\\-|\\]\\]>)/', $str));
     }
 }
-
