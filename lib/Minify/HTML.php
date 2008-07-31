@@ -56,6 +56,12 @@ class Minify_HTML {
             ,array('Minify_HTML', '_removePreCB')
             , $html);
         
+        // replace TEXTAREAs with token text
+        self::$_tas = array();
+        $html = preg_replace_callback('/\\s*(<textarea\\b[^>]*?>[\\s\\S]*?<\\/textarea>)\\s*/i'
+            ,array('Minify_HTML', '_removeTaCB')
+            , $html);
+        
         // trim each line.
         // @todo take into account attribute values that span multiple lines.
         $html = preg_replace('/^\\s+|\\s+$/m', '', $html);
@@ -77,6 +83,14 @@ class Minify_HTML {
         while ($i > 0) {
             $rep = array_pop(self::$_pres);
             $html = str_replace(self::$_replacementHash . 'PRE' . $i, $rep, $html);
+            $i--;
+        }
+        
+        // replace TEXTAREAs
+        $i = count(self::$_tas);
+        while ($i > 0) {
+            $rep = array_pop(self::$_tas);
+            $html = str_replace(self::$_replacementHash . 'TEXTAREA' . $i, $rep, $html);
             $i--;
         }
         
@@ -103,6 +117,7 @@ class Minify_HTML {
     protected static $_isXhtml = false;
     protected static $_replacementHash = null;
     protected static $_pres = array();
+    protected static $_tas = array(); // textareas
     protected static $_scripts = array();
     protected static $_styles = array();
     protected static $_cssMinifier = null;
@@ -112,6 +127,12 @@ class Minify_HTML {
     {
         self::$_pres[] = $m[1];
         return self::$_replacementHash . 'PRE' . count(self::$_pres);
+    }
+    
+    protected static function _removeTaCB($m)
+    {
+        self::$_tas[] = $m[1];
+        return self::$_replacementHash . 'TEXTAREA' . count(self::$_tas);
     }
 
     protected static function _removeStyleCB($m)
