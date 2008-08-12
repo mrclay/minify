@@ -13,6 +13,9 @@
  * 
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
+ * 
+ * @todo add static function to ease setting currentPath for CSS files
+ * (see line 83 of Version1.php)
  */
 abstract class Minify_Controller_Base {
     

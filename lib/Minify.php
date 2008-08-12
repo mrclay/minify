@@ -55,7 +55,7 @@ class Minify {
      * @return null
      * @deprecated
      */
-    public static function useServerCache($path = null) 
+    public static function useServerCache($path = '') 
     {
         self::setCache($path);
     }
@@ -133,6 +133,11 @@ class Minify {
      * $options['minifierOptions'][Minify::TYPE_CSS]['optionName'] = 'optionValue';
      * </code>
      * 
+     * 'contentType' : (optional) this is only needed if your file extension is not 
+     * js/css/html. The given content-type will be sent regardless of source file
+     * extension, so this should not be used in a Groups config with other
+     * Javascript/CSS files.
+     * 
      * Any controller options are documented in that controller's setupSources() method.
      * 
      * @param mixed instance of subclass of Minify_Controller_Base or string name of
@@ -143,6 +148,8 @@ class Minify {
      * @return mixed null, or, if the 'quiet' option is set to true, an array
      * with keys "success" (bool), "statusCode" (int), "content" (string), and
      * "headers" (array).
+     * 
+     * @todo add option to auto-fix relative URIs in CSS (default = true) 
      */
     public static function serve($controller, $options = array()) {
         if (is_string($controller)) {

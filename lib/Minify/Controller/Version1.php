@@ -30,7 +30,7 @@ class Minify_Controller_Version1 extends Minify_Controller_Base {
         if (MINIFY_USE_CACHE) {
             $cacheDir = defined('MINIFY_CACHE_DIR')
                 ? MINIFY_CACHE_DIR
-                : null;
+                : '';
             Minify::setCache($cacheDir);
         }
         $options['badRequestHeader'] = 'HTTP/1.0 404 Not Found';
