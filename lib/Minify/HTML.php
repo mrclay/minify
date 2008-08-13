@@ -71,16 +71,17 @@ class Minify_HTML {
         $html = preg_replace('/^\\s+|\\s+$/m', '', $html);
         
         // remove ws around block/undisplayed elements
-        $html = preg_replace('/\\s*(<\\/?(?:area|base(?:font)?|blockquote|body'
+        $html = preg_replace('/\\s+(<\\/?(?:area|base(?:font)?|blockquote|body'
             .'|caption|center|cite|col(?:group)?|dd|dir|div|dl|dt|fieldset|form'
             .'|frame(?:set)?|h[1-6]|head|hr|html|legend|li|link|map|menu|meta'
             .'|ol|opt(?:group|ion)|p|param|t(?:able|body|head|d|h||r|foot|itle)'
             .'|ul)\\b[^>]*>)/i', '$1', $html);
         
-        // remove ws between and inside elements.
-        $html = preg_replace('/>\\s+(\\S[\\s\\S]*?)?</', "> $1<", $html);
-        $html = preg_replace('/>(\\S[\\s\\S]*?)?\\s+</', ">$1 <", $html);
-        $html = preg_replace('/>\\s+</', "> <", $html);
+        // remove ws outside of all elements
+        $html = preg_replace_callback(
+            '/>([^<]+)</'
+            ,array('Minify_HTML', '_outsideTagCB')
+            ,$html);
         
         // fill placeholders
         self::_fillPlaceholders($html, self::$_pres, 'PRE');
@@ -113,6 +114,11 @@ class Minify_HTML {
     protected static $_cssMinifier = null;
     protected static $_jsMinifier = null;
 
+    protected static function _outsideTagCB($m)
+    {
+        return '>' . preg_replace('/^\\s+|\\s+$/', ' ', $m[1]) . '<';
+    }
+    
     protected static function _removePreCB($m)
     {
         self::$_pres[] = $m[1];
