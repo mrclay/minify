@@ -34,7 +34,7 @@ class Minify_HTML {
             self::$_jsMinifier = $options['jsMinifier'];
         }
         
-        $html = trim($html);
+        $html = str_replace("\r\n", "\n", trim($html));
         
         self::$_isXhtml = (false !== strpos($html, '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML'));
         
@@ -77,6 +77,9 @@ class Minify_HTML {
             .'|ol|opt(?:group|ion)|p|param|t(?:able|body|head|d|h||r|foot|itle)'
             .'|ul)\\b[^>]*>)/i', '$1', $html);
         
+        // line break within some tags to limit line lengths
+        $html = preg_replace('/(<(?:div|span|a|p|input)) ([^>]+>)/i', "$1\n$2", $html);
+            
         // remove ws outside of all elements
         $html = preg_replace_callback(
             '/>([^<]+)</'

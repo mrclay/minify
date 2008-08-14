@@ -16,7 +16,8 @@
     border: 1px solid #00ff77;
 }
 
-div#content h1 + p {
+div#content 
+h1 + p {
     padding-top: 0;
     margin-top: 0;
 }

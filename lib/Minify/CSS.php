@@ -113,9 +113,6 @@ class Minify_CSS {
         $css = preg_replace_callback('@\\s*/\\*([\\s\\S]*?)\\*/\\s*@'
             ,array('Minify_CSS', '_commentCB'), $css);
 
-        // compress whitespace.
-        $css = preg_replace('/\\s+/', ' ', $css);
-
         // leave needed comments
         $css = str_replace('/*keep*/', '/**/', $css);
         
@@ -169,6 +166,14 @@ class Minify_CSS {
         $css = preg_replace_callback('/font-family:([^;}]+)([;}])/'
             ,array('Minify_CSS', '_fontFamilyCB'), $css);
         
+        $css = preg_replace('/@import\\s+url/', '@import url', $css);
+        
+        // replace any ws involving newlines with a single newline
+        $css = preg_replace('/[ \\t]*\\n+\\s*/', "\n", $css);
+        
+        // separate common descendent selectors with newlines (to limit line lengths)
+        $css = preg_replace('/([\\w#\\.]+)\\s+([\\w#\\.]+){/', "$1\n$2{", $css);
+        
         $rewrite = false;
         if (isset($options['prependRelativePath'])) {
             self::$_tempPrepend = $options['prependRelativePath'];
@@ -178,13 +183,26 @@ class Minify_CSS {
             $rewrite = true;
         }
         if ($rewrite) {
-            $css = preg_replace_callback('/@import ([\'"])(.*?)[\'"]/'
+            $css = preg_replace_callback('/@import\\s+([\'"])(.*?)[\'"]/'
                 ,array('Minify_CSS', '_urlCB'), $css);
             $css = preg_replace_callback('/url\\(([^\\)]+)\\)/'
                 ,array('Minify_CSS', '_urlCB'), $css);
         }
         self::$_tempPrepend = self::$_tempCurrentPath = '';
         return trim($css);
+    }
+    
+	/**
+     * Replace what looks like a set of selectors  
+     *
+     * @param array $m regex matches
+     * 
+     * @return string
+     */
+    protected static function _selectorsCB($m)
+    {
+        // remove ws around the combinators
+        return preg_replace('/\\s*([,>+~])\\s*/', '$1', $m[0]);
     }
     
     /**
@@ -249,19 +267,6 @@ class Minify_CSS {
             return '/*keep*/';
         }
         return ''; // remove all other comments
-    }
-    
-    /**
-     * Replace what looks like a set of selectors  
-     *
-     * @param array $m regex matches
-     * 
-     * @return string
-     */
-    protected static function _selectorsCB($m)
-    {
-        // remove ws around the combinators
-        return preg_replace('/\\s*([,>+~])\\s*/', '$1', $m[0]);
     }
     
     protected static function _urlCB($m)
