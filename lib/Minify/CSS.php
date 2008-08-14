@@ -97,6 +97,8 @@ class Minify_CSS {
      */
     protected static function _minify($css, $options) 
     {
+        $css = str_replace("\r\n", "\n", $css);
+        
         // preserve empty comment after '>'
         // http://www.webdevout.net/css-hacks#in_css-selectors
         $css = preg_replace('@>/\\*\\s*\\*/@', '>/*keep*/', $css);
@@ -117,21 +119,46 @@ class Minify_CSS {
         // leave needed comments
         $css = str_replace('/*keep*/', '/**/', $css);
         
-        // remove ws around { }
+        // remove ws around { } and last semicolon in declaration block
         $css = preg_replace('/\\s*{\\s*/', '{', $css);
         $css = preg_replace('/;?\\s*}\\s*/', '}', $css);
         
-        // remove ws between rules
+        // remove ws surrounding semicolons
         $css = preg_replace('/\\s*;\\s*/', ';', $css);
         
         // remove ws around urls
-        $css = preg_replace('/url\\([\\s]*([^\\)]+?)[\\s]*\\)/', 'url($1)', $css);
+        $css = preg_replace('/
+        		url\\(      # url(
+        		\\s*
+        		([^\\)]+?)  # 1 = the URL (really just a bunch of non right parenthesis)
+        		\\s*
+        		\\)         # )
+        	/x', 'url($1)', $css);
         
         // remove ws between rules and colons
-        $css = preg_replace('/\\s*([{;])\\s*([\\w\\-]+)\\s*:\\s*(\\b|[#\'"])/', '$1$2:$3', $css);
+        $css = preg_replace('/
+            	\\s*
+            	([{;])              # 1 = beginning of block or rule separator 
+            	\\s*
+            	([\\*_]?[\\w\\-]+)  # 2 = property (and maybe IE filter)
+            	\\s*
+            	:
+            	\\s*
+            	(\\b|[#\'"])        # 3 = first character of a value
+        	/x', '$1$2:$3', $css);
         
         // remove ws in selectors
-        $css = preg_replace_callback('/(?:\\s*[^~>+,\\s]+\\s*[,>+~])+\\s*[^~>+,\\s]+{/'
+        $css = preg_replace_callback('/
+            	(?:              # non-capture
+            		\\s*
+            		[^~>+,\\s]+  # selector part
+            		\\s*
+            		[,>+~]       # combinators
+            	)+
+            	\\s*
+            	[^~>+,\\s]+      # selector part
+            	{                # open declaration block
+        	/x'
             ,array('Minify_CSS', '_selectorsCB'), $css);
         
         // minimize hex colors
@@ -151,7 +178,7 @@ class Minify_CSS {
             $rewrite = true;
         }
         if ($rewrite) {
-            $css = preg_replace_callback('/@import ([\'"])(.*?)[\'"]\\s*;/'
+            $css = preg_replace_callback('/@import ([\'"])(.*?)[\'"]/'
                 ,array('Minify_CSS', '_urlCB'), $css);
             $css = preg_replace_callback('/url\\(([^\\)]+)\\)/'
                 ,array('Minify_CSS', '_urlCB'), $css);
@@ -178,7 +205,7 @@ class Minify_CSS {
     protected static $_tempCurrentPath = '';
     
     /**
-     * Process what looks like a comment and return a replacement
+     * Process a comment and return a replacement
      * 
      * @param array $m regex matches
      * 
@@ -187,31 +214,41 @@ class Minify_CSS {
     protected static function _commentCB($m)
     {
         $m = $m[1]; 
-        // $m is everything after the opening tokens and before the closing 
-        // tokens but return will replace the entire comment.
+        // $m is the comment content w/o the surrounding tokens, 
+        // but the return value will replace the entire comment.
         if ($m === 'keep') {
             return '/*keep*/';
         }
         if (self::$_inHack) {
             // inversion: feeding only to one browser
-            if (preg_match('@^/\\s*(\\S[\\s\\S]+?)\\s*/\\*@', $m, $n)) {
+            if (preg_match('@
+            		^/               # comment started like /*/
+            		\\s*
+            		(\\S[\\s\\S]+?)  # has at least some non-ws content
+            		\\s*
+            		/\\*             # ends like /*/ or /**/
+            	@x', $m, $n)) {
+                // end hack mode after this comment, but preserve the hack and comment content
                 self::$_inHack = false;
                 return "/*/{$n[1]}/*keep*/";
             }
         }
-        if (substr($m, -1) === '\\') {
+        if (substr($m, -1) === '\\') { // comment ends like \*/
+            // begin hack mode and preserve hack
             self::$_inHack = true;
             return '/*\\*/';
         }
-        if ($m !== '' && $m[0] === '/') {
+        if ($m !== '' && $m[0] === '/') { // comment looks like /*/ foo */
+            // begin hack mode and preserve hack
             self::$_inHack = true;
             return '/*/*/';
         }
         if (self::$_inHack) {
+            // a regular comment ends hack mode but should be preserved
             self::$_inHack = false;
             return '/*keep*/';
         }
-        return '';
+        return ''; // remove all other comments
     }
     
     /**
@@ -223,6 +260,7 @@ class Minify_CSS {
      */
     protected static function _selectorsCB($m)
     {
+        // remove ws around the combinators
         return preg_replace('/\\s*([,>+~])\\s*/', '$1', $m[0]);
     }
     
@@ -233,7 +271,8 @@ class Minify_CSS {
             $quote = $m[1];
             $url = $m[2];
         } else {
-            // $m[1] is surrounded by quotes or not
+            // is url()
+            // $m[1] is either quoted or not
             $quote = ($m[1][0] === "'" || $m[1][0] === '"')
                 ? $m[1][0]
                 : '';
@@ -262,7 +301,7 @@ class Minify_CSS {
             }
         }
         if ($isImport) {
-            return "@import {$quote}{$url}{$quote};";
+            return "@import {$quote}{$url}{$quote}";
         } else {
             return "url({$quote}{$url}{$quote})";
         }
@@ -277,7 +316,15 @@ class Minify_CSS {
      */
     protected static function _fontFamilyCB($m)
     {
-        $m[1] = preg_replace('/\\s*("[^"]+"|\'[^\']+\'|[\\w\\-]+)\\s*/', '$1', $m[1]);        
+        $m[1] = preg_replace('/
+        		\\s*
+        		(
+        			"[^"]+"      # 1 = family in double qutoes
+        			|\'[^\']+\'  # or 1 = family in single quotes
+        			|[\\w\\-]+   # or 1 = unquoted family
+        		)
+        		\\s*
+        	/x', '$1', $m[1]);
         return 'font-family:' . $m[1] . $m[2];
     }
 }

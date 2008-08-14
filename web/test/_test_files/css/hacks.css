@@ -50,3 +50,8 @@ div {
     }
     /**/ /* end hidden from IE 5 Mac */
 }
+
+foo { /* filters for IE */
+    _height : 20px;
+    *height : 15px;
+}

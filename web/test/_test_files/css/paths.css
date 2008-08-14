@@ -1,8 +1,8 @@
 @import "foo.css";
-@import 'bar/foo.css';
+@import 'bar/foo.css' print;
 @import '/css/foo.css'; /* abs, should not alter */
 @import 'http://foo.com/css/foo.css'; /* abs, should not alter */
-@import url(../foo.css);
+@import url(../foo.css) tv, projection;
 @import url("/css/foo.css"); /* abs, should not alter */
 @import url(/css2/foo.css); /* abs, should not alter */
 foo {background:url('bar/foo.png')}
