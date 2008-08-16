@@ -415,6 +415,7 @@ class Minify {
             Minify_Source::getDigest(self::$_controller->sources)
             ,self::$_options['minifiers'] 
             ,self::$_options['minifierOptions']
+            ,self::$_options['postprocessor']
         )));
     }    
 }
