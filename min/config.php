@@ -33,16 +33,19 @@ $minifyGroupsOnly = false;
  * ?f=jsFiles/file1.js,jsFiles/file2.js
  * ?b=jsFiles&f=file1.js,file2.js
  */
-$minifyAllowBase = false;
+$minifyAllowBase = true;
 
 
 /**
  * If you'd like to restrict the "f" option to files within/below
- * a particular directory below DOCUMENT_ROOT, set this here.
- * You will still need to include this directory in the
+ * particular directories below DOCUMENT_ROOT, set this here.
+ * You will still need to include the directory in the
  * f or b GET parameters.
  * 
  * // = DOCUMENT_ROOT 
  */
-$minifyRestrictDir = '//js/transition';
+$minifyAllowDirs = array(
+	'//js'
+	,'//css'
+);
 

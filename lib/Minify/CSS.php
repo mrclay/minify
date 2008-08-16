@@ -171,8 +171,15 @@ class Minify_CSS {
         // replace any ws involving newlines with a single newline
         $css = preg_replace('/[ \\t]*\\n+\\s*/', "\n", $css);
         
-        // separate common descendent selectors with newlines (to limit line lengths)
-        $css = preg_replace('/([\\w#\\.]+)\\s+([\\w#\\.]+){/', "$1\n$2{", $css);
+        // separate common descendent selectors w/ newlines (to limit line lengths)
+        $css = preg_replace('/([\\w#\\.\\*]+)\\s+([\\w#\\.\\*]+){/', "$1\n$2{", $css);
+        
+        // Use newline after 1st numeric value (to limit line lengths).
+        $css = preg_replace('/
+            ((?:padding|margin|border|outline):\\d+(?:px|em)?) # 1 = prop : 1st numeric value
+            \\s+
+            /x'
+            ,"$1\n", $css);
         
         $rewrite = false;
         if (isset($options['prependRelativePath'])) {

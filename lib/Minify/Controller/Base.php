@@ -105,19 +105,26 @@ abstract class Minify_Controller_Base {
     }
     
     /**
-     * Is a user-given file within document root, existing,
+     * Is a user-given file within an allowable directory, existing,
      * and having an extension js/css/html/txt
      * 
      * This is a convenience function for controllers that have to accept
      * user-given paths
      *
      * @param string $file full file path (already processed by realpath())
-     * @param string $docRoot root where files are safe to serve
+     * @param array $safeDirs directories where files are safe to serve
      * @return bool file is safe
      */
-    public static function _fileIsSafe($file, $docRoot)
+    public static function _fileIsSafe($file, $safeDirs)
     {
-        if (strpos($file, $docRoot) !== 0 || ! file_exists($file)) {
+        $pathOk = false;
+        foreach ((array)$safeDirs as $safeDir) {
+            if (strpos($file, $safeDir) === 0 && file_exists($file)) {
+                $pathOk = true;
+                break;
+            }
+        }
+        if (! $pathOk) {
             return false;
         }
         $base = basename($file);

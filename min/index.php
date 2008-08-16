@@ -47,10 +47,13 @@ if (isset($_GET['g'])) {
     if (isset($minifyCachePath)) {
         define('MINIFY_CACHE_DIR', $minifyCachePath);
     }
-    if (isset($minifyRestrictDir)) {
-        define('MINIFY_BASE_DIR', realpath(
-            $_SERVER['DOCUMENT_ROOT'] . substr($minifyRestrictDir, 1)
-        ));
+    $serveOpts = array();
+    if (isset($minifyAllowDirs)) {
+        foreach ((array)$minifyAllowDirs as $_allowDir) {
+            $serveOpts['allowDirs'][] = realpath(
+                $_SERVER['DOCUMENT_ROOT'] . substr($_allowDir, 1)
+            );
+        }
     }
     // Version1 already does validation. All we want is to prepend "b"
     // to each file if it looks right.
@@ -64,5 +67,5 @@ if (isset($_GET['g'])) {
     // or               ?b=js&f=file1.js,file2.js,file3.js
     $_GET['files'] = $base . str_replace(',', ',' . $base, $_GET['f']);
     
-    Minify::serve('Version1');
+    Minify::serve('Version1', $serveOpts);
 }

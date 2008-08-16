@@ -66,13 +66,18 @@ class Minify_Controller_Version1 extends Minify_Controller_Base {
         $sources = array();
         $goodFiles = array();
         $hasBadSource = false;
+        
+        $allowDirs = isset($options['allowDirs'])
+            ? $options['allowDirs']
+            : MINIFY_BASE_DIR;
+        
         foreach ($files as $file) {
             // prepend appropriate string for abs/rel paths
             $file = ($file[0] === '/' ? $prependAbsPaths : $prependRelPaths) . $file;
             // make sure a real file!
             $file = realpath($file);
             // don't allow unsafe or duplicate files
-            if (parent::_fileIsSafe($file, MINIFY_BASE_DIR) 
+            if (parent::_fileIsSafe($file, $allowDirs) 
                 && !in_array($file, $goodFiles)) 
             {
                 $goodFiles[] = $file;
