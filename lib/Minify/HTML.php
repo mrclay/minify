@@ -77,9 +77,6 @@ class Minify_HTML {
             .'|ol|opt(?:group|ion)|p|param|t(?:able|body|head|d|h||r|foot|itle)'
             .'|ul)\\b[^>]*>)/i', '$1', $html);
         
-        // line break within some tags to limit line lengths
-        $html = preg_replace('/(<(?:div|span|a|p|input)) ([^>]+>)/i', "$1\n$2", $html);
-            
         // remove ws outside of all elements
         $html = preg_replace_callback(
             '/>([^<]+)</'
@@ -91,6 +88,9 @@ class Minify_HTML {
         self::_fillPlaceholders($html, self::$_tas, 'TEXTAREA');
         self::_fillPlaceholders($html, self::$_scripts, 'SCRIPT');
         self::_fillPlaceholders($html, self::$_styles, 'STYLE');
+        
+        // use newlines before 1st attribute in open tags (to limit line lengths)
+        $html = preg_replace('/(<[a-z\\-]+)\\s+([^>]+>)/i', "$1\n$2", $html);
         
         self::$_cssMinifier = self::$_jsMinifier = null;
         return $html;
