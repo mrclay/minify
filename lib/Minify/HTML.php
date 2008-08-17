@@ -39,6 +39,7 @@ class Minify_HTML {
         self::$_isXhtml = (false !== strpos($html, '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML'));
         
         self::$_replacementHash = 'MINIFYHTML' . md5(time());
+        self::$_placeholders = array();
         
         // replace SCRIPTs (and minify) with placeholders
         $html = preg_replace_callback(
@@ -84,10 +85,12 @@ class Minify_HTML {
             ,$html);
         
         // fill placeholders
-        self::_fillPlaceholders($html, self::$_pres, 'PRE');
-        self::_fillPlaceholders($html, self::$_tas, 'TEXTAREA');
-        self::_fillPlaceholders($html, self::$_scripts, 'SCRIPT');
-        self::_fillPlaceholders($html, self::$_styles, 'STYLE');
+        $html = str_replace(
+            array_keys(self::$_placeholders)
+            ,array_values(self::$_placeholders)
+            ,$html
+        );
+        self::$_placeholders = array();
         
         // use newlines before 1st attribute in open tags (to limit line lengths)
         $html = preg_replace('/(<[a-z\\-]+)\\s+([^>]+>)/i', "$1\n$2", $html);
@@ -96,24 +99,16 @@ class Minify_HTML {
         return $html;
     }
     
-    protected static function _fillPlaceholders(&$html, &$placeholderArray, $id)
+    protected static function _reservePlace($content)
     {
-        $i = count($placeholderArray);
-        while ($i) {
-            $html = str_replace(
-                self::$_replacementHash . $id . $i
-                ,array_pop($placeholderArray)
-                ,$html);
-            $i--;
-        }
+        $placeholder = '%' . self::$_replacementHash . count(self::$_placeholders) . '%';
+        self::$_placeholders[$placeholder] = $content;
+        return $placeholder;
     }
 
     protected static $_isXhtml = false;
     protected static $_replacementHash = null;
-    protected static $_pres = array();
-    protected static $_tas = array(); // textareas
-    protected static $_scripts = array();
-    protected static $_styles = array();
+    protected static $_placeholders = array();
     protected static $_cssMinifier = null;
     protected static $_jsMinifier = null;
 
@@ -124,14 +119,12 @@ class Minify_HTML {
     
     protected static function _removePreCB($m)
     {
-        self::$_pres[] = $m[1];
-        return self::$_replacementHash . 'PRE' . count(self::$_pres);
+        return self::_reservePlace($m[1]);
     }
     
     protected static function _removeTaCB($m)
     {
-        self::$_tas[] = $m[1];
-        return self::$_replacementHash . 'TEXTAREA' . count(self::$_tas);
+        return self::_reservePlace($m[1]);
     }
 
     protected static function _removeStyleCB($m)
@@ -150,13 +143,10 @@ class Minify_HTML {
             : 'trim';
         $css = call_user_func($minifier, $css);
         
-        // store
-        self::$_styles[] = self::_needsCdata($css)
+        return self::_reservePlace(self::_needsCdata($css)
             ? "{$openStyle}/*<![CDATA[*/{$css}/*]]>*/</style>"
-            : "{$openStyle}{$css}</style>"; 
-        
-        
-        return self::$_replacementHash . 'STYLE' . count(self::$_styles);
+            : "{$openStyle}{$css}</style>"
+        );
     }
 
     protected static function _removeScriptCB($m)
@@ -176,11 +166,10 @@ class Minify_HTML {
             : 'trim'; 
         $js = call_user_func($minifier, $js);
         
-        // store
-        self::$_scripts[] = self::_needsCdata($js)
+        return self::_reservePlace(self::_needsCdata($js)
             ? "{$openScript}/*<![CDATA[*/{$js}/*]]>*/</script>"
-            : "{$openScript}{$js}</script>";
-        return self::$_replacementHash . 'SCRIPT' . count(self::$_scripts);
+            : "{$openScript}{$js}</script>"
+        );
     }
 
     protected static function _removeCdata($str)
