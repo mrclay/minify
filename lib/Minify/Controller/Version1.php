@@ -84,9 +84,6 @@ class Minify_Controller_Version1 extends Minify_Controller_Base {
                 $srcOptions = array(
                     'filepath' => $file
                 );
-                if ('css' === $extension && MINIFY_REWRITE_CSS_URLS) {
-                    $srcOptions['minifyOptions']['currentPath'] = dirname($file);
-                }
                 $this->sources[] = new Minify_Source($srcOptions);
             } else {
                 $hasBadSource = true;
@@ -95,6 +92,9 @@ class Minify_Controller_Version1 extends Minify_Controller_Base {
         }
         if ($hasBadSource) {
             $this->sources = array();
+        }
+        if (! MINIFY_REWRITE_CSS_URLS) {
+            $options['rewriteCssUris'] = false;
         }
         return $options;
     }

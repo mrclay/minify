@@ -97,15 +97,26 @@ function test_Minify()
     // don't allow conditional headers
     unset($_SERVER['HTTP_IF_NONE_MATCH'], $_SERVER['HTTP_IF_MODIFIED_SINCE']);
     
+    $pathToWebTest = str_replace(
+        DIRECTORY_SEPARATOR
+        ,'/'
+        ,substr(dirname(__FILE__), strlen($_SERVER['DOCUMENT_ROOT']))
+    );
+    $expectedContent = str_replace(
+    	'%PATH_TO_WEB_TEST%'
+        ,$pathToWebTest
+        ,file_get_contents($minifyTestPath . '/minified.css')
+    );
+    
     $expected = array(
     	'success' => true
         ,'statusCode' => 200	
-    	,'content' => file_get_contents($minifyTestPath . '/minified.css')
+    	,'content' => $expectedContent
         ,'headers' => array (
         	'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
             'ETag' => "\"{$lastModified}pub\"",
             'Cache-Control' => 'max-age=0, public, must-revalidate',
-            'Content-Length' => filesize($minifyTestPath . '/minified.css'),
+            'Content-Length' => strlen($expectedContent),
             'Content-Type' => 'text/css; charset=UTF-8',
         )
     );

@@ -33,8 +33,8 @@ class Minify_CSS {
      * 'prependRelativePath': (default null) if given, this string will be
      * prepended to all relative URIs in import/url declarations
      * 
-     * 'currentPath': (default null) if given, this is assumed to be the
-     * file path of the current CSS file. Using this, minify will rewrite
+     * 'currentDir': (default null) if given, this is assumed to be the
+     * directory of the current CSS file. Using this, minify will rewrite
      * all relative URIs in import/url declarations to correctly point to
      * the desired files. For this to work, the files *must* exist and be
      * visible by the PHP process.
@@ -185,8 +185,8 @@ class Minify_CSS {
         if (isset($options['prependRelativePath'])) {
             self::$_tempPrepend = $options['prependRelativePath'];
             $rewrite = true;
-        } elseif (isset($options['currentPath'])) {
-            self::$_tempCurrentPath = $options['currentPath'];
+        } elseif (isset($options['currentDir'])) {
+            self::$_tempCurrentDir = $options['currentDir'];
             $rewrite = true;
         }
         if ($rewrite) {
@@ -195,7 +195,7 @@ class Minify_CSS {
             $css = preg_replace_callback('/url\\(([^\\)]+)\\)/'
                 ,array('Minify_CSS', '_urlCB'), $css);
         }
-        self::$_tempPrepend = self::$_tempCurrentPath = '';
+        self::$_tempPrepend = self::$_tempCurrentDir = '';
         return trim($css);
     }
     
@@ -225,9 +225,9 @@ class Minify_CSS {
     protected static $_tempPrepend = '';
     
     /**
-     * @var string path of this stylesheet for rewriting purposes   
+     * @var string directory of this stylesheet for rewriting purposes   
      */
-    protected static $_tempCurrentPath = '';
+    protected static $_tempCurrentDir = '';
     
     /**
      * Process a comment and return a replacement
@@ -302,7 +302,7 @@ class Minify_CSS {
                 } else {
                     // rewrite absolute url from scratch!
                     // prepend path with current dir separator (OS-independent)
-                    $path = self::$_tempCurrentPath 
+                    $path = self::$_tempCurrentDir 
                         . DIRECTORY_SEPARATOR . strtr($url, '/', DIRECTORY_SEPARATOR);
                     // strip doc root
                     $path = substr($path, strlen($_SERVER['DOCUMENT_ROOT']));

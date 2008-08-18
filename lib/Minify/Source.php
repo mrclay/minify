@@ -31,6 +31,11 @@ class Minify_Source {
     public $minifyOptions = null;
 
     /**
+     * @var string full path of file
+     */
+    public $filepath = null;
+    
+    /**
      * Create a Minify_Source
      * 
      * In the $spec array(), you can either provide a 'filepath' to an existing
@@ -49,7 +54,7 @@ class Minify_Source {
             if (0 === strpos($spec['filepath'], '//')) {
                 $spec['filepath'] = $_SERVER['DOCUMENT_ROOT'] . substr($spec['filepath'], 1);
             }
-            $this->_filepath = $spec['filepath'];
+            $this->filepath = $spec['filepath'];
             $this->_id = $spec['filepath'];
             $this->lastModified = filemtime($spec['filepath'])
                 // offset for Windows uploaders with out of sync clocks
@@ -80,8 +85,8 @@ class Minify_Source {
      */
     public function getContent()
     {
-        $content = (null !== $this->_filepath)
-			? file_get_contents($this->_filepath)
+        $content = (null !== $this->filepath)
+			? file_get_contents($this->filepath)
 			: ((null !== $this->_content)
 				? $this->_content
 				: call_user_func($this->_getContentFunc, $this->_id)
@@ -154,8 +159,8 @@ class Minify_Source {
             ,'html' => Minify::TYPE_HTML
         );
         foreach ($sources as $source) {
-            if (null !== $source->_filepath) {
-                $segments = explode('.', $source->_filepath);
+            if (null !== $source->filepath) {
+                $segments = explode('.', $source->filepath);
                 $ext = array_pop($segments);
                 if (isset($exts[$ext])) {
                     return $exts[$ext];
@@ -166,8 +171,7 @@ class Minify_Source {
     }
     
     protected $_content = null;
-	protected $_getContentFunc = null;
-    protected $_filepath = null;
+    protected $_getContentFunc = null;
     protected $_id = null;
 }
 

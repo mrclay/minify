@@ -111,6 +111,9 @@ class Minify {
      * Expires header. Unlike the old 'setExpires' setting, this setting will NOT
      * prevent conditional GETs. Note this has nothing to do with server-side caching.
      * 
+     * 'rewriteCssUris' : If true, serve() will automatically set the 'currentDir'
+     * minifier option to enable URI rewriting in CSS files (default true)
+     * 
      * 'debug' : set to true to minify all sources with the 'Lines' controller, which
      * eases the debugging of combined files. This also prevents 304 responses.
      * @see Minify_Lines::minify()
@@ -237,6 +240,19 @@ class Minify {
             }
         } else {
             self::$_options['encodeMethod'] = ''; // identity (no encoding)
+        }
+        
+        if (self::$_options['contentType'] === self::TYPE_CSS
+            && self::$_options['rewriteCssUris']) {
+            reset($controller->sources);
+            while (list($key, $source) = each($controller->sources)) {
+                if ($source->filepath 
+                    && !isset($source->minifyOptions['currentDir'])
+                    && !isset($source->minifyOptions['prependRelativePath'])
+                ) {
+                    $source->minifyOptions['currentDir'] = dirname($source->filepath);
+                }
+            }
         }
         
         // check server cache
