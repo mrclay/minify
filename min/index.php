@@ -33,9 +33,11 @@ if (isset($_GET['g'])) {
     // Groups expects the group key as PATH_INFO
     // we want to allow ?g=groupKey
     $_SERVER['PATH_INFO'] = '/' . $_GET['g'];
-    Minify::serve('Groups', array(
-        'groups' => (require MINIFY_MIN_DIR . '/groupsConfig.php')
-    ));
+    $serveOpts['groups'] = (require MINIFY_MIN_DIR . '/groupsConfig.php');
+    if (preg_match('/&\\d/', $_SERVER['QUERY_STRING'])) {
+        $serveOpts['maxAge'] = 31536000;
+    }
+    Minify::serve('Groups', $serveOpts);
 
 } elseif (!$minifyGroupsOnly && isset($_GET['f'])) {
 
@@ -57,9 +59,7 @@ if (isset($_GET['g'])) {
     }
     // Version1 already does validation. All we want is to prepend "b"
     // to each file if it looks right.
-    $base = ($minifyAllowBase 
-             && isset($_GET['b']) 
-             && preg_match('@^[^/.]+(?:/[^/.]+)*$@', $_GET['b']))
+    $base = (isset($_GET['b']) && preg_match('@^[^/.]+(?:/[^/.]+)*$@', $_GET['b']))
         ? '/' . $_GET['b'] . '/'
         : '/';
     // Version1 expects ?files=/js/file1.js,/js/file2.js,/js/file3.js
