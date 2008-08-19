@@ -17,7 +17,7 @@ $minifyCachePath = 'c:\\xampp\\tmp';
 /**
  * Manually set the path to Minify's lib folder
  */
-$minifyLibPath = '../lib';
+//$minifyLibPath = '../lib';
 
 
 /**
@@ -44,8 +44,4 @@ $minifyAllowBase = true;
  * 
  * // = DOCUMENT_ROOT 
  */
-$minifyAllowDirs = array(
-	'//js'
-	,'//css'
-);
-
+$minifyAllowDirs = array('//js', '//css');

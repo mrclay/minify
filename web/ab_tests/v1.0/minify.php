@@ -202,7 +202,7 @@ class Minify {
   * @see minifyCSS()
   */
  protected static function minifyJS($js) {
-   require_once dirname(__FILE__).'/../../../lib/JSMin.php';
+   require_once dirname(__FILE__).'/../../../min/lib/JSMin.php';
    return JSMin::minify($js);
  }
 

@@ -4,7 +4,7 @@ if (isset($_FILES['subject']['name'])
     && preg_match('/\\.(js|css|html)$/', $_FILES['subject']['name'], $m)
 ) {
     ini_set('include_path', 
-        dirname(__FILE__) . '/../../lib'
+        dirname(__FILE__) . '/../../min/lib'
         . PATH_SEPARATOR . ini_get('include_path')
     );
 
