@@ -55,3 +55,8 @@ foo { /* filters for IE */
     _height : 20px;
     *height : 15px;
 }
+
+/* http://tantek.com/CSS/Examples/midpass.html */
+@media tty {
+ i{content:"\";/*" "*/}} @import 'midpassafter.css'; /*";}
+}/* */

@@ -244,6 +244,14 @@ class Minify_CSS {
         if ($m === 'keep') {
             return '/*keep*/';
         }
+        if ($m === '" "') {
+            // component of http://tantek.com/CSS/Examples/midpass.html
+            return '/*" "*/';
+        }
+        if (preg_match('@";\\}\\s*\\}/\\*\\s+@', $m)) {
+            // component of http://tantek.com/CSS/Examples/midpass.html
+            return '/*";}}/* */';
+        }
         if (self::$_inHack) {
             // inversion: feeding only to one browser
             if (preg_match('@
