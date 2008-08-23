@@ -46,13 +46,15 @@ class Minify_Controller_Groups extends Minify_Controller_Base {
         $groups = $options['groups'];
         unset($options['groups']);
         
-        if (! isset($_SERVER['PATH_INFO'])) {
-            // no PATH_INFO
-            return $options;
-        }
-        $pi = substr($_SERVER['PATH_INFO'], 1);
-        if (! isset($groups[$pi])) {
-            // not a valid group
+        // mod_fcgid places PATH_INFO in ORIG_PATH_INFO
+        $pi = isset($_SERVER['ORIG_PATH_INFO'])
+            ? substr($_SERVER['ORIG_PATH_INFO'], 1) 
+            : (isset($_SERVER['PATH_INFO'])
+                ? substr($_SERVER['PATH_INFO'], 1) 
+                : false
+            );
+        if (false === $pi || ! isset($groups[$pi])) {
+            // no PATH_INFO or not a valid group
             return $options;
         }
         $sources = array();
