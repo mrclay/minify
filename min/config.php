@@ -9,8 +9,17 @@
  * For best performance, specify your temp directory here.
  * Otherwise Minify will have to load extra code to guess.
  */
-//$minifyCachePath = 'c:\\WINDOWS\Temp';
-//$minifyCachePath = '/tmp';
+//$min_cachePath = 'c:\\WINDOWS\Temp';
+//$min_cachePath = '/tmp';
+
+
+/**
+ * Maximum age of browser cache in seconds. After this period,
+ * the browser will send another conditional GET. You might
+ * want to shorten this before making changes if it's crucial
+ * those changes are seen immediately.
+ */
+$min_serveOptions['maxAge'] = 1800;
 
 
 /**
@@ -21,17 +30,36 @@
  * 
  * // = DOCUMENT_ROOT 
  */
-//$minifyAllowDirs = array('//js', '//css');
+//$min_allowDirs = array('//js', '//css');
 
 
 /**
  * Manually set the path to Minify's lib folder
  */
-//$minifyLibPath = 'lib';
+//$min_libPath = 'lib';
 
 
 /**
  * Set to true to disable the "f" GET parameter for specifying files.
  * Only the "g" parameter will be considered.
  */
-$minifyGroupsOnly = false;
+$min_groupsOnly = false;
+
+
+/**
+ * Uncomment to enable debug mode. Files will be combined with no 
+ * minification, and comments will be added to indicate the line #s
+ * of the original files.
+ */
+//$min_serveOptions['debug'] = true;
+
+
+/**
+ * If you upload files from Windows to a non-Windows server, Windows may report
+ * incorrect mtimes for the files. Immediately after modifying and uploading a 
+ * file, use the touch command to update the mtime on the server. If the mtime 
+ * jumps ahead by a number of hours, set this variable to that number. If the mtime 
+ * moves back, this should not be needed.
+ */
+$min_uploaderHoursBehind = 0;
+

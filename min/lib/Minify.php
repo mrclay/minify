@@ -38,11 +38,11 @@ class Minify {
     /**
      * How many hours behind are the file modification times of uploaded files?
      * 
-     * The mtime of files on Windows can behind what they should be on the server.
-     * Immediately after modifying and uploading a file, use the touch command 
-     * to update the mtime on the server. If the mtime jumps ahead by a
-     * number of hours, set this variable to that number. If the mtime moves back,
-     * this should not be needed.
+     * If you upload files from Windows to a non-Windows server, Windows may report
+     * incorrect mtimes for the files. Immediately after modifying and uploading a 
+     * file, use the touch command to update the mtime on the server. If the mtime 
+     * jumps ahead by a number of hours, set this variable to that number. If the mtime 
+     * moves back, this should not be needed.
      *
      * @var int $uploaderHoursBehind
      */
@@ -151,8 +151,6 @@ class Minify {
      * @return mixed null, or, if the 'quiet' option is set to true, an array
      * with keys "success" (bool), "statusCode" (int), "content" (string), and
      * "headers" (array).
-     * 
-     * @todo add option to auto-fix relative URIs in CSS (default = true) 
      */
     public static function serve($controller, $options = array()) {
         if (is_string($controller)) {
