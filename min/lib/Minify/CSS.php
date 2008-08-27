@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Class Minify_CSS  
  * @package Minify
@@ -125,37 +125,37 @@ class Minify_CSS {
         
         // remove ws around urls
         $css = preg_replace('/
-        		url\\(      # url(
-        		\\s*
-        		([^\\)]+?)  # 1 = the URL (really just a bunch of non right parenthesis)
-        		\\s*
-        		\\)         # )
-        	/x', 'url($1)', $css);
+                url\\(      # url(
+                \\s*
+                ([^\\)]+?)  # 1 = the URL (really just a bunch of non right parenthesis)
+                \\s*
+                \\)         # )
+            /x', 'url($1)', $css);
         
         // remove ws between rules and colons
         $css = preg_replace('/
-            	\\s*
-            	([{;])              # 1 = beginning of block or rule separator 
-            	\\s*
-            	([\\*_]?[\\w\\-]+)  # 2 = property (and maybe IE filter)
-            	\\s*
-            	:
-            	\\s*
-            	(\\b|[#\'"])        # 3 = first character of a value
-        	/x', '$1$2:$3', $css);
+                \\s*
+                ([{;])              # 1 = beginning of block or rule separator 
+                \\s*
+                ([\\*_]?[\\w\\-]+)  # 2 = property (and maybe IE filter)
+                \\s*
+                :
+                \\s*
+                (\\b|[#\'"])        # 3 = first character of a value
+            /x', '$1$2:$3', $css);
         
         // remove ws in selectors
         $css = preg_replace_callback('/
-            	(?:              # non-capture
-            		\\s*
-            		[^~>+,\\s]+  # selector part
-            		\\s*
-            		[,>+~]       # combinators
-            	)+
-            	\\s*
-            	[^~>+,\\s]+      # selector part
-            	{                # open declaration block
-        	/x'
+                (?:              # non-capture
+                    \\s*
+                    [^~>+,\\s]+  # selector part
+                    \\s*
+                    [,>+~]       # combinators
+                )+
+                \\s*
+                [^~>+,\\s]+      # selector part
+                {                # open declaration block
+            /x'
             ,array('Minify_CSS', '_selectorsCB'), $css);
         
         // minimize hex colors
@@ -199,7 +199,7 @@ class Minify_CSS {
         return trim($css);
     }
     
-	/**
+    /**
      * Replace what looks like a set of selectors  
      *
      * @param array $m regex matches
@@ -255,12 +255,12 @@ class Minify_CSS {
         if (self::$_inHack) {
             // inversion: feeding only to one browser
             if (preg_match('@
-            		^/               # comment started like /*/
-            		\\s*
-            		(\\S[\\s\\S]+?)  # has at least some non-ws content
-            		\\s*
-            		/\\*             # ends like /*/ or /**/
-            	@x', $m, $n)) {
+                    ^/               # comment started like /*/
+                    \\s*
+                    (\\S[\\s\\S]+?)  # has at least some non-ws content
+                    \\s*
+                    /\\*             # ends like /*/ or /**/
+                @x', $m, $n)) {
                 // end hack mode after this comment, but preserve the hack and comment content
                 self::$_inHack = false;
                 return "/*/{$n[1]}/*keep*/";
@@ -337,14 +337,14 @@ class Minify_CSS {
     protected static function _fontFamilyCB($m)
     {
         $m[1] = preg_replace('/
-        		\\s*
-        		(
-        			"[^"]+"      # 1 = family in double qutoes
-        			|\'[^\']+\'  # or 1 = family in single quotes
-        			|[\\w\\-]+   # or 1 = unquoted family
-        		)
-        		\\s*
-        	/x', '$1', $m[1]);
+                \\s*
+                (
+                    "[^"]+"      # 1 = family in double qutoes
+                    |\'[^\']+\'  # or 1 = family in single quotes
+                    |[\\w\\-]+   # or 1 = unquoted family
+                )
+                \\s*
+            /x', '$1', $m[1]);
         return 'font-family:' . $m[1] . $m[2];
     }
 }
