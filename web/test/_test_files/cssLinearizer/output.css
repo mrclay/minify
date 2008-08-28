@@ -38,6 +38,7 @@ adjacent bar { background: url('%TEST_FILES_URI%/cssLinearizer/../green.gif') }
 /*  */
 adjacent2 foo { background: red url(/red.gif); }
 adjacent2 bar { background: url('%TEST_FILES_URI%/cssLinearizer/1/../green.gif') }
+
 tv foo { background: red url(/red.gif); }
 tv bar { background: url('%TEST_FILES_URI%/cssLinearizer/1/../green.gif') }
 }

@@ -34,7 +34,12 @@ class Minify_CSS_Linearizer {
     
     private function _getStyles($file)
     {
-        if (false === ($css = @file_get_contents($file))) {
+        $file = realpath($file);
+        if (! $file
+            || in_array($file, self::$filesIncluded)
+            || false === ($css = @file_get_contents($file))
+        ) {
+            // file missing, already included, or failed read
             return '';
         }
         self::$filesIncluded[] = realpath($file);
@@ -70,7 +75,7 @@ class Minify_CSS_Linearizer {
         
         unset($copy); // copy served its purpose
 
-        // on original, strip all imports (we don't know which were successfull
+        // on original, strip all imports (we don't know which were successful
         // and they aren't allowed to appear below the top anyway).
         $css = preg_replace(
             '/
