@@ -1,7 +1,7 @@
 @media screen {
 /* some CSS to try to exercise things in general */
 
-/* Minify_CSS_Linearizer : could not open 'M:/home/mrclayor/public_html\_3rd_party\minify\web\test\_test_files\cssLinearizer\..\css\more.css' */
+
 
     body, td, th {
         font-family: Verdana , "Bitstream Vera Sans" , sans-serif ;
@@ -31,18 +31,17 @@ h1 + p {
 	#media-queries-2 { background-color: #0f0; }
 }
 
-@import url(http://example.com/hello.css);
 adjacent foo { background: red url(/red.gif); }
-adjacent bar { background: url('/_3rd_party/minify/web/test/_test_files/cssLinearizer/../green.gif') }
+adjacent bar { background: url('%TEST_FILES_URI%/cssLinearizer/../green.gif') }
 }
-
 @media tv,projection {
+/*  */
 adjacent2 foo { background: red url(/red.gif); }
-adjacent2 bar { background: url('/_3rd_party/minify/web/test/_test_files/cssLinearizer/1/../green.gif') }
-
+adjacent2 bar { background: url('%TEST_FILES_URI%/cssLinearizer/1/../green.gif') }
 tv foo { background: red url(/red.gif); }
-tv bar { background: url('/_3rd_party/minify/web/test/_test_files/cssLinearizer/1/../green.gif') }
+tv bar { background: url('%TEST_FILES_URI%/cssLinearizer/1/../green.gif') }
 }
+
 
 input foo { background: red url(/red.gif); }
-input bar { background: url('/_3rd_party/minify/web/test/_test_files/cssLinearizer/../green.gif') }
+input bar { background: url('%TEST_FILES_URI%/cssLinearizer/../green.gif') }

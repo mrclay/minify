@@ -21,7 +21,11 @@ class Minify_CSS_Linearizer {
         return $obj->_getStyles($file);
     }
     
+    // allows callback funcs to know the current directory
     private $_currentDir = null;
+    
+    // allows _importCB to write the fetched content back to the obj
+    private $_importedCss = '';
     
     private function __construct($currentDir)
     {
@@ -33,52 +37,77 @@ class Minify_CSS_Linearizer {
         if (false === ($css = @file_get_contents($file))) {
             return '';
         }
-        self::$filesIncluded[] = $file;
+        self::$filesIncluded[] = realpath($file);
         $this->_currentDir = dirname($file);
         
-        // TODO: rewrite relative URIs (non-imports)
-        $css = preg_replace_callback(
+        // remove UTF-8 BOM if present
+        if (pack("CCC",0xef,0xbb,0xbf) === substr($css, 0, 3)) {
+            $css = substr($css, 3);
+        }
+        // ensure uniform EOLs
+        $css = str_replace("\r\n", "\n", $css);
+        
+        // make copy w/ comments removed
+        $copy = preg_replace('@/\\*.*?\\*/@', '', $css);
+        
+        // process remaining @imports (we work on copy because we don't want to 
+        // pull in @imports that have been commented out). the replacement
+        // result is unimportant; we'd use "preg_match_callback" if it existed.
+        preg_replace_callback(
             '/
-				(?<!@import\\s)                
-            	url\\(\\s*([^\\)\\s]+)\\s*\\)
+                @import\\s+
+                (?:url\\(\\s*)?      # maybe url(
+                [\'"]?               # maybe quote
+                (.*?)                # 1 = URI
+                [\'"]?               # maybe end quote
+                (?:\\s*\\))?         # maybe )
+                ([a-zA-Z,\\s]*)?     # 2 = media list
+                ;                    # end token
             /x'
+            ,array($this, '_importCB')
+            ,$copy
+        );
+        
+        unset($copy); // copy served its purpose
+
+        // on original, strip all imports (we don't know which were successfull
+        // and they aren't allowed to appear below the top anyway).
+        $css = preg_replace(
+            '/
+                @import\\s+
+                (?:url\\(\\s*)?[\'"]?
+                .*?
+                [\'"]?(?:\\s*\\))?
+                [a-zA-Z,\\s]*
+                ;
+            /x'
+            ,''
+            ,$css
+        );
+        
+        // rewrite remaining relative URIs
+        $css = preg_replace_callback(
+            '/url\\(\\s*([^\\)\\s]+)\\s*\\)/'
             ,array($this, '_urlCB')
             ,$css
         );
         
-        // replace @imports with contents of files
-        $css = preg_replace_callback(
-            '/
-                @import\\s+
-                (?:url\\(\\s*)?[\'"]?
-                (.*?)                      # 1 = URI
-                [\'"]?(?:\\s*\\))?
-                ([a-zA-Z,\\s]*)?           # 2 = media list
-                ([;\\{])                   # 3 = put this back in
-            /x'
-            ,array($this, '_importCB')
-            ,$css
-        );
-        
-        return $css;
+        return $this->_importedCss . $css;
     }
     
     private function _importCB($m)
     {
         $url = $m[1];
         $mediaList = preg_replace('/\\s+/', '', $m[2]);
-        $endToken = $m[3] === '{' 
-            ? ':' 
-            : '';
         
         if (strpos($url, '://') > 0) {
-            // protocol, leave import in place
-            return $m[0];
+            // protocol, external content will not be fetched
+            return '';
         }
         if ('/' === $url[0]) {
             // protocol-relative or root path
             $url = ltrim($url, '/');
-            $file = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR
+            $file = realpath($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR
                 . strtr($url, '/', DIRECTORY_SEPARATOR);
         } else {
             // relative to current path
@@ -88,11 +117,13 @@ class Minify_CSS_Linearizer {
         $obj = new Minify_CSS_Linearizer(dirname($file));
         $css = $obj->_getStyles($file);
         if ('' === $css) {
-            return "/* Minify_CSS_Linearizer : could not open '{$file}' */";
+            // failed
+            return '';
         }
-        return preg_match('@(?:^$|\\ball\\b)@', $mediaList)
-            ? "{$css}\n{$endToken}"
-            : "@media {$mediaList} {\n{$css}\n}\n{$endToken}";
+        $this->_importedCss .= preg_match('@(?:^$|\\ball\\b)@', $mediaList)
+            ? $css
+            : "@media {$mediaList} {\n{$css}\n}\n";
+        return '';
     }
     
     private function _urlCB($m)
