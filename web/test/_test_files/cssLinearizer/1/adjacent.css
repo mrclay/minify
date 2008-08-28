@@ -1,0 +1,2 @@
+adjacent2 foo { background: red url(/red.gif); }
+adjacent2 bar { background: url('../green.gif') }

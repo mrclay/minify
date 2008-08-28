@@ -1,0 +1,3 @@
+@import url( adjacent.css ) all;
+tv foo { background: red url(/red.gif); }
+tv bar { background: url('../green.gif') }

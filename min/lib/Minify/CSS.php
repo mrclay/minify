@@ -192,7 +192,7 @@ class Minify_CSS {
         if ($rewrite) {
             $css = preg_replace_callback('/@import\\s+([\'"])(.*?)[\'"]/'
                 ,array('Minify_CSS', '_urlCB'), $css);
-            $css = preg_replace_callback('/url\\(([^\\)]+)\\)/'
+            $css = preg_replace_callback('/url\\(\\s*([^\\)\\s]+)\\s*\\)/'
                 ,array('Minify_CSS', '_urlCB'), $css);
         }
         self::$_tempPrepend = self::$_tempCurrentDir = '';

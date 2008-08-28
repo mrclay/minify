@@ -1,0 +1,4 @@
+@import url(../css/styles.css);
+@import url(http://example.com/hello.css);
+adjacent foo { background: red url(/red.gif); }
+adjacent bar { background: url('../green.gif') }
