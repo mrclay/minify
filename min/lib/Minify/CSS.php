@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Class Minify_CSS  
  * @package Minify

@@ -1,7 +1,7 @@
 <?php
 
 if (isset($_FILES['subject']['name'])
-    && preg_match('/\\.(js|css|html)$/', $_FILES['subject']['name'], $m)
+    && preg_match('/\\.(js|css|x?html?)$/', $_FILES['subject']['name'], $m)
 ) {
     ini_set('include_path', 
         dirname(__FILE__) . '/../../min/lib'
@@ -21,7 +21,9 @@ if (isset($_FILES['subject']['name'])
     case 'css':
         $type = 'CSS';
         break;
-    case 'html':
+    case 'html': // fallthrough
+    case 'htm': // fallthrough
+    case 'xhtml':
         $type = 'HTML';
         $arg2 = array(
             'cssMinifier' => array('Minify_CSS', 'minify')
@@ -38,6 +40,7 @@ if (isset($_FILES['subject']['name'])
         . preg_replace('/\\.(\w+)$/', '.min.$1', $_FILES['subject']['name'])   
         . '"');
     
+    //@unlink($_FILES['subject']['tmp_name']);
     echo $out;    
     exit();
 }

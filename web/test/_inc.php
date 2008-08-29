@@ -26,5 +26,3 @@ function assertTrue($test, $message)
 	
 	return (bool)$test;
 }
-
-?>
