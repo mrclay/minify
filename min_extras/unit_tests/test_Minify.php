@@ -91,7 +91,6 @@ function test_Minify()
     
     // Test minifying CSS and responding with Etag/Last-Modified
     
-    // needed to expose E_STRICT warning in Cache_Lite_File 
     Minify::setCache();
     
     // don't allow conditional headers
