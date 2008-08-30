@@ -1,5 +1,15 @@
 Minify Release History
 
+Version 2.1.0 beta
+    * "min" default app for quick deployment
+    * "debug" mode for revealing original line #s in combined files
+    * Relative URIs in CSS file are fixed automatically
+    * Conditional GETs always supported
+    * Improved CSS/HTML minifiers
+    * New "CSS linearizer" which processes @imports server-side
+    * New memcache storage class (default is files)
+    * Several bug fixes
+
 Version 2.0.2 beta (2008-06-24)
     * Fast new cache system. Cached files served almost 3x as fast.
     * Dropped support of compress encoding (though HTTP_Encoder still supports it)

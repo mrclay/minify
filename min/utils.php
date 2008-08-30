@@ -1,0 +1,78 @@
+<?php
+/**
+ * Utility functions for generating group URIs in HTML files
+ * 
+ * @package Minify
+ */
+
+require_once dirname(__FILE__) . '/lib/Minify/Build.php';
+
+
+/**
+ * Get a timestamped URI to a minified resource using the default Minify install
+ *
+ * <code>
+ * <link rel="stylesheet" type="text/css" href="<?php Minify_groupUri('css'); ?>" />
+ * <script type="text/javascript" src="<?php Minify_groupUri('js'); ?>"></script>
+ * </code>
+ *
+ * @param string $group a key from groupsConfig.php
+ * @param string $ampersand '&' or '&amp;' (default '&amp;')
+ * @return string
+ */ 
+function Minify_groupUri($group, $ampersand = '&amp;')
+{
+    Minify_Build::$ampersand = $ampersand;
+    return _Minify_getBuild($group)->uri('/' . basename(dirname(__FILE__)) . '/?g=' . $group);
+}
+
+
+/**
+ * Get the last modification time of the source js/css files used by Minify to
+ * build the page.
+ * 
+ * If you're caching the output of Minify_groupUri() on disk, you'll want 
+ * to rebuild the file if it's older than this value.
+ * 
+ * <code>
+ * // simplistic HTML cache system
+ * $file = '/path/to/cache/file';
+ * if (! file_exists($file) || filemtime($file) < Minify_groupsMtime(array('js', 'css'))) {
+ *     // (re)build cache
+ *     $page = buildPage(); // this calls Minify_groupUri() for js and css
+ *     file_put_contents($file, $page);
+ *     echo $page;
+ *     exit();
+ * }
+ * readfile($file);
+ * </code>
+ *
+ * @param array $groups an array of keys from groupsConfig.php
+ * @return int
+ */ 
+function Minify_groupsMtime($groups)
+{
+    $max = 0;
+    foreach ((array)$groups as $group) {
+        $max = max($max, _Minify_getBuild($group)->lastModified);
+    }
+    return $max;
+}
+
+/**
+ * @param string $group a key from groupsConfig.php
+ * @return Minify_Build
+ * @private
+ */
+function _Minify_getBuild($group)
+{
+    static $builds = array();
+    static $cg = false;
+    if (false === $gc) {
+        $gc = (require dirname(__FILE__) . '/groupsConfig.php');
+    }
+    if (! isset($builds[$group])) {
+        $builds[$group] = new Minify_Build($gc[$group]);
+    }
+    return $builds[$group];
+}
