@@ -15,7 +15,7 @@ class Minify_ImportProcessor {
     
     public static $filesIncluded = array();
     
-    public static function linearize($file)
+    public static function process($file)
     {
         self::$filesIncluded = array();
         self::$_isCss = (strtolower(substr($file, -4)) === '.css');

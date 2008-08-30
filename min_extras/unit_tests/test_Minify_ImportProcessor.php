@@ -1,12 +1,12 @@
 <?php
 
-return; // being refactored
+return; // refactoring
 
 require_once '_inc.php';
 
-require_once 'Minify/CSS/Linearizer.php';
+require_once 'Minify/ImportProcessor.php';
 
-function test_Minify_CSS_Linearizer()
+function test_Minify_ImportProcessor()
 {
     global $thisDir;
     
@@ -24,9 +24,9 @@ function test_Minify_CSS_Linearizer()
         ,file_get_contents($linDir . '/output.css')
     );
     
-    $actual = Minify_CSS_Linearizer::linearize($linDir . '/input.css');
+    $actual = Minify_ImportProcessor::process($linDir . '/input.css');
 
-    $passed = assertTrue($expected === $actual, 'Minify_CSS_Linearizer');
+    $passed = assertTrue($expected === $actual, 'ImportProcessor');
     
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         echo "\n---Output: " .strlen($actual). " bytes\n\n{$actual}\n\n";
@@ -43,8 +43,8 @@ function test_Minify_CSS_Linearizer()
         ,realpath($linDir . '/1/adjacent.css')
     );
     
-    $passed = assertTrue($expectedIncludes === Minify_CSS_Linearizer::$filesIncluded
-        , 'Minify_CSS_Linearizer : included right files in right order');
+    $passed = assertTrue($expectedIncludes === Minify_ImportProcessor::$filesIncluded
+        , 'ImportProcessor : included right files in right order');
 }
 
-test_Minify_CSS_Linearizer();
+test_Minify_ImportProcessor();
