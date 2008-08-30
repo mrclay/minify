@@ -34,7 +34,7 @@ $min_serveOptions['maxAge'] = 1800;
 
 
 /**
- * Manually set the path to Minify's lib folder
+ * If you move Minify's lib folder, give the path to it here.
  */
 //$min_libPath = 'lib';
 
@@ -49,7 +49,8 @@ $min_groupsOnly = false;
 /**
  * Uncomment to enable debug mode. Files will be combined with no 
  * minification, and comments will be added to indicate the line #s
- * of the original files.
+ * of the original files. This will allow you to debug the combined
+ * file while knowing where to modify the originals.
  */
 //$min_serveOptions['debug'] = true;
 

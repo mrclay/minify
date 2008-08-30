@@ -12,8 +12,8 @@ require_once dirname(__FILE__) . '/lib/Minify/Build.php';
  * Get a timestamped URI to a minified resource using the default Minify install
  *
  * <code>
- * <link rel="stylesheet" type="text/css" href="<?php Minify_groupUri('css'); ?>" />
- * <script type="text/javascript" src="<?php Minify_groupUri('js'); ?>"></script>
+ * <link rel="stylesheet" type="text/css" href="<?php echo Minify_groupUri('css'); ?>" />
+ * <script type="text/javascript" src="<?php echo Minify_groupUri('js'); ?>"></script>
  * </code>
  *
  * @param string $group a key from groupsConfig.php
@@ -31,8 +31,8 @@ function Minify_groupUri($group, $ampersand = '&amp;')
  * Get the last modification time of the source js/css files used by Minify to
  * build the page.
  * 
- * If you're caching the output of Minify_groupUri() on disk, you'll want 
- * to rebuild the file if it's older than this value.
+ * If you're caching the output of Minify_groupUri(), you'll want to rebuild 
+ * the cache if it's older than this timestamp.
  * 
  * <code>
  * // simplistic HTML cache system
@@ -48,7 +48,7 @@ function Minify_groupUri($group, $ampersand = '&amp;')
  * </code>
  *
  * @param array $groups an array of keys from groupsConfig.php
- * @return int
+ * @return int Unix timestamp of the latest modification
  */ 
 function Minify_groupsMtime($groups)
 {

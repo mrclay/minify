@@ -1,13 +1,12 @@
 The files in this directory represent the default Minify setup designed to ease
-integration with your site. Out-of-the-box, Minify can combine and minify files
-and serve them with HTTP compression and cache headers.
+integration with your site. This app will combine and minify your Javascript or
+CSS files and serve them with HTTP compression and cache headers.
 
 
 RECOMMENDED
 
 It's recommended to edit config.php to set $minifyCachePath to a writeable
-directory on your system. This will slightly improve the performance of each
-request.
+(by PHP) directory on your system. This will improve performance.
 
 
 MINIFYING A SINGLE FILE
@@ -25,7 +24,7 @@ initial "/". As CSS files may contain relative URIs, Minify will automatically
 
 COMBINING MULTIPLE FILES IN ONE DOWNLOAD
 
-Separate the file paths given to "f" with commas.
+Separate the paths given to "f" with commas.
 
 Let's say you have CSS files at these URLs:
   http://example.com/scripts/jquery-1.2.6.js
@@ -42,14 +41,13 @@ the "b" argument to set the base directory for the "f" argument. Do not include
 the leading or trailing "/" characters.
 
 E.g., the following URLs will serve the exact same content:
-  http://example.com/min/?f=scripts/jquery-1.2.6.js,scripts/site.js
-  http://example.com/min/?b=scripts&f=jquery-1.2.6.js,site.js
+  http://example.com/min/?f=scripts/jquery-1.2.6.js,scripts/site.js,scripts/home.js
+  http://example.com/min/?b=scripts&f=jquery-1.2.6.js,site.js,home.js
 
 
-USING THESE URLS IN HTML
+MINIFY URLS IN HTML
 
-In (X)HTML files, make sure to replace any "&" characters with "&amp;".
-
+In (X)HTML files, don't forget to replace any "&" characters with "&amp;".
 
 
 SPECIFYING ALLOWED DIRECTORIES
@@ -62,10 +60,10 @@ $minifyAllowDirs array in config.php. E.g. to limit to the /js and
 $minifyAllowDirs = array('//js', '//themes/default');
 
 
-FASTER PERFORMANCE AND SHORTER URLS
+GROUPS: FASTER PERFORMANCE AND BETTER URLS
 
 For the best performance, edit groupsConfig.php to pre-specify groups of files 
-to be combined under different keys. E.g., here's an example configuration in 
+to be combined under preset keys. E.g., here's an example configuration in 
 groupsConfig.php:
 
 return array(
@@ -79,3 +77,38 @@ This pre-selects the following files to be combined under the key "js":
 You can now serve these files with this simple URL:
   http://example.com/min/?g=js
   
+
+GROUPS: FAR-FUTURE EXPIRES HEADERS
+
+Minify can send far-future (one year) Expires headers. To enable this you must
+add a number to the querystring (/min/?g=js&1234) and alter it whenever a 
+source file is changed. If you have a build process you can use a build/
+source control revision number. If not, the utility function Minify_groupUri()
+will return "versioned" Minify URLs for use in your HTML. E.g.:
+
+<?php
+require $_SERVER['DOCUMENT_ROOT'] . '/min/util.php';
+
+$jsUri = Minify_groupUri('js'); 
+echo "<script type='text/javascript' src='{$jsUri}'></script>";
+
+
+GROUPS: SPECIFYING FILES OUTSIDE THE DOC_ROOT
+
+In the groupsConfig.php array, the "//" in the file paths is a shortcut for
+the DOCUMENT_ROOT, but you can also specify paths from the root of the filesystem
+or relative to the DOC_ROOT: 
+
+return array(
+    'js' => array(
+        '//js/file.js'            // file within DOC_ROOT
+        ,'//../file.js'           // file in parent directory of DOC_ROOT
+        ,'C:/Users/Steve/file.js' // file anywhere on filesystem
+    )
+);
+
+
+QUESTIONS?
+
+http://groups.google.com/group/minify
+steve@mrclay.org
