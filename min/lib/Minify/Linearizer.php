@@ -1,43 +1,47 @@
 <?php
 /**
- * Class Minify_CSS_Linearizer  
+ * Class Minify_ImportProcessor  
  * @package Minify
  */
 
 /**
- * Linearize a CSS file
+ * Linearize a CSS/JS file by including content specified by CSS import
+ * declarations. In CSS files, relative URIs are fixed. 
  *
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_CSS_Linearizer {
+class Minify_ImportProcessor {
     
     public static $filesIncluded = array();
     
     public static function linearize($file)
     {
         self::$filesIncluded = array();
-        $obj = new Minify_CSS_Linearizer(dirname($file));
-        return $obj->_getStyles($file);
+        self::$_isCss = (strtolower(substr($file, -4)) === '.css');
+        $obj = new Minify_ImportProcessor(dirname($file));
+        return $obj->_getContent($file);
     }
     
     // allows callback funcs to know the current directory
     private $_currentDir = null;
     
     // allows _importCB to write the fetched content back to the obj
-    private $_importedCss = '';
+    private $_importedContent = '';
+    
+    private static $_isCss = null;
     
     private function __construct($currentDir)
     {
         $this->_currentDir = $currentDir;
     }
     
-    private function _getStyles($file)
+    private function _getContent($file)
     {
         $file = realpath($file);
         if (! $file
             || in_array($file, self::$filesIncluded)
-            || false === ($css = @file_get_contents($file))
+            || false === ($content = @file_get_contents($file))
         ) {
             // file missing, already included, or failed read
             return '';
@@ -46,19 +50,14 @@ class Minify_CSS_Linearizer {
         $this->_currentDir = dirname($file);
         
         // remove UTF-8 BOM if present
-        if (pack("CCC",0xef,0xbb,0xbf) === substr($css, 0, 3)) {
-            $css = substr($css, 3);
+        if (pack("CCC",0xef,0xbb,0xbf) === substr($content, 0, 3)) {
+            $content = substr($content, 3);
         }
         // ensure uniform EOLs
-        $css = str_replace("\r\n", "\n", $css);
+        $content = str_replace("\r\n", "\n", $content);
         
-        // make copy w/ comments removed
-        $copy = preg_replace('@/\\*.*?\\*/@', '', $css);
-        
-        // process remaining @imports (we work on copy because we don't want to 
-        // pull in @imports that have been commented out). the replacement
-        // result is unimportant; we'd use "preg_match_callback" if it existed.
-        preg_replace_callback(
+        // process @imports
+        $content = preg_replace_callback(
             '/
                 @import\\s+
                 (?:url\\(\\s*)?      # maybe url(
@@ -70,34 +69,19 @@ class Minify_CSS_Linearizer {
                 ;                    # end token
             /x'
             ,array($this, '_importCB')
-            ,$copy
+            ,$content
         );
         
-        unset($copy); // copy served its purpose
-
-        // on original, strip all imports (we don't know which were successful
-        // and they aren't allowed to appear below the top anyway).
-        $css = preg_replace(
-            '/
-                @import\\s+
-                (?:url\\(\\s*)?[\'"]?
-                .*?
-                [\'"]?(?:\\s*\\))?
-                [a-zA-Z,\\s]*
-                ;
-            /x'
-            ,''
-            ,$css
-        );
+        if (self::$_isCss) {
+            // rewrite remaining relative URIs
+            $content = preg_replace_callback(
+                '/url\\(\\s*([^\\)\\s]+)\\s*\\)/'
+                ,array($this, '_urlCB')
+                ,$content
+            );
+        }
         
-        // rewrite remaining relative URIs
-        $css = preg_replace_callback(
-            '/url\\(\\s*([^\\)\\s]+)\\s*\\)/'
-            ,array($this, '_urlCB')
-            ,$css
-        );
-        
-        return $this->_importedCss . $css;
+        return $this->_importedContent . $content;
     }
     
     private function _importCB($m)
@@ -106,8 +90,10 @@ class Minify_CSS_Linearizer {
         $mediaList = preg_replace('/\\s+/', '', $m[2]);
         
         if (strpos($url, '://') > 0) {
-            // protocol, external content will not be fetched
-            return '';
+            // protocol, leave in place for CSS, comment for JS
+            return self::$_isCss
+                ? $m[0]
+                : "/* Minify_ImportProcessor will not include remote content */";
         }
         if ('/' === $url[0]) {
             // protocol-relative or root path
@@ -119,16 +105,17 @@ class Minify_CSS_Linearizer {
             $file = $this->_currentDir . DIRECTORY_SEPARATOR 
                 . strtr($url, '/', DIRECTORY_SEPARATOR);
         }
-        $obj = new Minify_CSS_Linearizer(dirname($file));
-        $css = $obj->_getStyles($file);
-        if ('' === $css) {
-            // failed
-            return '';
+        $obj = new Minify_ImportProcessor(dirname($file));
+        $content = $obj->_getContent($file);
+        if ('' === $content) {
+            // failed. leave in place for CSS, comment for JS
+            return self::$_isCss
+                ? $m[0]
+                : "/* Minify_ImportProcessor could not fetch '{$file}' */";;
         }
-        $this->_importedCss .= preg_match('@(?:^$|\\ball\\b)@', $mediaList)
-            ? $css
-            : "@media {$mediaList} {\n{$css}\n}\n";
-        return '';
+        return (!self::$_isCss || preg_match('@(?:^$|\\ball\\b)@', $mediaList))
+            ? $content
+            : "@media {$mediaList} {\n{$content}\n}\n";
     }
     
     private function _urlCB($m)
