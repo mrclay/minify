@@ -1,7 +1,5 @@
 <?php
 
-return; // refactoring
-
 require_once '_inc.php';
 
 require_once 'Minify/ImportProcessor.php';
@@ -10,7 +8,7 @@ function test_Minify_ImportProcessor()
 {
     global $thisDir;
     
-    $linDir = $thisDir . '/_test_files/cssLinearizer';
+    $linDir = $thisDir . '/_test_files/importProcessor';
     
     $testFilesUri = substr(
         realpath($thisDir . '/_test_files')
