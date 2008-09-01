@@ -32,10 +32,8 @@ class Minify_Lines {
         $id = (isset($options['id']) && $options['id'])
             ? $options['id']
             : '';
-        if (! $eol = self::_getEol($content)) {
-            return $content;
-        }
-        $lines = explode($eol, $content);
+        $content = str_replace("\r\n", "\n", $content);
+        $lines = explode("\n", $content);
         $numLines = count($lines);
         // determine left padding
         $padTo = strlen($numLines);
@@ -50,28 +48,7 @@ class Minify_Lines {
             $newLines[] = self::_addNote($line, $i, $inComment, $padTo);
             $inComment = self::_eolInComment($line, $inComment);
         }
-        return implode($eol, $newLines) . $eol;
-    }
-    
-    /**
-     * Determine EOL character sequence
-     *
-     * @param string $str file content
-     * 
-     * @return string EOL char(s) or '' if no EOL could be found
-     */
-    private static function _getEol($str)
-    {
-        $r = strpos($str, "\r");
-        $n = strpos($str, "\n");
-        if (false === $r && false === $n) {
-            return '';
-        }
-        return ($r !== false)
-            ? ($n == ($r + 1) 
-                ? "\r\n"
-                : "\r")
-            : "\n";
+        return implode("\n", $newLines) . "\n";
     }
     
     /**

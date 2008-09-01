@@ -6,7 +6,11 @@
 
 /**
  * Linearize a CSS/JS file by including content specified by CSS import
- * declarations. In CSS files, relative URIs are fixed. 
+ * declarations. In CSS files, relative URIs are fixed.
+ * 
+ * @imports will be processed regardless of where they appear in the source 
+ * files; i.e. @imports commented out or in string content will still be
+ * processed! 
  *
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>

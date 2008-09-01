@@ -47,44 +47,16 @@ class Minify_CSS {
             && !$options['preserveComments']) {
             return self::_minify($css, $options);    
         }
-        $ret = '';
-        while (1) {
-            list($beforeComment, $comment, $afterComment)
-                = self::_nextYuiComment($css);
-            $ret .= self::_minify($beforeComment, $options);
-            if (false === $comment) {
-                break;
-            }
-            $ret .= $comment;
-            $css = $afterComment;
-        }
-        return $ret;
+        require_once 'Minify/CommentPreserver.php';
+        // recursive calls don't preserve comments
+        $options['preserveComments'] = false;
+        return Minify_CommentPreserver::process(
+            $css
+            ,array('Minify_CSS', 'minify')
+            ,array($options)
+        );
     }
 
-    /**
-     * Extract comments that YUI Compressor preserves.
-     * 
-     * @param string $in input
-     * 
-     * @return array 3 elements are returned. If a YUI comment is found, the
-     * 2nd element is the comment and the 1st and 2nd are the surrounding
-     * strings. If no comment is found, the entire string is returned as the 
-     * 1st element and the other two are false.
-     */
-    private static function _nextYuiComment($in)
-    {
-        return (
-            (false !== ($start = strpos($in, '/*!')))
-            && (false !== ($end = strpos($in, '*/', $start + 3)))
-        )
-            ? array(
-                substr($in, 0, $start)
-                ,"\n/*" . substr($in, $start + 3, $end - $start - 1) . "\n"
-                ,substr($in, -(strlen($in) - $end - 2))
-            )
-            : array($in, false, false);
-    }
-    
     /**
      * Minify a CSS string
      * 
@@ -113,9 +85,6 @@ class Minify_CSS {
         $css = preg_replace_callback('@\\s*/\\*([\\s\\S]*?)\\*/\\s*@'
             ,array('Minify_CSS', '_commentCB'), $css);
 
-        // leave needed comments
-        $css = str_replace('/*keep*/', '/**/', $css);
-        
         // remove ws around { } and last semicolon in declaration block
         $css = preg_replace('/\\s*{\\s*/', '{', $css);
         $css = preg_replace('/;?\\s*}\\s*/', '}', $css);
@@ -242,7 +211,7 @@ class Minify_CSS {
         // $m is the comment content w/o the surrounding tokens, 
         // but the return value will replace the entire comment.
         if ($m === 'keep') {
-            return '/*keep*/';
+            return '/**/';
         }
         if ($m === '" "') {
             // component of http://tantek.com/CSS/Examples/midpass.html
@@ -263,7 +232,7 @@ class Minify_CSS {
                 @x', $m, $n)) {
                 // end hack mode after this comment, but preserve the hack and comment content
                 self::$_inHack = false;
-                return "/*/{$n[1]}/*keep*/";
+                return "/*/{$n[1]}/**/";
             }
         }
         if (substr($m, -1) === '\\') { // comment ends like \*/
@@ -279,7 +248,7 @@ class Minify_CSS {
         if (self::$_inHack) {
             // a regular comment ends hack mode but should be preserved
             self::$_inHack = false;
-            return '/*keep*/';
+            return '/**/';
         }
         return ''; // remove all other comments
     }

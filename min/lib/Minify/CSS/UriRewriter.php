@@ -7,7 +7,7 @@
 /**
  * Rewrite file-relative URIs as root-relative in CSS files
  *
- * @todo: unit tests, use in Minify_CSS and Minify_ImportProcessor
+ * @todo: prepend() method
  * 
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
@@ -55,14 +55,14 @@ class Minify_CSS_UriRewriter {
     /**
      * @var string directory of this stylesheet
      */
-    protected static $_currentDir = '';
+    private static $_currentDir = '';
     
     /**
      * @var string DOC_ROOT
      */
-    protected static $_docRoot = '';
+    private static $_docRoot = '';
     
-    protected static function _uriCB($m)
+    private static function _uriCB($m)
     {
         $isImport = ($m[0][0] === '@');
         if ($isImport) {
@@ -90,7 +90,12 @@ class Minify_CSS_UriRewriter {
                 $path = substr($path, strlen(self::$_docRoot));
                 // fix to root-relative URI
                 $uri = strtr($path, DIRECTORY_SEPARATOR, '/');
+                // eat .
                 $uri = str_replace('/./', '/', $uri);
+                // eat ..
+                while (preg_match('@/[^/\\.]+/\\.\\./@', $uri, $m)) {
+                    $uri = str_replace($m[0], '/', $uri);
+                }
             }
         }
         if ($isImport) {
