@@ -7,6 +7,7 @@ function test_HTTP_Encoder()
 {
     global $thisDir;
     
+    HTTP_Encoder::$encodeToIe6 = true;
     $methodTests = array(
         array(
             'ua' => 'Any browser'
@@ -51,7 +52,28 @@ function test_HTTP_Encoder()
             ,'desc' => 'Opera identifying as IE6'
         )
     );
-    
+    foreach ($methodTests as $test) {
+        $_SERVER['HTTP_USER_AGENT'] = $test['ua'];
+        $_SERVER['HTTP_ACCEPT_ENCODING'] = $test['ae'];
+        $exp = $test['exp'];
+        $ret = HTTP_Encoder::getAcceptedEncoding();
+        $passed = assertTrue($exp == $ret, 'HTTP_Encoder : ' . $test['desc']);
+        
+        if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
+            echo "\n--- AE | UA = {$test['ae']} | {$test['ua']}\n";
+            echo "Expected = " . preg_replace('/\\s+/', ' ', var_export($exp, 1)) . "\n";
+            echo "Returned = " . preg_replace('/\\s+/', ' ', var_export($ret, 1)) . "\n\n";
+        }
+    }
+    HTTP_Encoder::$encodeToIe6 = false;
+    $methodTests = array(
+        array(
+            'ua' => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)'
+            ,'ae' => 'gzip, deflate'
+            ,'exp' => array('', '')
+            ,'desc' => 'IE6 w/ "enhanced security"'
+        )
+    );
     foreach ($methodTests as $test) {
         $_SERVER['HTTP_USER_AGENT'] = $test['ua'];
         $_SERVER['HTTP_ACCEPT_ENCODING'] = $test['ae'];

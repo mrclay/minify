@@ -37,6 +37,23 @@
 class HTTP_Encoder {
 
     /**
+     * Should the encoder allow HTTP encoding to IE6? 
+     * 
+     * If you have many IE6 users and the bandwidth savings is worth troubling 
+     * some of them, set this to true.
+     * 
+     * By default, encoding is only offered to IE7+. When this is true,
+     * getAcceptedEncoding() will return an encoding for IE6 if its user agent
+     * string contains "SV1". This has been documented in many places as "safe",
+     * but there seem to be remaining, intermittent encoding bugs in patched 
+     * IE6 on the wild web.
+     * 
+     * @var int
+     */
+    public static $encodeToIe6 = false;
+    
+    
+    /**
      * Default compression level for zlib operations
      * 
      * This level is used if encode() is not given a $compressionLevel
@@ -44,6 +61,7 @@ class HTTP_Encoder {
      * @var int
      */
     public static $compressionLevel = 6;
+    
 
     /**
      * Get an HTTP Encoder object
@@ -258,9 +276,8 @@ class HTTP_Encoder {
         }
         // no regex = faaast
         $version = (float)substr($ua, 30); 
-        return (
-            $version < 6
-            || ($version == 6  && false === strpos($ua, 'SV1'))
-        );
+        return self::$encodeToIe6
+            ? ($version < 6 || ($version == 6 && false === strpos($ua, 'SV1')))
+            : ($version < 7);
     }
 }

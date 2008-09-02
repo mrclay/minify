@@ -1,7 +1,7 @@
 @media screen {
 /* some CSS to try to exercise things in general */
 
-@import     url(/_3rd_party/minify/min_extras/unit_tests/_test_files/css/more.css);
+@import     url(%TEST_FILES_URI%/css/more.css);
 
     body, td, th {
         font-family: Verdana , "Bitstream Vera Sans" , sans-serif ;
@@ -32,17 +32,17 @@ h1 + p {
 }
 @import url(http://example.com/hello.css);
 adjacent foo { background: red url(/red.gif); }
-adjacent bar { background: url('/_3rd_party/minify/min_extras/unit_tests/_test_files/importProcessor/../green.gif') }
+adjacent bar { background: url('%TEST_FILES_URI%/importProcessor/../green.gif') }
 }
 
 @media tv,projection {
-/* @import url('/_3rd_party/minify/min_extras/unit_tests/_test_files/importProcessor/1/bad.css') bad; */
+/* @import url('%TEST_FILES_URI%/importProcessor/1/bad.css') bad; */
 adjacent2 foo { background: red url(/red.gif); }
-adjacent2 bar { background: url('/_3rd_party/minify/min_extras/unit_tests/_test_files/importProcessor/1/../green.gif') }
+adjacent2 bar { background: url('%TEST_FILES_URI%/importProcessor/1/../green.gif') }
 @import '../input.css';
 tv foo { background: red url(/red.gif); }
-tv bar { background: url('/_3rd_party/minify/min_extras/unit_tests/_test_files/importProcessor/1/../green.gif') }
+tv bar { background: url('%TEST_FILES_URI%/importProcessor/1/../green.gif') }
 }
 
 input foo { background: red url(/red.gif); }
-input bar { background: url('/_3rd_party/minify/min_extras/unit_tests/_test_files/importProcessor/../green.gif') }
+input bar { background: url('%TEST_FILES_URI%/importProcessor/../green.gif') }
