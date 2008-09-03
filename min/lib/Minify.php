@@ -324,6 +324,30 @@ class Minify {
     }
     
     /**
+     * On IIS, create $_SERVER['DOCUMENT_ROOT']
+     * 
+     * @param bool $unsetPathInfo (default false) if true, $_SERVER['PATH_INFO']
+     * will be unset (it is inconsistent with Apache's setting)
+     * 
+     * @return null
+     */
+    public static function setDocRoot($unsetPathInfo = false)
+    {
+        if (isset($_SERVER['SERVER_SOFTWARE'])
+            && 0 === strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/')
+        ) {
+            $_SERVER['DOCUMENT_ROOT'] = substr(
+                $_SERVER['PATH_TRANSLATED']
+                ,0
+                ,strlen($_SERVER['PATH_TRANSLATED']) - strlen($_SERVER['SCRIPT_NAME'])
+            );
+            if ($unsetPathInfo) {
+                unset($_SERVER['PATH_INFO']);
+            }
+        }
+    }
+    
+    /**
      * @var Minify_Controller active controller for current request
      */
     protected static $_controller = null;

@@ -36,13 +36,18 @@ class Minify_Controller_Page extends Minify_Controller_Base {
      * @todo Add 'file' option to read HTML file.
      */
     public function setupSources($options) {
-        // strip controller options
-        $sourceSpec = array(
-            'content' => $options['content']
-            ,'id' => $options['id']
-        );
-        unset($options['content'], $options['id']);
-        
+        if (isset($options['file'])) {
+            $sourceSpec = array(
+                'filepath' => $options['file']
+            );
+        } else {
+            // strip controller options
+            $sourceSpec = array(
+                'content' => $options['content']
+                ,'id' => $options['id']
+            );
+            unset($options['content'], $options['id']);
+        }
         if (isset($options['minifyAll'])) {
             // this will be the 2nd argument passed to Minify_HTML::minify()
             $sourceSpec['minifyOptions'] = array(

@@ -27,6 +27,10 @@ if (! (include 'Minify.php')) {
     );
 }
 
+if (0 === stripos(PHP_OS, 'win')) {
+    Minify::setDocRoot(); // we may be on IIS
+}
+
 Minify::$uploaderHoursBehind = $min_uploaderHoursBehind;
 
 if (isset($_GET['g'])) {

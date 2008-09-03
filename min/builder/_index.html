@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<head>
+    <title>Minify URI Builder</title>
+    <style type="text/css">
+#sources {margin:0; padding:0;}
+#sources li {margin:0 0 0 40px}
+#sources li input {margin-left:2px}
+#add {margin:5px 0 1em 40px}
+#update, #uriTable {display:none}
+b {color:#c00}
+    </style>
+</head>
+<h1>Minify URI Builder</h1>
+
+<p>Create a list of Javascript or CSS files and click [Update] to generate
+a URI to serve them as one file through Minify.</p>
+
+<ol id=sources><li></li></ol>
+<div id=add><button>Add file +</button></div>
+
+<p><button id=update>Update</button></p>
+
+<table id=uriTable>
+    <tr><th>URI</th><td><a id=uriA onclick="this.target='_blank'">/min</a> <small>(opens in new window)</small></td></tr>
+    <tr><th>HTML</th><td><input id=uriHtml type=text size=80 readonly></td></tr>
+</table>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+
+<script type="text/javascript">
+    // workaround required to test when /min isn't child of web root
+    var src = location.pathname.replace(/\/[^\/]*$/, '/index.js').substr(1);
+    document.write('<\script type="text/javascript" src="../?f=' + src + '"><\/script>');
+</script>
+
+<!--[
+This comment remains because the "[" makes it look like an IE conditional comment
+-->
