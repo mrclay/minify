@@ -6,6 +6,13 @@
 
 
 /**
+ * Forward empty requests to URI Builder app. After initial setup this
+ * should be set to false.
+ **/
+$min_forwardToBuilder = true;
+
+
+/**
  * For best performance, specify your temp directory here.
  * Otherwise Minify will have to load extra code to guess.
  */

@@ -69,4 +69,15 @@ if (isset($_GET['g'])) {
     $_GET['files'] = $min_base . str_replace(',', ',' . $min_base, $_GET['f']);
     
     Minify::serve('Version1', $min_serveOptions);
+
+} elseif ($min_forwardToBuilder) {
+ 
+    header('Location: builder/');
+    exit();
+    
+} else {
+
+    header("HTTP/1.0 404 Not Found");
+    exit();
+
 }

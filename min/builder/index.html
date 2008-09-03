@@ -1,0 +1,24 @@
+<!doctype html>
+<head>
+    <title>Minify URI Builder</title>
+    <style type="text/css">
+#sources {margin:0; padding:0;}
+#sources li {margin:0 0 0 40px}
+#add {margin:5px 0 1em 40px}
+li span {margin:0 3px}
+    </style>
+</head>
+<h1>Minify URI Builder</h1>
+
+<ol id=sources></ol>
+<div id=add><a href='#'>Add file +</a></div>
+
+<p><button id=update>Update</button></p>
+
+<table style="display:none">
+    <tr><th>URI</th><td><a id=uriA target="_blank">/min</a> <small>(opens in new window)</small></td></tr>
+    <tr><th>HTML</th><td><input id=uriHtml type=text size=80 readonly></td></tr>
+</table>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+<script type="text/javascript" src="index.js"></script>
