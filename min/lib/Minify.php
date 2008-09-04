@@ -324,6 +324,29 @@ class Minify {
     }
     
     /**
+     * Return combined minified content for a set of sources
+     *
+     * No internal caching will be used and the content will not be HTTP encoded.
+     * 
+     * @param array $sources array of filepaths and/or Minify_Source objects
+     * 
+     * @return string
+     */
+    public static function combine($sources)
+    {
+        $cache = self::$_cache;
+        self::$_cache = null;
+        $out = self::serve('Files', array(
+            'files' => (array)$sources
+            ,'quiet' => true
+            ,'encodeMethod' => ''
+            ,'lastModifiedTime' => 0
+        ));
+        self::$_cache = $cache;
+        return $out['content'];
+    }
+    
+    /**
      * On IIS, create $_SERVER['DOCUMENT_ROOT']
      * 
      * @param bool $unsetPathInfo (default false) if true, $_SERVER['PATH_INFO']
