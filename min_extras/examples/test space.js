@@ -1,5 +1,5 @@
-$(function () {
+window.onload = function () {
 
-    $('#jsFail1').html('PASS');
+    html('jsFail1', 'PASS');
     
-});
+};

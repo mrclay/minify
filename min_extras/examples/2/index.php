@@ -26,8 +26,8 @@ ob_start();
 
 <?php if (! $minifyCachePath): ?>
 <p><strong>Note:</strong> You should <em>always</em> enable caching using 
-<code>Minify::useServerCache()</code>. For the examples this can be set in 
-<code>config.php</code>. Notice that minifying jQuery takes several seconds!.</p>
+<code>Minify::setCache()</code>. For the examples this can be set in 
+<code>config.php</code>.</p>
 <?php endif; ?>
 
 <h1>Minify Example 2: Minifying <em>Everything</em></h1>
@@ -40,6 +40,9 @@ elements.</p>
 <p>As the document is XHTML, Minify_HTML places the 2nd <code>&lt;script&gt;</code>
 element in a CDATA section because it contains "&lt;". The output is valid XHTML.</p>
 
+<h2><a href="http://validator.w3.org/check/referer" 
+onclick="this.target='_blank'">Validate XHTML</a></h2>
+
 <h2>Minify tests</h2>
 <ul>
     <li id="cssFail"><span>FAIL</span>PASS</li>
@@ -48,16 +51,21 @@ element in a CDATA section because it contains "&lt;". The output is valid XHTML
 </ul>
 
 <h2>Test client cache</h2>
-<p><a href="">Reload page</a> <small>(F5 can trigger no-cache headers)</small></p>
+<p>When you <a href="">click here</a> to reload the page, your browser should 
+not have to re-download any files.</p>
+
+<p style='text-align:right'><a href="../../">extras index &raquo;</a></p>
 
 <script type="text/javascript" src="<?php echo $jsBuild->uri('m.php/js'); ?>"></script>
 <script type="text/javascript">
 
-$(function () {
+var wo = window.onload;
+window.onload = function () {
+    wo && wo();
     if ( 1 < 2 ) {
-        $('#jsFail2').html('PASS');
+        html('jsFail2', 'PASS');
     }
-});
+};
 
 </script>
 </body>

@@ -90,7 +90,7 @@ function test_HTTP_Encoder()
     
     $variedContent = file_get_contents($thisDir . '/_test_files/html/before.html')
         . file_get_contents($thisDir . '/_test_files/css/subsilver.css')
-        . file_get_contents($thisDir . '/../examples/jquery-1.2.3.js');
+        . file_get_contents($thisDir . '/../ab_tests/minify/before.js');
     $variedLength = strlen($variedContent);
     
     $encodingTests = array(

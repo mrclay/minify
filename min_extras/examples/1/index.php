@@ -18,8 +18,8 @@ $cssBuild = new Minify_Build($groupsSources['css']);
 
 <?php if (! $minifyCachePath): ?>
 <p><strong>Note:</strong> You should <em>always</em> enable caching using 
-<code>Minify::useServerCache()</code>. For the examples this can be set in 
-<code>config.php</code>. Notice that minifying jQuery takes several seconds!.</p>
+<code>Minify::setCache()</code>. For the examples this can be set in 
+<code>config.php</code>.</p>
 <?php endif; ?>
 
 <h1>Minify Example 1 : Groups controller + Far-off Expires header</h1>
@@ -40,7 +40,10 @@ changed in the HTML document, causing the browser to request a new version.</p>
 </ul>
 
 <h2>Test client cache</h2>
-<p><a href="">Reload page</a> <small>(F5 can trigger no-cache headers)</small></p>
+<p>When you <a href="">click here</a> to reload the page, your browser should 
+not have to re-download the minified files.</p>
+
+<p style='text-align:right'><a href="../2/">example 2 &raquo;</a></p>
 
 <script type="text/javascript" src="<?php echo $jsBuild->uri('m.php/js'); ?>"></script>
 </body>

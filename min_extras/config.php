@@ -13,5 +13,5 @@ ini_set('include_path',
  * Set $minifyCachePath to a PHP-writeable path to enable server-side caching
  * in all examples and tests.  
  */
-$minifyCachePath = 'C:/xampp/tmp'; // '';
+$minifyCachePath = '';
 
