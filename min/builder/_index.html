@@ -30,7 +30,7 @@ a URI to serve them as one file through Minify.</p>
 
 <script type="text/javascript">
     // workaround required to test when /min isn't child of web root
-    var src = location.pathname.replace(/\/[^\/]*$/, '/index.js').substr(1);
+    var src = location.pathname.replace(/\/[^\/]*$/, '/_index.js').substr(1);
     document.write('<\script type="text/javascript" src="../?f=' + src + '"><\/script>');
 </script>
 
