@@ -11,5 +11,5 @@ Minify::serve('Groups', array(
     'groups' => array(
         'test' => array(dirname(__FILE__) . '/before.js') 
     )
-    ,'setExpires' => $_SERVER['REQUEST_TIME'] + 31536000 // 1 yr
+    ,'maxAge' => 31536000 // 1 yr
 ));

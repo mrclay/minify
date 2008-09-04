@@ -3,9 +3,13 @@
 require '../../config.php';
 
 require 'Minify.php';
+require 'Minify/Cache/Memcache.php';
 
-// give an explicit path to avoid having to load Solar/Dir.php
-Minify::setCache($minifyCachePath);
+$mc = new Memcache;
+if (! $mc->connect('localhost', 11211)) {
+    die();
+}
+Minify::setCache(new Minify_Cache_Memcache($mc));
 
 Minify::serve('Files', array(
     'files' => array(
