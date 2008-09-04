@@ -3,12 +3,9 @@
 if (isset($_FILES['subject']['name'])
     && preg_match('/\\.(js|css|x?html?)$/', $_FILES['subject']['name'], $m)
 ) {
-    ini_set('include_path', 
-        dirname(__FILE__) . '/../../min/lib'
-        . PATH_SEPARATOR . ini_get('include_path')
-    );
-
-    // eh why not
+    require '../config.php';
+    
+    // easier to just require them all
     require 'Minify/HTML.php';
     require 'Minify/CSS.php';
     require 'Minify/Javascript.php';

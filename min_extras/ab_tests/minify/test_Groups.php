@@ -4,7 +4,7 @@ require '../../config.php';
 
 require 'Minify.php';
 
-// give an explicit path to avoid having to load Solar/Dir.php
+// set in /min/config.php
 Minify::setCache($minifyCachePath);
 
 Minify::serve('Groups', array(
