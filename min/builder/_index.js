@@ -46,11 +46,14 @@ var MUB = {
         $.ajax({
             url : url
             ,complete : function (xhr, stat) {
-                $('span', li).html(
-                    'success' == stat
-                        ? '&#x2713;'
-                        : '<b>file not found!</b>'
-                );
+                if ('success' == stat)
+                    $('span', li).html('&#x2713;');
+                else {
+                    $('span', li).html('<button><b>404! </b> recheck</button>')
+                        .find('button').click(function () {
+                            MUB.liUpdateTestLink.call(li);
+                        });
+                }
             }
             ,dataType : 'text'
         });
@@ -125,6 +128,7 @@ var MUB = {
         });
         if (fail || ! sources.length)
             return;
+        $('#groupConfig').val("    'keyName' => '//" + sources.join("', '//") + "',");
         var uri = MUB.getBestUri(sources)
            ,uriH = uri.replace(/</, '&lt;').replace(/>/, '&gt;').replace(/&/, '&amp;');
         $('#uriA').html(uriH)[0].href = uri;
@@ -133,20 +137,23 @@ var MUB = {
             ? '<script type="text/javascript" src="' + uriH + '"></script>'
             : '<link type="text/css" rel="stylesheet" href="' + uriH + '" />'
         );
-        $('#uriTable').show();
+        $('#results').show();
+    }
+    ,addButtonClick : function () {
+        MUB.addLi();
+        MUB.updateAllTestLinks();
+        $('#update').show().click(MUB.update);
     }
     ,init : function () {
         $('#sources').html('');
-        $('#add button').click(function () {
-            MUB.addLi();
-            MUB.updateAllTestLinks();
-            $('#update').show().click(MUB.update);
-        });
-        $('#uriHtml').click(function () {
+        $('#add button').click(MUB.addButtonClick);
+        $('#uriHtml, #groupConfig').click(function () {
             this.select();
         }).focus(function () {
             this.select();
         });
+        $('a.ext').attr({target:'_blank'});
+        MUB.addButtonClick();
     }
 };
 window.onload = MUB.init;
