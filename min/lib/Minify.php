@@ -57,14 +57,17 @@ class Minify {
      *
      * @param mixed $cache object with identical interface as Minify_Cache_File or
      * a directory path. (default = '')
+     * 
+     * @param bool $fileLocking (default = true) This only applies if the first
+     * parameter is a string.
      *
      * @return null
      */
-    public static function setCache($cache = '')
+    public static function setCache($cache = '', $fileLocking = true)
     {
         if (is_string($cache)) {
             require_once 'Minify/Cache/File.php';
-            self::$_cache = new Minify_Cache_File($cache);
+            self::$_cache = new Minify_Cache_File($cache, $fileLocking);
         } else {
             self::$_cache = $cache;
         }

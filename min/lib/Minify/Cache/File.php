@@ -6,12 +6,13 @@
 
 class Minify_Cache_File {
     
-    public function __construct($path = '')
+    public function __construct($path = '', $fileLocking = false)
     {
         if (! $path) {
             require_once 'Solar/Dir.php';
             $path = rtrim(Solar_Dir::tmp(), DIRECTORY_SEPARATOR);
         }
+        $this->_locking = $fileLocking;
         $this->_path = $path;
     }
     
@@ -26,7 +27,20 @@ class Minify_Cache_File {
      */
     public function store($id, $data)
     {
-        return self::_verifiedWrite($this->_path . '/' . $id, $data);
+        $flag = $this->_locking
+            ? LOCK_EX
+            : null;
+        if (is_file($this->_path . '/' . $id)) {
+            @unlink($this->_path . '/' . $id);
+        }
+        if (! @file_put_contents($this->_path . '/' . $id, $data, $flag)) {
+            return false;
+        }
+        if ($data !== $this->fetch($id)) {
+            @unlink($file);
+            return false;
+        }
+        return true;
     }
     
     /**
@@ -53,7 +67,7 @@ class Minify_Cache_File {
     public function isValid($id, $srcMtime)
     {
         $file = $this->_path . '/' . $id;
-        return (file_exists($file) && (filemtime($file) >= $srcMtime));
+        return (is_file($file) && (filemtime($file) >= $srcMtime));
     }
     
     /**
@@ -63,7 +77,15 @@ class Minify_Cache_File {
      */
     public function display($id)
     {
-        readfile($this->_path . '/' . $id);
+        if ($this->_locking) {
+            $fp = fopen($this->_path . '/' . $id, 'rb');
+            flock($fp, LOCK_SH);
+            fpassthru($fp);
+            flock($fp, LOCK_UN);
+            fclose($fp);
+        } else {
+            readfile($this->_path . '/' . $id);            
+        }
     }
     
 	/**
@@ -75,29 +97,18 @@ class Minify_Cache_File {
      */
     public function fetch($id)
     {
-        return file_get_contents($this->_path . '/' . $id);
+        if ($this->_locking) {
+            $fp = fopen($this->_path . '/' . $id, 'rb');
+            flock($fp, LOCK_SH);
+            $ret = stream_get_contents($fp);
+            flock($fp, LOCK_UN);
+            fclose($fp);
+            return $ret;
+        } else {
+            return file_get_contents($this->_path . '/' . $id);
+        }
     }
     
     private $_path = null;
-    
-	/**
-     * Write data to file and verify its contents
-     * 
-     * @param string $file path
-     * 
-     * @param string $data
-     * 
-     * @return bool success
-     */
-    private static function _verifiedWrite($file, $data)
-    {
-        if (! @file_put_contents($file, $data)) {
-            return false;
-        }
-        if (md5($data) !== md5_file($file)) {
-            @unlink($file);
-            return false;
-        }
-        return true;
-    }
+    private $_locking = null;
 }
