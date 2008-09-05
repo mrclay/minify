@@ -10,7 +10,9 @@
  * 
  * @imports will be processed regardless of where they appear in the source 
  * files; i.e. @imports commented out or in string content will still be
- * processed! 
+ * processed!
+ * 
+ * This has a unit test but should be considered "experimental".
  *
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>

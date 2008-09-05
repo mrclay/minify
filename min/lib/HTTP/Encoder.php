@@ -48,7 +48,7 @@ class HTTP_Encoder {
      * but there seem to be remaining, intermittent encoding bugs in patched 
      * IE6 on the wild web.
      * 
-     * @var int
+     * @var bool
      */
     public static $encodeToIe6 = false;
     

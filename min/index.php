@@ -31,6 +31,10 @@ if (0 === stripos(PHP_OS, 'win')) {
     Minify::setDocRoot(); // we may be on IIS
 }
 
+if ($min_allowDebugFlag && isset($_GET['debug'])) {
+    $min_serveOptions['debug'] = true;
+}
+
 Minify::$uploaderHoursBehind = $min_uploaderHoursBehind;
 
 if (isset($_GET['g'])) {
@@ -41,6 +45,7 @@ if (isset($_GET['g'])) {
     $_SERVER['PATH_INFO'] = '/' . $_GET['g'];
     $min_serveOptions['groups'] = (require MINIFY_MIN_DIR . '/groupsConfig.php');
     if (preg_match('/&\\d/', $_SERVER['QUERY_STRING'])) {
+        // URI is versioned, send far off Expire
         $min_serveOptions['maxAge'] = 31536000;
     }
     Minify::serve('Groups', $min_serveOptions);
@@ -74,14 +79,14 @@ if (isset($_GET['g'])) {
     
     Minify::serve('Version1', $min_serveOptions);
 
-} elseif ($min_forwardToBuilder) {
+} elseif ($min_enableBuilder) {
  
     header('Location: builder/');
     exit();
     
 } else {
 
-    header("HTTP/1.0 404 Not Found");
+    header("Location: /");
     exit();
 
 }

@@ -19,6 +19,17 @@
  **/
 class Minify_Cache_Memcache {
     
+    /**
+     * Create a Minify_Cache_Memcache object, to be passed to 
+     * Minify::setCache().
+     *
+     * @param Memcache $memcache already-connected instance
+     * 
+     * @param int $expire seconds until expiration (default = 0
+     * meaning the item will not get an expiration date)
+     * 
+     * @return null
+     */
     public function __construct($memcache, $expire = 0)
     {
         $this->_mc = $memcache;
@@ -97,7 +108,7 @@ class Minify_Cache_Memcache {
     private $_mc = null;
     private $_exp = null;
     
-    // PHP memory cache of most recently fetched id
+    // cache of most recently fetched id
     private $_lm = null;
     private $_data = null;
     private $_id = null;

@@ -6,18 +6,18 @@
 
 
 /**
- * Forward empty requests to URI Builder app. After initial setup this
- * should be set to false.
- **/
-$min_forwardToBuilder = true;
-
-
-/**
  * For best performance, specify your temp directory here.
  * Otherwise Minify will have to load extra code to guess.
  */
 //$min_cachePath = 'c:\\WINDOWS\Temp';
 //$min_cachePath = '/tmp';
+
+
+/**
+ * Allow use of the Minify URI Builder app. If you no longer need 
+ * this, set to false.
+ **/
+$min_enableBuilder = true;
 
 
 /**
@@ -43,7 +43,7 @@ $min_serveOptions['maxAge'] = 1800;
 /**
  * If you move Minify's lib folder, give the path to it here.
  */
-//$min_libPath = 'lib';
+//$min_libPath = dirname(__FILE__) . '/lib';
 
 
 /**
@@ -54,20 +54,24 @@ $min_groupsOnly = false;
 
 
 /**
- * Uncomment to enable debug mode. Files will be combined with no 
- * minification, and comments will be added to indicate the line #s
- * of the original files. This will allow you to debug the combined
- * file while knowing where to modify the originals.
+ * In 'debug' mode, Minify can combine files with no minification and 
+ * add comments to indicate line #s of the original files. 
+ * 
+ * To allow debugging, set this option to true and add "&debug=1" to 
+ * a URI. E.g. /min/?f=script1.js,script2.js&debug=1
  */
-//$min_serveOptions['debug'] = true;
+$min_allowDebugFlag = false;
 
 
 /**
  * If you upload files from Windows to a non-Windows server, Windows may report
- * incorrect mtimes for the files. Immediately after modifying and uploading a 
- * file, use the touch command to update the mtime on the server. If the mtime 
- * jumps ahead by a number of hours, set this variable to that number. If the mtime 
- * moves back, this should not be needed.
+ * incorrect mtimes for the files. This may cause Minify to keep serving stale 
+ * cache files when source file changes are made too frequently (e.g. more than
+ * once an hour).
+ * 
+ * Immediately after modifying and uploading a file, use the touch command to 
+ * update the mtime on the server. If the mtime jumps ahead by a number of hours,
+ * set this variable to that number. If the mtime moves back, this should not be needed.
  */
 $min_uploaderHoursBehind = 0;
 

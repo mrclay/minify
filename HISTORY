@@ -1,13 +1,14 @@
 Minify Release History
 
-Version 2.1.0 beta
-    * "min" default app for quick deployment
+Version 2.1.0
+    * "min" default configuration for quick deployment
+    * builder app for creating minify URIs
     * "debug" mode for revealing original line #s in combined files
     * Relative URIs in CSS file are fixed automatically
     * Conditional GETs always supported
     * Improved CSS/HTML minifiers
     * New "CSS linearizer" which processes @imports server-side
-    * New memcache storage class (default is files)
+    * Experimental memcache cache class (default is files)
     * Several bug fixes
 
 Version 2.0.2 beta (2008-06-24)

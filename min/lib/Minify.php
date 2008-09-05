@@ -49,18 +49,6 @@ class Minify {
     public static $uploaderHoursBehind = 0;
     
     /**
-     * @see setCache()
-     * @param mixed $cache object with identical interface as Minify_Cache_File or
-     * a directory path. (default = '')
-     * @return null
-     * @deprecated
-     */
-    public static function useServerCache($path = '') 
-    {
-        self::setCache($path);
-    }
-    
-    /**
      * Specify a cache object (with identical interface as Minify_Cache_File) or
      * a path to use with Minify_Cache_File.
      * 
@@ -82,8 +70,6 @@ class Minify {
         }
     }
     
-    private static $_cache = null;
-
     /**
      * Serve a request for a minified file. 
      * 
@@ -369,6 +355,11 @@ class Minify {
             }
         }
     }
+    
+    /**
+     * @var mixed Minify_Cache_* object or null (i.e. no server cache is used)
+     */
+    private static $_cache = null;
     
     /**
      * @var Minify_Controller active controller for current request

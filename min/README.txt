@@ -111,4 +111,3 @@ return array(
 QUESTIONS?
 
 http://groups.google.com/group/minify
-steve@mrclay.org

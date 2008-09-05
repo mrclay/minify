@@ -2,6 +2,11 @@
 
 require dirname(__FILE__) . '/../config.php';
 
+if (! $min_enableBuilder) {
+    header('Location: /');
+    exit();
+}
+
 ob_start();
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
