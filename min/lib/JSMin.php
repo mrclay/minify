@@ -2,10 +2,14 @@
 /**
  * jsmin.php - PHP implementation of Douglas Crockford's JSMin.
  *
- * This is pretty much a direct port of jsmin.c to PHP with just a few
- * PHP-specific performance tweaks. Also, whereas jsmin.c reads from stdin and
- * outputs to stdout, this library accepts a string as input and returns another
+ * This is a direct port of jsmin.c to PHP with a few PHP performance tweaks and
+ * modifications to preserve some comments (see below). Also, rather than using
+ * stdin/stdout, JSMin::minify() accepts a string as input and returns another
  * string as output.
+ * 
+ * Comments containing IE conditional compilation are preserved, as are multi-line
+ * comments that begin with "/*!" (for documentation purposes). In the latter case
+ * newlines are inserted around the comment to enhance readability.
  *
  * PHP 5 or higher is required.
  *
@@ -38,6 +42,7 @@
  *
  * @package JSMin
  * @author Ryan Grove <ryan@wonko.com>
+ * @author Steve Clay <steve@mrclay.org> (modifications)
  * @copyright 2002 Douglas Crockford <douglas@crockford.com> (jsmin.c)
  * @copyright 2008 Ryan Grove <ryan@wonko.com> (PHP port)
  * @license http://opensource.org/licenses/mit-license.php MIT License
@@ -242,42 +247,54 @@ class JSMin {
   }
 
   protected function next() {
-    $c = $this->get();
+    $get = $this->get();
 
-    if ($c === '/') {
+    if ($get === '/') {
+      $commentContents = '';
       switch($this->peek()) {
         case '/':
+          // "//" comment
           for (;;) {
-            $c = $this->get();
-
-            if (ord($c) <= self::ORD_LF) {
-              return $c;
+            $get = $this->get();
+            $commentContents .= $get;
+            if (ord($get) <= self::ORD_LF) {
+              return preg_match('/^\\/@(?:cc_on|if|elif|else|end)\\b/', $commentContents)
+                ? "/{$commentContents}"
+                : $get;
             }
           }
 
         case '*':
+          // "/* */" comment
           $this->get();
-
           for (;;) {
-            switch($this->get()) {
+            $get = $this->get();
+            switch($get) {
               case '*':
                 if ($this->peek() === '/') {
                   $this->get();
-                  return ' ';
+                  if (0 === strpos($commentContents, '!')) {
+                    // YUI Compressor style
+                    return "\n/*" . substr($commentContents, 1) . "*/\n";
+                  }
+                  return preg_match('/^@(?:cc_on|if|elif|else|end)\\b/', $commentContents)
+                    ? "/*{$commentContents}*/" // IE conditional compilation
+                    : ' ';
                 }
                 break;
 
               case null:
                 throw new JSMinException('Unterminated comment.');
             }
+            $commentContents .= $get;
           }
 
         default:
-          return $c;
+          return $get;
       }
     }
 
-    return $c;
+    return $get;
   }
 
   protected function peek() {

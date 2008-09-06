@@ -33,3 +33,17 @@ if (is.ua.indexOf('gecko') >= 0) {
     is.ie = is.ns = false;
     is.gecko = true;
 }
+
+/*@cc_on
+   /*@if (@_win32)
+      document.write("OS is 32-bit, browser is IE.");
+   @else @*/
+      document.write("Browser is not IE (ie: is Firefox) or Browser is not 32 bit IE.");
+   /*@end
+@*/
+
+//@cc_on/*
+
+alert("Hello !IE browser");
+
+//@cc_on*/

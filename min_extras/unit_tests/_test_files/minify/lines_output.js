@@ -243,3 +243,18 @@
 /* 33 */     is.ie = is.ns = false;
 /* 34 */     is.gecko = true;
 /* 35 */ }
+/* 36 */ 
+/* 37 */ /*@cc_on
+/* 38 *|    /*@if (@_win32)
+/* 39 *|       document.write("OS is 32-bit, browser is IE.");
+/* 40 *|    @else @*/
+/* 41 */       document.write("Browser is not IE (ie: is Firefox) or Browser is not 32 bit IE.");
+/* 42 */    /*@end
+/* 43 *| @*/
+/* 44 */ 
+/* 45 */ //@cc_on/*
+/* 46 *| 
+/* 47 *| alert("Hello !IE browser");
+/* 48 *| 
+/* 49 *| //@cc_on*/
+/* 50 */ 

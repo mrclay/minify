@@ -1,41 +1,50 @@
-// @todo update test links when reordering, app instructions
 var MUB = {
     _uid : 0
+    /**
+     * Get markup for new source LI element
+     */
     ,newLi : function () {
         return '<li id="li' + MUB._uid + '">http://' + location.host + '/<input type=text size=20>' 
         + ' <button title="Remove">x</button> <button title="Include Earlier">&uarr;</button>'
         + ' <button title="Include Later">&darr;</button> <span></span></li>';
     }
+    /**
+     * Add new empty source LI and attach handlers to buttons
+     */
     ,addLi : function () {
         $('#sources').append(MUB.newLi());
         var li = $('#li' + MUB._uid)[0];
         $('button[title=Remove]', li).click(function () {
+            $('#results').hide();
             var hadValue = !!$('input', li)[0].value;
             $(li).remove();
-            hadValue && MUB.update();
         });
         $('button[title$=Earlier]', li).click(function () {
             $(li).prev('li').find('input').each(function () {
+                $('#results').hide();
                 // this = previous li input
                 var tmp = this.value;
                 this.value = $('input', li).val();
                 $('input', li).val(tmp);
                 MUB.updateAllTestLinks();
-                MUB.update();
             });
         });
         $('button[title$=Later]', li).click(function () {
             $(li).next('li').find('input').each(function () {
+                $('#results').hide();
                 // this = next li input
                 var tmp = this.value;
                 this.value = $('input', li).val();
                 $('input', li).val(tmp);
                 MUB.updateAllTestLinks();
-                MUB.update();
             });
         });
         ++MUB._uid;
     }
+    /**
+     * In the context of a source LI element, this will analyze the URI in
+     * the INPUT and check the URL on the site.
+     */
     ,liUpdateTestLink : function () { // call in context of li element
         if (! $('input', this)[0].value) 
             return;
@@ -58,9 +67,19 @@ var MUB = {
             ,dataType : 'text'
         });
     }
+    /**
+     * Check all source URLs
+     */
     ,updateAllTestLinks : function () {
         $('#sources li').each(MUB.liUpdateTestLink);
     }
+    /**
+     * In a given array of strings, find the character they all have at
+     * a particular index
+     * @param Array arr array of strings
+     * @param Number pos index to check
+     * @return mixed a common char or '' if any do not match
+     */
     ,getCommonCharAtPos : function (arr, pos) {
         var i
            ,l = arr.length
@@ -72,6 +91,10 @@ var MUB = {
                 return '';
         return c;
     }
+    /**
+     * Get the shortest URI to minify the set of source files
+     * @param Array sources URIs
+     */
     ,getBestUri : function (sources) {
         var pos = 0
            ,base = ''
@@ -103,6 +126,9 @@ var MUB = {
         }
         return uri;
     }
+    /**
+     * Create the Minify URI for the sources
+     */
     ,update : function () {
         MUB.updateAllTestLinks();
         var sources = []
@@ -139,21 +165,56 @@ var MUB = {
         );
         $('#results').show();
     }
+    /**
+     * Handler for the "Add file +" button
+     */
     ,addButtonClick : function () {
+        $('#results').hide();
         MUB.addLi();
         MUB.updateAllTestLinks();
         $('#update').show().click(MUB.update);
     }
+    /**
+     * Runs on DOMready
+     */
     ,init : function () {
         $('#sources').html('');
         $('#add button').click(MUB.addButtonClick);
+        // make easier to copy text out of
         $('#uriHtml, #groupConfig').click(function () {
             this.select();
         }).focus(function () {
             this.select();
         });
         $('a.ext').attr({target:'_blank'});
-        MUB.addButtonClick();
+        if (location.hash) {
+            // make links out of URIs from bookmarklet
+            $('#getBm').hide();
+            $('#bmUris').html('<p><strong>Found by bookmarklet:</strong> /<a href=#>'
+                + location.hash.substr(1).split(',').join('</a> | /<a href=#>')
+                + '</a></p>'
+            );
+            $('#bmUris a').click(function () {
+                MUB.addButtonClick();
+                $('#sources li:last input').val(this.innerHTML)
+                MUB.liUpdateTestLink.call($('#sources li:last')[0]);
+                $('#results').hide();
+                return false;
+            }).attr({title:'Add file +'});
+        } else {
+            // copy bookmarklet code into href
+            var bmUri = location.pathname.replace(/\/[^\/]*$/, '/bm.js').substr(1);
+            $.ajax({
+                url : '../?f=' + bmUri
+                ,success : function (code) {
+                    $('#bm')[0].href = code
+                        .replace('%BUILDER_URL%', location.href)
+                        .replace(/\n/g, ' ');
+                }
+                ,dataType : 'text'
+            });
+            MUB.addButtonClick();
+        }
     }
 };
 window.onload = MUB.init;

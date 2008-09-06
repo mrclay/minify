@@ -45,6 +45,8 @@ and click [Update].</p>
 <ol id=sources><li></li></ol>
 <div id=add><button>Add file +</button></div>
 
+<div id=bmUris></div>
+
 <p><button id=update>Update</button></p>
 
 <div id=results>
@@ -53,7 +55,7 @@ and click [Update].</p>
 <p>Place this URI in your HTML to serve the files above combined, minified, compressed and with cache headers.</p>
 <table id=uriTable>
     <tr><th>URI</th><td><a id=uriA class=ext>/min</a> <small>(opens in new window)</small></td></tr>
-    <tr><th>HTML</th><td><input id=uriHtml type=text size=80 readonly></td></tr>
+    <tr><th>HTML</th><td><input id=uriHtml type=text size=100 readonly></td></tr>
 </table>
 
 <h2>How to serve these files as a group</h2>
@@ -63,10 +65,19 @@ and click [Update].</p>
 
 <pre><code>return array(
     <span style="color:#666">... your existing groups here ...</span>
-<input id=groupConfig size=80 type=text readonly>
+<input id=groupConfig size=100 type=text readonly>
 );</code></pre>
 
 <p><em>Make sure to replace <code>keyName</code> with a unique key for this group.</em></p>
+</div>
+
+<div id=getBm>
+<h3>Find URIs on a Page</h3>
+<p>You can use the bookmarklet below to fetch all CSS &amp; Javascript URIs from a page
+on your site. When you active it, this page will open in a new window with a list of
+available URIs to add.</p>
+
+<p><a id=bm>Create Minify URIs</a> <small>(right-click, add to favorites/bookmarks)</small></p>
 </div>
 
 <hr>
@@ -81,7 +92,6 @@ and click [Update].</p>
     document.write('<\script type="text/javascript" src="../?f=' + src + '"><\/script>');
 </script>
 
-<!--[ This comment remains because the "[" makes it look like an IE conditional comment :) -->
 <?php
 
 $serveOpts = array(
