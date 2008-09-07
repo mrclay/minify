@@ -1,4 +1,4 @@
-WELCOME TO MINIFY 2.0!
+WELCOME TO MINIFY 2.1!
 
 Minify is an HTTP content server. It compresses sources of content 
 (usually files), combines the result and serves it with appropriate 
@@ -36,3 +36,5 @@ directory: i.e. you will have: /home/user/www/public_html/min_extras
 
 Other test_*.php files in that directory can be run to test individual
 components more verbosely.
+
+After testing you should remove the min_extras directory.

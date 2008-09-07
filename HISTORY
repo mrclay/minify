@@ -2,14 +2,20 @@ Minify Release History
 
 Version 2.1.0
     * "min" default configuration for quick deployment
-    * builder app for creating minify URIs
-    * "debug" mode for revealing original line #s in combined files
+    * Minify URI Builder app & bookmarklet for quickly creating minify URIs
     * Relative URIs in CSS file are fixed automatically
     * Conditional GETs always supported
-    * Improved CSS/HTML minifiers
-    * New "CSS linearizer" which processes @imports server-side
+    * "debug" mode for revealing original line #s in combined files
+    * Better IIS support
+    * Improved minifier classes:
+      * JS: preserves IE conditional comments
+      * CSS: smaller output, preserves more hacks and valid CSS syntax, 
+             shorter line lengths, other bug fixes
+      * HTML: smaller output, shorter line lengths, other bug fixes
     * Experimental memcache cache class (default is files)
-    * Several bug fixes
+    * Minify_Cache_File has flock()s (by default)
+    * Workaround for Windows mtime reporting bug
+    * New "CSS linearizer" which processes @imports server-side
 
 Version 2.0.2 beta (2008-06-24)
     * Fast new cache system. Cached files served almost 3x as fast.
