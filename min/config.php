@@ -6,11 +6,13 @@
 
 
 /**
- * For best performance, specify your temp directory here.
- * Otherwise Minify will have to load extra code to guess.
+ * For best performance, specify your temp directory here. Otherwise 
+ * Minify will have to load extra code to guess. Commented out below
+ * are a few possible choices.
  */
 //$min_cachePath = 'c:\\WINDOWS\Temp';
 //$min_cachePath = '/tmp';
+//$min_cachePath = preg_replace('/^\\d+;/', '', session_save_path());
 
 
 /**
