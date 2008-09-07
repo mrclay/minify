@@ -5,8 +5,14 @@ CSS files and serve them with HTTP compression and cache headers.
 
 RECOMMENDED
 
-It's recommended to edit config.php to set $minifyCachePath to a writeable
+It's recommended to edit config.php to set $min_cachePath to a writeable
 (by PHP) directory on your system. This will improve performance.
+
+
+GETTING STARTED
+
+The quickest way to get started is to use the Minify URI Builder application
+on your website: http://example.com/min/builder/
 
 
 MINIFYING A SINGLE FILE
@@ -54,10 +60,10 @@ SPECIFYING ALLOWED DIRECTORIES
 
 By default, Minify will serve any *.css/*.js files within the DOCUMENT_ROOT. If
 you'd prefer to limit Minify's access to certain directories, set the 
-$minifyAllowDirs array in config.php. E.g. to limit to the /js and 
+$min_allowDirs array in config.php. E.g. to limit to the /js and 
 /themes/default directories, use:
 
-$minifyAllowDirs = array('//js', '//themes/default');
+$min_allowDirs = array('//js', '//themes/default');
 
 
 GROUPS: FASTER PERFORMANCE AND BETTER URLS
@@ -84,7 +90,7 @@ Minify can send far-future (one year) Expires headers. To enable this you must
 add a number to the querystring (/min/?g=js&1234) and alter it whenever a 
 source file is changed. If you have a build process you can use a build/
 source control revision number. If not, the utility function Minify_groupUri()
-will return "versioned" Minify URLs for use in your HTML. E.g.:
+will return "versioned" Minify URIs for use in your HTML. E.g.:
 
 <?php
 require $_SERVER['DOCUMENT_ROOT'] . '/min/util.php';
