@@ -1,9 +1,41 @@
+Document Path:          /min_extras/ab_tests/ideal_php/before.php
+Document Length:        15993 bytes
+   (Connect: 0, Length: 1, Exceptions: 0)
+Requests per second:    385.54 [#/sec] (mean)
+--------------------------------------------------------------------------------
+Document Path:          /min_extras/ab_tests/v1.0/minify.php?files=before.js
+Document Length:        54418 bytes
+Requests per second:    276.46 [#/sec] (mean)
+--------------------------------------------------------------------------------
 Document Path:          /min_extras/ab_tests/minify/test_Files.php
 Document Length:        15993 bytes
-Requests per second:    248.06 [#/sec] (mean)
+   (Connect: 0, Length: 1, Exceptions: 0)
+Requests per second:    233.15 [#/sec] (mean)
 --------------------------------------------------------------------------------
 Document Path:          /min_extras/ab_tests/minify/test_Files_Memcache.php
 Document Length:        15993 bytes
-   (Connect: 0, Length: 17, Exceptions: 0)
-Requests per second:    181.56 [#/sec] (mean)
+   (Connect: 0, Length: 22, Exceptions: 0)
+Requests per second:    183.64 [#/sec] (mean)
+--------------------------------------------------------------------------------
+Document Path:          /min_extras/ab_tests/minify/test_Groups.php/test
+Document Length:        15993 bytes
+   (Connect: 0, Length: 2, Exceptions: 0)
+Requests per second:    207.79 [#/sec] (mean)
+--------------------------------------------------------------------------------
+Document Path:          /min_extras/ab_tests/minify/test_Version1.php?files=before.js
+Document Length:        15993 bytes
+Requests per second:    225.35 [#/sec] (mean)
+--------------------------------------------------------------------------------
+Document Path:          /min/?f=min_extras/ab_tests/minify/before.js
+Document Length:        15993 bytes
+   (Connect: 0, Length: 1, Exceptions: 0)
+Requests per second:    226.55 [#/sec] (mean)
+--------------------------------------------------------------------------------
+Document Path:          /min_extras/ab_tests/mod_deflate/before.js
+Document Length:        16053 bytes
+Requests per second:    177.78 [#/sec] (mean)
+--------------------------------------------------------------------------------
+Document Path:          /min_extras/ab_tests/type-map/before.js.var
+Document Length:        15993 bytes
+Requests per second:    334.20 [#/sec] (mean)
 --------------------------------------------------------------------------------
