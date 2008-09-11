@@ -73,7 +73,13 @@ $min_allowDebugFlag = false;
  * 
  * Immediately after modifying and uploading a file, use the touch command to 
  * update the mtime on the server. If the mtime jumps ahead by a number of hours,
- * set this variable to that number. If the mtime moves back, this should not be needed.
+ * set this variable to that number. If the mtime moves back, this should not be 
+ * needed.
+ *
+ * In the Windows SFTP client WinSCP, there's an option that may fix this 
+ * issue without changing the variable below. Under login > environment, 
+ * select the option "Adjust remote timestamp with DST".
+ * @link http://winscp.net/eng/docs/ui_login_environment#daylight_saving_time
  */
 $min_uploaderHoursBehind = 0;
 

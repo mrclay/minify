@@ -88,9 +88,10 @@ function test_HTTP_Encoder()
         }
     }
     
+    // test compression of varied content (HTML,JS, & CSS)
     $variedContent = file_get_contents($thisDir . '/_test_files/html/before.html')
         . file_get_contents($thisDir . '/_test_files/css/subsilver.css')
-        . file_get_contents($thisDir . '/../ab_tests/minify/before.js');
+        . file_get_contents($thisDir . '/_test_files/js/jquery-1.2.3.js');
     $variedLength = strlen($variedContent);
     
     $encodingTests = array(

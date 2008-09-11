@@ -80,6 +80,14 @@ available URIs to add.</p>
 <p><a id=bm>Create Minify URIs</a> <small>(right-click, add to favorites/bookmarks)</small></p>
 </div>
 
+<h3>Combining CSS files that contain <code>@import</code></h3>
+<p>If your CSS files contain <code>@import</code> declarations, Minify will not 
+remove them. Therefore, you will want to remove those that point to files already
+in your list, and move any others to the top of the first file in your list 
+(imports below any styles will be ignored by browsers as invalid).</p>
+<p>If you desire, you can use Minify URIs in imports and they will not be touched
+by Minify. E.g. <code>@import "/min/?g=css2";</code></p>
+
 <hr>
 <p>Need help? Search or post to the <a class=ext href="http://groups.google.com/group/minify">Minify discussion list</a>.</p>
 <p><small>This app is minified :) <a class=ext href="http://code.google.com/p/minify/source/browse/trunk/min/builder/index.php">view source</a></small></p>
