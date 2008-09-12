@@ -56,7 +56,10 @@ function test_Minify()
     // Test minifying JS and serving with Expires header
     
     $content = preg_replace('/\\r\\n?/', "\n", file_get_contents($minifyTestPath . '/minified.js'));
-    $lastModified = filemtime($minifyTestPath . '/minified.js');
+    $lastModified = max(
+        filemtime($minifyTestPath . '/email.js')
+        ,filemtime($minifyTestPath . '/QueryString.js')
+    );
     $expected = array(
     	'success' => true
         ,'statusCode' => 200
