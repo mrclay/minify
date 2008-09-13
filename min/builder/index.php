@@ -9,8 +9,7 @@ if (! $min_enableBuilder) {
 
 ob_start();
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-"http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <head>
     <meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
     <title>Minify URI Builder</title>
@@ -22,22 +21,32 @@ h1 {margin-top:0;}
 #sources li {margin:0 0 0 40px}
 #sources li input {margin-left:2px}
 #add {margin:5px 0 1em 40px}
-#update, #results {display:none}
+.hide {display:none}
 #uriTable {border-collapse:collapse;}
 #uriTable td, #uriTable th {padding-top:10px;}
 #uriTable th {padding-right:10px;}
 #groupConfig {font-family:monospace;}
 b {color:#c00}
-#cachePathNote {background: #ff9; display:inline-block; padding:.5em .6em;}
+.topNote {background: #ff9; display:inline-block; padding:.5em .6em; margin:0 0 1em;}
     </style>
 </head>
 
 <?php if (! isset($min_cachePath)): ?>
-<p id=cachePathNote><strong>Note:</strong> Please set <code>$min_cachePath</code> 
+<p class=topNote><strong>Note:</strong> Please set <code>$min_cachePath</code> 
 in /min/config.php to improve performance.</p>
 <?php endIf; ?>
 
+<p id=minRewriteFailed class="hide"><strong>Note:</strong> Your webserver does not seem to
+ support mod_rewrite (used in /min/.htaccess). Your Minify URIs will contain "?", which 
+<a href="http://www.stevesouders.com/blog/2008/08/23/revving-filenames-dont-use-querystring/"
+>may reduce the benefit of proxy cache servers</a>.</p>
+
 <h1>Minify URI Builder</h1>
+
+<noscript><p class="topNote">Javascript and a browser supported by jQuery 1.2.6 is required
+for this application.</p></noscript>
+
+<div id=app class=hide>
 
 <p>Create a list of Javascript or CSS files (or 1 is fine) you'd like to combine
 and click [Update].</p>
@@ -47,20 +56,21 @@ and click [Update].</p>
 
 <div id=bmUris></div>
 
-<p><button id=update>Update</button></p>
+<p><button id=update class=hide>Update</button></p>
 
-<div id=results>
+<div id=results class=hide>
 
 <h2>Minify URI</h2>
-<p>Place this URI in your HTML to serve the files above combined, minified, compressed and with cache headers.</p>
+<p>Place this URI in your HTML to serve the files above combined, minified, compressed and
+with cache headers.</p>
 <table id=uriTable>
     <tr><th>URI</th><td><a id=uriA class=ext>/min</a> <small>(opens in new window)</small></td></tr>
     <tr><th>HTML</th><td><input id=uriHtml type=text size=100 readonly></td></tr>
 </table>
 
 <h2>How to serve these files as a group</h2>
-<p>For the best performance you can serve these files as a pre-defined group with a URI like:
-<code>/min/?g=keyName</code></p>
+<p>For the best performance you can serve these files as a pre-defined group with a URI
+like: <code>/min/?g=keyName</code></p>
 <p>To do this, add a line like this to /min/groupsConfig.php:</p>
 
 <pre><code>return array(
@@ -77,7 +87,7 @@ and click [Update].</p>
 on your site. When you active it, this page will open in a new window with a list of
 available URIs to add.</p>
 
-<p><a id=bm>Create Minify URIs</a> <small>(right-click, add to favorites/bookmarks)</small></p>
+<p><a id=bm>Create Minify URIs</a> <small>(right-click, add to bookmarks)</small></p>
 </div>
 
 <h3>Combining CSS files that contain <code>@import</code></h3>
@@ -86,13 +96,19 @@ remove them. Therefore, you will want to remove those that point to files alread
 in your list, and move any others to the top of the first file in your list 
 (imports below any styles will be ignored by browsers as invalid).</p>
 <p>If you desire, you can use Minify URIs in imports and they will not be touched
-by Minify. E.g. <code>@import "/min/?g=css2";</code></p>
+by Minify. E.g. <code>@import "<span id=minRoot>/min/?</span>g=css2";</code></p>
+
+</div><!-- #app -->
 
 <hr>
-<p>Need help? Search or post to the <a class=ext href="http://groups.google.com/group/minify">Minify discussion list</a>.</p>
-<p><small>This app is minified :) <a class=ext href="http://code.google.com/p/minify/source/browse/trunk/min/builder/index.php">view source</a></small></p>
+<p>Need help? Search or post to the <a class=ext 
+href="http://groups.google.com/group/minify">Minify discussion list</a>.</p>
+<p><small>This app is minified :) <a class=ext 
+href="http://code.google.com/p/minify/source/browse/trunk/min/builder/index.php">view 
+source</a></small></p>
 
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+<script type="text/javascript" 
+src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
 
 <script type="text/javascript">
     // workaround required to test when /min isn't child of web root

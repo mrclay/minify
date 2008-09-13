@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^([a-z]=.*)  index.php?$1  [L,NE]

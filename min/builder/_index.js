@@ -1,5 +1,23 @@
 var MUB = {
     _uid : 0
+    ,_minRoot : '/min/?'
+    ,checkRewrite : function () {
+        var testUri = location.pathname.replace(/\/[^\/]*$/, '/rewriteTest.js').substr(1);
+        function fail() {
+            $('#minRewriteFailed')[0].className = 'topNote';
+        };
+        $.ajax({
+            url : '../f=' + testUri + '&' + (new Date()).getTime()
+            ,success : function (data) {
+                if (data === '1') {
+                    MUB._minRoot = '/min/';
+                    $('#minRoot').html('/min/');
+                } else
+                    fail();                
+            }
+            ,error : fail
+        });
+    }
     /**
      * Get markup for new source LI element
      */
@@ -108,7 +126,7 @@ var MUB = {
             ++pos;
         }
         base = base.replace(/[^\/]+$/, '');
-        var uri = '/min/?f=' + sources.join(',');
+        var uri = MUB._minRoot + 'f=' + sources.join(',');
         if (base.charAt(base.length - 1) === '/') {
             // we have a base dir!
             var basedSources = sources
@@ -118,7 +136,7 @@ var MUB = {
                 basedSources[i] = sources[i].substr(base.length);
             }
             base = base.substr(0, base.length - 1);
-            var bUri = '/min/?b=' + base + '&f=' + basedSources.join(',');
+            var bUri = MUB._minRoot + 'b=' + base + '&f=' + basedSources.join(',');
             //window.console && console.log([uri, bUri]);
             uri = uri.length < bUri.length
                 ? uri
@@ -178,6 +196,7 @@ var MUB = {
      * Runs on DOMready
      */
     ,init : function () {
+        $('#app').show();
         $('#sources').html('');
         $('#add button').click(MUB.addButtonClick);
         // make easier to copy text out of
@@ -213,8 +232,10 @@ var MUB = {
                 }
                 ,dataType : 'text'
             });
+            $.browser.msie && $('#getBm p:last').append(' Sorry, not supported in MSIE!');
             MUB.addButtonClick();
         }
+        MUB.checkRewrite();
     }
 };
 window.onload = MUB.init;

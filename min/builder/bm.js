@@ -21,7 +21,11 @@ javascript:(function() {
     while (o = d.getElementsByTagName('script')[i++])
         o.src && !(o.type && /vbs/i.test(o.type)) && add(o.src);
     i = 0;
-    while (o = d.styleSheets[i++]) 
+    while (o = d.styleSheets[i++])
+    /* http://www.w3.org/TR/DOM-Level-2-Style/stylesheets.html#StyleSheets-DocumentStyle-styleSheets
+    document.styleSheet is a list property where [0] accesses the 1st element and 
+    [outOfRange] returns null. In IE, styleSheets is a function, and also throws an 
+    exception when you check the out of bounds index. (sigh) */
         sheet(o);
     if (uris.length)
         window.open('%BUILDER_URL%#' + uris.join(','));
