@@ -172,7 +172,7 @@ var MUB = {
         });
         if (fail || ! sources.length)
             return;
-        $('#groupConfig').val("    'keyName' => '//" + sources.join("', '//") + "',");
+        $('#groupConfig').val("    'keyName' => array('//" + sources.join("', '//") + "'),");
         var uri = MUB.getBestUri(sources)
            ,uriH = uri.replace(/</, '&lt;').replace(/>/, '&gt;').replace(/&/, '&amp;');
         $('#uriA').html(uriH)[0].href = uri;
@@ -191,6 +191,7 @@ var MUB = {
         MUB.addLi();
         MUB.updateAllTestLinks();
         $('#update').show().click(MUB.update);
+        $('#sources li:last input')[0].focus();
     }
     /**
      * Runs on DOMready
