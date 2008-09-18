@@ -6,6 +6,13 @@
 
 
 /**
+ * Path to Minify's lib folder. If you happen to move it, change 
+ * this accordingly.
+ */
+$min_libPath = dirname(__FILE__) . '/lib';
+
+
+/**
  * For best performance, specify your temp directory here. Otherwise 
  * Minify will have to load extra code to guess. Commented out below
  * are a few possible choices.
@@ -16,10 +23,26 @@
 
 
 /**
+ * Cache file locking. Set to false if filesystem is NFS.
+ */
+$min_cacheFileLocking = true;
+
+
+/**
  * Allow use of the Minify URI Builder app. If you no longer need 
  * this, set to false.
  **/
 $min_enableBuilder = true;
+
+
+/**
+ * In 'debug' mode, Minify can combine files with no minification and 
+ * add comments to indicate line #s of the original files. 
+ * 
+ * To allow debugging, set this option to true and add "&debug=1" to 
+ * a URI. E.g. /min/?f=script1.js,script2.js&debug=1
+ */
+$min_allowDebugFlag = false;
 
 
 /**
@@ -39,30 +62,18 @@ $min_serveOptions['maxAge'] = 1800;
  * 
  * // = DOCUMENT_ROOT 
  */
-//$min_allowDirs = array('//js', '//css');
-
-
-/**
- * If you move Minify's lib folder, give the path to it here.
- */
-//$min_libPath = dirname(__FILE__) . '/lib';
-
+//$min_serveOptions['minApp']['allowDirs'] = array('//js', '//css');
 
 /**
  * Set to true to disable the "f" GET parameter for specifying files.
  * Only the "g" parameter will be considered.
  */
-$min_groupsOnly = false;
-
+$min_serveOptions['minApp']['groupsOnly'] = false;
 
 /**
- * In 'debug' mode, Minify can combine files with no minification and 
- * add comments to indicate line #s of the original files. 
- * 
- * To allow debugging, set this option to true and add "&debug=1" to 
- * a URI. E.g. /min/?f=script1.js,script2.js&debug=1
+ * Maximum # of files that can be specified in the "f" GET parameter
  */
-$min_allowDebugFlag = false;
+$min_serveOptions['minApp']['maxFiles'] = 10;
 
 
 /**

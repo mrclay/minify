@@ -36,6 +36,7 @@ class Minify_Cache_File {
         if (! @file_put_contents($this->_path . '/' . $id, $data, $flag)) {
             return false;
         }
+        // write control
         if ($data !== $this->fetch($id)) {
             @unlink($file);
             return false;

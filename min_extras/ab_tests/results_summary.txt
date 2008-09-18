@@ -1,41 +1,37 @@
-Document Path:          /min_extras/ab_tests/ideal_php/before.php
+Document Path:          /_3rd_party/minify/min_extras/ab_tests/ideal_php/before.php
 Document Length:        15993 bytes
-   (Connect: 0, Length: 1, Exceptions: 0)
-Requests per second:    385.54 [#/sec] (mean)
+Requests per second:    354.57 [#/sec] (mean)
 --------------------------------------------------------------------------------
-Document Path:          /min_extras/ab_tests/v1.0/minify.php?files=before.js
+Document Path:          /_3rd_party/minify/min_extras/ab_tests/v1.0/minify.php?files=before.js
 Document Length:        54418 bytes
-Requests per second:    276.46 [#/sec] (mean)
+Requests per second:    261.76 [#/sec] (mean)
 --------------------------------------------------------------------------------
-Document Path:          /min_extras/ab_tests/minify/test_Files.php
+Document Path:          /_3rd_party/minify/min_extras/ab_tests/minify/test_Files.php
 Document Length:        15993 bytes
-   (Connect: 0, Length: 1, Exceptions: 0)
-Requests per second:    233.15 [#/sec] (mean)
+Requests per second:    203.82 [#/sec] (mean)
 --------------------------------------------------------------------------------
-Document Path:          /min_extras/ab_tests/minify/test_Files_Memcache.php
+Document Path:          /_3rd_party/minify/min_extras/ab_tests/minify/test_Files_Memcache.php
 Document Length:        15993 bytes
-   (Connect: 0, Length: 22, Exceptions: 0)
-Requests per second:    183.64 [#/sec] (mean)
+   (Connect: 0, Length: 19, Exceptions: 0)
+Requests per second:    156.86 [#/sec] (mean)
 --------------------------------------------------------------------------------
-Document Path:          /min_extras/ab_tests/minify/test_Groups.php/test
+Document Path:          /_3rd_party/minify/min_extras/ab_tests/minify/test_Groups.php/test
 Document Length:        15993 bytes
-   (Connect: 0, Length: 2, Exceptions: 0)
 Requests per second:    207.79 [#/sec] (mean)
 --------------------------------------------------------------------------------
-Document Path:          /min_extras/ab_tests/minify/test_Version1.php?files=before.js
+Document Path:          /_3rd_party/minify/min_extras/ab_tests/minify/test_Version1.php?files=before.js
 Document Length:        15993 bytes
-Requests per second:    225.35 [#/sec] (mean)
+Requests per second:    210.53 [#/sec] (mean)
 --------------------------------------------------------------------------------
-Document Path:          /min/?f=min_extras/ab_tests/minify/before.js
+Document Path:          /min/?f=_3rd_party/minify/min_extras/ab_tests/minify/before.js
 Document Length:        15993 bytes
-   (Connect: 0, Length: 1, Exceptions: 0)
-Requests per second:    226.55 [#/sec] (mean)
+Requests per second:    231.46 [#/sec] (mean)
 --------------------------------------------------------------------------------
-Document Path:          /min_extras/ab_tests/mod_deflate/before.js
+Document Path:          /_3rd_party/minify/min_extras/ab_tests/mod_deflate/before.js
 Document Length:        16053 bytes
-Requests per second:    177.78 [#/sec] (mean)
+Requests per second:    185.78 [#/sec] (mean)
 --------------------------------------------------------------------------------
-Document Path:          /min_extras/ab_tests/type-map/before.js.var
+Document Path:          /_3rd_party/minify/min_extras/ab_tests/type-map/before.js.var
 Document Length:        15993 bytes
-Requests per second:    334.20 [#/sec] (mean)
+Requests per second:    472.32 [#/sec] (mean)
 --------------------------------------------------------------------------------

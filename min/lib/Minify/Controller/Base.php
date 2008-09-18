@@ -120,23 +120,18 @@ abstract class Minify_Controller_Base {
     {
         $pathOk = false;
         foreach ((array)$safeDirs as $safeDir) {
-            if (strpos($file, $safeDir) === 0 && file_exists($file)) {
+            if (strpos($file, $safeDir) === 0) {
                 $pathOk = true;
                 break;
             }
         }
-        if (! $pathOk) {
-            return false;
-        }
         $base = basename($file);
-        if ($base[0] === '.') {
+        if (! $pathOk || ! is_file($file) || $base[0] === '.') {
             return false;
         }
         list($revExt) = explode('.', strrev($base));
         return in_array(strrev($revExt), array('js', 'css', 'html', 'txt'));
     }
-    
-    /*public static function _haveSameExt
     
     /**
      * @var array instances of Minify_Source, which provide content and

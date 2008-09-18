@@ -60,10 +60,10 @@ SPECIFYING ALLOWED DIRECTORIES
 
 By default, Minify will serve any *.css/*.js files within the DOCUMENT_ROOT. If
 you'd prefer to limit Minify's access to certain directories, set the 
-$min_allowDirs array in config.php. E.g. to limit to the /js and 
-/themes/default directories, use:
+$min_serveOptions['minApp']['allowDirs'] array in config.php. E.g. to limit 
+to the /js and /themes/default directories, use:
 
-$min_allowDirs = array('//js', '//themes/default');
+$min_serveOptions['minApp']['allowDirs'] = array('//js', '//themes/default');
 
 
 GROUPS: FASTER PERFORMANCE AND BETTER URLS
