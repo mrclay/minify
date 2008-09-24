@@ -70,7 +70,7 @@ with cache headers.</p>
 
 <h2>How to serve these files as a group</h2>
 <p>For the best performance you can serve these files as a pre-defined group with a URI
-like: <code>/min/?g=keyName</code></p>
+like: <code><span class=minRoot>/min/?</span>g=keyName</code></p>
 <p>To do this, add a line like this to /min/groupsConfig.php:</p>
 
 <pre><code>return array(
@@ -96,7 +96,7 @@ remove them. Therefore, you will want to remove those that point to files alread
 in your list, and move any others to the top of the first file in your list 
 (imports below any styles will be ignored by browsers as invalid).</p>
 <p>If you desire, you can use Minify URIs in imports and they will not be touched
-by Minify. E.g. <code>@import "<span id=minRoot>/min/?</span>g=css2";</code></p>
+by Minify. E.g. <code>@import "<span class=minRoot>/min/?</span>g=css2";</code></p>
 
 </div><!-- #app -->
 

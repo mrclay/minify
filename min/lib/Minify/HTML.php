@@ -22,7 +22,18 @@ class Minify_HTML {
      * "Minify" an HTML page
      *
      * @param string $html
+     *
      * @param array $options
+     *
+     * 'cssMinifier' : (optional) callback function to process content of STYLE
+     * elements.
+     * 
+     * 'jsMinifier' : (optional) callback function to process content of SCRIPT
+     * elements. Note: the type attribute is ignored.
+     * 
+     * 'xhtml' : (optional boolean) should content be treated as XHTML1.0? If
+     * unset, minify will sniff for an XHTML doctype.
+     * 
      * @return string
      */
     public static function minify($html, $options = array()) {
@@ -36,7 +47,11 @@ class Minify_HTML {
         
         $html = str_replace("\r\n", "\n", trim($html));
         
-        self::$_isXhtml = (false !== strpos($html, '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML'));
+        self::$_isXhtml = (
+            isset($options['xhtml'])
+                ? (bool)$options['xhtml']
+                : (false !== strpos($html, '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML'))
+        );
         
         self::$_replacementHash = 'MINIFYHTML' . md5(time());
         self::$_placeholders = array();

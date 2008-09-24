@@ -11,7 +11,7 @@ var MUB = {
             ,success : function (data) {
                 if (data === '1') {
                     MUB._minRoot = '/min/';
-                    $('#minRoot').html('/min/');
+                    $('span.minRoot').html('/min/');
                 } else
                     fail();                
             }
