@@ -99,6 +99,9 @@ class Minify_HTML {
             ,array('Minify_HTML', '_outsideTagCB')
             ,$html);
         
+        // use newlines before 1st attribute in open tags (to limit line lengths)
+        $html = preg_replace('/(<[a-z\\-]+)\\s+([^>]+>)/i', "$1\n$2", $html);
+        
         // fill placeholders
         $html = str_replace(
             array_keys(self::$_placeholders)
@@ -106,9 +109,6 @@ class Minify_HTML {
             ,$html
         );
         self::$_placeholders = array();
-        
-        // use newlines before 1st attribute in open tags (to limit line lengths)
-        $html = preg_replace('/(<[a-z\\-]+)\\s+([^>]+>)/i', "$1\n$2", $html);
         
         self::$_cssMinifier = self::$_jsMinifier = null;
         return $html;
