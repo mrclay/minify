@@ -90,12 +90,12 @@ class Minify_CSS_UriRewriter {
                 $path = substr($path, strlen(self::$_docRoot));
                 // fix to root-relative URI
                 $uri = strtr($path, DIRECTORY_SEPARATOR, '/');
-                // eat .
+                // remove /./ and /../ where possible
                 $uri = str_replace('/./', '/', $uri);
-                // eat ..
-                while (preg_match('@/[^/\\.]+/\\.\\./@', $uri, $m)) {
-                    $uri = str_replace($m[0], '/', $uri);
-                }
+                // inspired by patch from Oleg Cherniy
+                do {
+                    $uri = preg_replace('@/[^/]+/\\.\\./@', '/', $uri, -1, $changed);
+                } while ($changed);
             }
         }
         if ($isImport) {

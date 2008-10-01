@@ -1,5 +1,7 @@
 @import "foo.css";
 @import 'bar/foo.css' print;
+@import '../bar/foo.css' print;
+@import '../../foo.css' print;
 @import '/css/foo.css'; /* abs, should not alter */
 @import 'http://foo.com/css/foo.css'; /* abs, should not alter */
 @import url(../foo.css) tv, projection;

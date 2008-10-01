@@ -1,5 +1,7 @@
 @import "/_test_files/css_uriRewriter/foo.css";
 @import '/_test_files/css_uriRewriter/bar/foo.css' print;
+@import '/_test_files/bar/foo.css' print;
+@import '/foo.css' print;
 @import '/css/foo.css'; /* abs, should not alter */
 @import 'http://foo.com/css/foo.css'; /* abs, should not alter */
 @import url(/_test_files/foo.css) tv, projection;

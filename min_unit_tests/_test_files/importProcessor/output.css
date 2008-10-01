@@ -32,17 +32,17 @@ h1 + p {
 }
 @import url(http://example.com/hello.css);
 adjacent foo { background: red url(/red.gif); }
-adjacent bar { background: url('%TEST_FILES_URI%/importProcessor/../green.gif') }
+adjacent bar { background: url('%TEST_FILES_URI%/green.gif') }
 }
 
 @media tv,projection {
 /* @import url('%TEST_FILES_URI%/importProcessor/1/bad.css') bad; */
 adjacent2 foo { background: red url(/red.gif); }
-adjacent2 bar { background: url('%TEST_FILES_URI%/importProcessor/1/../green.gif') }
+adjacent2 bar { background: url('%TEST_FILES_URI%/importProcessor/green.gif') }
 @import '../input.css';
 tv foo { background: red url(/red.gif); }
-tv bar { background: url('%TEST_FILES_URI%/importProcessor/1/../green.gif') }
+tv bar { background: url('%TEST_FILES_URI%/importProcessor/green.gif') }
 }
 
 input foo { background: red url(/red.gif); }
-input bar { background: url('%TEST_FILES_URI%/importProcessor/../green.gif') }
+input bar { background: url('%TEST_FILES_URI%/green.gif') }
