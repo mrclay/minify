@@ -93,7 +93,7 @@ source control revision number. If not, the utility function Minify_groupUri()
 will return "versioned" Minify URIs for use in your HTML. E.g.:
 
 <?php
-require $_SERVER['DOCUMENT_ROOT'] . '/min/util.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/min/utils.php';
 
 $jsUri = Minify_groupUri('js'); 
 echo "<script type='text/javascript' src='{$jsUri}'></script>";
