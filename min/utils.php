@@ -1,11 +1,13 @@
 <?php
 /**
  * Utility functions for generating group URIs in HTML files
+ *
+ * Before including this file, /min/lib must be in your include_path.
  * 
  * @package Minify
  */
 
-require_once dirname(__FILE__) . '/lib/Minify/Build.php';
+require_once 'Minify/Build.php';
 
 
 /**
@@ -16,14 +18,24 @@ require_once dirname(__FILE__) . '/lib/Minify/Build.php';
  * <script type="text/javascript" src="<?php echo Minify_groupUri('js'); ?>"></script>
  * </code>
  *
+ * If you do not want ampersands as HTML entities, set Minify_Build::$ampersand = "&" 
+ * before using this function.
+ *
  * @param string $group a key from groupsConfig.php
- * @param string $ampersand '&' or '&amp;' (default '&amp;')
+ * @param boolean $forceAmpersand (default false) Set to true if the RewriteRule
+ * directives in .htaccess are functional. This will remove the "?" from URIs, making them
+ * more cacheable by proxies.
  * @return string
  */ 
-function Minify_groupUri($group, $ampersand = '&amp;')
+function Minify_groupUri($group, $forceAmpersand = false)
 {
-    Minify_Build::$ampersand = $ampersand;
-    return _Minify_getBuild($group)->uri('/' . basename(dirname(__FILE__)) . '/?g=' . $group);
+    $path = $forceAmpersand
+        ? "/g={$group}"
+        : "/?g={$group}";
+    return _Minify_getBuild($group)->uri(
+        '/' . basename(dirname(__FILE__)) . $path
+        ,$forceAmpersand
+    );
 }
 
 

@@ -93,6 +93,7 @@ source control revision number. If not, the utility function Minify_groupUri()
 will return "versioned" Minify URIs for use in your HTML. E.g.:
 
 <?php
+// add /min/lib to your include_path first!
 require $_SERVER['DOCUMENT_ROOT'] . '/min/utils.php';
 
 $jsUri = Minify_groupUri('js'); 
