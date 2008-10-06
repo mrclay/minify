@@ -68,8 +68,11 @@ class Minify_HTML {
             ,array('Minify_HTML', '_removeStyleCB')
             ,$html);
         
-        // remove HTML comments (but not IE conditional comments).
-        $html = preg_replace('/<!--[^\\[][\\s\\S]*?-->/', '', $html);
+        // remove HTML comments (not containing IE conditional comments).
+        $html = preg_replace_callback(
+            '/<!--([\\s\\S]*?)-->/'
+            ,array('Minify_HTML', '_commentCB')
+            ,$html);
         
         // replace PREs with placeholders
         $html = preg_replace_callback('/\\s*(<pre\\b[^>]*?>[\\s\\S]*?<\\/pre>)\\s*/i'
@@ -112,6 +115,13 @@ class Minify_HTML {
         
         self::$_cssMinifier = self::$_jsMinifier = null;
         return $html;
+    }
+    
+    protected static function _commentCB($m)
+    {
+        return (0 === strpos($m[1], '[') || false !== strpos($m[1], '<!['))
+            ? $m[0]
+            : '';
     }
     
     protected static function _reservePlace($content)
