@@ -117,7 +117,7 @@ src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
 <script type="text/javascript">
 $(function () {
     // detection of double output encoding
-    var msg = '<p class=topWarning><strong>Warning:</strong> ';
+    var msg = '<\p class=topWarning><\strong>Warning:<\/strong> ';
     var url = 'ocCheck.php?' + (new Date()).getTime();
     $.get(url, function (ocStatus) {
         $.get(url + '&hello=1', function (ocHello) {
@@ -131,13 +131,13 @@ $(function () {
                 else
                     msg += 'The option "zlib.output_compression" is disabled in your PHP configuration '
                          + 'so this behavior is likely due to a server option.';
-                $(document.body).prepend(msg + '</p>');
+                $(document.body).prepend(msg + '<\/p>');
             } else
                 if (ocStatus == '1')
-                    $(document.body).prepend('<p class=topNote><strong>Note:</strong> The option '
+                    $(document.body).prepend('<\p class=topNote><\strong>Note:</\strong> The option '
                         + '"zlib.output_compression" is enabled in your PHP configuration, but has been '
                         + 'successfully disabled via ini_set(). If you experience mangled output you '
-                        + 'may want to consider disabling this option in your PHP configuration.'
+                        + 'may want to consider disabling this option in your PHP configuration.<\/p>'
                     );
         });
     });

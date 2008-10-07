@@ -94,3 +94,6 @@ $min_serveOptions['minApp']['maxFiles'] = 10;
  */
 $min_uploaderHoursBehind = 0;
 
+
+// try to disable output_compression (may not have an effect)
+ini_set('zlib.output_compression', '0');

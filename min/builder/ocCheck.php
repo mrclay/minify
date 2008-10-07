@@ -5,6 +5,8 @@
  * @package Minify
  */
 
+$_oc = ini_get('zlib.output_compression');
+ 
 // allow access only if builder is enabled
 require dirname(__FILE__) . '/../config.php';
 if (! $min_enableBuilder) {
@@ -30,5 +32,5 @@ if (isset($_GET['hello'])) {
 } else {
     // echo status "0" or "1"
     header('Content-Type: text/plain');
-    echo (int)ini_get('zlib.output_compression');
+    echo (int)$_oc;
 }

@@ -9,9 +9,6 @@
 
 define('MINIFY_MIN_DIR', dirname(__FILE__));
 
-// try to disable output_compression (may not have an effect)
-ini_set('zlib.output_compression', '0');
-
 // load config
 require MINIFY_MIN_DIR . '/config.php';
 
