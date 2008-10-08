@@ -43,7 +43,7 @@ abstract class Minify_Controller_Base {
     public function getDefaultMinifyOptions() {
         return array(
             'isPublic' => true
-            ,'encodeOutput' => true
+            ,'encodeOutput' => function_exists('gzdeflate')
             ,'encodeMethod' => null // determine later
             ,'encodeLevel' => 9
             ,'minifierOptions' => array() // no minifier options

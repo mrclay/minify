@@ -263,8 +263,10 @@ class Minify {
                 // generate & cache content
                 $content = self::_combineMinify();
                 self::$_cache->store($cacheId, $content);
-                self::$_cache->store($cacheId . '.zd', gzdeflate($content, self::$_options['encodeLevel']));
-                self::$_cache->store($cacheId . '.zg', gzencode($content, self::$_options['encodeLevel']));
+                if (function_exists('gzdeflate')) {
+                    self::$_cache->store($cacheId . '.zd', gzdeflate($content, self::$_options['encodeLevel']));
+                    self::$_cache->store($cacheId . '.zg', gzencode($content, self::$_options['encodeLevel']));
+                }
             }
         } else {
             // no cache

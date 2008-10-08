@@ -88,6 +88,11 @@ function test_HTTP_Encoder()
         }
     }
     
+    if (! function_exists('gzdeflate')) {
+        echo "!WARN: HTTP_Encoder : Zlib support is not present in PHP. Encoding cannot be performed/tested.\n";
+        return;
+    }
+    
     // test compression of varied content (HTML,JS, & CSS)
     $variedContent = file_get_contents($thisDir . '/_test_files/html/before.html')
         . file_get_contents($thisDir . '/_test_files/css/subsilver.css')
