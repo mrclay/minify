@@ -282,7 +282,7 @@ class Minify_CSS {
                     $path = self::$_tempCurrentDir 
                         . DIRECTORY_SEPARATOR . strtr($url, '/', DIRECTORY_SEPARATOR);
                     // strip doc root
-                    $path = substr($path, strlen($_SERVER['DOCUMENT_ROOT']));
+                    $path = substr($path, strlen(realpath($_SERVER['DOCUMENT_ROOT'])));
                     // fix to absolute URL
                     $url = strtr($path, DIRECTORY_SEPARATOR, '/');
                     // remove /./ and /../ where possible
@@ -294,11 +294,9 @@ class Minify_CSS {
                 }
             }
         }
-        if ($isImport) {
-            return "@import {$quote}{$url}{$quote}";
-        } else {
-            return "url({$quote}{$url}{$quote})";
-        }
+        return $isImport 
+            ? "@import {$quote}{$url}{$quote}"
+            : "url({$quote}{$url}{$quote})";
     }
     
     /**
