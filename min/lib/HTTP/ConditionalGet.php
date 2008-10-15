@@ -74,6 +74,9 @@ class HTTP_ConditionalGet {
      * 
      * 'lastModifiedTime': (int) if given, both ETag AND Last-Modified headers
      * will be sent with content. This is recommended.
+     *
+     * 'eTag': (string) if given, this will be used as the ETag header rather
+     * than values based on lastModifiedTime or contentHash.
      * 
      * 'contentHash': (string) if given, only the ETag header can be sent with
      * content (only HTTP1.1 clients can conditionally GET). The given string 
@@ -109,16 +112,18 @@ class HTTP_ConditionalGet {
                 $_SERVER['REQUEST_TIME'] + $spec['maxAge'] 
             );
         }
-        if (isset($spec['lastModifiedTime'])) {
-            // base both headers on time
-            $this->_setLastModified($spec['lastModifiedTime']);
-            $this->_setEtag($spec['lastModifiedTime'], $scope);
-        } else {
-            // hope to use ETag
-            if (isset($spec['contentHash'])) {
-                $this->_setEtag($spec['contentHash'], $scope);
-            }
-        }
+    	if (isset($spec['lastModifiedTime'])) {
+    		$this->_setLastModified($spec['lastModifiedTime']);
+    		if (isset($spec['eTag'])) { // Use it
+    			$this->_setEtag($spec['eTag'], $scope);
+    		} else { // base both headers on time
+    			$this->_setEtag($spec['lastModifiedTime'], $scope);
+    		}
+    	} elseif (isset($spec['eTag'])) { // Use it
+    		$this->_setEtag($spec['eTag'], $scope);
+    	} elseif (isset($spec['contentHash'])) { // Use the hash as the ETag
+    		$this->_setEtag($spec['contentHash'], $scope);
+    	}
         $this->_headers['Cache-Control'] = "max-age={$maxAge}, {$scope}, must-revalidate";
         // invalidate cache if disabled, otherwise check
         $this->cacheIsValid = (isset($spec['invalidate']) && $spec['invalidate'])
