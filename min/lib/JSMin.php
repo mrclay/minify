@@ -11,6 +11,11 @@
  * comments that begin with "/*!" (for documentation purposes). In the latter case
  * newlines are inserted around the comment to enhance readability.
  *
+ * Known issue: regular expressions containing quote characters must be proceeded
+ * by one of the following characters: (,=:[!&|?
+ * E.g. JSMin will fail on the following: return /'/;
+ * The simple workaround is to wrap the expression in parenthesis: return (/'/); 
+ * 
  * PHP 5 or higher is required.
  *
  * Permission is hereby granted to use this version of the library under the
