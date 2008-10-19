@@ -1,5 +1,12 @@
 Minify Release History
 
+Version 2.1.1
+    * Bug fix release
+    * Detection and workarounds for zlib.output_compression and non-PHP encoding modules
+    * Zlib not required (mod_rewrite, et.al., can still be used for encoding)
+    * HTML : More IE conditional comments preserved
+    * Minify_groupUri() utility fixed
+
 Version 2.1.0
     * "min" default application for quick deployment
     * Minify URI Builder app & bookmarklet for quickly creating minify URIs

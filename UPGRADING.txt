@@ -1,0 +1,16 @@
+Minify Upgrade Guide
+
+= From 2.1.0 to 2.1.1 =
+
+1. Add the following 2 lines to the end of your existing /min/config.php file:
+    
+    // try to disable output_compression (may not have an effect)
+    ini_set('zlib.output_compression', '0');
+
+2. Overwrite all files EXCEPT the following three with those in the 2.1.1 release:
+
+    /min/config.php        <-- do NOT overwrite!
+    /min/groupsConfig.php  <-- do NOT overwrite!
+    /min/.htaccess         <-- do NOT overwrite!
+    
+3. (optional) Delete all the Minify files from your cache directory ($min_cachePath).
