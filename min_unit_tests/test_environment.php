@@ -21,7 +21,7 @@ function test_environment()
     global $thisDir;
     
     $thisUrl = 'http://' 
-        . $_SERVER['SERVER_NAME']
+        . $_SERVER['HTTP_HOST'] // avoid redirects when SERVER_NAME doesn't match
         . ('80' === $_SERVER['SERVER_PORT'] ? '' : ":{$_SERVER['SERVER_PORT']}")
         . dirname($_SERVER['REQUEST_URI']) 
         . '/test_environment.php';
@@ -45,8 +45,20 @@ function test_environment()
     
     $meta = stream_get_meta_data($fp);
     
-    $passed = assertTrue(
-        false !== strpos(serialize($meta), '"Content-Length: 6"')
+    $passed = true;
+    foreach ($meta['wrapper_data'] as $i => $header) {
+        if ((preg_match('@^Content-Length: (\\d+)$@i', $header, $m) && $m[1] !== '6')
+            || preg_match('@^Content-Encoding:@i', $header, $m)
+        ) {
+            $passed = false;
+            break;
+        }
+    }
+    if ($passed && stream_get_contents($fp) !== 'World!') {
+        $passed = false;
+    }
+    assertTrue(
+        $passed
         ,'environment : PHP/server does not auto-HTTP-encode content'
     );
     fclose($fp);
