@@ -36,14 +36,22 @@ if (is.ua.indexOf('gecko') >= 0) {
 
 /*@cc_on
    /*@if (@_win32)
-      document.write("OS is 32-bit, browser is IE.");
+    if (is.ie && is.win)
+        document.write("PASS: IE/win honored conditional comment.<br>");
    @else @*/
-      document.write("Browser is not IE (ie: is Firefox) or Browser is not 32 bit IE.");
+    if (is.ie && is.win)
+        document.write("FAIL: IE/win did not honor multi-line conditional comment.<br>");
+    else 
+        document.write("PASS: Non-IE/win browser ignores multi-line conditional comment.<br>");
    /*@end
 @*/
 
+var recognizesCondComm = true;
 //@cc_on/*
-
-alert("Hello !IE browser");
-
+recognizesCondComm = false;
 //@cc_on*/
+
+if ((is.ie && is.win) == recognizesCondComm)
+    document.write("PASS: IE/win honored single-line conditional comment.<br>");
+else 
+    document.write("FAIL: Non-IE/win browser did not ignore single-line conditional comment.<br>");

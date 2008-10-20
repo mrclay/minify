@@ -246,15 +246,26 @@
 /* 36 */ 
 /* 37 */ /*@cc_on
 /* 38 *|    /*@if (@_win32)
-/* 39 *|       document.write("OS is 32-bit, browser is IE.");
-/* 40 *|    @else @*/
-/* 41 */       document.write("Browser is not IE (ie: is Firefox) or Browser is not 32 bit IE.");
-/* 42 */    /*@end
-/* 43 *| @*/
-/* 44 */ 
-/* 45 */ //@cc_on/*
-/* 46 *| 
-/* 47 *| alert("Hello !IE browser");
-/* 48 *| 
-/* 49 *| //@cc_on*/
-/* 50 */ 
+/* 39 *|     if (is.ie && is.win)
+/* 40 *|         document.write("PASS: IE/win honored conditional comment.<br>");
+/* 41 *|    @else @*/
+/* 42 */     if (is.ie && is.win)
+/* 43 */         document.write("FAIL: IE/win did not honor multi-line conditional comment.<br>");
+/* 44 */     else 
+/* 45 */         document.write("PASS: Non-IE/win browser ignores multi-line conditional comment.<br>");
+/* 46 */    /*@end
+/* 47 *| @*/
+/* 48 */ 
+/* 49 */ var recognizesCondComm = true;
+/* 50 */ //@cc_on/*
+
+/* before.js */
+
+/* 51 *| recognizesCondComm = false;
+/* 52 *| //@cc_on*/
+/* 53 */ 
+/* 54 */ if ((is.ie && is.win) == recognizesCondComm)
+/* 55 */     document.write("PASS: IE/win honored single-line conditional comment.<br>");
+/* 56 */ else 
+/* 57 */     document.write("FAIL: Non-IE/win browser did not ignore single-line conditional comment.<br>");
+/* 58 */ 
