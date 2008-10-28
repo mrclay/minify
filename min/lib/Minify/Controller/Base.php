@@ -13,23 +13,21 @@
  * 
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
- * 
- * @todo add static function to ease setting currentPath for CSS files
- * (see line 83 of Version1.php)
  */
 abstract class Minify_Controller_Base {
     
     /**
-     * Setup controller sources
+     * Setup controller sources and set an needed options for Minify::source
      * 
      * You must override this method in your subclass controller to set 
      * $this->sources. If the request is NOT valid, make sure $this->sources 
      * is left an empty array. Then strip any controller-specific options from 
-     * $options and return it.
+     * $options and return it. To serve files, $this->sources must be an array of
+     * Minify_Source objects.
      * 
      * @param array $options controller and Minify options
      * 
-     * @param array $options Minify options
+     * return array $options Minify::serve options
      */
     abstract public function setupSources($options);
     
@@ -85,7 +83,7 @@ abstract class Minify_Controller_Base {
      * via this method. This built-in function will only load classes for
      * static method callbacks where the class isn't already defined. It uses
      * the PEAR convention, so, given array('Jimmy_Minifier', 'minCss'), this 
-     * function will include 'Jimmy/Minifier.php'
+     * function will include 'Jimmy/Minifier.php'.
      * 
      * If you need code loaded on demand and this doesn't suit you, you'll need
      * to override this function in your subclass. 
@@ -107,13 +105,16 @@ abstract class Minify_Controller_Base {
     
     /**
      * Is a user-given file within an allowable directory, existing,
-     * and having an extension js/css/html/txt
+     * and having an extension js/css/html/txt ?
      * 
      * This is a convenience function for controllers that have to accept
      * user-given paths
      *
      * @param string $file full file path (already processed by realpath())
-     * @param array $safeDirs directories where files are safe to serve
+     * 
+     * @param array $safeDirs directories where files are safe to serve. Files can also
+     * be in subdirectories of these directories.
+     * 
      * @return bool file is safe
      */
     public static function _fileIsSafe($file, $safeDirs)
