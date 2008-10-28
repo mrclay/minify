@@ -29,15 +29,14 @@ if (0 === stripos(PHP_OS, 'win')) {
 if ($min_allowDebugFlag && isset($_GET['debug'])) {
     $min_serveOptions['debug'] = true;
 }
+// check for URI versioning
+if (preg_match('/&\\d/', $_SERVER['QUERY_STRING'])) {
+    $min_serveOptions['maxAge'] = 31536000;
+}
 if (isset($_GET['g'])) {
     // well need groups config
     $min_serveOptions['minApp']['groups'] = (require MINIFY_MIN_DIR . '/groupsConfig.php');
-    // check for URI versioning
-    if (preg_match('/&\\d/', $_SERVER['QUERY_STRING'])) {
-        $min_serveOptions['maxAge'] = 31536000;
-    }
 }
-
 if (isset($_GET['f']) || isset($_GET['g'])) {
     // serve!   
     Minify::serve('MinApp', $min_serveOptions);

@@ -84,22 +84,6 @@ You can now serve these files with this simple URL:
   http://example.com/min/?g=js
   
 
-GROUPS: FAR-FUTURE EXPIRES HEADERS
-
-Minify can send far-future (one year) Expires headers. To enable this you must
-add a number to the querystring (/min/?g=js&1234) and alter it whenever a 
-source file is changed. If you have a build process you can use a build/
-source control revision number. If not, the utility function Minify_groupUri()
-will return "versioned" Minify URIs for use in your HTML. E.g.:
-
-<?php
-// add /min/lib to your include_path first!
-require $_SERVER['DOCUMENT_ROOT'] . '/min/utils.php';
-
-$jsUri = Minify_groupUri('js'); 
-echo "<script type='text/javascript' src='{$jsUri}'></script>";
-
-
 GROUPS: SPECIFYING FILES OUTSIDE THE DOC_ROOT
 
 In the groupsConfig.php array, the "//" in the file paths is a shortcut for
@@ -113,6 +97,34 @@ return array(
         ,'C:/Users/Steve/file.js' // file anywhere on filesystem
     )
 );
+
+
+FAR-FUTURE EXPIRES HEADERS
+
+Minify can send far-future (one year) Expires headers. To enable this you must
+add a number to the querystring (e.g. /min/?g=js&1234 or /min/f=file.js&1234) 
+and alter it whenever a source file is changed. If you have a build process you 
+can use a build/source control revision number.
+
+If you serve files as a group, you can use the utility function Minify_groupUri()
+to get a "versioned" Minify URI for use in your HTML. E.g.:
+
+<?php
+// add /min/lib to your include_path first!
+require $_SERVER['DOCUMENT_ROOT'] . '/min/utils.php';
+
+$jsUri = Minify_groupUri('js'); 
+echo "<script type='text/javascript' src='{$jsUri}'></script>";
+
+
+DEBUG MODE
+
+In debug mode, instead of compressing files, Minify sends combined files with
+comments prepended to each line to show the line number in the original source
+file. To enable this, set $min_allowDebugFlag to true in config.php and append
+"&debug=1" to your URIs. E.g. /min/?f=script1.js,script2.js&debug=1
+
+Known issue: files with comment-like strings/regexps can cause problems in this mode.
 
 
 QUESTIONS?
