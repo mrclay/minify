@@ -102,7 +102,7 @@ function test_Minify()
     $pathToWebTest = str_replace(
         DIRECTORY_SEPARATOR
         ,'/'
-        ,substr(dirname(__FILE__), strlen($_SERVER['DOCUMENT_ROOT']))
+        ,substr(dirname(__FILE__), strlen(realpath($_SERVER['DOCUMENT_ROOT'])))
     );
     $expectedContent = str_replace(
     	'%PATH_TO_WEB_TEST%'
