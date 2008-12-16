@@ -16,8 +16,16 @@
  * 
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
+ * @author http://code.google.com/u/1stvamp/ (Issue 64 patch)
  */
 class Minify_CSS {
+
+    /**
+     * Defines which class to call as part of callbacks, change this
+     * if you extend Minify_CSS
+     * @var string
+     */
+    protected static $className = 'Minify_CSS';
     
     /**
      * Minify a CSS string
@@ -52,7 +60,7 @@ class Minify_CSS {
         $options['preserveComments'] = false;
         return Minify_CommentPreserver::process(
             $css
-            ,array('Minify_CSS', 'minify')
+            ,array(self::$className, 'minify')
             ,array($options)
         );
     }
@@ -83,7 +91,7 @@ class Minify_CSS {
         // apply callback to all valid comments (and strip out surrounding ws
         self::$_inHack = false;
         $css = preg_replace_callback('@\\s*/\\*([\\s\\S]*?)\\*/\\s*@'
-            ,array('Minify_CSS', '_commentCB'), $css);
+            ,array(self::$className, '_commentCB'), $css);
 
         // remove ws around { } and last semicolon in declaration block
         $css = preg_replace('/\\s*{\\s*/', '{', $css);
@@ -125,7 +133,7 @@ class Minify_CSS {
                 [^~>+,\\s]+      # selector part
                 {                # open declaration block
             /x'
-            ,array('Minify_CSS', '_selectorsCB'), $css);
+            ,array(self::$className, '_selectorsCB'), $css);
         
         // minimize hex colors
         $css = preg_replace('/([^=])#([a-f\\d])\\2([a-f\\d])\\3([a-f\\d])\\4([\\s;\\}])/i'
@@ -133,7 +141,7 @@ class Minify_CSS {
         
         // remove spaces between font families
         $css = preg_replace_callback('/font-family:([^;}]+)([;}])/'
-            ,array('Minify_CSS', '_fontFamilyCB'), $css);
+            ,array(self::$className, '_fontFamilyCB'), $css);
         
         $css = preg_replace('/@import\\s+url/', '@import url', $css);
         
@@ -160,9 +168,9 @@ class Minify_CSS {
         }
         if ($rewrite) {
             $css = preg_replace_callback('/@import\\s+([\'"])(.*?)[\'"]/'
-                ,array('Minify_CSS', '_urlCB'), $css);
+                ,array(self::$className, '_urlCB'), $css);
             $css = preg_replace_callback('/url\\(\\s*([^\\)\\s]+)\\s*\\)/'
-                ,array('Minify_CSS', '_urlCB'), $css);
+                ,array(self::$className, '_urlCB'), $css);
         }
         self::$_tempPrepend = self::$_tempCurrentDir = '';
         return trim($css);

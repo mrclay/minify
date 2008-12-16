@@ -439,7 +439,7 @@ class Minify {
                 $options = (null !== $source->minifyOptions)
                     ? array_merge($defaultOptions, $source->minifyOptions)
                     : $defaultOptions;
-                if ($defaultMinifier) {
+                if ($minifier) {
                     self::$_controller->loadMinifier($minifier);
                     // get source content and minify it
                     $pieces[] = call_user_func($minifier, $source->getContent(), $options);     

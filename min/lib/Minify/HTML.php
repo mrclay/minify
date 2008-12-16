@@ -17,7 +17,14 @@
  * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_HTML {
-    
+
+    /**
+     * Defines which class to call as part of callbacks, change this
+     * if you extend Minify_HTML
+     * @var string
+     */
+    protected static $className = 'Minify_HTML';
+
     /**
      * "Minify" an HTML page
      *
@@ -59,30 +66,30 @@ class Minify_HTML {
         // replace SCRIPTs (and minify) with placeholders
         $html = preg_replace_callback(
             '/\\s*(<script\\b[^>]*?>)([\\s\\S]*?)<\\/script>\\s*/i'
-            ,array('Minify_HTML', '_removeScriptCB')
+            ,array(self::$className, '_removeScriptCB')
             ,$html);
         
         // replace STYLEs (and minify) with placeholders
         $html = preg_replace_callback(
             '/\\s*(<style\\b[^>]*?>)([\\s\\S]*?)<\\/style>\\s*/i'
-            ,array('Minify_HTML', '_removeStyleCB')
+            ,array(self::$className, '_removeStyleCB')
             ,$html);
         
         // remove HTML comments (not containing IE conditional comments).
         $html = preg_replace_callback(
             '/<!--([\\s\\S]*?)-->/'
-            ,array('Minify_HTML', '_commentCB')
+            ,array(self::$className, '_commentCB')
             ,$html);
         
         // replace PREs with placeholders
         $html = preg_replace_callback('/\\s*(<pre\\b[^>]*?>[\\s\\S]*?<\\/pre>)\\s*/i'
-            ,array('Minify_HTML', '_removePreCB')
+            ,array(self::$className, '_removePreCB')
             , $html);
         
         // replace TEXTAREAs with placeholders
         $html = preg_replace_callback(
             '/\\s*(<textarea\\b[^>]*?>[\\s\\S]*?<\\/textarea>)\\s*/i'
-            ,array('Minify_HTML', '_removeTaCB')
+            ,array(self::$className, '_removeTaCB')
             , $html);
         
         // trim each line.
@@ -99,7 +106,7 @@ class Minify_HTML {
         // remove ws outside of all elements
         $html = preg_replace_callback(
             '/>([^<]+)</'
-            ,array('Minify_HTML', '_outsideTagCB')
+            ,array(self::$className, '_outsideTagCB')
             ,$html);
         
         // use newlines before 1st attribute in open tags (to limit line lengths)

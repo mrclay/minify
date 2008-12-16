@@ -1,7 +1,8 @@
 <?php 
 
 // check for auto-encoding
-$encodeOutput = ! ini_get('zlib.output_compression');
+$encodeOutput = (function_exists('gzdeflate')
+                 && !ini_get('zlib.output_compression'));
 
 require dirname(__FILE__) . '/../config.php';
 

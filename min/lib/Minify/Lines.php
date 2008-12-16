@@ -9,6 +9,7 @@
  *
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
+ * @author Adam Pedersen (Issue 55 fix)
  */
 class Minify_Lines {
 
@@ -71,7 +72,13 @@ class Minify_Lines {
             if (false === $pos) {
                 return $inComment;
             } else {
-                $inComment = ! $inComment;
+                if ($pos == 0
+                    || ($inComment
+                        ? substr($line, $pos, 3)
+                        : substr($line, $pos-1, 3)) != '*/*')
+                {
+                        $inComment = ! $inComment;
+                }
                 $line = substr($line, $pos + 2);
             }
         }

@@ -19,8 +19,22 @@ require_once '_inc.php';
 function test_environment()
 {
     global $thisDir;
-    
-    $thisUrl = 'http://' 
+
+    // check DOCROOT
+    $noSlash = assertTrue(
+        0 === preg_match('@[\\\\/]$@', $_SERVER['DOCUMENT_ROOT'])
+        ,'environment : DOCUMENT_ROOT should not end in trailing slash'
+    );
+    $goodRoot = assertTrue(
+        0 === strpos(realpath(__FILE__), realpath($_SERVER['DOCUMENT_ROOT']))
+        ,'environment : DOCUMENT_ROOT should be real path and contain this test file'
+    );
+    if (! $noSlash || ! $goodRoot) {
+        echo "!NOTE: If you cannot modify DOCUMENT_ROOT, see this comment for a workaround:"
+            ,"\n       http://code.google.com/p/minify/issues/detail?id=68#c6\n";
+    }
+
+    $thisUrl = 'http://'
         . $_SERVER['HTTP_HOST'] // avoid redirects when SERVER_NAME doesn't match
         . ('80' === $_SERVER['SERVER_PORT'] ? '' : ":{$_SERVER['SERVER_PORT']}")
         . dirname($_SERVER['REQUEST_URI']) 
