@@ -112,18 +112,18 @@ class HTTP_ConditionalGet {
                 $_SERVER['REQUEST_TIME'] + $spec['maxAge'] 
             );
         }
-    	if (isset($spec['lastModifiedTime'])) {
-    		$this->_setLastModified($spec['lastModifiedTime']);
-    		if (isset($spec['eTag'])) { // Use it
-    			$this->_setEtag($spec['eTag'], $scope);
-    		} else { // base both headers on time
-    			$this->_setEtag($spec['lastModifiedTime'], $scope);
-    		}
-    	} elseif (isset($spec['eTag'])) { // Use it
-    		$this->_setEtag($spec['eTag'], $scope);
-    	} elseif (isset($spec['contentHash'])) { // Use the hash as the ETag
-    		$this->_setEtag($spec['contentHash'], $scope);
-    	}
+        if (isset($spec['lastModifiedTime'])) {
+            $this->_setLastModified($spec['lastModifiedTime']);
+            if (isset($spec['eTag'])) { // Use it
+                $this->_setEtag($spec['eTag'], $scope);
+            } else { // base both headers on time
+                $this->_setEtag($spec['lastModifiedTime'], $scope);
+            }
+        } elseif (isset($spec['eTag'])) { // Use it
+            $this->_setEtag($spec['eTag'], $scope);
+        } elseif (isset($spec['contentHash'])) { // Use the hash as the ETag
+            $this->_setEtag($spec['contentHash'], $scope);
+        }
         $this->_headers['Cache-Control'] = "max-age={$maxAge}, {$scope}, must-revalidate";
         // invalidate cache if disabled, otherwise check
         $this->cacheIsValid = (isset($spec['invalidate']) && $spec['invalidate'])
@@ -226,7 +226,7 @@ class HTTP_ConditionalGet {
     {
         if (null === $this->_etag) {
             // lmTime is copied to ETag, so this condition implies that the
-            // client received neither ETag nor Last-Modified, so can't 
+            // server sent neither ETag nor Last-Modified, so the client can't 
             // possibly has a valid cache.
             return false;
         }
