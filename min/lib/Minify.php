@@ -56,7 +56,7 @@ class Minify {
      * need to recombine files, minify and encode the output.
      *
      * @param mixed $cache object with identical interface as Minify_Cache_File or
-     * a directory path. (default = '')
+     * a directory path, or null to disable caching. (default = '')
      * 
      * @param bool $fileLocking (default = true) This only applies if the first
      * parameter is a string.
@@ -186,7 +186,7 @@ class Minify {
         // check client cache
         require_once 'HTTP/ConditionalGet.php';
         $cgOptions = array(
-        	'lastModifiedTime' => self::$_options['lastModifiedTime']
+            'lastModifiedTime' => self::$_options['lastModifiedTime']
             ,'isPublic' => self::$_options['isPublic']
         );
         if (self::$_options['maxAge'] > 0) {
@@ -201,7 +201,7 @@ class Minify {
             } else {
                 return array(
                     'success' => true
-                    ,'statusCode' => 304 
+                    ,'statusCode' => 304
                     ,'content' => ''
                     ,'headers' => $cg->getHeaders()
                 );
@@ -309,7 +309,7 @@ class Minify {
                 ,'content' => $cacheIsReady
                     ? self::$_cache->fetch($fullCacheId)
                     : $content
-                ,'headers' => $headers                
+                ,'headers' => $headers
             );
         }
     }
@@ -402,9 +402,10 @@ class Minify {
     protected static function _combineMinify() {
         $type = self::$_options['contentType']; // ease readability
         
-        // when combining scripts, make sure all statements separated
+        // when combining scripts, make sure all statements separated and
+        // trailing single line comment is terminated
         $implodeSeparator = ($type === self::TYPE_JS)
-            ? ';'
+            ? "\n;"
             : '';
         // allow the user to pass a particular array of options to each
         // minifier (designated by type). source objects may still override
@@ -474,5 +475,5 @@ class Minify {
             ,self::$_options['minifierOptions']
             ,self::$_options['postprocessor']
         )));
-    }    
+    }
 }
