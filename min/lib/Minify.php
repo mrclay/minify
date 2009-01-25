@@ -358,8 +358,33 @@ class Minify {
             if ($unsetPathInfo) {
                 unset($_SERVER['PATH_INFO']);
             }
+            Minify::logError("setDocRoot() set DOCUMENT_ROOT to \"{$_SERVER['DOCUMENT_ROOT']}\"");
         }
     }
+    
+    /**
+     * Set error logger object. 
+     *
+     * The object should have a method "log" that accepts a value as 1st argument and
+     * an optional string label as the 2nd.
+     *
+     * @param mixed $obj or a "falsey" value to disable
+     */
+    public static function setLogger($obj = null) {
+        self::$_logger = $obj
+            ? $obj
+            : null;
+    }
+    
+    public static function logError($msg) {
+        if (! self::$_logger) return;
+        self::$_logger->log($msg, 'Minify');
+    }
+    
+    /**
+     * @var mixed logger object (like FirePHP) or null (i.e. no logging enabled)
+     */
+    private static $_logger = null;
     
     /**
      * @var mixed Minify_Cache_* object or null (i.e. no server cache is used)

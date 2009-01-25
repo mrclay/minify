@@ -52,13 +52,13 @@ class Minify_Controller_Files extends Minify_Controller_Base {
             if (0 === strpos($file, '//')) {
                 $file = $_SERVER['DOCUMENT_ROOT'] . substr($file, 1);
             }
-            $file = realpath($file);
-            if (file_exists($file)) {
+            $realPath = realpath($file);
+            if (is_file($realPath)) {
                 $sources[] = new Minify_Source(array(
-                    'filepath' => $file
+                    'filepath' => $realPath
                 ));    
             } else {
-                // file not found
+                Minify::logError("The path \"{$file}\" could not be found (or was not a file)");
                 return $options;
             }
         }

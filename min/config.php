@@ -17,7 +17,7 @@ $min_libPath = dirname(__FILE__) . '/lib';
  * Minify will have to load extra code to guess. Commented out below
  * are a few possible choices.
  */
-//$min_cachePath = 'c:\\WINDOWS\Temp';
+//$min_cachePath = 'c:\\WINDOWS\\Temp';
 //$min_cachePath = '/tmp';
 //$min_cachePath = preg_replace('/^\\d+;/', '', session_save_path());
 
@@ -36,10 +36,12 @@ $min_enableBuilder = true;
 
 
 /**
- * In 'debug' mode, Minify can combine files with no minification and 
- * add comments to indicate line #s of the original files. 
+ * Enable logging of errors to FirePHP and setting of the 'debug' flag.
+ *
+ * When enabled and "&debug=1" is added to the URI, Minify will combine files with no 
+ * minification and add comments to indicate line #s of the original files. 
  * 
- * To allow debugging, set this option to true and add "&debug=1" to 
+ * To allow debugging, set this option to true and add "&debug=1" to
  * a URI. E.g. /min/?f=script1.js,script2.js&debug=1
  */
 $min_allowDebugFlag = false;

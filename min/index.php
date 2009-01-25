@@ -26,8 +26,12 @@ Minify::setCache(
 if (0 === stripos(PHP_OS, 'win')) {
     Minify::setDocRoot(); // we may be on IIS
 }
-if ($min_allowDebugFlag && isset($_GET['debug'])) {
-    $min_serveOptions['debug'] = true;
+if ($min_allowDebugFlag) {
+    require_once 'FirePHP.php';
+    Minify::setLogger(FirePHP::getInstance(true));
+    if (isset($_GET['debug'])) {
+        $min_serveOptions['debug'] = true;
+    } 
 }
 // check for URI versioning
 if (preg_match('/&\\d/', $_SERVER['QUERY_STRING'])) {
