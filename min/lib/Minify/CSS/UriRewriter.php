@@ -15,6 +15,13 @@
 class Minify_CSS_UriRewriter {
     
     /**
+     * Defines which class to call as part of callbacks, change this
+     * if you extend Minify_CSS_UriRewriter
+     * @var string
+     */
+    protected static $className = 'Minify_CSS_UriRewriter';
+    
+    /**
      * Rewrite file relative URIs as root relative in CSS files
      * 
      * @param string $css
@@ -45,9 +52,9 @@ class Minify_CSS_UriRewriter {
         
         // rewrite
         $css = preg_replace_callback('/@import\\s+([\'"])(.*?)[\'"]/'
-            ,array('Minify_CSS_UriRewriter', '_uriCB'), $css);
+            ,array(self::$className, '_uriCB'), $css);
         $css = preg_replace_callback('/url\\(\\s*([^\\)\\s]+)\\s*\\)/'
-            ,array('Minify_CSS_UriRewriter', '_uriCB'), $css);
+            ,array(self::$className, '_uriCB'), $css);
 
         return $css;
     }
@@ -79,7 +86,9 @@ class Minify_CSS_UriRewriter {
                 : substr($m[1], 1, strlen($m[1]) - 2);
         }
         if ('/' !== $uri[0]) {
-            if (strpos($uri, '//') > 0) {
+            if (strpos($uri, '//') > 0
+                || 0 === strpos($uri, 'data:')
+            ) {
                 // probably starts with protocol, do not alter
             } else {
                 // it's a file relative URI!

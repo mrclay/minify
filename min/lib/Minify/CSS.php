@@ -278,7 +278,9 @@ class Minify_CSS {
                 : substr($m[1], 1, strlen($m[1]) - 2);
         }
         if ('/' !== $url[0]) {
-            if (strpos($url, '//') > 0) {
+            if (strpos($url, '//') > 0
+                || 0 === strpos($url, 'data:')
+            ) {
                 // probably starts with protocol, do not alter
             } else {
                 // relative URI, rewrite!
