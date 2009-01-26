@@ -1,21 +1,36 @@
 <?php
 /**
- * Configuration for default Minify implementation
+ * Configuration for default Minify application
  * @package Minify
  */
 
 
 /**
- * Path to Minify's lib folder. If you happen to move it, change 
- * this accordingly.
+ * In 'debug' mode, Minify can combine files with no minification and 
+ * add comments to indicate line #s of the original files. 
+ * 
+ * To allow debugging, set this option to true and add "&debug=1" to 
+ * a URI. E.g. /min/?f=script1.js,script2.js&debug=1
  */
-$min_libPath = dirname(__FILE__) . '/lib';
+$min_allowDebugFlag = false;
 
 
 /**
- * For best performance, specify your temp directory here. Otherwise 
- * Minify will have to load extra code to guess. Commented out below
- * are a few possible choices.
+ * Set to true to log messages to FirePHP (Firefox Firebug addon).
+ * Set to false for no error logging (Minify may be slightly faster).
+ * @link http://www.firephp.org/
+ *
+ * If you want to use a custom error logger, set this to your logger 
+ * instance. Your object should have a method log(string $message).
+ *
+ * @todo cache system does not have error logging yet.
+ */
+$min_errorLogger = false;
+
+
+/**
+ * For best performance, specify your temp directory here. Otherwise Minify
+ * will have to load extra code to guess. Some examples below:
  */
 //$min_cachePath = 'c:\\WINDOWS\\Temp';
 //$min_cachePath = '/tmp';
@@ -23,7 +38,21 @@ $min_libPath = dirname(__FILE__) . '/lib';
 
 
 /**
- * Cache file locking. Set to false if filesystem is NFS.
+ * On most servers, this can be left empty. On others, $_SERVER['DOCUMENT_ROOT']
+ * may be misconfigured or missing. If so, set this to your full document
+ * root path with no trailing slash.
+ * E.g. '/home/accountname/public_html' or 'c:\\xampp\\htdocs'
+ *
+ * If /min/ is directly inside your document root, just uncomment the 
+ * second line:
+ */
+$min_documentRoot = '';
+//$min_documentRoot = substr(__FILE__, 0, strlen(__FILE__) - 15);
+
+
+/**
+ * Cache file locking. Set to false if filesystem is NFS. On at least one 
+ * NFS system flock-ing attempts stalled PHP for 30 seconds!
  */
 $min_cacheFileLocking = true;
 
@@ -36,22 +65,13 @@ $min_enableBuilder = true;
 
 
 /**
- * Enable logging of errors to FirePHP and setting of the 'debug' flag.
- *
- * When enabled and "&debug=1" is added to the URI, Minify will combine files with no 
- * minification and add comments to indicate line #s of the original files. 
- * 
- * To allow debugging, set this option to true and add "&debug=1" to
- * a URI. E.g. /min/?f=script1.js,script2.js&debug=1
- */
-$min_allowDebugFlag = false;
-
-
-/**
- * Maximum age of browser cache in seconds. After this period,
- * the browser will send another conditional GET. You might
- * want to shorten this before making changes if it's crucial
+ * Maximum age of browser cache in seconds. After this period, the browser
+ * will send another conditional GET. Use a longer period for lower traffic
+ * but you may want to shorten this before making changes if it's crucial
  * those changes are seen immediately.
+ *
+ * Note: Despite this setting, if you include a number at the end of the
+ * querystring, maxAge will be set to one year. E.g. /min/f=hello.css&123456
  */
 $min_serveOptions['maxAge'] = 1800;
 
@@ -95,6 +115,13 @@ $min_serveOptions['minApp']['maxFiles'] = 10;
  * @link http://winscp.net/eng/docs/ui_login_environment#daylight_saving_time
  */
 $min_uploaderHoursBehind = 0;
+
+
+/**
+ * Path to Minify's lib folder. If you happen to move it, change 
+ * this accordingly.
+ */
+$min_libPath = dirname(__FILE__) . '/lib';
 
 
 // try to disable output_compression (may not have an effect)

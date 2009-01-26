@@ -23,15 +23,20 @@ Minify::setCache(
     ,$min_cacheFileLocking
 );
 
-if (0 === stripos(PHP_OS, 'win')) {
-    Minify::setDocRoot(); // we may be on IIS
+if ($min_documentRoot) {
+    $SERVER['DOCUMENT_ROOT'] = $min_documentRoot;
+} elseif (0 === stripos(PHP_OS, 'win')) {
+    Minify::setDocRoot(); // IIS may need help
 }
-if ($min_allowDebugFlag) {
+
+if ($min_allowDebugFlag && isset($_GET['debug'])) {
+    $min_serveOptions['debug'] = true;
+}
+if (true === $min_errorLogger) {
     require_once 'FirePHP.php';
     Minify::setLogger(FirePHP::getInstance(true));
-    if (isset($_GET['debug'])) {
-        $min_serveOptions['debug'] = true;
-    } 
+} elseif ($min_errorLogger) {
+    Minify::setLogger($min_errorLogger);
 }
 // check for URI versioning
 if (preg_match('/&\\d/', $_SERVER['QUERY_STRING'])) {
