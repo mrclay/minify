@@ -30,8 +30,12 @@ function test_environment()
         ,'environment : DOCUMENT_ROOT should be real path and contain this test file'
     );
     if (! $noSlash || ! $goodRoot) {
-        echo "!NOTE: If you cannot modify DOCUMENT_ROOT, see this comment for a workaround:"
-            ,"\n       http://code.google.com/p/minify/issues/detail?id=68#c6\n";
+        echo "!NOTE: environment : If you cannot modify DOCUMENT_ROOT, consider "
+           . "setting \$min_documentRoot in config.php\n";
+    }
+    if (isset($_SERVER['SUBDOMAIN_DOCUMENT_ROOT'])) {
+        echo "!NOTE: environment : \$_SERVER['SUBDOMAIN_DOCUMENT_ROOT'] is set. "
+           . "You may need to set \$min_documentRoot to this in config.php\n";
     }
 
     $thisUrl = 'http://'
@@ -47,7 +51,8 @@ function test_environment()
         return;
     }
     if ('1' === $oc) {
-        echo "!WARN: environment : zlib.output_compression is enabled in php.ini or .htaccess.\n";
+        echo "!WARN: environment : zlib.output_compression is enabled in php.ini"
+           . " or .htaccess.\n";
     }
     
     $fp = fopen($thisUrl . '?hello=1', 'r', false, stream_context_create(array(

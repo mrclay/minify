@@ -9,6 +9,8 @@ function test_Lines()
     
     $exp = file_get_contents("{$thisDir}/_test_files/minify/lines_output.js");
 
+    Minify::setCache(null); // no cache
+    
     $ret = Minify::serve('Files', array(
         'debug' => true
         ,'quiet' => true

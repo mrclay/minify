@@ -369,6 +369,7 @@ class Minify {
      * an optional string label as the 2nd.
      *
      * @param mixed $obj or a "falsey" value to disable
+     * @return null
      */
     public static function setLogger($obj = null) {
         self::$_logger = $obj
@@ -376,6 +377,12 @@ class Minify {
             : null;
     }
     
+    /**
+     * Send message to the error log (if set)
+     *
+     * @param string $msg message to log
+     * @return null
+     */
     public static function logError($msg) {
         if (! self::$_logger) return;
         self::$_logger->log($msg, 'Minify');

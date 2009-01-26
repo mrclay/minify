@@ -29,6 +29,13 @@ $min_errorLogger = false;
 
 
 /**
+ * Allow use of the Minify URI Builder app. If you no longer need 
+ * this, set to false.
+ **/
+$min_enableBuilder = true;
+
+
+/**
  * For best performance, specify your temp directory here. Otherwise Minify
  * will have to load extra code to guess. Some examples below:
  */
@@ -44,10 +51,11 @@ $min_errorLogger = false;
  * E.g. '/home/accountname/public_html' or 'c:\\xampp\\htdocs'
  *
  * If /min/ is directly inside your document root, just uncomment the 
- * second line:
+ * second line. The third line might work on some Apache servers.
  */
 $min_documentRoot = '';
 //$min_documentRoot = substr(__FILE__, 0, strlen(__FILE__) - 15);
+//$min_documentRoot = $_SERVER['SUBDOMAIN_DOCUMENT_ROOT'];
 
 
 /**
@@ -55,13 +63,6 @@ $min_documentRoot = '';
  * NFS system flock-ing attempts stalled PHP for 30 seconds!
  */
 $min_cacheFileLocking = true;
-
-
-/**
- * Allow use of the Minify URI Builder app. If you no longer need 
- * this, set to false.
- **/
-$min_enableBuilder = true;
 
 
 /**
@@ -82,7 +83,7 @@ $min_serveOptions['maxAge'] = 1800;
  * You will still need to include the directory in the
  * f or b GET parameters.
  * 
- * // = DOCUMENT_ROOT 
+ * // = shortcut for DOCUMENT_ROOT 
  */
 //$min_serveOptions['minApp']['allowDirs'] = array('//js', '//css');
 
