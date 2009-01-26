@@ -7,6 +7,12 @@ GETs (serving content only when clients do not have a valid cache)
 and tell clients to cache the file for a period of time. 
 More info: http://code.google.com/p/minify/
 
+
+UPGRADING
+
+See UPGRADING.txt for instructions.
+
+
 INSTALLATION AND USAGE:
 
 1. Place the /min/ directory as a child of your DOCUMENT_ROOT 

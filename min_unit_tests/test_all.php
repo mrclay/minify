@@ -2,6 +2,7 @@
 
 require 'test_Minify.php';
 require 'test_Minify_Build.php';
+require 'test_Minify_Cache_APC.php';
 require 'test_Minify_Cache_File.php';
 require 'test_Minify_Cache_Memcache.php';
 require 'test_Minify_CSS.php';

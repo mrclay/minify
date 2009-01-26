@@ -1,5 +1,17 @@
 Minify Release History
 
+Version 2.1.2
+    * Javascript fixes
+      * Debug mode no longer confused by "*/*" in strings/RegExps (jQuery)
+      * quote characters inside RegExp literals no longer cause exception
+      * files ending in single-line comments no longer cause code loss
+    * CSS: data: URLs no longer mangled
+    * Optional error logging to Firefox's FirePHP extension
+    * Unit tests to check for common DOCUMENT_ROOT problems
+      * DOCUMENT_ROOT no longer overwritten on IIS servers
+    * Builder app doesn't fail on systems without gzdeflate()
+    * APC caching class included
+
 Version 2.1.1
     * Bug fix release
     * Detection and workarounds for zlib.output_compression and non-PHP encoding modules

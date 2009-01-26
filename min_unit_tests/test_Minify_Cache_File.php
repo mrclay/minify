@@ -5,11 +5,13 @@ require_once 'Minify/Cache/File.php';
 
 function test_Minify_Cache_File()
 {
+    global $minifyCachePath;
+    
     $data = str_repeat(md5(time()), 160);
     $id = 'Minify_test_cache_noLock';
     $prefix = 'Minify_Cache_File : ';
     
-    $cache = new Minify_Cache_File();
+    $cache = new Minify_Cache_File($minifyCachePath);
     
     assertTrue(true === $cache->store($id, $data), $prefix . 'store');
     
@@ -29,7 +31,7 @@ function test_Minify_Cache_File()
     // test with locks
     
     $id = 'Minify_test_cache_withLock';
-    $cache = new Minify_Cache_File('', true);
+    $cache = new Minify_Cache_File($minifyCachePath, true);
     
     assertTrue(true === $cache->store($id, $data), $prefix . 'store w/ lock');
     
