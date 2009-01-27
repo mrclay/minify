@@ -120,16 +120,7 @@ function test_Minify()
     // don't allow conditional headers
     unset($_SERVER['HTTP_IF_NONE_MATCH'], $_SERVER['HTTP_IF_MODIFIED_SINCE']);
 
-    $pathToWebTest = str_replace(
-        DIRECTORY_SEPARATOR
-        ,'/'
-        ,substr(dirname(__FILE__), strlen(realpath($_SERVER['DOCUMENT_ROOT'])))
-    );
-    $expectedContent = str_replace(
-        '%PATH_TO_WEB_TEST%'
-        ,$pathToWebTest
-        ,file_get_contents($minifyTestPath . '/minified.css')
-    );
+    $expectedContent = file_get_contents($minifyTestPath . '/minified.css');
 
     $expected = array(
         'success' => true
@@ -146,7 +137,7 @@ function test_Minify()
     $output = Minify::serve('Files', array(
         'files' => array(
             $thisDir . '/_test_files/css/styles.css'
-            ,$thisDir . '/_test_files/css/subsilver.css'
+            ,$thisDir . '/_test_files/css/comments.css'
         )
         ,'quiet' => true
         ,'lastModifiedTime' => $lastModified

@@ -1,6 +1,6 @@
 /* some CSS to try to exercise things in general */
 
-@import     url( more.css );
+@import     url( /more.css );
 
     body, td, th {
         font-family: Verdana , "Bitstream Vera Sans" , sans-serif ;

@@ -7,7 +7,7 @@ function test_Minify_Build()
 {
     global $thisDir;
     
-    $file1 = $thisDir . '/_test_files/css/paths.css';
+    $file1 = $thisDir . '/_test_files/css/paths_prepend.css';
     $file2 = $thisDir . '/_test_files/css/styles.css';
     $maxTime = max(filemtime($file1), filemtime($file2));
     

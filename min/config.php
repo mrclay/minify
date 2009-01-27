@@ -45,9 +45,10 @@ $min_enableBuilder = true;
 
 
 /**
- * On most servers, this can be left empty. On others, $_SERVER['DOCUMENT_ROOT']
- * may be misconfigured or missing. If so, set this to your full document
- * root path with no trailing slash.
+ * Leave an empty string to use PHP's $_SERVER['DOCUMENT_ROOT'].
+ *
+ * On some servers, this value may be misconfigured or missing. If so, set this 
+ * to your full document root path with no trailing slash.
  * E.g. '/home/accountname/public_html' or 'c:\\xampp\\htdocs'
  *
  * If /min/ is directly inside your document root, just uncomment the 

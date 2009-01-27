@@ -4,9 +4,13 @@ require dirname(__FILE__) . '/../min/config.php';
 
 set_include_path($min_libPath . PATH_SEPARATOR . get_include_path());
 
+// set cache path and doc root if configured
 $minifyCachePath = isset($min_cachePath) 
     ? $min_cachePath 
     : '';
+if ($min_documentRoot) {
+    $_SERVER['DOCUMENT_ROOT'] = $min_documentRoot;
+}
 
 error_reporting(E_ALL | E_STRICT);
 ini_set('display_errors', 1);

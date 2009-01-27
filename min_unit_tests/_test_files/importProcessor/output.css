@@ -1,7 +1,7 @@
 @media screen {
 /* some CSS to try to exercise things in general */
 
-@import     url(%TEST_FILES_URI%/css/more.css);
+@import     url(/more.css);
 
     body, td, th {
         font-family: Verdana , "Bitstream Vera Sans" , sans-serif ;

@@ -25,17 +25,23 @@ function test_environment()
         0 === preg_match('@[\\\\/]$@', $_SERVER['DOCUMENT_ROOT'])
         ,'environment : DOCUMENT_ROOT should not end in trailing slash'
     );
-    $goodRoot = assertTrue(
-        0 === strpos(realpath(__FILE__), realpath($_SERVER['DOCUMENT_ROOT']))
-        ,'environment : DOCUMENT_ROOT should be real path and contain this test file'
+    $isRealPath = assertTrue(false !== realpath($_SERVER['DOCUMENT_ROOT'])
+        ,'environment : DOCUMENT_ROOT should pass realpath()'
     );
-    if (! $noSlash || ! $goodRoot) {
-        echo "!NOTE: environment : If you cannot modify DOCUMENT_ROOT, consider "
-           . "setting \$min_documentRoot in config.php\n";
+    $containsThisFile = assertTrue(
+        0 === strpos(realpath(__FILE__), realpath($_SERVER['DOCUMENT_ROOT']))
+        ,'environment : DOCUMENT_ROOT should contain this test file'
+    );
+    if (! $noSlash || ! $isRealPath || ! $containsThisFile) {
+        echo "\nDOCUMENT_ROOT is set to: '{$_SERVER['DOCUMENT_ROOT']}'. If you "
+           . "cannot modify this, consider setting \$min_documentRoot in config.php\n\n";
     }
     if (isset($_SERVER['SUBDOMAIN_DOCUMENT_ROOT'])) {
-        echo "!NOTE: environment : \$_SERVER['SUBDOMAIN_DOCUMENT_ROOT'] is set. "
+        echo "\n!NOTE: environment : \$_SERVER['SUBDOMAIN_DOCUMENT_ROOT'] is set. "
            . "You may need to set \$min_documentRoot to this in config.php\n";
+    }
+    if (realpath(__FILE__) !== realpath($_SERVER['DOCUMENT_ROOT'] . '/min_unit_tests/test_environment.php')) {
+        echo "!NOTE: environment : /min_unit_tests/ is not directly inside DOCUMENT_ROOT\n";
     }
 
     $thisUrl = 'http://'

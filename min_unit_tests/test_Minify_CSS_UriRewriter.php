@@ -13,8 +13,8 @@ function test_Minify_CSS_UriRewriter()
     
     $actual = Minify_CSS_UriRewriter::rewrite(
         $in
-        ,$thisDir . '/_test_files/css_uriRewriter'
-        ,$thisDir
+        ,$thisDir . '/_test_files/css_uriRewriter' // currentDir
+        ,$thisDir // use DOCUMENT_ROOT = '/full/path/to/min_unit_tests'
     );
     
     $passed = assertTrue($expected === $actual, 'Minify_CSS_UriRewriter');
