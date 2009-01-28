@@ -49,7 +49,7 @@ function test_Minify()
         ! class_exists('HTTP_Encoder', false)
         && ! class_exists('Minify_CSS', false)
         && ! class_exists('Minify_Cache', false)
-        ,'Encoder.php, CSS.php, Cache.php not loaded'
+        ,'Minify : encoding, cache, and minifier classes aren\'t loaded for 304s'
     );
 
     // Test minifying JS and serving with Expires header
