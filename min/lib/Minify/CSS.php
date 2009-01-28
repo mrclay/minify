@@ -163,7 +163,10 @@ class Minify_CSS {
             self::$_tempPrepend = $options['prependRelativePath'];
             $rewrite = true;
         } elseif (isset($options['currentDir'])) {
-            self::$_tempCurrentDir = $options['currentDir'];
+            self::$_tempCurrentDir = realpath($options['currentDir']);
+            if (isset($options['symlinks'])) {
+                self::$_tempSymlinks = $options['symlinks'];
+            }
             $rewrite = true;
         }
         if ($rewrite) {
@@ -172,7 +175,9 @@ class Minify_CSS {
             $css = preg_replace_callback('/url\\(\\s*([^\\)\\s]+)\\s*\\)/'
                 ,array(self::$className, '_urlCB'), $css);
         }
+        // cleanup statics
         self::$_tempPrepend = self::$_tempCurrentDir = '';
+        self::$_tempSymlinks = array();
         return trim($css);
     }
     
@@ -190,28 +195,34 @@ class Minify_CSS {
     }
     
     /**
-     * @var bool Are we "in" a hack? 
+     * @var bool Are we "in" a hack?
      * 
-     * I.e. are some browsers targetted until the next comment?   
+     * I.e. are some browsers targetted until the next comment?
      */
     protected static $_inHack = false;
     
     /**
-     * @var string string to be prepended to relative URIs   
+     * @var string string to be prepended to relative URIs
      */
     protected static $_tempPrepend = '';
     
     /**
-     * @var string directory of this stylesheet for rewriting purposes   
+     * @var string directory of this stylesheet for rewriting purposes
      */
     protected static $_tempCurrentDir = '';
+    
+    /**
+     * @var array directory replacements to map symlink targets back to their
+     * source (within the document root) E.g. '/var/www/symlink' => '/var/realpath'
+     */
+    protected static $_tempSymlinks = array();
     
     /**
      * Process a comment and return a replacement
      * 
      * @param array $m regex matches
      * 
-     * @return string   
+     * @return string
      */
     protected static function _commentCB($m)
     {
@@ -291,6 +302,14 @@ class Minify_CSS {
                     // prepend path with current dir separator (OS-independent)
                     $path = self::$_tempCurrentDir 
                         . DIRECTORY_SEPARATOR . strtr($url, '/', DIRECTORY_SEPARATOR);
+                    // "unresolve" a symlink back to doc root
+                    foreach (self::$_tempSymlinks as $link => $target) {
+                        if (0 === strpos($path, $target)) {
+                            // replace $target with $link
+                            $path = $link . substr($path, strlen($target));
+                            break;
+                        }
+                    }
                     // strip doc root
                     $path = substr($path, strlen(realpath($_SERVER['DOCUMENT_ROOT'])));
                     // fix to absolute URL

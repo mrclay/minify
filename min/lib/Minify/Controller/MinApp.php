@@ -37,7 +37,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
         if (isset($_GET['g'])) {
             // try groups
             if (! isset($cOptions['groups'][$_GET['g']])) {
-                Minify::logError("A group configuration for \"{$_GET['g']}\" was not set");
+                $this->log("A group configuration for \"{$_GET['g']}\" was not set");
                 return $options;
             }
             foreach ((array)$cOptions['groups'][$_GET['g']] as $file) {
@@ -54,7 +54,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                         'filepath' => $file
                     ));    
                 } else {
-                    Minify::logError("The path \"{$file}\" could not be found (or was not a file)");
+                    $this->log("The path \"{$file}\" could not be found (or was not a file)");
                     return $options;
                 }
             }
@@ -72,12 +72,12 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 // no "./"
                 || preg_match('/(?:^|[^\\.])\\.\\//', $_GET['f'])
             ) {
-                Minify::logError("GET param 'f' invalid (see MinApp.php line 63)");
+                $this->log("GET param 'f' invalid (see MinApp.php line 63)");
                 return $options;
             }
             $files = explode(',', $_GET['f']);
             if (count($files) > $cOptions['maxFiles'] || $files != array_unique($files)) {
-                Minify::logError("Too many or duplicate files specified");
+                $this->log("Too many or duplicate files specified");
                 return $options;
             }
             if (isset($_GET['b'])) {
@@ -88,7 +88,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                     // valid base
                     $base = "/{$_GET['b']}/";       
                 } else {
-                    Minify::logError("GET param 'b' invalid (see MinApp.php line 84)");
+                    $this->log("GET param 'b' invalid (see MinApp.php line 84)");
                     return $options;
                 }
             } else {
@@ -102,10 +102,10 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 $path = $_SERVER['DOCUMENT_ROOT'] . $base . $file;
                 $file = realpath($path);
                 if (false === $file) {
-                    Minify::logError("Path \"{$path}\" failed realpath()");
+                    $this->log("Path \"{$path}\" failed realpath()");
                     return $options;
                 } elseif (! parent::_fileIsSafe($file, $allowDirs)) {
-                    Minify::logError("Path \"{$path}\" failed Minify_Controller_Base::_fileIsSafe()");
+                    $this->log("Path \"{$path}\" failed Minify_Controller_Base::_fileIsSafe()");
                     return $options;
                 } else {
                     $sources[] = new Minify_Source(array(
@@ -117,7 +117,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
         if ($sources) {
             $this->sources = $sources;
         } else {
-            Minify::logError("No sources to serve");
+            $this->log("No sources to serve");
         }
         return $options;
     }

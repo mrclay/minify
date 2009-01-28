@@ -65,7 +65,7 @@ class Minify_HTML {
         
         // replace SCRIPTs (and minify) with placeholders
         $html = preg_replace_callback(
-            '/\\s*(<script\\b[^>]*?>)([\\s\\S]*?)<\\/script>\\s*/i'
+            '/(\\s*)(<script\\b[^>]*?>)([\\s\\S]*?)<\\/script>(\\s*)/i'
             ,array(self::$className, '_removeScriptCB')
             ,$html);
         
@@ -183,9 +183,13 @@ class Minify_HTML {
 
     protected static function _removeScriptCB($m)
     {
-        $openScript = $m[1];
-        $js = $m[2];
+        $openScript = $m[2];
+        $js = $m[3];
         
+        // whitespace surrounding? preserve at least one space
+        $ws1 = ($m[1] === '') ? '' : ' ';
+        $ws2 = ($m[4] === '') ? '' : ' ';
+ 
         // remove HTML comments (and ending "//" if present)
         $js = preg_replace('/(?:^\\s*<!--\\s*|\\s*(?:\\/\\/)?\\s*-->\\s*$)/', '', $js);
             
@@ -199,8 +203,8 @@ class Minify_HTML {
         $js = call_user_func($minifier, $js);
         
         return self::_reservePlace(self::_needsCdata($js)
-            ? "{$openScript}/*<![CDATA[*/{$js}/*]]>*/</script>"
-            : "{$openScript}{$js}</script>"
+            ? "{$ws1}{$openScript}/*<![CDATA[*/{$js}/*]]>*/</script>{$ws2}"
+            : "{$ws1}{$openScript}{$js}</script>{$ws2}"
         );
     }
 

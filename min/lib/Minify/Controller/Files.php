@@ -58,7 +58,7 @@ class Minify_Controller_Files extends Minify_Controller_Base {
                     'filepath' => $realPath
                 ));    
             } else {
-                Minify::logError("The path \"{$file}\" could not be found (or was not a file)");
+                $this->log("The path \"{$file}\" could not be found (or was not a file)");
                 return $options;
             }
         }

@@ -55,7 +55,7 @@ class Minify_Controller_Groups extends Minify_Controller_Base {
             );
         if (false === $pi || ! isset($groups[$pi])) {
             // no PATH_INFO or not a valid group
-            Minify::logError("Missing PATH_INFO or no group set for \"$pi\"");
+            $this->log("Missing PATH_INFO or no group set for \"$pi\"");
             return $options;
         }
         $sources = array();
@@ -73,7 +73,7 @@ class Minify_Controller_Groups extends Minify_Controller_Base {
                     'filepath' => $realPath
                 ));    
             } else {
-                Minify::logError("The path \"{$file}\" could not be found (or was not a file)");
+                $this->log("The path \"{$file}\" could not be found (or was not a file)");
                 return $options;
             }
         }

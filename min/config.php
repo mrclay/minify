@@ -101,6 +101,21 @@ $min_serveOptions['minApp']['maxFiles'] = 10;
 
 
 /**
+ * If you minify CSS files stored in symlink-ed directories, the URI rewriting
+ * algorithm can fail. To prevent this, provide an array of link paths to
+ * target paths, where the link paths are within the document root.
+ * 
+ * Because paths need to be normalized for this to work, use "//" to substitute 
+ * the doc root in the link paths (the array keys). E.g.:
+ * <code>
+ * array('//symlink' => '/real/target/path') // unix
+ * array('//static' => 'D:\\staticStorage')  // Windows
+ * </code>
+ */
+$min_symlinks = array();
+
+
+/**
  * If you upload files from Windows to a non-Windows server, Windows may report
  * incorrect mtimes for the files. This may cause Minify to keep serving stale 
  * cache files when source file changes are made too frequently (e.g. more than

@@ -29,15 +29,27 @@ if ($min_documentRoot) {
     Minify::setDocRoot(); // IIS may need help
 }
 
+// normalize paths in symlinks
+foreach ($min_symlinks as $link => $target) {
+    $link = str_replace('//', realpath($SERVER['DOCUMENT_ROOT']), $link);
+    $link = strtr($link, '/', DIRECTORY_SEPARATOR);
+    $min_serveOptions['minifierOptions']['text/css']['symlinks'][$link] = realpath($target);
+}
+
 if ($min_allowDebugFlag && isset($_GET['debug'])) {
     $min_serveOptions['debug'] = true;
 }
-if (true === $min_errorLogger) {
-    require_once 'FirePHP.php';
-    Minify::setLogger(FirePHP::getInstance(true));
-} elseif ($min_errorLogger) {
-    Minify::setLogger($min_errorLogger);
+
+if ($min_errorLogger) {
+    require_once 'Minify/Logger.php';
+    if (true === $min_errorLogger) {
+        require_once 'FirePHP.php';
+        Minify_Logger::setLogger(FirePHP::getInstance(true));
+    } else {
+        Minify_Logger::setLogger($min_errorLogger);
+    }
 }
+
 // check for URI versioning
 if (preg_match('/&\\d/', $_SERVER['QUERY_STRING'])) {
     $min_serveOptions['maxAge'] = 31536000;

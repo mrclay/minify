@@ -12,6 +12,15 @@ if ($min_documentRoot) {
     $_SERVER['DOCUMENT_ROOT'] = $min_documentRoot;
 }
 
+// default log to FirePHP
+require_once 'Minify/Logger.php';
+if ($min_errorLogger && true !== $min_errorLogger) { // custom logger
+    Minify_Logger::setLogger($min_errorLogger);
+} else {
+    require_once 'FirePHP.php';
+    Minify_Logger::setLogger(FirePHP::getInstance(true));
+}
+
 error_reporting(E_ALL | E_STRICT);
 ini_set('display_errors', 1);
 
@@ -37,3 +46,5 @@ function assertTrue($test, $message)
 	
 	return (bool)$test;
 }
+
+ob_start();
