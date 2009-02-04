@@ -19,6 +19,12 @@
  * </code>
  *
  * <code>
+ * // Shortcut to encoding output
+ * header('Content-Type: text/css'); // needed if not HTML
+ * HTTP_Encoder::output($css);
+ * </code>
+ * 
+ * <code>
  * // Just sniff for the accepted encoding
  * $encoding = HTTP_Encoder::getAcceptedEncoding();
  * </code>
@@ -257,6 +263,29 @@ class HTTP_Encoder {
         $this->_headers['Vary'] = 'Accept-Encoding';
         $this->_content = $encoded;
         return true;
+    }
+    
+    /**
+     * Encode and send appropriate headers and content
+     *
+     * This is a convenience method for common use of the class
+     * 
+     * @param string $content
+     * 
+     * @param int $compressionLevel given to zlib functions. If not given, the
+     * class default will be used.
+     * 
+     * @return bool success true if the content was actually compressed
+     */
+    public static function output($content, $compressionLevel = null)
+    {
+        if (null === $compressionLevel) {
+            $compressionLevel = self::$compressionLevel;
+        }
+        $he = new HTTP_Encoder(array('content' => $content));
+        $ret = $he->encode($compressionLevel);
+        $he->sendAll();
+        return $ret;
     }
     
     protected $_content = '';
