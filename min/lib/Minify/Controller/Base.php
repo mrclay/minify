@@ -48,6 +48,7 @@ abstract class Minify_Controller_Base {
             ,'contentTypeCharset' => 'UTF-8'
             ,'maxAge' => 1800 // 30 minutes
             ,'rewriteCssUris' => true
+            ,'bubbleCssImports' => false
             ,'quiet' => false // serve() will send headers and output
             ,'debug' => false
             
