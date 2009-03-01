@@ -10,6 +10,7 @@ function test_Minify()
     global $thisDir;
 
     $minifyTestPath = dirname(__FILE__) . '/_test_files/minify';
+    $thisFileActive = (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME']));
     $tomorrow = $_SERVER['REQUEST_TIME'] + 86400;
     $lastModified = $_SERVER['REQUEST_TIME'] - 86400;
 
@@ -38,7 +39,7 @@ function test_Minify()
         ,'encodeOutput' => false
     ));
     $passed = assertTrue($expected === $output, 'Minify : 304 response');
-    if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
+    if ($thisFileActive) {
         echo "\nOutput: " .var_export($output, 1). "\n\n";
         if (! $passed) {
             echo "\n\n\n\n---Expected: " .var_export($expected, 1). "\n\n";
@@ -84,7 +85,7 @@ function test_Minify()
     ));
     
     $passed = assertTrue($expected === $output, 'Minify : JS and Expires');
-    if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
+    if ($thisFileActive) {
         echo "\nOutput: " .var_export($output, 1). "\n\n";
         if (! $passed) {
             echo "\n\n\n\n---Expected: " .var_export($expected, 1). "\n\n";
@@ -106,7 +107,60 @@ function test_Minify()
     $output = $output['content'];
     
     $passed = assertTrue($expected === $output, 'Minify : Issue 73');
-    if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
+    if ($thisFileActive) {
+        if (! $passed) {
+            echo "\n---Output  : " .var_export($output, 1). "\n";
+            echo "---Expected: " .var_export($expected, 1). "\n\n";
+        }    
+    }
+    
+    // test for Issue 89
+    $expected = file_get_contents($minifyTestPath . '/issue89_out.min.css');
+    $output = Minify::serve('Files', array(
+        'files' => array(
+            $minifyTestPath . '/issue89_1.css'
+            ,$minifyTestPath . '/issue89_2.css'
+        )
+        ,'quiet' => true
+        ,'encodeOutput' => false
+        ,'bubbleCssImports' => true
+    ));
+    $output = $output['content'];
+    $passed = assertTrue($expected === $output, 'Minify : Issue 89 : bubbleCssImports');
+    if ($thisFileActive) {
+        if (! $passed) {
+            echo "\n---Output  : " .var_export($output, 1). "\n";
+            echo "---Expected: " .var_export($expected, 1). "\n\n";
+        }    
+    }
+    
+    $output = Minify::serve('Files', array(
+        'files' => array(
+            $minifyTestPath . '/issue89_1.css'
+            ,$minifyTestPath . '/issue89_2.css'
+        )
+        ,'quiet' => true
+        ,'encodeOutput' => false
+    ));
+    $output = $output['content'];
+    $passed = assertTrue(0 === strpos($output, Minify::$importWarning), 'Minify : Issue 89 : detect invalid imports');
+    if ($thisFileActive) {
+        if (! $passed) {
+            echo "\n---Output  : " .var_export($output, 1). "\n";
+            echo "---Expected: " .var_export($expected, 1). "\n\n";
+        }    
+    }
+    
+    $output = Minify::serve('Files', array(
+        'files' => array(
+            $minifyTestPath . '/issue89_1.css'
+        )
+        ,'quiet' => true
+        ,'encodeOutput' => false
+    ));
+    $output = $output['content'];
+    $passed = assertTrue(false === strpos($output, Minify::$importWarning), 'Minify : Issue 89 : don\'t warn about valid imports');
+    if ($thisFileActive) {
         if (! $passed) {
             echo "\n---Output  : " .var_export($output, 1). "\n";
             echo "---Expected: " .var_export($expected, 1). "\n\n";
@@ -146,7 +200,7 @@ function test_Minify()
     ));
 
     $passed = assertTrue($expected === $output, 'Minify : CSS and Etag/Last-Modified');
-    if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
+    if ($thisFileActive) {
         echo "\nOutput: " .var_export($output, 1). "\n\n";
         if (! $passed) {
             echo "\n\n\n\n---Expected: " .var_export($expected, 1). "\n\n";

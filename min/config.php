@@ -67,6 +67,17 @@ $min_cacheFileLocking = true;
 
 
 /**
+ * Combining multiple CSS files can place @import declarations after rules, which
+ * is invalid. Minify will attempt to detect when this happens and place a
+ * warning comment at the top of the CSS output. To resolve this you can either 
+ * move the @imports within your CSS files, or enable this option, which will 
+ * move all @imports to the top of the output. Note that moving @imports could 
+ * affect CSS values (which is why this option is disabled by default).
+ */
+$min_serveOptions['bubbleCssImports'] = false;
+
+
+/**
  * Maximum age of browser cache in seconds. After this period, the browser
  * will send another conditional GET. Use a longer period for lower traffic
  * but you may want to shorten this before making changes if it's crucial
