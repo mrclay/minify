@@ -24,14 +24,14 @@ Minify::setCache(
 );
 
 if ($min_documentRoot) {
-    $SERVER['DOCUMENT_ROOT'] = $min_documentRoot;
+    $_SERVER['DOCUMENT_ROOT'] = $min_documentRoot;
 } elseif (0 === stripos(PHP_OS, 'win')) {
     Minify::setDocRoot(); // IIS may need help
 }
 
 // normalize paths in symlinks
 foreach ($min_symlinks as $link => $target) {
-    $link = str_replace('//', realpath($SERVER['DOCUMENT_ROOT']), $link);
+    $link = str_replace('//', realpath($_SERVER['DOCUMENT_ROOT']), $link);
     $link = strtr($link, '/', DIRECTORY_SEPARATOR);
     $min_serveOptions['minifierOptions']['text/css']['symlinks'][$link] = realpath($target);
 }
