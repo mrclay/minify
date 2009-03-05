@@ -147,7 +147,10 @@ class Minify_CSS_Compressor {
             \\s+
             /x'
             ,"$1\n", $css);
-
+        
+        // prevent triggering IE6 bug: http://www.crankygeek.com/ie6pebug/
+        $css = preg_replace('/:first-l(etter|ine)\\{/', ':first-l$1 {', $css);
+            
         return trim($css);
     }
     

@@ -60,3 +60,7 @@ foo { /* filters for IE */
 @media tty {
  i{content:"\";/*" "*/}} @import 'midpassafter.css'; /*";}
 }/* */
+
+/* leave at least 1 space between these pseudo elements and "{" for IE6: http://www.crankygeek.com/ie6pebug/ */
+p:first-letter  {color:red;}
+p:first-line   {color:red;}
