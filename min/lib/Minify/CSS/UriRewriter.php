@@ -52,7 +52,7 @@ class Minify_CSS_UriRewriter {
         
         // normalize symlinks
         foreach ($symlinks as $link => $target) {
-            $link = str_replace('//', realpath(self::$_docRoot), $link);
+            $link = str_replace('//', realpath(self::$_docRoot) . '/', $link);
             $link = strtr($link, '/', DIRECTORY_SEPARATOR);
             self::$_symlinks[$link] = realpath($target);
         }

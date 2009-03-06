@@ -29,12 +29,7 @@ if ($min_documentRoot) {
     Minify::setDocRoot(); // IIS may need help
 }
 
-// normalize paths in symlinks
-foreach ($min_symlinks as $link => $target) {
-    $link = str_replace('//', realpath($_SERVER['DOCUMENT_ROOT']), $link);
-    $link = strtr($link, '/', DIRECTORY_SEPARATOR);
-    $min_serveOptions['minifierOptions']['text/css']['symlinks'][$link] = realpath($target);
-}
+$min_serveOptions['minifierOptions']['text/css']['symlinks'] = $min_symlinks;
 
 if ($min_allowDebugFlag && isset($_GET['debug'])) {
     $min_serveOptions['debug'] = true;
