@@ -18,13 +18,19 @@ class Minify_Lines {
      *
      * This uses a very basic parser easily fooled by comment tokens inside
      * strings or regexes, but, otherwise, generally clean code will not be 
-     * mangled.
-     * 
+     * mangled. URI rewriting can also be performed.
+     *
      * @param string $content
      * 
      * @param array $options available options:
      * 
      * 'id': (optional) string to identify file. E.g. file name/path
+     *
+     * 'currentDir': (default null) if given, this is assumed to be the
+     * directory of the current CSS file. Using this, minify will rewrite
+     * all relative URIs in import/url declarations to correctly point to
+     * the desired files, and prepend a comment with debugging information about
+     * this process.
      * 
      * @return string 
      */
@@ -49,7 +55,24 @@ class Minify_Lines {
             $newLines[] = self::_addNote($line, $i, $inComment, $padTo);
             $inComment = self::_eolInComment($line, $inComment);
         }
-        return implode("\n", $newLines) . "\n";
+        $content = implode("\n", $newLines) . "\n";
+        
+        // check for desired URI rewriting
+        if (isset($options['currentDir'])) {
+            require_once 'Minify/CSS/UriRewriter.php';
+            Minify_CSS_UriRewriter::$debugText = '';
+            $content = Minify_CSS_UriRewriter::rewrite(
+                 $content
+                ,$options['currentDir']
+                ,isset($options['docRoot']) ? $options['docRoot'] : $_SERVER['DOCUMENT_ROOT']
+                ,isset($options['symlinks']) ? $options['symlinks'] : array()
+            );
+            $content = "/* Minify_CSS_UriRewriter::\$debugText\n\n" 
+                     . Minify_CSS_UriRewriter::$debugText . "*/\n"
+                     . $content;
+        }
+        
+        return $content;
     }
     
     /**

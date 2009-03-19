@@ -56,7 +56,7 @@ class Minify {
      *
      * @var string $importWarning
      */
-    public static $importWarning = "/* See http://code.google.com/p/minify/wiki/CommonProblems#@imports_can_appear_in_invalid_locations_in_combined_CSS_files */";
+    public static $importWarning = "/* See http://code.google.com/p/minify/wiki/CommonProblems#@imports_can_appear_in_invalid_locations_in_combined_CSS_files */\n";
     
     /**
      * Specify a cache object (with identical interface as Minify_Cache_File) or

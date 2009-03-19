@@ -11,6 +11,8 @@ function test_Minify_CSS_UriRewriter()
     $in = file_get_contents($thisDir . '/_test_files/css_uriRewriter/in.css');
     $expected = file_get_contents($thisDir . '/_test_files/css_uriRewriter/exp.css');
     
+    Minify_CSS_UriRewriter::$debugText = '';
+    
     $actual = Minify_CSS_UriRewriter::rewrite(
         $in
         ,$thisDir . '/_test_files/css_uriRewriter' // currentDir
@@ -24,6 +26,10 @@ function test_Minify_CSS_UriRewriter()
         if (!$passed) {
             echo "---Expected: " .strlen($expected). " bytes\n\n{$expected}\n\n\n";
         }
+        
+        // show debugging only when test run directly
+        echo "--- Minify_CSS_UriRewriter::\$debugText\n\n"
+            , Minify_CSS_UriRewriter::$debugText;
     }    
 }
 

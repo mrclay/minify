@@ -20,6 +20,12 @@ class Minify_CSS_UriRewriter {
     protected static $className = 'Minify_CSS_UriRewriter';
     
     /**
+     * rewrite() and rewriteRelative() append debugging information here
+     * @var string
+     */
+    public static $debugText = '';
+    
+    /**
      * Rewrite file relative URIs as root relative in CSS files
      * 
      * @param string $css
@@ -57,6 +63,13 @@ class Minify_CSS_UriRewriter {
             $link = strtr($link, '/', DIRECTORY_SEPARATOR);
             self::$_symlinks[$link] = self::_realpath($target);
         }
+        
+        self::$debugText .= "docRoot    : " . self::$_docRoot . "\n"
+                          . "currentDir : " . self::$_currentDir . "\n";
+        if (self::$_symlinks) {
+            self::$debugText .= "symlinks : " . var_export(self::$_symlinks, 1) . "\n";
+        }
+        self::$debugText .= "\n";
         
         $css = self::_trimUrls($css);
         
@@ -202,16 +215,26 @@ class Minify_CSS_UriRewriter {
         // prepend path with current dir separator (OS-independent)
         $path = strtr($realCurrentDir, '/', DIRECTORY_SEPARATOR)  
             . DIRECTORY_SEPARATOR . strtr($uri, '/', DIRECTORY_SEPARATOR);
+        
+        self::$debugText .= "file-relative URI  : {$uri}\n"
+                          . "path prepended     : {$path}\n";
+        
         // "unresolve" a symlink back to doc root
         foreach ($symlinks as $link => $target) {
             if (0 === strpos($path, $target)) {
                 // replace $target with $link
                 $path = $link . substr($path, strlen($target));
+                
+                self::$debugText .= "symlink unresolved : {$path}\n";
+                
                 break;
             }
         }
         // strip doc root
         $path = substr($path, strlen($realDocRoot));
+        
+        self::$debugText .= "docroot stripped   : {$path}\n";
+        
         // fix to root-relative URI
         $uri = strtr($path, DIRECTORY_SEPARATOR, '/');
         // remove /./ and /../ where possible
@@ -220,8 +243,13 @@ class Minify_CSS_UriRewriter {
         do {
             $uri = preg_replace('@/[^/]+/\\.\\./@', '/', $uri, -1, $changed);
         } while ($changed);
+      
+        self::$debugText .= "traversals removed : {$uri}\n\n";
+        
         return $uri;
     }
+    
+    
     
     /**
      * Get realpath with any trailing slash removed
