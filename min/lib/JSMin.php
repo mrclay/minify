@@ -51,8 +51,11 @@
  */
 
 class JSMin {
-    const ORD_LF    = 10;
-    const ORD_SPACE = 32;
+    const ORD_LF            = 10;
+    const ORD_SPACE         = 32;
+    const ACTION_KEEP_A     = 1;
+    const ACTION_DELETE_A   = 2;
+    const ACTION_DELETE_A_B = 3;
     
     protected $a           = "\n";
     protected $b           = '';
@@ -88,67 +91,61 @@ class JSMin {
      */
     public function min()
     {
-        if ($this->output !== '') {
-            // min already run
+        if ($this->output !== '') { // min already run
             return $this->output;
         }
-        $this->action(3);
+        $this->action(self::ACTION_DELETE_A_B);
         
         while ($this->a !== null) {
-            // determine next action
+            // determine next command
+            $command = self::ACTION_KEEP_A; // default
             if ($this->a === ' ') {
-                $act = $this->isAlphaNum($this->b) ? 1 : 2;
+                if (! $this->isAlphaNum($this->b)) {
+                    $command = self::ACTION_DELETE_A;
+                }
             } elseif ($this->a === "\n") {
                 if ($this->b === ' ') {
-                    $act = 3;
-                } elseif (false !== strpos('{[(+-', $this->b)) {
-                    $act = 1;
-                } else {
-                    $act = $this->isAlphaNum($this->b) ? 1 : 2;
+                    $command = self::ACTION_DELETE_A_B;
+                } elseif (false === strpos('{[(+-', $this->b) 
+                          && ! $this->isAlphaNum($this->b)) {
+                    $command = self::ACTION_DELETE_A;
                 }
-            } else {
-                if ($this->b === ' ') {
-                    $act = $this->isAlphaNum($this->a) ? 1 : 3;
-                } elseif ($this->b === "\n") {
-                    if (false !== strpos('}])+-"\'', $this->a)) {
-                        $act = 1;
-                    } else {
-                        $act = $this->isAlphaNum($this->a) ? 1 : 3;
-                    }
-                } else {
-                    $act = 1;
+            } elseif (! $this->isAlphaNum($this->a)) {
+                if ($this->b === ' '
+                    || ($this->b === "\n" 
+                        && (false === strpos('}])+-"\'', $this->a)))) {
+                    $command = self::ACTION_DELETE_A_B;
                 }
             }
-            $this->action($act);
+            $this->action($command);
         }
         return $this->output;
     }
     
     /**
-     * 1 = Output A. Copy B to A. Get the next B.
-     * 2 = Copy B to A. Get the next B. (Delete A).
-     * 3 = Get the next B. (Delete B).
+     * ACTION_KEEP_A = Output A. Copy B to A. Get the next B.
+     * ACTION_DELETE_A = Copy B to A. Get the next B.
+     * ACTION_DELETE_A_B = Get the next B.
      */
-    protected function action($d)
+    protected function action($command)
     {
-        switch ($d) {
-            case 1:
+        switch ($command) {
+            case self::ACTION_KEEP_A:
                 $this->output .= $this->a;
                 // fallthrough
-            case 2:
+            case self::ACTION_DELETE_A:
                 $this->a = $this->b;
-                if ($this->a === "'" || $this->a === '"') {
-                    // string literal
+                if ($this->a === "'" || $this->a === '"') { // string literal
                     $str = ''; // in case needed for exception
                     while (true) {
                         $this->output .= $this->a;
                         $this->a       = $this->get();
-                        if ($this->a === $this->b) {
-                            // end quote
+                        if ($this->a === $this->b) { // end quote
                             break;
                         }
                         if (ord($this->a) <= self::ORD_LF) {
-                            throw new JSMin_UnterminatedStringException('Contents: ' . $str);
+                            throw new JSMin_UnterminatedStringException(
+                                'Contents: ' . var_export($str, true));
                         }
                         $str .= $this->a;
                         if ($this->a === '\\') {
@@ -159,49 +156,48 @@ class JSMin {
                     }
                 }
                 // fallthrough
-            case 3:
+            case self::ACTION_DELETE_A_B:
                 $this->b = $this->next();
-                if ($this->b === '/' && $this->isRegexpLiteral()) {
-                    // RegExp literal
+                if ($this->b === '/' && $this->isRegexpLiteral()) { // RegExp literal
                     $this->output .= $this->a . $this->b;
                     $pattern = '/'; // in case needed for exception
                     while (true) {
                         $this->a = $this->get();
                         $pattern .= $this->a;
-                        if ($this->a === '/') {
-                            // end pattern
+                        if ($this->a === '/') { // end pattern
                             break; // while (true)
                         } elseif ($this->a === '\\') {
                             $this->output .= $this->a;
                             $this->a       = $this->get();
                             $pattern      .= $this->a;
                         } elseif (ord($this->a) <= self::ORD_LF) {
-                            throw new JSMin_UnterminatedRegExpException('Contents: '. $pattern);
+                            throw new JSMin_UnterminatedRegExpException(
+                                'Contents: '. var_export($pattern, true));
                         }
                         $this->output .= $this->a;
                     }
                     $this->b = $this->next();
                 }
-                break; // switch ($d)
-            // end case 3
+            // end case ACTION_DELETE_A_B
         }
     }
     
     protected function isRegexpLiteral()
     {
-        if (false !== strpos("\n{;(,=:[!&|?", $this->a)) {
+        if (false !== strpos("\n{;(,=:[!&|?", $this->a)) { // we aren't dividing
             return true;
         }
         if (' ' === $this->a) {
-            // see if preceeded by keyword
             $length = strlen($this->output);
-            if ($length < 2) {
+            if ($length < 2) { // weird edge case
                 return true;
             }
+            // you can't divide a keyword
             if (preg_match('/(?:case|else|in|return|typeof)$/', $this->output, $m)) {
-                if ($this->output === $m[0]) {
+                if ($this->output === $m[0]) { // odd but could happen
                     return true;
                 }
+                // make sure it's a keyword, not end of an identifier
                 $charBeforeKeyword = substr($this->output, $length - strlen($m[0]) - 1, 1);
                 if (! $this->isAlphaNum($charBeforeKeyword)) {
                     return true;
@@ -229,8 +225,7 @@ class JSMin {
         if ($c === "\r" || $c === "\n") {
             return "\n";
         }
-        if (ord($c) < self::ORD_SPACE) {
-            // control char
+        if (ord($c) < self::ORD_SPACE) { // control char
             return ' ';
         }
         return $c;
@@ -259,10 +254,9 @@ class JSMin {
         while (true) {
             $get = $this->get();
             $comment .= $get;
-            if (ord($get) <= self::ORD_LF) {
-                // EOL reached
+            if (ord($get) <= self::ORD_LF) { // EOL reached
+                // if IE conditional comment
                 if (preg_match('/^\\/@(?:cc_on|if|elif|else|end)\\b/', $comment)) {
-                    // conditional comment, preserve it
                     return "/{$comment}";
                 }
                 return $get;
@@ -277,21 +271,20 @@ class JSMin {
         while (true) {
             $get = $this->get();
             if ($get === '*') {
-                if ($this->peek() === '/') {
-                    // end of comment reached
+                if ($this->peek() === '/') { // end of comment reached
                     $this->get();
+                    // if comment preserved by YUI Compressor
                     if (0 === strpos($comment, '!')) {
-                        // is YUI Compressor style, keep it
                         return "\n/*" . substr($comment, 1) . "*/\n";
                     }
+                    // if IE conditional comment
                     if (preg_match('/^@(?:cc_on|if|elif|else|end)\\b/', $comment)) {
-                        // is IE conditional, keep it
                         return "/*{$comment}*/";
                     }
                     return ' ';
                 }
             } elseif ($get === null) {
-                throw new JSMin_UnterminatedCommentException('Contents: ' . $comment);
+                throw new JSMin_UnterminatedCommentException('Contents: ' . var_export($comment, true));
             }
             $comment .= $get;
         }
