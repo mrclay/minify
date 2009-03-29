@@ -8,7 +8,7 @@ if (isset($_FILES['subject']['name'])
     // easier to just require them all
     require 'Minify/HTML.php';
     require 'Minify/CSS.php';
-    require 'Minify/Javascript.php';
+    require 'JSMin.php';
     
     $arg2 = null;
     switch ($m[1]) {
@@ -24,7 +24,7 @@ if (isset($_FILES['subject']['name'])
         $type = 'HTML';
         $arg2 = array(
             'cssMinifier' => array('Minify_CSS', 'minify')
-            ,'jsMinifier' => array('Minify_Javascript', 'minify')
+            ,'jsMinifier' => array('JSMin', 'minify')
         );
     }
     $func = array('Minify_' . $type, 'minify');

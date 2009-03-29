@@ -7,9 +7,9 @@
  * include_path). 
  * @link http://joliclic.free.fr/php/javascript-packer/en/
  *
- * Be aware that, as long as HTTP encoding is used, scripts minified
- * with Minify_Javascript (JSMin) will provide better client-side 
- * performance, as they need not be unpacked in client-side code.
+ * Be aware that, as long as HTTP encoding is used, scripts minified with JSMin
+ * will provide better client-side performance, as they need not be unpacked in
+ * client-side code.
  * 
  * @package Minify  
  */

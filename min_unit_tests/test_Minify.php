@@ -63,7 +63,7 @@ function test_Minify()
     $expected = array(
         'success' => true
         ,'statusCode' => 200
-        // Minify_Javascript always converts to \n line endings
+        // JSMin always converts to \n line endings
         ,'content' => $content
         ,'headers' => array (
             'Expires' => gmdate('D, d M Y H:i:s \G\M\T', $tomorrow),

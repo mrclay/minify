@@ -119,6 +119,7 @@ class JSMin {
             }
             $this->action($command);
         }
+        $this->output = trim($this->output);
         return $this->output;
     }
     
@@ -136,7 +137,7 @@ class JSMin {
             case self::ACTION_DELETE_A:
                 $this->a = $this->b;
                 if ($this->a === "'" || $this->a === '"') { // string literal
-                    $str = ''; // in case needed for exception
+                    $str = $this->a; // in case needed for exception
                     while (true) {
                         $this->output .= $this->a;
                         $this->a       = $this->get();
@@ -145,7 +146,7 @@ class JSMin {
                         }
                         if (ord($this->a) <= self::ORD_LF) {
                             throw new JSMin_UnterminatedStringException(
-                                'Contents: ' . var_export($str, true));
+                                'Unterminated String: ' . var_export($str, true));
                         }
                         $str .= $this->a;
                         if ($this->a === '\\') {
@@ -172,7 +173,7 @@ class JSMin {
                             $pattern      .= $this->a;
                         } elseif (ord($this->a) <= self::ORD_LF) {
                             throw new JSMin_UnterminatedRegExpException(
-                                'Contents: '. var_export($pattern, true));
+                                'Unterminated RegExp: '. var_export($pattern, true));
                         }
                         $this->output .= $this->a;
                     }
@@ -284,7 +285,7 @@ class JSMin {
                     return ' ';
                 }
             } elseif ($get === null) {
-                throw new JSMin_UnterminatedCommentException('Contents: ' . var_export($comment, true));
+                throw new JSMin_UnterminatedCommentException('Unterminated Comment: ' . var_export('/*' . $comment, true));
             }
             $comment .= $get;
         }

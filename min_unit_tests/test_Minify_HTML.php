@@ -3,7 +3,7 @@ require_once '_inc.php';
 
 require_once 'Minify/HTML.php';
 require_once 'Minify/CSS.php';
-require_once 'Minify/Javascript.php';
+require_once 'JSMin.php';
 
 function test_HTML()
 {
@@ -15,7 +15,7 @@ function test_HTML()
     $time = microtime(true);
     $minOutput = Minify_HTML::minify($src, array(
         'cssMinifier' => array('Minify_CSS', 'minify')
-        ,'jsMinifier' => array('Minify_Javascript', 'minify')
+        ,'jsMinifier' => array('JSMin', 'minify')
     ));
     $time = microtime(true) - $time;
     
@@ -38,7 +38,7 @@ function test_HTML()
     $time = microtime(true);
     $minOutput = Minify_HTML::minify($src, array(
         'cssMinifier' => array('Minify_CSS', 'minify')
-        ,'jsMinifier' => array('Minify_Javascript', 'minify')
+        ,'jsMinifier' => array('JSMin', 'minify')
     ));
     $time = microtime(true) - $time;
     
