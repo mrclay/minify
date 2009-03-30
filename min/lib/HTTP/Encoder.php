@@ -8,6 +8,9 @@
 /**
  * Encode and send gzipped/deflated content
  *
+ * The "Vary: Accept-Encoding" header is sent. If the client allows encoding, 
+ * Content-Encoding and Content-Length are added.
+ *
  * <code>
  * // Send a CSS file, compressed if possible
  * $he = new HTTP_Encoder(array(
@@ -176,7 +179,7 @@ class HTTP_Encoder {
      * 
      * A syntax-aware scan is done of the Accept-Encoding, so the method must
      * be non 0. The methods are favored in order of deflate, gzip, then 
-     * compress. Yes, deflate is always smaller and faster!
+     * compress. deflate is always smallest and generally faster!
      * 
      * @param bool $allowCompress allow the older compress encoding
      * 
@@ -229,8 +232,8 @@ class HTTP_Encoder {
      * Then the appropriate gz_* function is called to compress the content. If
      * this fails, false is returned.
      * 
-     * If successful, the Content-Length header is updated, and Content-Encoding
-     * and Vary headers are added.
+     * The header "Vary: Accept-Encoding" is added. If encoding is successful, 
+     * the Content-Length header is updated, and Content-Encoding is also added.
      * 
      * @param int $compressionLevel given to zlib functions. If not given, the
      * class default will be used.
@@ -239,6 +242,7 @@ class HTTP_Encoder {
      */
     public function encode($compressionLevel = null)
     {
+        $this->_headers['Vary'] = 'Accept-Encoding';
         if (null === $compressionLevel) {
             $compressionLevel = self::$compressionLevel;
         }
@@ -260,7 +264,6 @@ class HTTP_Encoder {
         }
         $this->_headers['Content-Length'] = strlen($encoded);
         $this->_headers['Content-Encoding'] = $this->_encodeMethod[1];
-        $this->_headers['Vary'] = 'Accept-Encoding';
         $this->_content = $encoded;
         return true;
     }

@@ -1,14 +1,18 @@
 <?php
 
-require '../../config.php';
+set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . '/../../min/lib'));
 require 'HTTP/ConditionalGet.php';
 
 // emulate regularly updating document
 $every = 20;
 $lastModified = round(time()/$every)*$every - $every;
 
+require 'HTTP/Encoder.php';
+list($enc,) = HTTP_Encoder::getAcceptedEncoding();
+
 $cg = new HTTP_ConditionalGet(array(
     'lastModifiedTime' => $lastModified
+    ,'encoding' => $enc
 ));
 $cg->sendHeaders();
 if ($cg->cacheIsValid) {
@@ -31,7 +35,6 @@ $content = get_content(array(
     ,'explain' => $explain
 ));
 
-require 'HTTP/Encoder.php';
 $he = new HTTP_Encoder(array(
     'content' => get_content(array(
         'title' => $title

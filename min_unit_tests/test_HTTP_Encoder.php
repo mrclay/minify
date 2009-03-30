@@ -128,6 +128,14 @@ function test_HTTP_Encoder()
                 , "(off by ". abs($ret - $test['exp']) . " bytes)\n\n";
         }
     }
+    
+    $_SERVER['HTTP_ACCEPT_ENCODING'] = 'identity';
+    $he = new HTTP_Encoder(array(
+        'content' => 'Hello'
+    ));
+    $he->encode();
+    $headers = $he->getHeaders();
+    assertTrue(isset($headers['Vary']), 'HTTP_Encoder : Vary always sent');    
 }
 
 test_HTTP_Encoder();

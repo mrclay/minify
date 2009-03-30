@@ -26,8 +26,9 @@ function test_Minify()
         ,'content' => '',
         'headers' => array(
             'Expires' => gmdate('D, d M Y H:i:s \G\M\T', $_SERVER['REQUEST_TIME'] + 1800),
+            'Vary' => 'Accept-Encoding',
             'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
-            'ETag' => "\"{$lastModified}pub\"",
+            'ETag' => "\"pub{$lastModified}\"",
             'Cache-Control' => 'max-age=1800, public, must-revalidate',
             '_responseCode' => 'HTTP/1.0 304 Not Modified',
         )
@@ -47,10 +48,9 @@ function test_Minify()
     }
 
     assertTrue(
-        ! class_exists('HTTP_Encoder', false)
-        && ! class_exists('Minify_CSS', false)
+        ! class_exists('Minify_CSS', false)
         && ! class_exists('Minify_Cache', false)
-        ,'Minify : encoding, cache, and minifier classes aren\'t loaded for 304s'
+        ,'Minify : cache, and minifier classes aren\'t loaded for 304s'
     );
 
     // Test minifying JS and serving with Expires header
@@ -67,8 +67,9 @@ function test_Minify()
         ,'content' => $content
         ,'headers' => array (
             'Expires' => gmdate('D, d M Y H:i:s \G\M\T', $tomorrow),
+            'Vary' => 'Accept-Encoding',
             'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
-            'ETag' => "\"{$lastModified}pub\"",
+            'ETag' => "\"pub{$lastModified}\"",
             'Cache-Control' => 'max-age=86400, public, must-revalidate',
             'Content-Length' => strlen($content),
             'Content-Type' => 'application/x-javascript; charset=UTF-8',
@@ -181,8 +182,9 @@ function test_Minify()
         ,'statusCode' => 200
         ,'content' => $expectedContent
         ,'headers' => array (
+            'Vary' => 'Accept-Encoding',
             'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
-            'ETag' => "\"{$lastModified}pub\"",
+            'ETag' => "\"pub{$lastModified}\"",
             'Cache-Control' => 'max-age=0, public, must-revalidate',
             'Content-Length' => strlen($expectedContent),
             'Content-Type' => 'text/css; charset=UTF-8',

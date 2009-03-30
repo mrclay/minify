@@ -94,7 +94,8 @@ class Minify {
      * 'quiet' : set to true to have serve() return an array rather than sending
      * any headers/output (default false)
      * 
-     * 'encodeOutput' : to disable content encoding, set this to false (default true)
+     * 'encodeOutput' : set to false to disable content encoding, and not send
+     * the Vary header (default true)
      * 
      * 'encodeMethod' : generally you should let this be determined by 
      * HTTP_Encoder (leave null), but you can force a particular encoding
@@ -197,11 +198,29 @@ class Minify {
             self::$_options['maxAge'] = 0;
         }
         
+        // determine encoding
+        if (self::$_options['encodeOutput']) {
+            if (self::$_options['encodeMethod'] !== null) {
+                // controller specifically requested this
+                $contentEncoding = self::$_options['encodeMethod'];
+            } else {
+                // sniff request header
+                require_once 'HTTP/Encoder.php';
+                // depending on what the client accepts, $contentEncoding may be 
+                // 'x-gzip' while our internal encodeMethod is 'gzip'. Calling
+                // getAcceptedEncoding() with false leaves out compress as an option.
+                list(self::$_options['encodeMethod'], $contentEncoding) = HTTP_Encoder::getAcceptedEncoding(false);
+            }
+        } else {
+            self::$_options['encodeMethod'] = ''; // identity (no encoding)
+        }
+        
         // check client cache
         require_once 'HTTP/ConditionalGet.php';
         $cgOptions = array(
             'lastModifiedTime' => self::$_options['lastModifiedTime']
             ,'isPublic' => self::$_options['isPublic']
+            ,'encoding' => self::$_options['encodeMethod']
         );
         if (self::$_options['maxAge'] > 0) {
             $cgOptions['maxAge'] = self::$_options['maxAge'];
@@ -224,23 +243,6 @@ class Minify {
             // client will need output
             $headers = $cg->getHeaders();
             unset($cg);
-        }
-        
-        // determine encoding
-        if (self::$_options['encodeOutput']) {
-            if (self::$_options['encodeMethod'] !== null) {
-                // controller specifically requested this
-                $contentEncoding = self::$_options['encodeMethod'];
-            } else {
-                // sniff request header
-                require_once 'HTTP/Encoder.php';
-                // depending on what the client accepts, $contentEncoding may be 
-                // 'x-gzip' while our internal encodeMethod is 'gzip'. Calling
-                // getAcceptedEncoding() with false leaves out compress as an option.
-                list(self::$_options['encodeMethod'], $contentEncoding) = HTTP_Encoder::getAcceptedEncoding(false);
-            }
-        } else {
-            self::$_options['encodeMethod'] = ''; // identity (no encoding)
         }
         
         if (self::$_options['contentType'] === self::TYPE_CSS
@@ -303,6 +305,8 @@ class Minify {
             : self::$_options['contentType'];
         if (self::$_options['encodeMethod'] !== '') {
             $headers['Content-Encoding'] = $contentEncoding;
+        }
+        if (self::$_options['encodeOutput']) {
             $headers['Vary'] = 'Accept-Encoding';
         }
 

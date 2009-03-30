@@ -1,6 +1,6 @@
 <?php
 
-require '../../config.php';
+set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . '/../../min/lib'));
 require 'HTTP/ConditionalGet.php';
 
 // far expires
