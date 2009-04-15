@@ -65,8 +65,7 @@ define('TOKEN_IDENTIFIER', 3);
 define('TOKEN_STRING', 4);
 define('TOKEN_REGEXP', 5);
 define('TOKEN_NEWLINE', 6);
-define('TOKEN_CONDCOMMENT_START', 7);
-define('TOKEN_CONDCOMMENT_END', 8);
+define('TOKEN_CONDCOMMENT_MULTILINE', 7);
 
 define('JS_SCRIPT', 100);
 define('JS_BLOCK', 101);
@@ -121,7 +120,7 @@ class JSMinPlus
 
 		return $instance->min($js, $filename);
 	}
-    
+
 	private function min($js, $filename)
 	{
 		try
@@ -139,7 +138,7 @@ class JSMinPlus
 
 	private function parseTree($n, $noBlockGrouping = false)
 	{
-        $s = '';
+		$s = '';
 
 		switch ($n->type)
 		{
@@ -293,9 +292,8 @@ class JSMinPlus
 				throw new Exception('NOT IMPLEMENTED: DEBUGGER');
 			break;
 
-			case TOKEN_CONDCOMMENT_START:
-			case TOKEN_CONDCOMMENT_END:
-				$s = $n->value . ($n->type == TOKEN_CONDCOMMENT_START ? ' ' : '');
+			case TOKEN_CONDCOMMENT_MULTILINE:
+				$s = $n->value . ' ';
 				$childs = $n->treeNodes;
 				for ($i = 0, $j = count($childs); $i < $j; $i++)
 					$s .= $this->parseTree($childs[$i]);
@@ -525,7 +523,7 @@ class JSParser
 		'.' => 2,
 		JS_NEW_WITH_ARGS => 2, JS_INDEX => 2, JS_CALL => 2,
 		JS_ARRAY_INIT => 1, JS_OBJECT_INIT => 1, JS_GROUP => 1,
-		TOKEN_CONDCOMMENT_START => 1, TOKEN_CONDCOMMENT_END => 1
+		TOKEN_CONDCOMMENT_MULTILINE => 1
 	);
 
 	public function __construct()
@@ -837,8 +835,7 @@ class JSParser
 			        $n = $this->Variables($x);
 			break;
 
-			case TOKEN_CONDCOMMENT_START:
-			case TOKEN_CONDCOMMENT_END:
+			case TOKEN_CONDCOMMENT_MULTILINE:
 				$n = new JSNode($this->t);
 			return $n;
 
@@ -1130,8 +1127,7 @@ class JSParser
 					$this->t->scanOperand = false;
 				break;
 
-				case TOKEN_CONDCOMMENT_START:
-				case TOKEN_CONDCOMMENT_END:
+				case TOKEN_CONDCOMMENT_MULTILINE:
 					if ($this->t->scanOperand)
 						array_push($operators, new JSNode($this->t));
 					else
@@ -1477,7 +1473,6 @@ class JSTokenizer
 {
 	private $cursor = 0;
 	private $source;
-    private $inCC = false;
 
 	public $tokens = array();
 	public $tokenIndex = 0;
@@ -1686,7 +1681,7 @@ class JSTokenizer
 			// check if this is a conditional (JScript) comment
 			if (!empty($match[1]))
 			{
-				$match[0] = '/*' . $match[1];
+				//$match[0] = '/*' . $match[1];
 				$conditional_comment = true;
 				break;
 			}
@@ -1704,8 +1699,7 @@ class JSTokenizer
 		}
 		elseif ($conditional_comment)
 		{
-			$tt = TOKEN_CONDCOMMENT_START;
-            $this->inCC = true;
+			$tt = TOKEN_CONDCOMMENT_MULTILINE;
 		}
 		else
 		{
@@ -1805,29 +1799,7 @@ class JSTokenizer
 				break;
 
 				case '@':
-					if ($this->inCC)
-                    {
-                        // check end of conditional comment
-    					if (substr($input, 0, 3) == '@*/')
-    					{
-    						$match = array('@*/');
-    						$tt = TOKEN_CONDCOMMENT_END;
-                            $this->inCC = false;
-    					}
-                        // try simply considering "@if" as an identifier
-                        elseif (preg_match('/^@[$\w]+/', $input, $match))
-                        {
-                            $tt = TOKEN_IDENTIFIER;
-                        }
-    					else
-                        {
-                            throw $this->newSyntaxError('Illegal token');
-                        }
-                    }
-                    else
-                    {
-                        throw $this->newSyntaxError('Illegal token');
-                    }
+					throw $this->newSyntaxError('Illegal token');
 				break;
 
 				case "\n":
@@ -1870,8 +1842,6 @@ class JSTokenizer
 		$token->end = $this->cursor;
 		$token->lineno = $this->lineno;
 
-var_export($token);echo "\n";
-        
 		return $tt;
 	}
 
