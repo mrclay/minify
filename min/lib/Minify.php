@@ -28,7 +28,8 @@ require_once 'Minify/Source.php';
  * @link http://code.google.com/p/minify/
  */
 class Minify {
-
+    
+    const VERSION = '2.2.0';
     const TYPE_CSS = 'text/css';
     const TYPE_HTML = 'text/html';
     // there is some debate over the ideal JS Content-Type, but this is the
@@ -156,7 +157,8 @@ class Minify {
      * with keys "success" (bool), "statusCode" (int), "content" (string), and
      * "headers" (array).
      */
-    public static function serve($controller, $options = array()) {
+    public static function serve($controller, $options = array())
+    {
         if (is_string($controller)) {
             // make $controller into object
             $class = 'Minify_Controller_' . $controller;
@@ -423,7 +425,8 @@ class Minify {
      *
      * @return string
      */
-    protected static function _combineMinify() {
+    protected static function _combineMinify()
+    {
         $type = self::$_options['contentType']; // ease readability
         
         // when combining scripts, make sure all statements separated and
@@ -496,7 +499,8 @@ class Minify {
      *
      * @return string
      */
-    protected static function _getCacheId() {
+    protected static function _getCacheId()
+    {
         return md5(serialize(array(
             Minify_Source::getDigest(self::$_controller->sources)
             ,self::$_options['minifiers'] 
@@ -510,7 +514,8 @@ class Minify {
      * Bubble CSS @imports to the top or prepend a warning if an
      * @import is detected not at the top.
      */
-    protected static function _handleCssImports($css) {
+    protected static function _handleCssImports($css)
+    {
         if (self::$_options['bubbleCssImports']) {
             // bubble CSS imports
             preg_match_all('/@import.*?;/', $css, $imports);
