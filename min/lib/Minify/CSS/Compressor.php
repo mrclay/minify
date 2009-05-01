@@ -176,6 +176,7 @@ class Minify_CSS_Compressor {
      */
     protected function _commentCB($m)
     {
+        $hasSurroundingWs = (trim($m[0]) !== $m[1]);
         $m = $m[1]; 
         // $m is the comment content w/o the surrounding tokens, 
         // but the return value will replace the entire comment.
@@ -219,7 +220,11 @@ class Minify_CSS_Compressor {
             $this->_inHack = false;
             return '/**/';
         }
-        return ''; // remove all other comments
+        // Issue 107: if there's any surrounding whitespace, it may be important, so 
+        // replace the comment with a single space
+        return $hasSurroundingWs // remove all other comments
+            ? ' '
+            : '';
     }
     
     /**
