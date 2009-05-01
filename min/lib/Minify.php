@@ -105,7 +105,7 @@ class Minify {
      * 'encodeLevel' : level of encoding compression (0 to 9, default 9)
      * 
      * 'contentTypeCharset' : appended to the Content-Type header sent. Set to a falsey
-     * value to remove. (default 'UTF-8')  
+     * value to remove. (default 'utf-8')  
      * 
      * 'maxAge' : set this to the number of seconds the client should use its cache
      * before revalidating with the server. This sets Cache-Control: max-age and the

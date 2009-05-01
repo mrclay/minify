@@ -45,7 +45,7 @@ abstract class Minify_Controller_Base {
             ,'encodeMethod' => null // determine later
             ,'encodeLevel' => 9
             ,'minifierOptions' => array() // no minifier options
-            ,'contentTypeCharset' => 'UTF-8'
+            ,'contentTypeCharset' => 'utf-8'
             ,'maxAge' => 1800 // 30 minutes
             ,'rewriteCssUris' => true
             ,'bubbleCssImports' => false

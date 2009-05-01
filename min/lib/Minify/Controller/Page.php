@@ -59,9 +59,6 @@ class Minify_Controller_Page extends Minify_Controller_Base {
         }
         $this->sources[] = new Minify_Source($sourceSpec);
         
-        // may not be needed
-        //$options['minifier'] = array('Minify_HTML', 'minify');
-        
         $options['contentType'] = Minify::TYPE_HTML;
         return $options;
     }

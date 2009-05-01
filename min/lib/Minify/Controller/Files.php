@@ -40,7 +40,14 @@ class Minify_Controller_Files extends Minify_Controller_Base {
      */
     public function setupSources($options) {
         // strip controller options
-        $files = (array)$options['files'];
+        
+        $files = $options['files'];
+        // if $files is a single object, casting will break it
+        if (is_object($files)) {
+            $files = array($files);
+        } elseif (! is_array($files)) {
+            $files = (array)$files;
+        }
         unset($options['files']);
         
         $sources = array();

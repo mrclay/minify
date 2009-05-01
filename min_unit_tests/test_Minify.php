@@ -72,7 +72,7 @@ function test_Minify()
             'ETag' => "\"pub{$lastModified}\"",
             'Cache-Control' => 'max-age=86400, public, must-revalidate',
             'Content-Length' => strlen($content),
-            'Content-Type' => 'application/x-javascript; charset=UTF-8',
+            'Content-Type' => 'application/x-javascript; charset=utf-8',
         )
     );
     $output = Minify::serve('Files', array(
@@ -170,7 +170,7 @@ function test_Minify()
 
     // Test minifying CSS and responding with Etag/Last-Modified
 
-    Minify::setCache();
+    Minify::setCache(null);
 
     // don't allow conditional headers
     unset($_SERVER['HTTP_IF_NONE_MATCH'], $_SERVER['HTTP_IF_MODIFIED_SINCE']);
@@ -187,7 +187,7 @@ function test_Minify()
             'ETag' => "\"pub{$lastModified}\"",
             'Cache-Control' => 'max-age=0, public, must-revalidate',
             'Content-Length' => strlen($expectedContent),
-            'Content-Type' => 'text/css; charset=UTF-8',
+            'Content-Type' => 'text/css; charset=utf-8',
         )
     );
     $output = Minify::serve('Files', array(

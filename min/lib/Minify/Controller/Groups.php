@@ -59,7 +59,15 @@ class Minify_Controller_Groups extends Minify_Controller_Base {
             return $options;
         }
         $sources = array();
-        foreach ((array)$groups[$pi] as $file) {
+        
+        $files = $groups[$pi];
+        // if $files is a single object, casting will break it
+        if (is_object($files)) {
+            $files = array($files);
+        } elseif (! is_array($files)) {
+            $files = (array)$files;
+        }
+        foreach ($files as $file) {
             if ($file instanceof Minify_Source) {
                 $sources[] = $file;
                 continue;
