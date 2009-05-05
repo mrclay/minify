@@ -236,12 +236,14 @@ class Minify_CSS_UriRewriter {
         self::$debugText .= "docroot stripped   : {$path}\n";
         
         // fix to root-relative URI
-        $uri = strtr($path, DIRECTORY_SEPARATOR, '/');
+
+        $uri = strtr($path, '/\\', '//');
+
         // remove /./ and /../ where possible
         $uri = str_replace('/./', '/', $uri);
         // inspired by patch from Oleg Cherniy
         do {
-            $uri = preg_replace('@/[^/]+/\\.\\./@', '/', $uri, -1, $changed);
+            $uri = preg_replace('@/[^/]+/\\.\\./@', '/', $uri, 1, $changed);
         } while ($changed);
       
         self::$debugText .= "traversals removed : {$uri}\n\n";
@@ -249,20 +251,19 @@ class Minify_CSS_UriRewriter {
         return $uri;
     }
     
-    
-    
     /**
-     * Get realpath with any trailing slash removed
+     * Get realpath with any trailing slash removed. If realpath() fails,
+     * just remove the trailing slash.
      * 
      * @param string $path
      * 
-     * @return mixed real path or false on realpath() failure
+     * @return mixed path with no trailing slash
      */
     protected static function _realpath($path)
     {
-        $path = realpath($path);
-        if (! $path) {
-            return false;
+        $realPath = realpath($path);
+        if ($realPath !== false) {
+            $path = $realPath;
         }
         $last = $path[strlen($path) - 1];
         return ($last === '/' || $last === '\\')
