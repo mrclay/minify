@@ -1,0 +1,44 @@
+
+# turn off MultiViews if enabled
+Options -MultiViews
+
+# register .var as type-map and zd for deflate encoding
+AddHandler type-map .mjs .mcss
+AddEncoding deflate .zd
+
+# Necessary to add charset while using type-map
+AddType application/x-javascript;charset=utf-8 js
+AddType text/css;charset=utf-8 css
+
+# Below we remove the ETag header and set a far-off Expires
+# header. Since clients will aggressively cache, make sure 
+# to modify the URL (querystring or via mod_rewrite) when 
+# the resource changes
+
+# remove ETag
+FileETag None
+
+# requires mod_expires
+ExpiresActive On
+# sets Expires and Cache-Control: max-age, but not "public"
+ExpiresDefault "access plus 1 year"
+
+# requires mod_headers
+# adds the "public" to Cache-Control.
+#
+# If you get 500 errors, you may need to comment this out
+#
+Header set Cache-Control "public, max-age=31536000"
+
+# mod_rewrite reqd. 
+RewriteEngine On
+
+# remove any rev number 
+RewriteRule ^(.*)_\d+\.m(js|css)$  $1.m$2
+
+# if mincache is NOT directly within document root, you must
+# specify the path to it
+RewriteCond %{DOCUMENT_ROOT}/mincache/$1  !-f
+
+# any unfound files go to PHP
+RewriteRule ^(.*)$  gen.php?req=$1 [L,QSA]
