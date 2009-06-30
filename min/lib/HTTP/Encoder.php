@@ -178,16 +178,19 @@ class HTTP_Encoder {
      * this will return ('', ''), the "identity" encoding.
      * 
      * A syntax-aware scan is done of the Accept-Encoding, so the method must
-     * be non 0. The methods are favored in order of deflate, gzip, then 
-     * compress. deflate is always smallest and generally faster!
+     * be non 0. The methods are favored in order of gzip, deflate, then 
+     * compress. Deflate is always smallest and generally faster, but is 
+     * rarely sent by servers, so client support could be buggier.
      * 
      * @param bool $allowCompress allow the older compress encoding
+     * 
+     * @param bool $allowDeflate allow the more recent deflate encoding
      * 
      * @return array two values, 1st is the actual encoding method, 2nd is the
      * alias of that method to use in the Content-Encoding header (some browsers
      * call gzip "x-gzip" etc.)
      */
-    public static function getAcceptedEncoding($allowCompress = true)
+    public static function getAcceptedEncoding($allowCompress = true, $allowDeflate = true)
     {
         // @link http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
         
@@ -197,22 +200,30 @@ class HTTP_Encoder {
             return array('', '');
         }
         $ae = $_SERVER['HTTP_ACCEPT_ENCODING'];
-        $aeRev = strrev($ae);
-        // Fast tests for common AEs. If these don't pass we have to do 
-        // slow regex parsing
-        if (0 === strpos($aeRev, 'etalfed ,') // ie, webkit
-            || 0 === strpos($aeRev, 'etalfed,') // gecko
-            || 0 === strpos($ae, 'deflate,') // opera 9.5b
-            // slow parsing
-            || preg_match(
-                '@(?:^|,)\\s*deflate\\s*(?:$|,|;\\s*q=(?:0\\.|1))@', $ae)) {
-            return array('deflate', 'deflate');
+        // gzip checks (quick)
+        if (0 === strpos($ae, 'gzip,')             // most browsers
+            || 0 === strpos($ae, 'deflate, gzip,') // opera
+        ) {
+            return array('gzip', 'gzip');
         }
+        // gzip checks (slow)
         if (preg_match(
                 '@(?:^|,)\\s*((?:x-)?gzip)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@'
                 ,$ae
                 ,$m)) {
             return array('gzip', $m[1]);
+        }
+        if ($allowDeflate) {
+            // deflate checks    
+            $aeRev = strrev($ae);
+            if (0 === strpos($aeRev, 'etalfed ,') // ie, webkit
+                || 0 === strpos($aeRev, 'etalfed,') // gecko
+                || 0 === strpos($ae, 'deflate,') // opera
+                // slow parsing
+                || preg_match(
+                    '@(?:^|,)\\s*deflate\\s*(?:$|,|;\\s*q=(?:0\\.|1))@', $ae)) {
+                return array('deflate', 'deflate');
+            }
         }
         if ($allowCompress && preg_match(
                 '@(?:^|,)\\s*((?:x-)?compress)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@'

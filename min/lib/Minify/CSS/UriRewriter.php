@@ -265,9 +265,6 @@ class Minify_CSS_UriRewriter {
         if ($realPath !== false) {
             $path = $realPath;
         }
-        $last = $path[strlen($path) - 1];
-        return ($last === '/' || $last === '\\')
-            ? substr($path, 0, strlen($path) - 1)
-            : $path;
+        return rtrim($path, '/\\');
     }
 }

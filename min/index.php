@@ -19,7 +19,7 @@ require 'Minify.php';
 
 Minify::$uploaderHoursBehind = $min_uploaderHoursBehind;
 Minify::setCache(
-    isset($min_cachePath) ? $min_cachePath : null
+    isset($min_cachePath) ? $min_cachePath : ''
     ,$min_cacheFileLocking
 );
 

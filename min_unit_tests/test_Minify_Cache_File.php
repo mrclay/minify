@@ -13,6 +13,8 @@ function test_Minify_Cache_File()
     
     $cache = new Minify_Cache_File($minifyCachePath);
     
+    echo "NOTE: Minify_Cache_File : path is set to: '" . $cache->getPath() . "'.\n";
+    
     assertTrue(true === $cache->store($id, $data), $prefix . 'store');
     
     assertTrue(strlen($data) === $cache->getSize($id), $prefix . 'getSize');

@@ -29,7 +29,7 @@ require_once 'Minify/Source.php';
  */
 class Minify {
     
-    const VERSION = '2.2.0';
+    const VERSION = '2.1.3';
     const TYPE_CSS = 'text/css';
     const TYPE_HTML = 'text/html';
     // there is some debate over the ideal JS Content-Type, but this is the
@@ -100,7 +100,7 @@ class Minify {
      * 
      * 'encodeMethod' : generally you should let this be determined by 
      * HTTP_Encoder (leave null), but you can force a particular encoding
-     * to be returned, by setting this to 'gzip', 'deflate', or '' (no encoding)
+     * to be returned, by setting this to 'gzip' or '' (no encoding)
      * 
      * 'encodeLevel' : level of encoding compression (0 to 9, default 9)
      * 
@@ -210,8 +210,8 @@ class Minify {
                 require_once 'HTTP/Encoder.php';
                 // depending on what the client accepts, $contentEncoding may be 
                 // 'x-gzip' while our internal encodeMethod is 'gzip'. Calling
-                // getAcceptedEncoding() with false leaves out compress as an option.
-                list(self::$_options['encodeMethod'], $contentEncoding) = HTTP_Encoder::getAcceptedEncoding(false);
+                // getAcceptedEncoding(false, false) leaves out compress and deflate as options.
+                list(self::$_options['encodeMethod'], $contentEncoding) = HTTP_Encoder::getAcceptedEncoding(false, false);
             }
         } else {
             self::$_options['encodeMethod'] = ''; // identity (no encoding)
@@ -267,12 +267,9 @@ class Minify {
             // output the content, as they do not require ever loading the file into
             // memory.
             $cacheId = 'minify_' . self::_getCacheId();
-            $encodingExtension = self::$_options['encodeMethod']
-                ? ('deflate' === self::$_options['encodeMethod']
-                    ? '.zd'
-                    : '.zg')
-                : '';
-            $fullCacheId = $cacheId . $encodingExtension;
+            $fullCacheId = (self::$_options['encodeMethod'])
+                ? $cacheId . '.gz'
+                : $cacheId;
             // check cache for valid entry
             $cacheIsReady = self::$_cache->isValid($fullCacheId, self::$_options['lastModifiedTime']); 
             if ($cacheIsReady) {
@@ -281,9 +278,8 @@ class Minify {
                 // generate & cache content
                 $content = self::_combineMinify();
                 self::$_cache->store($cacheId, $content);
-                if (function_exists('gzdeflate')) {
-                    self::$_cache->store($cacheId . '.zd', gzdeflate($content, self::$_options['encodeLevel']));
-                    self::$_cache->store($cacheId . '.zg', gzencode($content, self::$_options['encodeLevel']));
+                if (function_exists('gzencode')) {
+                    self::$_cache->store($cacheId . '.gz', gzencode($content, self::$_options['encodeLevel']));
                 }
             }
         } else {
@@ -293,9 +289,7 @@ class Minify {
         }
         if (! $cacheIsReady && self::$_options['encodeMethod']) {
             // still need to encode
-            $content = ('deflate' === self::$_options['encodeMethod'])
-                ? gzdeflate($content, self::$_options['encodeLevel'])
-                : gzencode($content, self::$_options['encodeLevel']);
+            $content = gzencode($content, self::$_options['encodeLevel']);
         }
         
         // add headers
@@ -374,11 +368,11 @@ class Minify {
         if (isset($_SERVER['SERVER_SOFTWARE'])
             && 0 === strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/')
         ) {
-            $_SERVER['DOCUMENT_ROOT'] = substr(
+            $_SERVER['DOCUMENT_ROOT'] = rtrim(substr(
                 $_SERVER['PATH_TRANSLATED']
                 ,0
                 ,strlen($_SERVER['PATH_TRANSLATED']) - strlen($_SERVER['SCRIPT_NAME'])
-            );
+            ), '\\');
             if ($unsetPathInfo) {
                 unset($_SERVER['PATH_INFO']);
             }

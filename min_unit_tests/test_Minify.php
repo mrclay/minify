@@ -29,7 +29,7 @@ function test_Minify()
             'Vary' => 'Accept-Encoding',
             'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
             'ETag' => "\"pub{$lastModified}\"",
-            'Cache-Control' => 'max-age=1800, public, must-revalidate',
+            'Cache-Control' => 'max-age=1800, public',
             '_responseCode' => 'HTTP/1.0 304 Not Modified',
         )
     );
@@ -70,7 +70,7 @@ function test_Minify()
             'Vary' => 'Accept-Encoding',
             'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
             'ETag' => "\"pub{$lastModified}\"",
-            'Cache-Control' => 'max-age=86400, public, must-revalidate',
+            'Cache-Control' => 'max-age=86400, public',
             'Content-Length' => strlen($content),
             'Content-Type' => 'application/x-javascript; charset=utf-8',
         )
@@ -185,7 +185,7 @@ function test_Minify()
             'Vary' => 'Accept-Encoding',
             'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
             'ETag' => "\"pub{$lastModified}\"",
-            'Cache-Control' => 'max-age=0, public, must-revalidate',
+            'Cache-Control' => 'max-age=0, public',
             'Content-Length' => strlen($expectedContent),
             'Content-Type' => 'text/css; charset=utf-8',
         )

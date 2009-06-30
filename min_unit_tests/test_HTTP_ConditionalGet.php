@@ -19,7 +19,7 @@ function test_HTTP_ConditionalGet()
                 'Vary' => 'Accept-Encoding'
             	,'Last-Modified' => $gmtTime
                 ,'ETag' => "\"pri{$lmTime}\""
-                ,'Cache-Control' => 'max-age=0, private, must-revalidate'
+                ,'Cache-Control' => 'max-age=0, private'
                 ,'_responseCode' => 'HTTP/1.0 304 Not Modified'
                 ,'isValid' => true
             )
@@ -32,7 +32,7 @@ function test_HTTP_ConditionalGet()
             	'Vary' => 'Accept-Encoding'
             	,'Last-Modified' => $gmtTime
                 ,'ETag' => "\"pri{$lmTime}\""
-                ,'Cache-Control' => 'max-age=0, private, must-revalidate'
+                ,'Cache-Control' => 'max-age=0, private'
                 ,'_responseCode' => 'HTTP/1.0 304 Not Modified'
                 ,'isValid' => true
             )
@@ -45,7 +45,7 @@ function test_HTTP_ConditionalGet()
                 'Vary' => 'Accept-Encoding'
             	,'Last-Modified' => $gmtTime
                 ,'ETag' => "\"pri{$lmTime}\""
-                ,'Cache-Control' => 'max-age=0, private, must-revalidate'
+                ,'Cache-Control' => 'max-age=0, private'
                 ,'_responseCode' => 'HTTP/1.0 304 Not Modified'
                 ,'isValid' => true
             )
@@ -58,7 +58,7 @@ function test_HTTP_ConditionalGet()
                 'Vary' => 'Accept-Encoding'
             	,'Last-Modified' => $gmtTime
                 ,'ETag' => "\"pri{$lmTime};gz\""
-                ,'Cache-Control' => 'max-age=0, private, must-revalidate'
+                ,'Cache-Control' => 'max-age=0, private'
                 ,'_responseCode' => 'HTTP/1.0 304 Not Modified'
                 ,'isValid' => true
             )
@@ -71,7 +71,7 @@ function test_HTTP_ConditionalGet()
                 'Vary' => 'Accept-Encoding'
             	,'Last-Modified' => $gmtTime
                 ,'ETag' => "\"pri{$lmTime};gz\""
-                ,'Cache-Control' => 'max-age=0, private, must-revalidate'
+                ,'Cache-Control' => 'max-age=0, private'
                 ,'isValid' => false
             )
         )
@@ -83,7 +83,7 @@ function test_HTTP_ConditionalGet()
                 'Vary' => 'Accept-Encoding'
             	,'Last-Modified' => $gmtTime
                 ,'ETag' => "\"pri{$lmTime};gz\""
-                ,'Cache-Control' => 'max-age=0, private, must-revalidate'
+                ,'Cache-Control' => 'max-age=0, private'
                 ,'isValid' => false
             )
         )
@@ -95,7 +95,7 @@ function test_HTTP_ConditionalGet()
                 'Vary' => 'Accept-Encoding'
             	,'Last-Modified' => $gmtTime
                 ,'ETag' => "\"pri{$lmTime};gz\""
-                ,'Cache-Control' => 'max-age=0, private, must-revalidate'
+                ,'Cache-Control' => 'max-age=0, private'
                 ,'isValid' => false
             )
         )

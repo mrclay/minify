@@ -36,7 +36,7 @@ function test_HTTP_Encoder()
         ,array(
             'ua' => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)'
             ,'ae' => 'gzip, deflate'
-            ,'exp' => array('deflate', 'deflate')
+            ,'exp' => array('gzip', 'gzip')
             ,'desc' => 'IE6 w/ "enhanced security"'
         )
         ,array(
@@ -48,7 +48,7 @@ function test_HTTP_Encoder()
         ,array(
             'ua' => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; en) Opera 9.25'
             ,'ae' => 'gzip,deflate'
-            ,'exp' => array('deflate', 'deflate')
+            ,'exp' => array('gzip', 'gzip')
             ,'desc' => 'Opera identifying as IE6'
         )
     );

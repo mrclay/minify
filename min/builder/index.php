@@ -1,5 +1,9 @@
 <?php 
 
+if (phpversion() < 5) {
+    exit('Minify requires PHP5 or greater.');
+}
+
 // check for auto-encoding
 $encodeOutput = (function_exists('gzdeflate')
                  && !ini_get('zlib.output_compression'));

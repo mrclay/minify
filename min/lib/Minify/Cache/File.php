@@ -110,6 +110,16 @@ class Minify_Cache_File {
         }
     }
     
+    /**
+     * Fetch the cache path used
+     *
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->_path;
+    }
+    
     private $_path = null;
     private $_locking = null;
 }
