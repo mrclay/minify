@@ -28,6 +28,7 @@ if ($min_documentRoot) {
 } elseif (0 === stripos(PHP_OS, 'win')) {
     Minify::setDocRoot(); // IIS may need help
 }
+$_SERVER['DOCUMENT_ROOT'] = rtrim($_SERVER['DOCUMENT_ROOT'], '/\\');
 
 $min_serveOptions['minifierOptions']['text/css']['symlinks'] = $min_symlinks;
 
