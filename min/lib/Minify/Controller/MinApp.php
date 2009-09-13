@@ -104,16 +104,23 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             }
             $allowDirs = array();
             foreach ((array)$cOptions['allowDirs'] as $allowDir) {
-                $allowDirs[] = realpath(str_replace('//', $_SERVER['DOCUMENT_ROOT'] . '/', $allowDir));
+                $allowDir = str_replace('//', $_SERVER['DOCUMENT_ROOT'] . '/', $allowDir);
+                $realAllowDir = realpath($allowDir);
+                if (false === $realAllowDir) {
+                    $this->log("AllowDir path '{$allowDir}' failed realpath()");
+                } else {
+                    $allowDirs[] = $realAllowDir;
+                }
             }
             foreach ($files as $file) {
                 $path = $_SERVER['DOCUMENT_ROOT'] . $base . $file;
                 $file = realpath($path);
                 if (false === $file) {
-                    $this->log("Path \"{$path}\" failed realpath()");
+                    $this->log("Path '{$path}' failed realpath()");
                     return $options;
                 } elseif (! parent::_fileIsSafe($file, $allowDirs)) {
-                    $this->log("Path \"{$path}\" failed Minify_Controller_Base::_fileIsSafe()");
+                    $this->log("File '{$file}' was not found, or not located"
+                        . " inside the 'allowDirs': " . var_export($allowDirs, 1));
                     return $options;
                 } else {
                     $sources[] = new Minify_Source(array(
