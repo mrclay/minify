@@ -5,11 +5,6 @@
  */
 
 /**
- * Minify_Source
- */
-require_once 'Minify/Source.php';
- 
-/**
  * Minify - Combines, minifies, and caches JavaScript and CSS files on demand.
  *
  * See README for usage instructions (for now).
@@ -77,7 +72,6 @@ class Minify {
     public static function setCache($cache = '', $fileLocking = true)
     {
         if (is_string($cache)) {
-            require_once 'Minify/Cache/File.php';
             self::$_cache = new Minify_Cache_File($cache, $fileLocking);
         } else {
             self::$_cache = $cache;
@@ -162,10 +156,6 @@ class Minify {
         if (is_string($controller)) {
             // make $controller into object
             $class = 'Minify_Controller_' . $controller;
-            if (! class_exists($class, false)) {
-                require_once "Minify/Controller/" 
-                    . str_replace('_', '/', $controller) . ".php";    
-            }
             $controller = new $class();
         }
         
@@ -207,7 +197,6 @@ class Minify {
                 $contentEncoding = self::$_options['encodeMethod'];
             } else {
                 // sniff request header
-                require_once 'HTTP/Encoder.php';
                 // depending on what the client accepts, $contentEncoding may be 
                 // 'x-gzip' while our internal encodeMethod is 'gzip'. Calling
                 // getAcceptedEncoding(false, false) leaves out compress and deflate as options.
@@ -218,7 +207,6 @@ class Minify {
         }
         
         // check client cache
-        require_once 'HTTP/ConditionalGet.php';
         $cgOptions = array(
             'lastModifiedTime' => self::$_options['lastModifiedTime']
             ,'isPublic' => self::$_options['isPublic']
@@ -376,7 +364,6 @@ class Minify {
             if ($unsetPathInfo) {
                 unset($_SERVER['PATH_INFO']);
             }
-            require_once 'Minify/Logger.php';
             Minify_Logger::log("setDocRoot() set DOCUMENT_ROOT to \"{$_SERVER['DOCUMENT_ROOT']}\"");
         }
     }

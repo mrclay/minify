@@ -8,6 +8,4 @@ define('MINIFY_BASE_DIR', realpath(
 // set in /min/config.php
 define('MINIFY_CACHE_DIR', $minifyCachePath);
 
-require 'Minify.php';
-
 Minify::serve('Version1');

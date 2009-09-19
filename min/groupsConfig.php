@@ -31,4 +31,7 @@ return array(
             'minifier' => array('Minify_Packer', 'minify')
         ))
     ),//*/
+    
+    // testing
+    //'js' => array(dirname(__FILE__) . '/builder/_index.js'),
 );

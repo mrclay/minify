@@ -96,12 +96,15 @@ abstract class Minify_Controller_Base {
      */
     public function loadMinifier($minifierCallback)
     {
-        if (is_array($minifierCallback)
+        // autoloading... may no longer be needed
+        
+        /*if (is_array($minifierCallback)
             && is_string($minifierCallback[0])
             && !class_exists($minifierCallback[0], false)) {
             
             require str_replace('_', '/', $minifierCallback[0]) . '.php';
         }
+        */
     }
     
     /**
@@ -196,7 +199,6 @@ abstract class Minify_Controller_Base {
      * @return null
      */
     protected function log($msg) {
-        require_once 'Minify/Logger.php';
         Minify_Logger::log($msg);
     }
 }

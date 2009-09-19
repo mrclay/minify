@@ -12,7 +12,6 @@ if (isset($_POST['textIn'])) {
 }
 
 if (isset($_POST['method']) && $_POST['method'] === 'Minify and serve') {
-    require 'Minify.php';
     
     $base = trim(getPost('base'));
     if ($base) {
@@ -27,15 +26,11 @@ if (isset($_POST['method']) && $_POST['method'] === 'Minify and serve') {
     $sourceSpec['id'] = 'foo';
     if (isset($_POST['minJs'])) {
         $sourceSpec['minifyOptions']['jsMinifier'] = array('JSMin', 'minify');
-        require 'JSMin.php';
     }
     if (isset($_POST['minCss'])) {
         $sourceSpec['minifyOptions']['cssMinifier'] = array('Minify_CSS', 'minify');
-        require 'Minify/CSS.php';
     }
     $source = new Minify_Source($sourceSpec);
-    require_once 'Minify/Logger.php';
-    require_once 'FirePHP.php';
     Minify_Logger::setLogger(FirePHP::getInstance(true));
     Minify::serve('Files', array(
         'files' => $source
@@ -47,11 +42,6 @@ if (isset($_POST['method']) && $_POST['method'] === 'Minify and serve') {
 $classes = array('Minify_HTML', 'Minify_CSS', 'JSMin', 'JSMinPlus');
 
 if (isset($_POST['method']) && in_array($_POST['method'], $classes)) {
-    // easier to just require them all
-    require 'Minify/HTML.php';
-    require 'Minify/CSS.php';
-    require 'JSMin.php';
-    require 'JSMinPlus.php';
 
     $arg2 = null;
     if ($_POST['method'] === 'Minify_HTML') {

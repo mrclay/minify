@@ -2,8 +2,6 @@
 
 require '../../config.php';
 
-require 'Minify.php';
-
 // set in /min/config.php
 Minify::setCache($minifyCachePath);
 

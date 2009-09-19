@@ -9,6 +9,11 @@
 
 $_min_preIncludedFiles = get_included_files();
 
+function min_autoload($name) {
+    require str_replace('_', DIRECTORY_SEPARATOR, $name) . '.php';
+}
+spl_autoload_register('min_autoload');
+
 function ob_minify_page($content) {
     global $min_serveOptions, $min_cacheMaxAge;
 
@@ -29,8 +34,6 @@ function ob_minify_page($content) {
     // setup include path
     set_include_path($min_libPath . PATH_SEPARATOR . get_include_path());
 
-    require $min_libPath . '/Minify.php';
-
     Minify::$uploaderHoursBehind = $min_uploaderHoursBehind;
     Minify::setCache(
         isset($min_cachePath) ? $min_cachePath : ''
@@ -38,9 +41,7 @@ function ob_minify_page($content) {
     );
 
     if ($min_errorLogger) {
-        require_once $min_libPath . '/Minify/Logger.php';
         if (true === $min_errorLogger) {
-            require_once $min_libPath . '/FirePHP.php';
             Minify_Logger::setLogger(FirePHP::getInstance(true));
         } else {
             Minify_Logger::setLogger($min_errorLogger);

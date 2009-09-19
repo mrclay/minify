@@ -170,8 +170,12 @@ $serveOpts = array(
 ob_end_clean();
 
 set_include_path(dirname(__FILE__) . '/../lib' . PATH_SEPARATOR . get_include_path());
+function min_autoload($name) {
+    require str_replace('_', DIRECTORY_SEPARATOR, $name) . '.php';
+}
+spl_autoload_register('min_autoload');
 
-require 'Minify.php';
+//require 'Minify.php';
 
 if (0 === stripos(PHP_OS, 'win')) {
     Minify::setDocRoot(); // we may be on IIS

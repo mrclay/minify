@@ -4,7 +4,6 @@ if (isset($_FILES['subject']['name'])) {
 
     require '../config.php';
     
-    require 'HTTP/Encoder.php';
     $he = new HTTP_Encoder(array(
         'content' => file_get_contents($_FILES['subject']['tmp_name'])
         ,'method' => $_POST['method']

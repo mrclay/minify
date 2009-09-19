@@ -33,7 +33,6 @@ $out = '';
 
 if (isset($_POST['css'])) {
     require '../config.php';
-    require 'Minify/CSS/UriRewriter.php';
     $symlinks = array();
     if ('' !== ($target = getPost('symTarget'))) {
         $symlinks[getPost('symLink')] = $target;

@@ -2,7 +2,6 @@
 require '../../config.php';
 require '_groupsSources.php';
 
-require 'Minify/Build.php';
 $jsBuild = new Minify_Build($groupsSources['js']);
 $cssBuild = new Minify_Build($groupsSources['css']);
 
@@ -72,8 +71,6 @@ window.onload = function () {
 </html>
 <?php
 $content = ob_get_clean();
-
-require 'Minify.php';
 
 if ($minifyCachePath) {
     Minify::useServerCache($minifyCachePath);

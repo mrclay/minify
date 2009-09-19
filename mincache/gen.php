@@ -39,8 +39,10 @@ require MINCACHE_DIR   . '/config.php';
 
 // setup include path
 set_include_path($min_libPath . PATH_SEPARATOR . get_include_path());
-
-require 'Minify.php';
+function min_autoload($name) {
+    require str_replace('_', DIRECTORY_SEPARATOR, $name) . '.php';
+}
+spl_autoload_register('min_autoload');
 
 if ($min_documentRoot) {
     $_SERVER['DOCUMENT_ROOT'] = $min_documentRoot;

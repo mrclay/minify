@@ -79,11 +79,6 @@ if (isset($_POST['url'])) {
         die('Unrecognized Content-Type: ' . $type['sent']);
     }
         
-    require 'Minify.php';
-    require 'Minify/HTML.php';
-    require 'Minify/CSS.php';
-    require 'JSMin.php';
-    
     if ($type['minify'] === 'text/html' 
         && isset($_POST['addBase'])
         && ! preg_match('@<base\\b@i', $content)) {
@@ -100,11 +95,9 @@ if (isset($_POST['url'])) {
     if ($type['minify'] === 'text/html') {
         if (isset($_POST['minJs'])) {
             $sourceSpec['minifyOptions']['jsMinifier'] = array('JSMin', 'minify');
-            require 'JSMin.php';
         }
         if (isset($_POST['minCss'])) {
             $sourceSpec['minifyOptions']['cssMinifier'] = array('Minify_CSS', 'minify');
-            require 'Minify/CSS.php';
         }
     }
        

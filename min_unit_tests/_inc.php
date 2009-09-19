@@ -3,6 +3,11 @@
 require dirname(__FILE__) . '/../min/config.php';
 
 set_include_path($min_libPath . PATH_SEPARATOR . get_include_path());
+function min_autoload($name) {
+    require str_replace('_', DIRECTORY_SEPARATOR, $name) . '.php';
+}
+spl_autoload_register('min_autoload');
+
 
 // set cache path and doc root if configured
 $minifyCachePath = isset($min_cachePath) 
@@ -13,11 +18,9 @@ if ($min_documentRoot) {
 }
 
 // default log to FirePHP
-require_once 'Minify/Logger.php';
 if ($min_errorLogger && true !== $min_errorLogger) { // custom logger
     Minify_Logger::setLogger($min_errorLogger);
 } else {
-    require_once 'FirePHP.php';
     Minify_Logger::setLogger(FirePHP::getInstance(true));
 }
 

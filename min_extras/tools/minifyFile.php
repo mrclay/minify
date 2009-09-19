@@ -5,11 +5,6 @@ if (isset($_FILES['subject']['name'])
 ) {
     require '../config.php';
     
-    // easier to just require them all
-    require 'Minify/HTML.php';
-    require 'Minify/CSS.php';
-    require 'JSMin.php';
-    
     $arg2 = null;
     switch ($m[1]) {
     case 'js':

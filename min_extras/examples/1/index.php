@@ -2,7 +2,6 @@
 require '../../config.php';
 require '_groupsSources.php';
 
-require 'Minify/Build.php';
 $jsBuild = new Minify_Build($groupsSources['js']);
 $cssBuild = new Minify_Build($groupsSources['css']);
 ?>

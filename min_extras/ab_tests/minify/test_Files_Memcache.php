@@ -2,8 +2,6 @@
 
 require '../../config.php';
 
-require 'Minify.php';
-require 'Minify/Cache/Memcache.php';
 
 $mc = new Memcache;
 if (! @$mc->connect('localhost', 11211)) {

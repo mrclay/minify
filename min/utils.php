@@ -7,8 +7,6 @@
  * @package Minify
  */
 
-require_once 'Minify/Build.php';
-
 
 /**
  * Get a timestamped URI to a minified resource using the default Minify install

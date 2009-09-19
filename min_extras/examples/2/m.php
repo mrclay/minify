@@ -2,7 +2,6 @@
 
 require '../../config.php';
 require '_groupsSources.php';
-require 'Minify.php';
 
 if ($minifyCachePath) {
     Minify::setCache($minifyCachePath);
