@@ -66,11 +66,11 @@ to the /js and /themes/default directories, use:
 $min_serveOptions['minApp']['allowDirs'] = array('//js', '//themes/default');
 
 
-GROUPS: FASTER PERFORMANCE AND BETTER URLS
+GROUPS: SHORTER URLS
 
 For the best performance, edit groupsConfig.php to pre-specify groups of files 
-to be combined under preset keys. E.g., here's an example configuration in 
-groupsConfig.php:
+to be combined under preset keys (note: keys should not contain commas). E.g.,
+here's an example configuration in groupsConfig.php:
 
 return array(
     'js' => array('//js/Class.js', '//js/email.js')
@@ -99,6 +99,20 @@ return array(
 );
 
 
+COMBINING GROUPS AND FILES
+
+In a single URL you can combine multiple groups and files:
+  http://example.com/min/?g=js1,js2&f=page1.js
+  
+Caveats: 
+  * Groups always come before files in the output
+    E.g. /g=js1&f=page.js == /f=page.js&g=js1
+  * Groups will be combined in the order specified.
+    E.g. /g=js1,js2 != /g=js2,js1
+  * Minify will NOT keep you from trying to combine Javascript and CSS.
+    Combining the wrong files will cause an exception in JSMin or break CSS.
+
+
 FAR-FUTURE EXPIRES HEADERS
 
 Minify can send far-future (one year) Expires headers. To enable this you must
@@ -106,14 +120,14 @@ add a number to the querystring (e.g. /min/?g=js&1234 or /min/f=file.js&1234)
 and alter it whenever a source file is changed. If you have a build process you 
 can use a build/source control revision number.
 
-If you serve files as a group, you can use the utility function Minify_groupUri()
-to get a "versioned" Minify URI for use in your HTML. E.g.:
+If you serve files as groups, you can use the utility function
+Minify_groupUri() to get a "versioned" Minify URI for use in your HTML. E.g.:
 
 <?php
 // add /min/lib to your include_path first!
 require $_SERVER['DOCUMENT_ROOT'] . '/min/utils.php';
 
-$jsUri = Minify_groupUri('js'); 
+$jsUri = Minify_groupUri('js1,js2'); 
 echo "<script type='text/javascript' src='{$jsUri}'></script>";
 
 
@@ -122,11 +136,17 @@ DEBUG MODE
 In debug mode, instead of compressing files, Minify sends combined files with
 comments prepended to each line to show the line number in the original source
 file. To enable this, set $min_allowDebugFlag to true in config.php and append
-"&debug=1" to your URIs. E.g. /min/?f=script1.js,script2.js&debug=1
+"&debug=1" to your URIs. E.g. /min/?f=script1.js,script2.js&debug
 
 Known issue: files with comment-like strings/regexps can cause problems in this mode.
 
 
+SEE ALSO
+
+http://code.google.com/p/minify/wiki/CookBook
+
+
 QUESTIONS?
 
+http://code.google.com/p/minify/wiki/CommonProblems
 http://groups.google.com/group/minify

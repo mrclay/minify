@@ -14,10 +14,24 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
     
     /**
      * Set up groups of files as sources
+     *
+     * If $_GET['g'] is set, it's split with "," and each piece is looked up as
+     * a key in groupsConfig.php, and the found arrays are added to the sources.
+     *
+     * If $_GET['f'] is set and $options['groupsOnly'] is false, sources are
+     * added based on validity of name and location.
+     * 
+     * Caveat: Groups always come before files, but the groups are ordered as
+     * requested. E.g. 
+     * /f=file.js&g=js1,js2 == /g=js1,js2&f=file.js != /g=js2,js1&f=file.js
+     * 
+     * Caveat: If JS group(s) are specified, the method will still allow you to 
+     * add CSS files and vice-versa. E.g.:
+     * /g=js1,js2&f=site.css => Minify will try to process site.css through the
+     * Javascript minifier, possibly causing an exception.
      * 
      * @param array $options controller and Minify options
      * @return array Minify options
-     * 
      */
     public function setupSources($options) {
         // filter controller options
@@ -34,17 +48,25 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
         $sources = array();
         if (isset($_GET['g'])) {
             // try groups
-            if (! isset($cOptions['groups'][$_GET['g']])) {
-                $this->log("A group configuration for \"{$_GET['g']}\" was not set");
+            $files = array();
+            $keys = explode(',', $_GET['g']);
+            // check for duplicate key
+            // note: no check for duplicate files
+            if ($keys != array_unique($keys)) {
+                $this->log("Duplicate key given in \"{$_GET['g']}\"");
                 return $options;
             }
-            
-            $files = $cOptions['groups'][$_GET['g']];
-            // if $files is a single object, casting will break it
-            if (is_object($files)) {
-                $files = array($files);
-            } elseif (! is_array($files)) {
-                $files = (array)$files;
+            foreach ($keys as $key) {
+                if (! isset($cOptions['groups'][$key])) {
+                    $this->log("A group configuration for \"{$key}\" was not set");
+                    return $options;
+                }
+                $groupFiles = $cOptions['groups'][$key];
+                if (is_array($groupFiles)) {
+                    array_splice($files, count($files), 0, $groupFiles);
+                } else {
+                    $files[] = $groupFiles;
+                }
             }
             foreach ($files as $file) {
                 if ($file instanceof Minify_Source) {
@@ -64,7 +86,8 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                     return $options;
                 }
             }
-        } elseif (! $cOptions['groupsOnly'] && isset($_GET['f'])) {
+        } 
+        if (! $cOptions['groupsOnly'] && isset($_GET['f'])) {
             // try user files
             // The following restrictions are to limit the URLs that minify will
             // respond to. Ideally there should be only one way to reference a file.
@@ -102,23 +125,16 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             }
             $allowDirs = array();
             foreach ((array)$cOptions['allowDirs'] as $allowDir) {
-                $allowDir = str_replace('//', $_SERVER['DOCUMENT_ROOT'] . '/', $allowDir);
-                $realAllowDir = realpath($allowDir);
-                if (false === $realAllowDir) {
-                    $this->log("AllowDir path '{$allowDir}' failed realpath()");
-                } else {
-                    $allowDirs[] = $realAllowDir;
-                }
+                $allowDirs[] = realpath(str_replace('//', $_SERVER['DOCUMENT_ROOT'] . '/', $allowDir));
             }
             foreach ($files as $file) {
                 $path = $_SERVER['DOCUMENT_ROOT'] . $base . $file;
                 $file = realpath($path);
                 if (false === $file) {
-                    $this->log("Path '{$path}' failed realpath()");
+                    $this->log("Path \"{$path}\" failed realpath()");
                     return $options;
                 } elseif (! parent::_fileIsSafe($file, $allowDirs)) {
-                    $this->log("File '{$file}' was not found, or not located"
-                        . " inside the 'allowDirs': " . var_export($allowDirs, 1));
+                    $this->log("Path \"{$path}\" failed Minify_Controller_Base::_fileIsSafe()");
                     return $options;
                 } else {
                     $sources[] = new Minify_Source(array(

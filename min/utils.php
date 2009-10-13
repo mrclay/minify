@@ -19,7 +19,7 @@
  * If you do not want ampersands as HTML entities, set Minify_Build::$ampersand = "&" 
  * before using this function.
  *
- * @param string $group a key from groupsConfig.php
+ * @param string $group a key (or comma-separated keys) from groupsConfig.php
  * @param boolean $forceAmpersand (default false) Set to true if the RewriteRule
  * directives in .htaccess are functional. This will remove the "?" from URIs, making them
  * more cacheable by proxies.
@@ -70,7 +70,7 @@ function Minify_groupsMtime($groups)
 }
 
 /**
- * @param string $group a key from groupsConfig.php
+ * @param string $group a key (or comma-separated keys) from groupsConfig.php
  * @return Minify_Build
  * @private
  */
@@ -82,7 +82,16 @@ function _Minify_getBuild($group)
         $gc = (require dirname(__FILE__) . '/groupsConfig.php');
     }
     if (! isset($builds[$group])) {
-        $builds[$group] = new Minify_Build($gc[$group]);
+        $sources = array();
+        foreach (explode(',', $group) as $key) {
+            $val = $gc[$key];
+            if (is_array($val)) {
+                array_splice($sources, count($sources), 0, $val);
+            } else {
+                $sources[] = $val;
+            }
+        }
+        $builds[$group] = new Minify_Build($sources);
     }
     return $builds[$group];
 }

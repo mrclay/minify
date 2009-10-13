@@ -14,12 +14,13 @@ return array(
     // 'css' => array('//css/file1.css', '//css/file2.css'),
 
     // custom source example
+    // see http://code.google.com/p/minify/wiki/CustomSource
     /*'js2' => array(
         dirname(__FILE__) . '/../min_unit_tests/_test_files/js/before.js',
         // do NOT process this file
         new Minify_Source(array(
             'filepath' => dirname(__FILE__) . '/../min_unit_tests/_test_files/js/before.js',
-            'minifier' => create_function('$a', 'return $a;')
+            'minifier' => ''
         ))
     ),//*/
 
