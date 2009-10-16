@@ -3,12 +3,16 @@
 if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
     // called directly
     if (isset($_GET['getOutputCompression'])) {
-        echo (int)ini_get('zlib.output_compression');
+        echo (int)(
+            ini_get('zlib.output_compression')
+            || ini_get('output_handler') === 'ob_gzhandler'
+        );
         exit();
     }
     if (isset($_GET['hello'])) {
         // try to disable (may not work)
         ini_set('zlib.output_compression', '0');
+        ini_set('output_handler', '');
         echo 'World!';
         exit();
     }
@@ -56,10 +60,6 @@ function test_environment()
         echo "!WARN: environment : Local HTTP request failed. Testing cannot continue.\n";
         return;
     }
-    if ('1' === $oc) {
-        echo "!WARN: environment : zlib.output_compression is enabled in php.ini"
-           . " or .htaccess.\n";
-    }
     
     $fp = fopen($thisUrl . '?hello=1', 'r', false, stream_context_create(array(
         'http' => array(
@@ -79,7 +79,8 @@ function test_environment()
             break;
         }
     }
-    if ($passed && stream_get_contents($fp) !== 'World!') {
+    $streamContents = stream_get_contents($fp);
+    if ($passed && $streamContents !== 'World!') {
         $passed = false;
     }
     assertTrue(
@@ -88,11 +89,17 @@ function test_environment()
     );
     fclose($fp);
     
-    if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
-        if (! $passed) {
-            echo "\nReturned content should be 6 bytes and not HTTP encoded.\n"
-               . "Headers returned by: {$thisUrl}?hello=1\n\n";
-            var_export($meta['wrapper_data']);
+    if (! $passed) {
+        echo "\nReturned content should be 6 bytes and not HTTP encoded.\n"
+           . "Headers returned by: {$thisUrl}?hello=1\n";
+        var_export($meta['wrapper_data']);
+        echo "\nContent body: ";
+        var_export($streamContents);
+        echo "\n\n";
+        
+        if ('1' === $oc) {
+            echo "!NOTE: environment : zlib.output_compression='On' OR "
+               . " output_handler='ob_gzhandler' in php.ini or .htaccess.\n";
         }
     }
 }
