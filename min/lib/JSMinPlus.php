@@ -1,7 +1,7 @@
 <?php
 
 /**
- * JSMinPlus version 1.1
+ * JSMinPlus version 1.3
  *
  * Minifies a javascript file using a javascript parser
  *
@@ -15,6 +15,8 @@
  * Usage: $minified = JSMinPlus::minify($script [, $filename])
  *
  * Versionlog (see also changelog.txt):
+ * 17-05-2009 - fixed hook:colon precedence, fixed empty body in loop and if-constructs
+ * 18-04-2009 - fixed crashbug in PHP 5.2.9 and several other bugfixes
  * 12-04-2009 - some small bugfixes and performance improvements
  * 09-04-2009 - initial open sourced version 1.0
  *
@@ -65,7 +67,8 @@ define('TOKEN_IDENTIFIER', 3);
 define('TOKEN_STRING', 4);
 define('TOKEN_REGEXP', 5);
 define('TOKEN_NEWLINE', 6);
-define('TOKEN_CONDCOMMENT_MULTILINE', 7);
+define('TOKEN_CONDCOMMENT_START', 7);
+define('TOKEN_CONDCOMMENT_END', 8);
 
 define('JS_SCRIPT', 100);
 define('JS_BLOCK', 101);
@@ -153,25 +156,42 @@ class JSMinPlus
 			case JS_SCRIPT:
 				// we do nothing with funDecls or varDecls
 				$noBlockGrouping = true;
-			// fall through
+			// FALL THROUGH
+
 			case JS_BLOCK:
 				$childs = $n->treeNodes;
+				$lastType = 0;
 				for ($c = 0, $i = 0, $j = count($childs); $i < $j; $i++)
 				{
+					$type = $childs[$i]->type;
 					$t = $this->parseTree($childs[$i]);
 					if (strlen($t))
 					{
 						if ($c)
 						{
-							if ($childs[$i]->type == KEYWORD_FUNCTION && $childs[$i]->functionForm == DECLARED_FORM)
-								$s .= "\n"; // put declared functions on a new line
+							$s = rtrim($s, ';');
+
+							if ($type == KEYWORD_FUNCTION && $childs[$i]->functionForm == DECLARED_FORM)
+							{
+								// put declared functions on a new line
+								$s .= "\n";
+							}
+							elseif ($type == KEYWORD_VAR && $type == $lastType)
+							{
+								// mutiple var-statements can go into one
+								$t = ',' . substr($t, 4);
+							}
 							else
+							{
+								// add terminator
 								$s .= ';';
+							}
 						}
 
 						$s .= $t;
 
 						$c++;
+						$lastType = $type;
 					}
 				}
 
@@ -186,25 +206,27 @@ class JSMinPlus
 				$thenPart = $this->parseTree($n->thenPart);
 				$elsePart = $n->elsePart ? $this->parseTree($n->elsePart) : null;
 
-				// quite a rancid hack to see if we should enclose the thenpart in brackets
-				if ($thenPart[0] != '{')
-				{
-					if (strpos($thenPart, 'if(') !== false)
-						$thenPart = '{' . $thenPart . '}';
-					elseif ($elsePart)
-						$thenPart .= ';';
-				}
-
-				$s .= $thenPart;
+				// empty if-statement
+				if ($thenPart == '')
+					$thenPart = ';';
 
 				if ($elsePart)
 				{
-					$s .= 'else';
+					// be carefull and always make a block out of the thenPart; could be more optimized but is a lot of trouble
+					if ($thenPart != ';' && $thenPart[0] != '{')
+						$thenPart = '{' . $thenPart . '}';
 
+					$s .= $thenPart . 'else';
+
+					// we could check for more, but that hardly ever applies so go for performance
 					if ($elsePart[0] != '{')
 						$s .= ' ';
 
 					$s .= $elsePart;
+				}
+				else
+				{
+					$s .= $thenPart;
 				}
 			break;
 
@@ -219,26 +241,48 @@ class JSMinPlus
 					else
 						$s .= 'default:';
 
-					$statement = $this->parseTree($case->statements);
+					$statement = $this->parseTree($case->statements, true);
 					if ($statement)
-						$s .= $statement . ';';
+					{
+						$s .= $statement;
+						// no terminator for last statement
+						if ($i + 1 < $j)
+							$s .= ';';
+					}
 				}
-				$s = rtrim($s, ';') . '}';
+				$s .= '}';
 			break;
 
 			case KEYWORD_FOR:
 				$s = 'for(' . ($n->setup ? $this->parseTree($n->setup) : '')
 					. ';' . ($n->condition ? $this->parseTree($n->condition) : '')
-					. ';' . ($n->update ? $this->parseTree($n->update) : '') . ')'
-					. $this->parseTree($n->body);
+					. ';' . ($n->update ? $this->parseTree($n->update) : '') . ')';
+
+				$body  = $this->parseTree($n->body);
+				if ($body == '')
+					$body = ';';
+
+				$s .= $body;
 			break;
 
 			case KEYWORD_WHILE:
-				$s = 'while(' . $this->parseTree($n->condition) . ')' . $this->parseTree($n->body);
+				$s = 'while(' . $this->parseTree($n->condition) . ')';
+
+				$body  = $this->parseTree($n->body);
+				if ($body == '')
+					$body = ';';
+
+				$s .= $body;
 			break;
 
 			case JS_FOR_IN:
-				$s = 'for(' . ($n->varDecl ? $this->parseTree($n->varDecl) : $this->parseTree($n->iterator)) . ' in ' . $this->parseTree($n->object) . ')' . $this->parseTree($n->body);
+				$s = 'for(' . ($n->varDecl ? $this->parseTree($n->varDecl) : $this->parseTree($n->iterator)) . ' in ' . $this->parseTree($n->object) . ')';
+
+				$body  = $this->parseTree($n->body);
+				if ($body == '')
+					$body = ';';
+
+				$s .= $body;
 			break;
 
 			case KEYWORD_DO:
@@ -267,7 +311,20 @@ class JSMinPlus
 			break;
 
 			case KEYWORD_RETURN:
-				$s = 'return' . ($n->value ? ' ' . $this->parseTree($n->value) : '');
+				$s = 'return';
+				if ($n->value)
+				{
+					$t = $this->parseTree($n->value);
+					if (strlen($t))
+					{
+						if (	$t[0] != '(' && $t[0] != '[' && $t[0] != '{' &&
+							$t[0] != '"' && $t[0] != "'" && $t[0] != '/'
+						)
+							$s .= ' ';
+
+						$s .= $t;
+					}
+				}
 			break;
 
 			case KEYWORD_WITH:
@@ -292,8 +349,9 @@ class JSMinPlus
 				throw new Exception('NOT IMPLEMENTED: DEBUGGER');
 			break;
 
-			case TOKEN_CONDCOMMENT_MULTILINE:
-				$s = $n->value . ' ';
+			case TOKEN_CONDCOMMENT_START:
+			case TOKEN_CONDCOMMENT_END:
+				$s = $n->value . ($n->type == TOKEN_CONDCOMMENT_START ? ' ' : '');
 				$childs = $n->treeNodes;
 				for ($i = 0, $j = count($childs); $i < $j; $i++)
 					$s .= $this->parseTree($childs[$i]);
@@ -333,14 +391,32 @@ class JSMinPlus
 
 			case OP_PLUS:
 			case OP_MINUS:
-				$s = $this->parseTree($n->treeNodes[0]) . $n->type;
-				$nextTokenType = $n->treeNodes[1]->type;
-				if (	$nextTokenType == OP_PLUS || $nextTokenType == OP_MINUS ||
-					$nextTokenType == OP_INCREMENT || $nextTokenType == OP_DECREMENT ||
-					$nextTokenType == OP_UNARY_PLUS || $nextTokenType == OP_UNARY_MINUS
-				)
-					$s .= ' ';
-				$s .= $this->parseTree($n->treeNodes[1]);
+				$left = $this->parseTree($n->treeNodes[0]);
+				$right = $this->parseTree($n->treeNodes[1]);
+
+				switch ($n->treeNodes[1]->type)
+				{
+					case OP_PLUS:
+					case OP_MINUS:
+					case OP_INCREMENT:
+					case OP_DECREMENT:
+					case OP_UNARY_PLUS:
+					case OP_UNARY_MINUS:
+						$s = $left . $n->type . ' ' . $right;
+					break;
+
+					case TOKEN_STRING:
+						//combine concatted strings with same quotestyle
+						if ($n->type == OP_PLUS && substr($left, -1) == $right[0])
+						{
+							$s = substr($left, 0, -1) . substr($right, 1);
+							break;
+						}
+					// FALL THROUGH
+
+					default:
+						$s = $left . $n->type . $right;
+				}
 			break;
 
 			case KEYWORD_IN:
@@ -482,7 +558,7 @@ class JSParser
 		';' => 0,
 		',' => 1,
 		'=' => 2, '?' => 2, ':' => 2,
-		// The above all have to have the same precedence, see bug 330975.
+		// The above all have to have the same precedence, see bug 330975
 		'||' => 4,
 		'&&' => 5,
 		'|' => 6,
@@ -523,7 +599,7 @@ class JSParser
 		'.' => 2,
 		JS_NEW_WITH_ARGS => 2, JS_INDEX => 2, JS_CALL => 2,
 		JS_ARRAY_INIT => 1, JS_OBJECT_INIT => 1, JS_GROUP => 1,
-		TOKEN_CONDCOMMENT_MULTILINE => 1
+		TOKEN_CONDCOMMENT_START => 1, TOKEN_CONDCOMMENT_END => 1
 	);
 
 	public function __construct()
@@ -835,7 +911,8 @@ class JSParser
 			        $n = $this->Variables($x);
 			break;
 
-			case TOKEN_CONDCOMMENT_MULTILINE:
+			case TOKEN_CONDCOMMENT_START:
+			case TOKEN_CONDCOMMENT_END:
 				$n = new JSNode($this->t);
 			return $n;
 
@@ -994,37 +1071,47 @@ class JSParser
 					// NB: cannot be empty, Statement handled that.
 					break 2;
 
-				case OP_ASSIGN:
 				case OP_HOOK:
-				case OP_COLON:
 					if ($this->t->scanOperand)
 						break 2;
 
-					// Use >, not >=, for right-associative ASSIGN and HOOK/COLON.
 					while (	!empty($operators) &&
-						(	$this->opPrecedence[end($operators)->type] > $this->opPrecedence[$tt] ||
-							($tt == OP_COLON && end($operators)->type == OP_ASSIGN)
-						)
+						$this->opPrecedence[end($operators)->type] > $this->opPrecedence[$tt]
 					)
 						$this->reduce($operators, $operands);
 
-					if ($tt == OP_COLON)
-					{
-						$n = end($operators);
-						if ($n->type != OP_HOOK)
-							throw $this->t->newSyntaxError('Invalid label');
+					array_push($operators, new JSNode($this->t));
 
-						--$x->hookLevel;
-					}
-					else
-					{
-						array_push($operators, new JSNode($this->t));
-						if ($tt == OP_ASSIGN)
-							end($operands)->assignOp = $this->t->currentToken()->assignOp;
-						else
-							++$x->hookLevel;
-					}
+					++$x->hookLevel;
+					$this->t->scanOperand = true;
+					$n = $this->Expression($x);
 
+					if (!$this->t->match(OP_COLON))
+						break 2;
+
+					--$x->hookLevel;
+					array_push($operands, $n);
+				break;
+
+				case OP_COLON:
+					if ($x->hookLevel)
+						break 2;
+
+					throw $this->t->newSyntaxError('Invalid label');
+				break;
+
+				case OP_ASSIGN:
+					if ($this->t->scanOperand)
+						break 2;
+
+					// Use >, not >=, for right-associative ASSIGN
+					while (	!empty($operators) &&
+						$this->opPrecedence[end($operators)->type] > $this->opPrecedence[$tt]
+					)
+						$this->reduce($operators, $operands);
+
+					array_push($operators, new JSNode($this->t));
+					end($operands)->assignOp = $this->t->currentToken()->assignOp;
 					$this->t->scanOperand = true;
 				break;
 
@@ -1036,14 +1123,19 @@ class JSParser
 						!$x->bracketLevel && !$x->curlyLevel &&
 						!$x->parenLevel
 					)
-					{
 						break 2;
-					}
 				// FALL THROUGH
 				case OP_COMMA:
-					// Treat comma as left-associative so reduce can fold left-heavy
-					// COMMA trees into a single array.
-					// FALL THROUGH
+					// A comma operator should not be parsed if we're parsing the then part
+					// of a conditional expression unless it's parenthesized somehow.
+					if ($tt == OP_COMMA && $x->hookLevel &&
+						!$x->bracketLevel && !$x->curlyLevel &&
+						!$x->parenLevel
+					)
+						break 2;
+				// Treat comma as left-associative so reduce can fold left-heavy
+				// COMMA trees into a single array.
+				// FALL THROUGH
 				case OP_OR:
 				case OP_AND:
 				case OP_BITWISE_OR:
@@ -1127,7 +1219,8 @@ class JSParser
 					$this->t->scanOperand = false;
 				break;
 
-				case TOKEN_CONDCOMMENT_MULTILINE:
+				case TOKEN_CONDCOMMENT_START:
+				case TOKEN_CONDCOMMENT_END:
 					if ($this->t->scanOperand)
 						array_push($operators, new JSNode($this->t));
 					else
@@ -1312,7 +1405,7 @@ class JSParser
 		}
 
 		if ($x->hookLevel != $hl)
-			throw $this->t->newSyntaxError('Missing : after ?');
+			throw $this->t->newSyntaxError('Missing : in conditional expression');
 
 		if ($x->parenLevel != $pl)
 			throw $this->t->newSyntaxError('Missing ) in parenthetical');
@@ -1465,6 +1558,14 @@ class JSNode
 
 	public function addNode($node)
 	{
+		if ($node !== null)
+		{
+			if ($node->start < $this->start)
+				$this->start = $node->start;
+			if ($this->end < $node->end)
+				$this->end = $node->end;
+		}
+
 		$this->treeNodes[] = $node;
 	}
 }
@@ -1668,7 +1769,7 @@ class JSTokenizer
 			}
 
 			// Comments
-			if (!preg_match('/^\/(?:\*(@(?:cc_on|if|elif|else|end))?(?:.|\n)*?\*\/|\/.*)/', $input, $match))
+			if (!preg_match('/^\/(?:\*(@(?:cc_on|if|elif|else|end))?.*?\*\/|\/[^\n]*)/s', $input, $match))
 			{
 				if (!$chunksize)
 					break;
@@ -1681,7 +1782,7 @@ class JSTokenizer
 			// check if this is a conditional (JScript) comment
 			if (!empty($match[1]))
 			{
-				//$match[0] = '/*' . $match[1];
+				$match[0] = '/*' . $match[1];
 				$conditional_comment = true;
 				break;
 			}
@@ -1699,7 +1800,7 @@ class JSTokenizer
 		}
 		elseif ($conditional_comment)
 		{
-			$tt = TOKEN_CONDCOMMENT_MULTILINE;
+			$tt = TOKEN_CONDCOMMENT_START;
 		}
 		else
 		{
@@ -1711,7 +1812,7 @@ class JSTokenizer
 					{
 						$tt = TOKEN_NUMBER;
 					}
-					elseif (preg_match('/^0[xX][\da-fA-F]+|^0[0-7]*|^\d+/', $input, $match))
+					else if (preg_match('/^0[xX][\da-fA-F]+|^0[0-7]*|^\d+/', $input, $match))
 					{
 						// this should always match because of \d+
 						$tt = TOKEN_NUMBER;
@@ -1720,7 +1821,7 @@ class JSTokenizer
 
 				case '"':
 				case "'":
-					if (preg_match('/^"(?:\\\\(?:.|\r?\n)|[^\\\\"\r\n])*"|^\'(?:\\\\(?:.|\r?\n)|[^\\\\\'\r\n])*\'/', $input, $match))
+					if (preg_match('/^"(?:\\\\(?:.|\r?\n)|[^\\\\"\r\n]+)*"|^\'(?:\\\\(?:.|\r?\n)|[^\\\\\'\r\n]+)*\'/', $input, $match))
 					{
 						$tt = TOKEN_STRING;
 					}
@@ -1739,7 +1840,7 @@ class JSTokenizer
 						$tt = TOKEN_REGEXP;
 						break;
 					}
-				// fall through
+				// FALL THROUGH
 
 				case '|':
 				case '^':
@@ -1780,7 +1881,7 @@ class JSTokenizer
 						$tt = TOKEN_NUMBER;
 						break;
 					}
-				// fall through
+				// FALL THROUGH
 
 				case ';':
 				case ',':
@@ -1799,7 +1900,14 @@ class JSTokenizer
 				break;
 
 				case '@':
-					throw $this->newSyntaxError('Illegal token');
+					// check end of conditional comment
+					if (substr($input, 0, 3) == '@*/')
+					{
+						$match = array('@*/');
+						$tt = TOKEN_CONDCOMMENT_END;
+					}
+					else
+						throw $this->newSyntaxError('Illegal token');
 				break;
 
 				case "\n":
