@@ -1,6 +1,10 @@
 <?php
 /**
- * jsmin.php - PHP implementation of Douglas Crockford's JSMin.
+ * jsmin.php - extended PHP implementation of Douglas Crockford's JSMin.
+ *
+ * <code>
+ * $minifiedJs = JSMin::minify($js);
+ * </code>
  *
  * This is a direct port of jsmin.c to PHP with a few PHP performance tweaks and
  * modifications to preserve some comments (see below). Also, rather than using
@@ -64,7 +68,7 @@ class JSMin {
     protected $inputLength = 0;
     protected $lookAhead   = null;
     protected $output      = '';
-    
+
     /**
      * Minify Javascript
      *
@@ -73,16 +77,37 @@ class JSMin {
      */
     public static function minify($js)
     {
+        // look out for syntax like "++ +" and "- ++"
+        $p = '\\+';
+        $m = '\\-';
+        if (preg_match("/([$p$m])(?:\\1 [$p$m]| (?:$p$p|$m$m))/", $js)) {
+            // likely pre-minified and would be broken by JSMin
+            return $js;
+        }
+        if (function_exists('mb_strlen')
+            && (ini_get('mbstring.func_overload') !== '')
+            && ((int)ini_get('mbstring.func_overload') & 2)) {
+            $enc = mb_internal_encoding();
+            mb_internal_encoding('8bit');
+            $jsmin = new JSMin($js);
+            $ret = $jsmin->min();
+            mb_internal_encoding($enc);
+            return $ret;
+        }
         $jsmin = new JSMin($js);
         return $jsmin->min();
     }
-    
-    /**
-     * Setup process
+
+    /*
+     * Don't create a JSMin instance, instead use the static function minify,
+     * which checks for mb_string function overloading and avoids errors
+     * trying to re-minify the output of Closure Compiler
+     *
+     * @private
      */
     public function __construct($input)
     {
-        $this->input       = str_replace("\r\n", "\n", $input);
+        $this->input = str_replace("\r\n", "\n", $input);
         $this->inputLength = strlen($this->input);
     }
     

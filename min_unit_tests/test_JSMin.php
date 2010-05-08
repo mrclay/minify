@@ -19,6 +19,13 @@ function test_JSMin()
         echo "---Source: " .strlen($src). " bytes\n\n{$src}\n\n\n";
     }
     
+    $src = file_get_contents($thisDir . '/_test_files/js/issue144.js');
+    $minExpected = file_get_contents($thisDir . '/_test_files/js/issue144.min.js');
+    $minOutput = JSMin::minify($src);
+
+    $passed = assertTrue($minExpected == $minOutput, 'JSMin : Don\'t minify files with + ++ (Issue 144)');
+
+
     $src = file_get_contents($thisDir . '/_test_files/js/issue74.js');
     $minExpected = file_get_contents($thisDir . '/_test_files/js/issue74.min.js');
     $minOutput = JSMin::minify($src);
