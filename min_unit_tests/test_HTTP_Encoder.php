@@ -128,14 +128,19 @@ function test_HTTP_Encoder()
                 , "(off by ". abs($ret - $test['exp']) . " bytes)\n\n";
         }
     }
-    
+
+    HTTP_Encoder::$encodeToIe6 = true;
     $_SERVER['HTTP_ACCEPT_ENCODING'] = 'identity';
-    $he = new HTTP_Encoder(array(
-        'content' => 'Hello'
-    ));
+    $he = new HTTP_Encoder(array('content' => 'Hello'));
     $he->encode();
     $headers = $he->getHeaders();
-    assertTrue(isset($headers['Vary']), 'HTTP_Encoder : Vary always sent');    
+    assertTrue(isset($headers['Vary']), 'HTTP_Encoder : Vary always sent to good browsers');
+
+    $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)';
+    $he = new HTTP_Encoder(array('content' => 'Hello'));
+    $he->encode();
+    $headers = $he->getHeaders();
+    assertTrue(! isset($headers['Vary']), 'HTTP_Encoder : Vary not sent to bad IE (Issue 126)');
 }
 
 test_HTTP_Encoder();

@@ -35,6 +35,7 @@ class Minify {
     // there is some debate over the ideal JS Content-Type, but this is the
     // Apache default and what Yahoo! uses..
     const TYPE_JS = 'application/x-javascript';
+    const URL_DEBUG = 'http://code.google.com/p/minify/wiki/Debugging';
     
     /**
      * How many hours behind are the file modification times of uploaded files?
@@ -179,9 +180,7 @@ class Minify {
         if (! $controller->sources) {
             // invalid request!
             if (! self::$_options['quiet']) {
-                header(self::$_options['badRequestHeader']);
-                echo self::$_options['badRequestHeader'];
-                return;
+                self::_errorExit(self::$_options['badRequestHeader'], self::URL_DEBUG);
             } else {
                 list(,$statusCode) = explode(' ', self::$_options['badRequestHeader']);
                 return array(
@@ -202,6 +201,7 @@ class Minify {
         
         // determine encoding
         if (self::$_options['encodeOutput']) {
+            $sendVary = true;
             if (self::$_options['encodeMethod'] !== null) {
                 // controller specifically requested this
                 $contentEncoding = self::$_options['encodeMethod'];
@@ -212,6 +212,7 @@ class Minify {
                 // 'x-gzip' while our internal encodeMethod is 'gzip'. Calling
                 // getAcceptedEncoding(false, false) leaves out compress and deflate as options.
                 list(self::$_options['encodeMethod'], $contentEncoding) = HTTP_Encoder::getAcceptedEncoding(false, false);
+                $sendVary = ! HTTP_Encoder::isBuggyIe();
             }
         } else {
             self::$_options['encodeMethod'] = ''; // identity (no encoding)
@@ -261,7 +262,7 @@ class Minify {
         }
         
         // check server cache
-        if (null !== self::$_cache) {
+        if (null !== self::$_cache && ! self::$_options['debug']) {
             // using cache
             // the goal is to use only the cache methods to sniff the length and 
             // output the content, as they do not require ever loading the file into
@@ -276,7 +277,15 @@ class Minify {
                 $cacheContentLength = self::$_cache->getSize($fullCacheId);    
             } else {
                 // generate & cache content
-                $content = self::_combineMinify();
+                try {
+                    $content = self::_combineMinify();
+                } catch (Exception $e) {
+                    self::$_controller->log($e->getMessage());
+                    if (! self::$_options['quiet']) {
+                        self::_errorExit(self::$_options['errorHeader'], self::URL_DEBUG);
+                    }
+                    throw $e;
+                }
                 self::$_cache->store($cacheId, $content);
                 if (function_exists('gzencode')) {
                     self::$_cache->store($cacheId . '.gz', gzencode($content, self::$_options['encodeLevel']));
@@ -285,7 +294,15 @@ class Minify {
         } else {
             // no cache
             $cacheIsReady = false;
-            $content = self::_combineMinify();
+            try {
+                $content = self::_combineMinify();
+            } catch (Exception $e) {
+                self::$_controller->log($e->getMessage());
+                if (! self::$_options['quiet']) {
+                    self::_errorExit(self::$_options['errorHeader'], self::URL_DEBUG);
+                }
+                throw $e;
+            }
         }
         if (! $cacheIsReady && self::$_options['encodeMethod']) {
             // still need to encode
@@ -293,16 +310,22 @@ class Minify {
         }
         
         // add headers
+        $hasMbOverload = (function_exists('mb_strlen')
+                          && (ini_get('mbstring.func_overload') !== '')
+                          && ((int)ini_get('mbstring.func_overload') & 2));
         $headers['Content-Length'] = $cacheIsReady
             ? $cacheContentLength
-            : strlen($content);
+            : ($hasMbOverload
+                ? mb_strlen($content, '8bit')
+                : strlen($content)
+            );
         $headers['Content-Type'] = self::$_options['contentTypeCharset']
             ? self::$_options['contentType'] . '; charset=' . self::$_options['contentTypeCharset']
             : self::$_options['contentType'];
         if (self::$_options['encodeMethod'] !== '') {
             $headers['Content-Encoding'] = $contentEncoding;
         }
-        if (self::$_options['encodeOutput']) {
+        if (self::$_options['encodeOutput'] && $sendVary) {
             $headers['Vary'] = 'Accept-Encoding';
         }
 
@@ -369,9 +392,9 @@ class Minify {
             && 0 === strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/')
         ) {
             $_SERVER['DOCUMENT_ROOT'] = rtrim(substr(
-                $_SERVER['PATH_TRANSLATED']
+                $_SERVER['SCRIPT_FILENAME']
                 ,0
-                ,strlen($_SERVER['PATH_TRANSLATED']) - strlen($_SERVER['SCRIPT_NAME'])
+                ,strlen($_SERVER['SCRIPT_FILENAME']) - strlen($_SERVER['SCRIPT_NAME'])
             ), '\\');
             if ($unsetPathInfo) {
                 unset($_SERVER['PATH_INFO']);
@@ -396,6 +419,18 @@ class Minify {
      */
     protected static $_options = null;
     
+    protected static function _errorExit($header, $url)
+    {
+        $url = htmlspecialchars($url, ENT_QUOTES);
+        list(,$h1) = explode(' ', $header, 2);
+        $h1 = htmlspecialchars($h1);
+        header($header);
+        header('Content-Type: text/html; charset=utf-8');
+        echo "<h1>$h1</h1>";
+        echo "<p>Please see <a href='$url'>$url</a>.</p>";
+        exit();
+    }
+
     /**
      * Set up sources to use Minify_Lines
      *
@@ -440,37 +475,26 @@ class Minify {
             ? self::$_options['minifiers'][$type]
             : false;
        
-        if (Minify_Source::haveNoMinifyPrefs(self::$_controller->sources)) {
-            // all source have same options/minifier, better performance
-            // to combine, then minify once
-            foreach (self::$_controller->sources as $source) {
+        // minify each source with its own options and minifier, then combine.
+        // Here we used to combine all first but this was probably
+        // bad for PCRE performance, esp. in CSS.
+        foreach (self::$_controller->sources as $source) {
+            // allow the source to override our minifier and options
+            $minifier = (null !== $source->minifier)
+                ? $source->minifier
+                : $defaultMinifier;
+            $options = (null !== $source->minifyOptions)
+                ? array_merge($defaultOptions, $source->minifyOptions)
+                : $defaultOptions;
+            if ($minifier) {
+                self::$_controller->loadMinifier($minifier);
+                // get source content and minify it
+                $pieces[] = call_user_func($minifier, $source->getContent(), $options);
+            } else {
                 $pieces[] = $source->getContent();
             }
-            $content = implode($implodeSeparator, $pieces);
-            if ($defaultMinifier) {
-                self::$_controller->loadMinifier($defaultMinifier);
-                $content = call_user_func($defaultMinifier, $content, $defaultOptions);    
-            }
-        } else {
-            // minify each source with its own options and minifier, then combine
-            foreach (self::$_controller->sources as $source) {
-                // allow the source to override our minifier and options
-                $minifier = (null !== $source->minifier)
-                    ? $source->minifier
-                    : $defaultMinifier;
-                $options = (null !== $source->minifyOptions)
-                    ? array_merge($defaultOptions, $source->minifyOptions)
-                    : $defaultOptions;
-                if ($minifier) {
-                    self::$_controller->loadMinifier($minifier);
-                    // get source content and minify it
-                    $pieces[] = call_user_func($minifier, $source->getContent(), $options);     
-                } else {
-                    $pieces[] = $source->getContent();     
-                }
-            }
-            $content = implode($implodeSeparator, $pieces);
         }
+        $content = implode($implodeSeparator, $pieces);
         
         if ($type === self::TYPE_CSS && false !== strpos($content, '@import')) {
             $content = self::_handleCssImports($content);

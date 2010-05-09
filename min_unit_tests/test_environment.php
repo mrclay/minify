@@ -79,7 +79,8 @@ function test_environment()
             break;
         }
     }
-    if ($passed && stream_get_contents($fp) !== 'World!') {
+    $streamContents = stream_get_contents($fp);
+    if ($passed && $streamContents !== 'World!') {
         $passed = false;
     }
     assertTrue(

@@ -30,6 +30,10 @@ if ($min_documentRoot) {
 }
 
 $min_serveOptions['minifierOptions']['text/css']['symlinks'] = $min_symlinks;
+// auto-add targets to allowDirs
+foreach ($min_symlinks as $uri => $target) {
+    $min_serveOptions['minApp']['allowDirs'][] = $target;
+}
 
 if ($min_allowDebugFlag && isset($_GET['debug'])) {
     $min_serveOptions['debug'] = true;

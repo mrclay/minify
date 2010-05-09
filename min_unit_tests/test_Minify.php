@@ -53,7 +53,7 @@ function test_Minify()
         ,'Minify : cache, and minifier classes aren\'t loaded for 304s'
     );
 
-    // Test minifying JS and serving with Expires header
+    // Test JS and Expires
 
     $content = preg_replace('/\\r\\n?/', "\n", file_get_contents($minifyTestPath . '/minified.js'));
     $lastModified = max(
@@ -96,7 +96,7 @@ function test_Minify()
     // test for Issue 73
     Minify::setCache(null);
     
-    $expected = ";function h(){}";
+    $expected = "\n;function h(){}";
     $output = Minify::serve('Files', array(
         'files' => array(
             $minifyTestPath . '/issue73_1.js'

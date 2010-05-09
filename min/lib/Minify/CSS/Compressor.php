@@ -108,7 +108,7 @@ class Minify_CSS_Compressor {
                 \\s*
                 :
                 \\s*
-                (\\b|[#\'"])        # 3 = first character of a value
+                (\\b|[#\'"-])        # 3 = first character of a value
             /x', '$1$2:$3', $css);
         
         // remove ws in selectors

@@ -1,5 +1,6 @@
 (function(){var
-reMailto=/^mailto:my_name_is_(\S+)_and_the_domain_is_(\S+)$/,reRemoveTitleIf=/^my name is/,oo=window.onload,fixHrefs=function(){var i=0,l,m;while(l=document.links[i++]){if(m=l.href.match(reMailto)){l.href='mailto:'+m[1]+'@'+m[2];if(reRemoveTitleIf.test(l.title)){l.title='';}}}};window.onload=function(){oo&&oo();fixHrefs();};})();;var MrClay=window.MrClay||{};MrClay.QueryString=function(){var parse=function(str){var assignments=str.split('&'),obj={},propValue;for(var i=0,l=assignments.length;i<l;++i){propValue=assignments[i].split('=');if(propValue.length>2||-1!=propValue[0].indexOf('+')||propValue[0]==''){continue;}
+reMailto=/^mailto:my_name_is_(\S+)_and_the_domain_is_(\S+)$/,reRemoveTitleIf=/^my name is/,oo=window.onload,fixHrefs=function(){var i=0,l,m;while(l=document.links[i++]){if(m=l.href.match(reMailto)){l.href='mailto:'+m[1]+'@'+m[2];if(reRemoveTitleIf.test(l.title)){l.title='';}}}};window.onload=function(){oo&&oo();fixHrefs();};})();
+;var MrClay=window.MrClay||{};MrClay.QueryString=function(){var parse=function(str){var assignments=str.split('&'),obj={},propValue;for(var i=0,l=assignments.length;i<l;++i){propValue=assignments[i].split('=');if(propValue.length>2||-1!=propValue[0].indexOf('+')||propValue[0]==''){continue;}
 if(propValue.length==1){propValue[1]=propValue[0];}
 obj[unescape(propValue[0])]=unescape(propValue[1].replace(/\+/g,' '));}
 return obj;};function construct_(spec){spec=spec||window;if(typeof spec=='object'){this.window=spec;spec=spec.location.search.substr(1);}else{this.window=window;}

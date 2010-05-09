@@ -59,7 +59,7 @@ class HTTP_Encoder {
      * 
      * @var bool
      */
-    public static $encodeToIe6 = false;
+    public static $encodeToIe6 = true;
     
     
     /**
@@ -195,7 +195,7 @@ class HTTP_Encoder {
         // @link http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
         
         if (! isset($_SERVER['HTTP_ACCEPT_ENCODING'])
-            || self::_isBuggyIe())
+            || self::isBuggyIe())
         {
             return array('', '');
         }
@@ -253,7 +253,9 @@ class HTTP_Encoder {
      */
     public function encode($compressionLevel = null)
     {
-        $this->_headers['Vary'] = 'Accept-Encoding';
+        if (! self::isBuggyIe()) {
+            $this->_headers['Vary'] = 'Accept-Encoding';
+        }
         if (null === $compressionLevel) {
             $compressionLevel = self::$compressionLevel;
         }
@@ -301,15 +303,13 @@ class HTTP_Encoder {
         $he->sendAll();
         return $ret;
     }
-    
-    protected $_content = '';
-    protected $_headers = array();
-    protected $_encodeMethod = array('', '');
 
     /**
-     * Is the browser an IE version earlier than 6 SP2?  
+     * Is the browser an IE version earlier than 6 SP2?
+     *
+     * @return bool
      */
-    protected static function _isBuggyIe()
+    public static function isBuggyIe()
     {
         $ua = $_SERVER['HTTP_USER_AGENT'];
         // quick escape for non-IEs
@@ -318,9 +318,13 @@ class HTTP_Encoder {
             return false;
         }
         // no regex = faaast
-        $version = (float)substr($ua, 30); 
+        $version = (float)substr($ua, 30);
         return self::$encodeToIe6
             ? ($version < 6 || ($version == 6 && false === strpos($ua, 'SV1')))
             : ($version < 7);
     }
+    
+    protected $_content = '';
+    protected $_headers = array();
+    protected $_encodeMethod = array('', '');
 }

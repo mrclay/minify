@@ -197,6 +197,7 @@ var MUB = {
      * Runs on DOMready
      */
     ,init : function () {
+        $('#jsDidntLoad').hide();
         $('#app').show();
         $('#sources').html('');
         $('#add button').click(MUB.addButtonClick);
@@ -239,4 +240,4 @@ var MUB = {
         MUB.checkRewrite();
     }
 };
-window.onload = MUB.init;
+$(MUB.init);

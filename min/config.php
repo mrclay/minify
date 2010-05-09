@@ -1,6 +1,8 @@
 <?php
 /**
- * Configuration for default Minify application
+ * Configuration for "min", the default application built with the Minify
+ * library
+ * 
  * @package Minify
  */
 
@@ -78,9 +80,9 @@ $min_serveOptions['bubbleCssImports'] = false;
 
 
 /**
- * Maximum age of browser cache in seconds. After this period, the browser
- * will send another conditional GET. Use a longer period for lower traffic
- * but you may want to shorten this before making changes if it's crucial
+ * Cache-Control: max-age value sent to browser (in seconds). After this period,
+ * the browser will send another conditional GET. Use a longer period for lower
+ * traffic but you may want to shorten this before making changes if it's crucial
  * those changes are seen immediately.
  *
  * Note: Despite this setting, if you include a number at the end of the
@@ -105,10 +107,15 @@ $min_serveOptions['maxAge'] = 1800;
  */
 $min_serveOptions['minApp']['groupsOnly'] = false;
 
+
 /**
- * Maximum # of files that can be specified in the "f" GET parameter
+ * By default, Minify will not minify files with names containing .min or -min
+ * before the extension. E.g. myFile.min.js will not be processed by JSMin
+ * 
+ * To minify all files, set this option to null. You could also specify your
+ * own pattern that is matched against the filename.
  */
-$min_serveOptions['minApp']['maxFiles'] = 10;
+//$min_serveOptions['minApp']['noMinPattern'] = '@[-\\.]min\\.(?:js|css)$@i';
 
 
 /**

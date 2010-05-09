@@ -55,6 +55,7 @@ abstract class Minify_Controller_Base {
             // if you override this, the response code MUST be directly after 
             // the first space.
             ,'badRequestHeader' => 'HTTP/1.0 400 Bad Request'
+            ,'errorHeader'      => 'HTTP/1.0 500 Internal Server Error'
             
             // callback function to see/modify content of all sources
             ,'postprocessor' => null
@@ -195,7 +196,7 @@ abstract class Minify_Controller_Base {
      * @param string $msg
      * @return null
      */
-    protected function log($msg) {
+    public function log($msg) {
         require_once 'Minify/Logger.php';
         Minify_Logger::log($msg);
     }

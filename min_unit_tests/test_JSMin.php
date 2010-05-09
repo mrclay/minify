@@ -40,15 +40,15 @@ function test_JSMin()
         test_JSMin_exception('"Hello'
                             ,'Unterminated String'
                             ,'JSMin_UnterminatedStringException'
-                            ,"Unterminated String: '\"Hello'");
+                            ,"Unterminated String: \"Hello");
         test_JSMin_exception("return /regexp\n}"
                             ,'Unterminated RegExp'
                             ,'JSMin_UnterminatedRegExpException'
-                            ,"Unterminated RegExp: '/regexp\n'");
+                            ,"Unterminated RegExp: /regexp\n");
         test_JSMin_exception("/* Comment "
                             ,'Unterminated Comment'
                             ,'JSMin_UnterminatedCommentException'
-                            ,"Unterminated Comment: '/* Comment '");    
+                            ,"Unterminated Comment: /* Comment ");    
     }
 }
 

@@ -17,11 +17,10 @@ if (! $min_enableBuilder) {
 
 ob_start();
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<head>
-    <meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
-    <title>Minify URI Builder</title>
-    <style type="text/css">
+<!DOCTYPE HTML>
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+<title>Minify URI Builder</title>
+<style type="text/css">
 body {margin:1em 60px;}
 h1, h2, h3 {margin-left:-25px; position:relative;}
 h1 {margin-top:0;}
@@ -37,8 +36,13 @@ h1 {margin-top:0;}
 b {color:#c00}
 .topNote {background: #ff9; display:inline-block; padding:.5em .6em; margin:0 0 1em;}
 .topWarning {background:#c00; color:#fff; padding:.5em .6em; margin:0 0 1em;}
-    </style>
-</head>
+.topWarning a {color:#fff;}
+</style>
+<body>
+<p class=topWarning id=jsDidntLoad><strong>Uh Oh.</strong> Minify was unable to
+    serve the Javascript for this app. <a href="http://code.google.com/p/minify/wiki/Debugging">Enable
+    FirePHP debugging</a> and request the <a id=builderScriptSrc href=#>Minify URL</a> directly.
+</p>
 
 <?php if (! isset($min_cachePath)): ?>
 <p class=topNote><strong>Note:</strong> Please set <code>$min_cachePath</code> 
@@ -149,11 +153,15 @@ $(function () {
 });
 </script>
 <script type="text/javascript">
-    // workaround required to test when /min isn't child of web root
-    var src = location.pathname.replace(/\/[^\/]*$/, '/_index.js').substr(1);
-    document.write('<\script type="text/javascript" src="../?f=' + src + '"><\/script>');
+// workaround required to test when /min isn't child of web root
+var src = location.pathname.replace(/\/[^\/]*$/, '/_index.js').substr(1);
+src = "../?f=" + src;
+document.write('<\script type="text/javascript" src="' + src + '"><\/script>');
+$(function () {
+    $('#builderScriptSrc')[0].href = src;
+});
 </script>
-
+</body>
 <?php
 
 $serveOpts = array(

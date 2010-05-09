@@ -171,7 +171,7 @@ class JSMin {
                         }
                         if (ord($this->a) <= self::ORD_LF) {
                             throw new JSMin_UnterminatedStringException(
-                                'Unterminated String: ' . var_export($str, true));
+                                "Unterminated String: {$str}");
                         }
                         $str .= $this->a;
                         if ($this->a === '\\') {
@@ -198,7 +198,7 @@ class JSMin {
                             $pattern      .= $this->a;
                         } elseif (ord($this->a) <= self::ORD_LF) {
                             throw new JSMin_UnterminatedRegExpException(
-                                'Unterminated RegExp: '. var_export($pattern, true));
+                                "Unterminated RegExp: {$pattern}");
                         }
                         $this->output .= $this->a;
                     }
@@ -310,7 +310,7 @@ class JSMin {
                     return ' ';
                 }
             } elseif ($get === null) {
-                throw new JSMin_UnterminatedCommentException('Unterminated Comment: ' . var_export('/*' . $comment, true));
+                throw new JSMin_UnterminatedCommentException("Unterminated Comment: /*{$comment}");
             }
             $comment .= $get;
         }

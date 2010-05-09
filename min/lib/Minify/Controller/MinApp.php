@@ -28,7 +28,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 'allowDirs' => '//'
                 ,'groupsOnly' => false
                 ,'groups' => array()
-                ,'maxFiles' => 10                
+                ,'noMinPattern' => '@[-\\.]min\\.(?:js|css)$@i' // matched against basename
             )
             ,(isset($options['minApp']) ? $options['minApp'] : array())
         );
@@ -58,9 +58,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 }
                 $file = realpath($file);
                 if (is_file($file)) {
-                    $sources[] = new Minify_Source(array(
-                        'filepath' => $file
-                    ));    
+                    $sources[] = $this->_getFileSource($file, $cOptions);
                 } else {
                     $this->log("The path \"{$file}\" could not be found (or was not a file)");
                     return $options;
@@ -84,8 +82,8 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 return $options;
             }
             $files = explode(',', $_GET['f']);
-            if (count($files) > $cOptions['maxFiles'] || $files != array_unique($files)) {
-                $this->log("Too many or duplicate files specified");
+            if ($files != array_unique($files)) {
+                $this->log("Duplicate files specified");
                 return $options;
             }
             if (isset($_GET['b'])) {
@@ -116,9 +114,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                     $this->log("Path \"{$path}\" failed Minify_Controller_Base::_fileIsSafe()");
                     return $options;
                 } else {
-                    $sources[] = new Minify_Source(array(
-                        'filepath' => $file
-                    ));
+                    $sources[] = $this->_getFileSource($file, $cOptions);
                 }
             }
         }
@@ -128,5 +124,15 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             $this->log("No sources to serve");
         }
         return $options;
+    }
+
+    protected function _getFileSource($file, $cOptions)
+    {
+        $spec['filepath'] = $file;
+        if ($cOptions['noMinPattern']
+            && preg_match($cOptions['noMinPattern'], basename($file))) {
+            $spec['minifier'] = '';
+        }
+        return new Minify_Source($spec);
     }
 }
