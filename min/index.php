@@ -35,8 +35,15 @@ foreach ($min_symlinks as $uri => $target) {
     $min_serveOptions['minApp']['allowDirs'][] = $target;
 }
 
-if ($min_allowDebugFlag && isset($_GET['debug'])) {
-    $min_serveOptions['debug'] = true;
+if ($min_allowDebugFlag) {
+    if (! empty($_COOKIE['minDebug'])
+        && false !== strpos($_SERVER['REQUEST_URI'], $_COOKIE['minDebug'])) {
+        $min_serveOptions['debug'] = true;
+    }
+    // allow GET to override
+    if (isset($_GET['debug'])) {
+        $min_serveOptions['debug'] = true;
+    }
 }
 
 if ($min_errorLogger) {

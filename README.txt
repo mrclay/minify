@@ -16,11 +16,13 @@ See UPGRADING.txt for instructions.
 INSTALLATION AND USAGE:
 
 1. Place the /min/ directory as a child of your DOCUMENT_ROOT 
-directory: i.e. you will have: /home/user/www/public_html/min
+directory: i.e. you will have: /home/user/www/min
 
 2. Open http://yourdomain/min/ in a web browser. This will forward
 you to the Minify URI Builder application, which will help you
 quickly start using Minify to serve content on your site.
+
+See the User Guide: http://code.google.com/p/minify/wiki/UserGuide
 
 
 UNIT TESTING:
@@ -34,12 +36,6 @@ directory: i.e. you will have: /home/user/www/public_html/min_unit_tests
 components with more verbose output.)
 
 3. Remove /min_unit_tests/ from your DOCUMENT_ROOT when you are done.
-
-
-EXTRAS:
-
-The min_extras folder contains files for benchmarking using Apache ab on Windows
-and a couple single-use tools. DO NOT place this on your production server.
 
 
 FILE ENCODINGS

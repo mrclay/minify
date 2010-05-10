@@ -66,9 +66,9 @@ to the /js and /themes/default directories, use:
 $min_serveOptions['minApp']['allowDirs'] = array('//js', '//themes/default');
 
 
-GROUPS: FASTER PERFORMANCE AND BETTER URLS
+GROUPS: NICER URLS
 
-For the best performance, edit groupsConfig.php to pre-specify groups of files 
+For nicer URLs, edit groupsConfig.php to pre-specify groups of files
 to be combined under preset keys. E.g., here's an example configuration in 
 groupsConfig.php:
 

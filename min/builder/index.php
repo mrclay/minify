@@ -8,6 +8,20 @@ if (phpversion() < 5) {
 $encodeOutput = (function_exists('gzdeflate')
                  && !ini_get('zlib.output_compression'));
 
+// recommend $min_symlinks setting for Apache UserDir
+$symlinkOption = '';
+if (0 === strpos($_SERVER["SERVER_SOFTWARE"], 'Apache/')
+    && preg_match('@^/\\~(\\w+)/@', $_SERVER['REQUEST_URI'], $m)
+) {
+    $userDir = DIRECTORY_SEPARATOR . $m[1] . DIRECTORY_SEPARATOR;
+    if (false !== strpos(__FILE__, $userDir)) {
+        $sm = array();
+        $sm["//~{$m[1]}"] = dirname(dirname(__FILE__));
+        $array = str_replace('array (', 'array(', var_export($sm, 1));
+        $symlinkOption = "\$min_symlinks = $array;";
+    }
+}
+
 require dirname(__FILE__) . '/../config.php';
 
 if (! $min_enableBuilder) {
@@ -18,8 +32,8 @@ if (! $min_enableBuilder) {
 ob_start();
 ?>
 <!DOCTYPE HTML>
-<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
 <title>Minify URI Builder</title>
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
 <style type="text/css">
 body {margin:1em 60px;}
 h1, h2, h3 {margin-left:-25px; position:relative;}
@@ -39,14 +53,24 @@ b {color:#c00}
 .topWarning a {color:#fff;}
 </style>
 <body>
+<?php if ($symlinkOption): ?>
+<div class=topNote><strong>Note:</strong> It looks like you're running Minify in a user
+ directory. You may need the following option in /min/config.php to have URIs
+ correctly rewritten in CSS output:
+ <br><textarea id=symlinkOpt rows=3 cols=80 readonly><?php echo htmlspecialchars($symlinkOption); ?></textarea>
+</div>
+<?php endif; ?>
+
 <p class=topWarning id=jsDidntLoad><strong>Uh Oh.</strong> Minify was unable to
-    serve the Javascript for this app. <a href="http://code.google.com/p/minify/wiki/Debugging">Enable
-    FirePHP debugging</a> and request the <a id=builderScriptSrc href=#>Minify URL</a> directly.
+    serve the Javascript for this app. To troubleshoot this,
+    <a href="http://code.google.com/p/minify/wiki/Debugging">enable FirePHP debugging</a>
+    and request the <a id=builderScriptSrc href=#>Minify URL</a> directly. Hopefully the
+    FirePHP console will report the cause of the error.
 </p>
 
 <?php if (! isset($min_cachePath)): ?>
-<p class=topNote><strong>Note:</strong> Please set <code>$min_cachePath</code> 
-in /min/config.php to improve performance.</p>
+<p class=topNote><strong>Note:</strong> You can set <code>$min_cachePath</code>
+in /min/config.php to slightly improve performance.</p>
 <?php endIf; ?>
 
 <p id=minRewriteFailed class="hide"><strong>Note:</strong> Your webserver does not seem to
@@ -111,14 +135,21 @@ in your list, and move any others to the top of the first file in your list
 <p>If you desire, you can use Minify URIs in imports and they will not be touched
 by Minify. E.g. <code>@import "<span class=minRoot>/min/?</span>g=css2";</code></p>
 
+<h3>Debug Mode</h3>
+<p>When /min/config.php has <code>$min_allowDebugFlag = <strong>true</strong>;</code>
+ you can get debug output by appending <code>&amp;debug</code> to a Minify URL, or
+ by sending the cookie <code>minDebug=&lt;match&gt;</code>, where <code>minDebug=&lt;match&gt;</code>
+ should match the Minify URIs you'd like to debug. This bookmarklet will allow you to
+ set this cookie.</p>
+<p><a id=bm2>Minify Debug</a> <small>(right-click, add to bookmarks)</small></p>
+
 </div><!-- #app -->
 
 <hr>
-<p>Need help? Search or post to the <a class=ext 
-href="http://groups.google.com/group/minify">Minify discussion list</a>.</p>
-<p><small>This app is minified :) <a class=ext 
-href="http://code.google.com/p/minify/source/browse/trunk/min/builder/index.php">view 
-source</a></small></p>
+<p>Need help? Check the <a href="http://code.google.com/p/minify/w/list?can=3">wiki</a>,
+ or post to the <a class=ext href="http://groups.google.com/group/minify">discussion
+ list</a>.</p>
+<p><small>This app is minified :)</small></p>
 
 <script type="text/javascript" 
 src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
@@ -163,9 +194,22 @@ $(function () {
 </script>
 </body>
 <?php
+$content = ob_get_clean();
 
-$serveOpts = array(
-    'content' => ob_get_contents()
+// setup Minify
+set_include_path(dirname(__FILE__) . '/../lib' . PATH_SEPARATOR . get_include_path());
+require 'Minify.php';
+if (0 === stripos(PHP_OS, 'win')) {
+    Minify::setDocRoot(); // we may be on IIS
+}
+Minify::setCache(
+    isset($min_cachePath) ? $min_cachePath : ''
+    ,$min_cacheFileLocking
+);
+Minify::$uploaderHoursBehind = $min_uploaderHoursBehind;
+
+Minify::serve('Page', array(
+    'content' => $content
     ,'id' => __FILE__
     ,'lastModifiedTime' => max(
         // regenerate cache if either of these change
@@ -174,17 +218,4 @@ $serveOpts = array(
     )
     ,'minifyAll' => true
     ,'encodeOutput' => $encodeOutput
-);
-ob_end_clean();
-
-set_include_path(dirname(__FILE__) . '/../lib' . PATH_SEPARATOR . get_include_path());
-
-require 'Minify.php';
-
-if (0 === stripos(PHP_OS, 'win')) {
-    Minify::setDocRoot(); // we may be on IIS
-}
-Minify::setCache(isset($min_cachePath) ? $min_cachePath : null);
-Minify::$uploaderHoursBehind = $min_uploaderHoursBehind;
-
-Minify::serve('Page', $serveOpts);
+));

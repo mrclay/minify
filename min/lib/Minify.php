@@ -227,6 +227,8 @@ class Minify {
         );
         if (self::$_options['maxAge'] > 0) {
             $cgOptions['maxAge'] = self::$_options['maxAge'];
+        } elseif (self::$_options['debug']) {
+            $cgOptions['invalidate'] = true;
         }
         $cg = new HTTP_ConditionalGet($cgOptions);
         if ($cg->cacheIsValid) {
@@ -267,7 +269,7 @@ class Minify {
             // the goal is to use only the cache methods to sniff the length and 
             // output the content, as they do not require ever loading the file into
             // memory.
-            $cacheId = 'minify_' . self::_getCacheId();
+            $cacheId = self::_getCacheId();
             $fullCacheId = (self::$_options['encodeMethod'])
                 ? $cacheId . '.gz'
                 : $cacheId;
@@ -489,7 +491,12 @@ class Minify {
             if ($minifier) {
                 self::$_controller->loadMinifier($minifier);
                 // get source content and minify it
-                $pieces[] = call_user_func($minifier, $source->getContent(), $options);
+                try {
+                    $pieces[] = call_user_func($minifier, $source->getContent(), $options);
+                } catch (Exception $e) {
+                    throw new Exception("Exception in " . $source->getId() .
+                        ": " . $e->getMessage());
+                }
             } else {
                 $pieces[] = $source->getContent();
             }
@@ -515,17 +522,23 @@ class Minify {
      * 
      * Any settings that could affect output are taken into consideration  
      *
+     * @param string $prefix
+     *
      * @return string
      */
-    protected static function _getCacheId()
+    protected static function _getCacheId($prefix = 'minify')
     {
-        return md5(serialize(array(
+        $name = preg_replace('/[^a-zA-Z0-9\\.=_,]/', '', self::$_controller->selectionId);
+        $name = preg_replace('/\\.+/', '.', $name);
+        $name = substr($name, 0, 250 - 34 - strlen($prefix));
+        $md5 = md5(serialize(array(
             Minify_Source::getDigest(self::$_controller->sources)
             ,self::$_options['minifiers'] 
             ,self::$_options['minifierOptions']
             ,self::$_options['postprocessor']
             ,self::$_options['bubbleCssImports']
         )));
+        return "{$prefix}_{$name}_{$md5}";
     }
     
     /**

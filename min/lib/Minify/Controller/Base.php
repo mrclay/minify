@@ -145,6 +145,15 @@ abstract class Minify_Controller_Base {
     public $sources = array();
     
     /**
+     * The setupSources() method may choose to set this, making it easier to 
+     * recognize a particular set of sources/settings in the cache folder. It
+     * will be filtered and truncated to make the final cache id <= 250 bytes.
+     * 
+     * @var string short name to place inside cache id
+     */
+    public $selectionId = '';
+
+    /**
      * Mix in default controller options with user-given options
      * 
      * @param array $options user options

@@ -1,5 +1,7 @@
 <?php
 
+//phpinfo(); exit();
+
 if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
     // called directly
     if (isset($_GET['getOutputCompression'])) {
@@ -9,6 +11,10 @@ if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
     if (isset($_GET['hello'])) {
         // try to disable (may not work)
         ini_set('zlib.output_compression', '0');
+        $type = ($_GET['hello'] == 'js')
+            ? 'application/x-javascript'
+            : "text/{$_GET['hello']}";
+        header("Content-Type: {$type}");
         echo 'World!';
         exit();
     }
@@ -60,42 +66,73 @@ function test_environment()
         echo "!WARN: environment : zlib.output_compression is enabled in php.ini"
            . " or .htaccess.\n";
     }
-    
-    $fp = fopen($thisUrl . '?hello=1', 'r', false, stream_context_create(array(
+
+    $testJs = _test_environment_getHello($thisUrl . '?hello=js');
+    $passed = assertTrue(
+        $testJs['length'] == 6
+        ,'environment : PHP/server should not auto-encode application/x-javascript output'
+    );
+
+    $testCss = _test_environment_getHello($thisUrl . '?hello=css');
+    $passed = $passed && assertTrue(
+        $testCss['length'] == 6
+        ,'environment : PHP/server should not auto-encode text/css output'
+    );
+
+    $testHtml = _test_environment_getHello($thisUrl . '?hello=html');
+    $passed = $passed && assertTrue(
+        $testHtml['length'] == 6
+        ,'environment : PHP/server should not auto-encode text/html output'
+    );
+
+    if (! $passed) {
+        $testFake = _test_environment_getHello($thisUrl . '?hello=faketype');
+        if ($testFake['length'] == 6) {
+            echo "!NOTE: environment : Server does not auto-encode arbitrary types. This\n"
+               . "       may indicate that the auto-encoding is caused by Apache's \n"
+               . "       AddOutputFilterByType.";
+        }
+    }
+}
+
+function _test_environment_getHello($url)
+{
+    $fp = fopen($url, 'r', false, stream_context_create(array(
         'http' => array(
             'method' => "GET",
-            'header' => "Accept-Encoding: deflate, gzip\r\n"
+            'timeout' => '10',
+            'header' => "Accept-Encoding: deflate, gzip\r\n",
         )
     )));
-    
     $meta = stream_get_meta_data($fp);
-    
-    $passed = true;
+    $encoding = '';
+    $length = 0;
     foreach ($meta['wrapper_data'] as $i => $header) {
-        if ((preg_match('@^Content-Length: (\\d+)$@i', $header, $m) && $m[1] !== '6')
-            || preg_match('@^Content-Encoding:@i', $header, $m)
-        ) {
-            $passed = false;
-            break;
+        if (preg_match('@^Content-Length:\\s*(\\d+)$@i', $header, $m)) {
+            $length = $m[1];
+        } elseif (preg_match('@^Content-Encoding:\\s*(\\S+)$@i', $header, $m)) {
+            if ($m[1] !== 'identity') {
+                $encoding = $m[1];
+            }
         }
     }
     $streamContents = stream_get_contents($fp);
-    if ($passed && $streamContents !== 'World!') {
-        $passed = false;
-    }
-    assertTrue(
-        $passed
-        ,'environment : PHP/server does not auto-HTTP-encode content'
-    );
     fclose($fp);
-    
+
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
-        if (! $passed) {
+        if ($length != 6) {
             echo "\nReturned content should be 6 bytes and not HTTP encoded.\n"
-               . "Headers returned by: {$thisUrl}?hello=1\n\n";
+               . "Headers returned by: {$url}\n\n";
             var_export($meta['wrapper_data']);
+            echo "\n\n";
         }
     }
+
+    return array(
+        'length' => $length
+        ,'encoding' => $encoding
+        ,'bytes' => $streamContents
+    );
 }
 
 test_environment();

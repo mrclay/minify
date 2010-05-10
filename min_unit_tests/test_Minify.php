@@ -29,7 +29,7 @@ function test_Minify()
             'Vary' => 'Accept-Encoding',
             'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
             'ETag' => "\"pub{$lastModified}\"",
-            'Cache-Control' => 'max-age=1800, public',
+            'Cache-Control' => 'max-age=1800',
             '_responseCode' => 'HTTP/1.0 304 Not Modified',
         )
     );
@@ -49,7 +49,7 @@ function test_Minify()
 
     assertTrue(
         ! class_exists('Minify_CSS', false)
-        && ! class_exists('Minify_Cache', false)
+        && ! class_exists('Minify_Cache_File', false)
         ,'Minify : cache, and minifier classes aren\'t loaded for 304s'
     );
 
@@ -70,11 +70,13 @@ function test_Minify()
             'Vary' => 'Accept-Encoding',
             'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
             'ETag' => "\"pub{$lastModified}\"",
-            'Cache-Control' => 'max-age=86400, public',
+            'Cache-Control' => 'max-age=86400',
             'Content-Length' => strlen($content),
             'Content-Type' => 'application/x-javascript; charset=utf-8',
         )
     );
+    unset($_SERVER['HTTP_IF_NONE_MATCH']);
+    unset($_SERVER['HTTP_IF_MODIFIED_SINCE']);
     $output = Minify::serve('Files', array(
         'files' => array(
             $minifyTestPath . '/email.js'
@@ -185,7 +187,7 @@ function test_Minify()
             'Vary' => 'Accept-Encoding',
             'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
             'ETag' => "\"pub{$lastModified}\"",
-            'Cache-Control' => 'max-age=0, public',
+            'Cache-Control' => 'max-age=0',
             'Content-Length' => strlen($expectedContent),
             'Content-Type' => 'text/css; charset=utf-8',
         )

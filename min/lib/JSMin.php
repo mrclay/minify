@@ -171,7 +171,8 @@ class JSMin {
                         }
                         if (ord($this->a) <= self::ORD_LF) {
                             throw new JSMin_UnterminatedStringException(
-                                "Unterminated String: {$str}");
+                                "JSMin: Unterminated String at byte "
+                                . $this->inputIndex . ": {$str}");
                         }
                         $str .= $this->a;
                         if ($this->a === '\\') {
@@ -198,7 +199,8 @@ class JSMin {
                             $pattern      .= $this->a;
                         } elseif (ord($this->a) <= self::ORD_LF) {
                             throw new JSMin_UnterminatedRegExpException(
-                                "Unterminated RegExp: {$pattern}");
+                                "JSMin: Unterminated RegExp at byte "
+                                . $this->inputIndex .": {$pattern}");
                         }
                         $this->output .= $this->a;
                     }
@@ -310,7 +312,9 @@ class JSMin {
                     return ' ';
                 }
             } elseif ($get === null) {
-                throw new JSMin_UnterminatedCommentException("Unterminated Comment: /*{$comment}");
+                throw new JSMin_UnterminatedCommentException(
+                    "JSMin: Unterminated comment at byte "
+                    . $this->inputIndex . ": /*{$comment}");
             }
             $comment .= $get;
         }

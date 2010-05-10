@@ -8,26 +8,31 @@
 
 
 /**
- * In 'debug' mode, Minify can combine files with no minification and 
- * add comments to indicate line #s of the original files. 
- * 
- * To allow debugging, set this option to true and add "&debug=1" to 
- * a URI. E.g. /min/?f=script1.js,script2.js&debug=1
- */
-$min_allowDebugFlag = false;
-
-
-/**
  * Set to true to log messages to FirePHP (Firefox Firebug addon).
  * Set to false for no error logging (Minify may be slightly faster).
  * @link http://www.firephp.org/
  *
- * If you want to use a custom error logger, set this to your logger 
+ * If you want to use a custom error logger, set this to your logger
  * instance. Your object should have a method log(string $message).
  *
  * @todo cache system does not have error logging yet.
  */
 $min_errorLogger = false;
+
+
+/**
+ * To allow debugging, you must set this option to true.
+ *
+ * Once true, you can send the cookie minDebug to request debug mode output. The
+ * cookie value should match the URIs you'd like to debug. E.g. to debug
+ * /min/f=file1.js send the cookie minDebug=file1.js
+ * You can manually enable debugging by appending "&debug" to a URI.
+ * E.g. /min/?f=script1.js,script2.js&debug
+ * 
+ * In 'debug' mode, Minify combines files with no minification and adds comments
+ * to indicate line #s of the original files.
+ */
+$min_allowDebugFlag = false;
 
 
 /**

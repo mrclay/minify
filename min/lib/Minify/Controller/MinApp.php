@@ -40,7 +40,8 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 $this->log("A group configuration for \"{$_GET['g']}\" was not set");
                 return $options;
             }
-            
+
+            $this->selectionId = "g=" . $_GET['g'];
             $files = $cOptions['groups'][$_GET['g']];
             // if $files is a single object, casting will break it
             if (is_object($files)) {
@@ -70,7 +71,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             // respond to. Ideally there should be only one way to reference a file.
             if (// verify at least one file, files are single comma separated, 
                 // and are all same extension
-                ! preg_match('/^[^,]+\\.(css|js)(?:,[^,]+\\.\\1)*$/', $_GET['f'])
+                ! preg_match('/^[^,]+\\.(css|js)(?:,[^,]+\\.\\1)*$/', $_GET['f'], $m)
                 // no "//"
                 || strpos($_GET['f'], '//') !== false
                 // no "\"
@@ -81,11 +82,13 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 $this->log("GET param 'f' invalid (see MinApp.php line 63)");
                 return $options;
             }
+            $ext = ".{$m[1]}";
             $files = explode(',', $_GET['f']);
             if ($files != array_unique($files)) {
                 $this->log("Duplicate files specified");
                 return $options;
             }
+
             if (isset($_GET['b'])) {
                 // check for validity
                 if (preg_match('@^[^/]+(?:/[^/]+)*$@', $_GET['b'])
@@ -104,6 +107,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             foreach ((array)$cOptions['allowDirs'] as $allowDir) {
                 $allowDirs[] = realpath(str_replace('//', $_SERVER['DOCUMENT_ROOT'] . '/', $allowDir));
             }
+            $basenames = array(); // just for cache id
             foreach ($files as $file) {
                 $path = $_SERVER['DOCUMENT_ROOT'] . $base . $file;
                 $file = realpath($path);
@@ -115,8 +119,10 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                     return $options;
                 } else {
                     $sources[] = $this->_getFileSource($file, $cOptions);
+                    $basenames[] = basename($file, $ext);
                 }
             }
+            $this->selectionId = implode(',', $basenames) . $ext;
         }
         if ($sources) {
             $this->sources = $sources;
