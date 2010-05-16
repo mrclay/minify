@@ -10,45 +10,52 @@ function test_JSMin()
     $src = file_get_contents($thisDir . '/_test_files/js/before.js');
     $minExpected = file_get_contents($thisDir . '/_test_files/js/before.min.js');
     $minOutput = JSMin::minify($src);
-    
     $passed = assertTrue($minExpected == $minOutput, 'JSMin : Overall');
-    
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
-        echo "\n---Output: " .strlen($minOutput). " bytes\n\n{$minOutput}\n\n";
-        echo "---Expected: " .strlen($minExpected). " bytes\n\n{$minExpected}\n\n";
-        echo "---Source: " .strlen($src). " bytes\n\n{$src}\n\n\n";
+        echo "\n---Output: " .countBytes($minOutput). " bytes\n\n{$minOutput}\n\n";
+        echo "---Expected: " .countBytes($minExpected). " bytes\n\n{$minExpected}\n\n";
+        echo "---Source: " .countBytes($src). " bytes\n\n{$src}\n\n\n";
     }
     
     $src = file_get_contents($thisDir . '/_test_files/js/issue144.js');
     $minExpected = file_get_contents($thisDir . '/_test_files/js/issue144.min.js');
     $minOutput = JSMin::minify($src);
-
     $passed = assertTrue($minExpected == $minOutput, 'JSMin : Don\'t minify files with + ++ (Issue 144)');
 
+    if (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2)) {
+        $src = file_get_contents($thisDir . '/_test_files/js/issue132.js');
+        $minExpected = file_get_contents($thisDir . '/_test_files/js/issue132.min.js');
+        $minOutput = JSMin::minify($src);
+        $passed = assertTrue($minExpected == $minOutput, 'JSMin : mbstring.func_overload shouldn\'t cause failure (Issue 132)');
+        if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
+            echo "\n---Output: " .countBytes($minOutput). " bytes\n\n{$minOutput}\n\n";
+            echo "---Expected: " .countBytes($minExpected). " bytes\n\n{$minExpected}\n\n";
+            echo "---Source: " .countBytes($src). " bytes\n\n{$src}\n\n\n";
+        }
+    }
 
     $src = file_get_contents($thisDir . '/_test_files/js/issue74.js');
     $minExpected = file_get_contents($thisDir . '/_test_files/js/issue74.min.js');
     $minOutput = JSMin::minify($src);
-    
     $passed = assertTrue($minExpected == $minOutput, 'JSMin : Quotes in RegExp literals (Issue 74)');
-    
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
-        echo "\n---Output: " .strlen($minOutput). " bytes\n\n{$minOutput}\n\n";
-        echo "---Expected: " .strlen($minExpected). " bytes\n\n{$minExpected}\n\n";
-        echo "---Source: " .strlen($src). " bytes\n\n{$src}\n\n\n";
-        
+        echo "\n---Output: " .countBytes($minOutput). " bytes\n\n{$minOutput}\n\n";
+        echo "---Expected: " .countBytes($minExpected). " bytes\n\n{$minExpected}\n\n";
+        echo "---Source: " .countBytes($src). " bytes\n\n{$src}\n\n\n";
+
+        // only test exceptions on this page
         test_JSMin_exception('"Hello'
                             ,'Unterminated String'
                             ,'JSMin_UnterminatedStringException'
-                            ,"Unterminated String: \"Hello");
+                            ,"JSMin: Unterminated String at byte 6: \"Hello");
         test_JSMin_exception("return /regexp\n}"
                             ,'Unterminated RegExp'
                             ,'JSMin_UnterminatedRegExpException'
-                            ,"Unterminated RegExp: /regexp\n");
+                            ,"JSMin: Unterminated RegExp at byte 15: /regexp\n");
         test_JSMin_exception("/* Comment "
                             ,'Unterminated Comment'
                             ,'JSMin_UnterminatedCommentException'
-                            ,"Unterminated Comment: /* Comment ");    
+                            ,"JSMin: Unterminated comment at byte 11: /* Comment ");
     }
 }
 

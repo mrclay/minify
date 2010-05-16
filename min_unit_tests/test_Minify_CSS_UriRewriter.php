@@ -20,9 +20,9 @@ function test_Minify_CSS_UriRewriter()
     $passed = assertTrue($expected === $actual, 'Minify_CSS_UriRewriter');
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         echo "\n---Input:\n\n{$in}\n";
-        echo "\n---Output: " .strlen($actual). " bytes\n\n{$actual}\n\n";
+        echo "\n---Output: " .countBytes($actual). " bytes\n\n{$actual}\n\n";
         if (!$passed) {
-            echo "---Expected: " .strlen($expected). " bytes\n\n{$expected}\n\n\n";
+            echo "---Expected: " .countBytes($expected). " bytes\n\n{$expected}\n\n\n";
         }
         
         // show debugging only when test run directly
@@ -42,9 +42,9 @@ function test_Minify_CSS_UriRewriter()
     $passed = assertTrue($exp === $actual, 'Minify_CSS_UriRewriter : Issue 99');
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         echo "\n---Input:\n\n{$in}\n";
-        echo "\n---Output: " .strlen($actual). " bytes\n\n{$actual}\n\n";
+        echo "\n---Output: " .countBytes($actual). " bytes\n\n{$actual}\n\n";
         if (!$passed) {
-            echo "---Expected: " .strlen($exp). " bytes\n\n{$exp}\n\n\n";
+            echo "---Expected: " .countBytes($exp). " bytes\n\n{$exp}\n\n\n";
         }
         
         // show debugging only when test run directly

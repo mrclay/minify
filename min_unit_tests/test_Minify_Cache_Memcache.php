@@ -14,14 +14,14 @@ function test_Minify_Cache_Memcache()
         return;
     }
     
-    $data = str_repeat(md5('testing'), 160);
+    $data = str_repeat(md5(time()) . 'í', 100); // 3400 bytes in UTF-8
     $id = 'Minify_test_cache';
     
     $cache = new Minify_Cache_Memcache($mc);
     
     assertTrue(true === $cache->store($id, $data), $prefix . 'store');
     
-    assertTrue(strlen($data) === $cache->getSize($id), $prefix . 'getSize');
+    assertTrue(countBytes($data) === $cache->getSize($id), $prefix . 'getSize');
     
     assertTrue(true === $cache->isValid($id, $_SERVER['REQUEST_TIME'] - 10), $prefix . 'isValid');
     

@@ -19,9 +19,9 @@ function test_Minify_CommentPreserver()
         $actual = Minify_CommentPreserver::process($in, '_test_MCP_processor');
         $passed = assertTrue($expected === $actual, 'Minify_CommentPreserver');
         if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
-            echo "\n---Output: " .strlen($actual). " bytes\n\n{$actual}\n\n";
+            echo "\n---Output: " .countBytes($actual). " bytes\n\n{$actual}\n\n";
             if (!$passed) {
-                echo "---Expected: " .strlen($expected). " bytes\n\n{$expected}\n\n\n";
+                echo "---Expected: " .countBytes($expected). " bytes\n\n{$expected}\n\n\n";
             }
         }    
     }

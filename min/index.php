@@ -36,9 +36,13 @@ foreach ($min_symlinks as $uri => $target) {
 }
 
 if ($min_allowDebugFlag) {
-    if (! empty($_COOKIE['minDebug'])
-        && false !== strpos($_SERVER['REQUEST_URI'], $_COOKIE['minDebug'])) {
-        $min_serveOptions['debug'] = true;
+    if (! empty($_COOKIE['minDebug'])) {
+        foreach (preg_split('/\\s+/', $_COOKIE['minDebug']) as $debugUri) {
+            if (false !== strpos($_SERVER['REQUEST_URI'], $debugUri)) {
+                $min_serveOptions['debug'] = true;
+                break;
+            }
+        }
     }
     // allow GET to override
     if (isset($_GET['debug'])) {

@@ -24,7 +24,7 @@ if ($min_errorLogger && true !== $min_errorLogger) { // custom logger
 error_reporting(E_ALL | E_STRICT);
 ini_set('display_errors', 1);
 
-header('Content-Type: text/plain');
+header('Content-Type: text/plain;charset=utf-8');
 
 $thisDir = dirname(__FILE__);
 
@@ -45,6 +45,19 @@ function assertTrue($test, $message)
 		$outMode, $message, ++$count[$mode], ++$count['total'], $mode);
 	
 	return (bool)$test;
+}
+
+/**
+ * Get number of bytes in a string regardless of mbstring.func_overload
+ *
+ * @param string $str
+ * @return int
+ */
+function countBytes($str)
+{
+    return (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2))
+        ? mb_strlen($str, '8bit')
+        : strlen($str);
 }
 
 ob_start();

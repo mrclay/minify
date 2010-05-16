@@ -90,8 +90,13 @@ class HTTP_Encoder {
      */
     public function __construct($spec) 
     {
+        $this->_useMbStrlen = (function_exists('mb_strlen')
+                               && (ini_get('mbstring.func_overload') !== '')
+                               && ((int)ini_get('mbstring.func_overload') & 2));
         $this->_content = $spec['content'];
-        $this->_headers['Content-Length'] = (string)strlen($this->_content);
+        $this->_headers['Content-Length'] = $this->_useMbStrlen
+            ? (string)mb_strlen($this->_content, '8bit')
+            : (string)strlen($this->_content);
         if (isset($spec['type'])) {
             $this->_headers['Content-Type'] = $spec['type'];
         }
@@ -275,7 +280,9 @@ class HTTP_Encoder {
         if (false === $encoded) {
             return false;
         }
-        $this->_headers['Content-Length'] = strlen($encoded);
+        $this->_headers['Content-Length'] = $this->_useMbStrlen
+            ? (string)mb_strlen($encoded, '8bit')
+            : (string)strlen($encoded);
         $this->_headers['Content-Encoding'] = $this->_encodeMethod[1];
         $this->_content = $encoded;
         return true;
@@ -327,4 +334,5 @@ class HTTP_Encoder {
     protected $_content = '';
     protected $_headers = array();
     protected $_encodeMethod = array('', '');
+    protected $_useMbStrlen = false;
 }

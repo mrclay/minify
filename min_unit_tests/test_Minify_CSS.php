@@ -41,10 +41,10 @@ function test_CSS()
         $passed = assertTrue($minExpected === $minOutput, 'Minify_CSS : ' . $item);
         
         if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
-            echo "\n---Output: " .strlen($minOutput). " bytes\n\n{$minOutput}\n\n";
+            echo "\n---Output: " .countBytes($minOutput). " bytes\n\n{$minOutput}\n\n";
             if (!$passed) {
-                echo "---Expected: " .strlen($minExpected). " bytes\n\n{$minExpected}\n\n";
-                echo "---Source: " .strlen($src). " bytes\n\n{$src}\n\n\n";    
+                echo "---Expected: " .countBytes($minExpected). " bytes\n\n{$minExpected}\n\n";
+                echo "---Source: " .countBytes($src). " bytes\n\n{$src}\n\n\n";
             }
         }
     }    

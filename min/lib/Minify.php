@@ -29,7 +29,7 @@ require_once 'Minify/Source.php';
  */
 class Minify {
     
-    const VERSION = '2.1.3';
+    const VERSION = '2.1.4';
     const TYPE_CSS = 'text/css';
     const TYPE_HTML = 'text/html';
     // there is some debate over the ideal JS Content-Type, but this is the
@@ -312,12 +312,9 @@ class Minify {
         }
         
         // add headers
-        $hasMbOverload = (function_exists('mb_strlen')
-                          && (ini_get('mbstring.func_overload') !== '')
-                          && ((int)ini_get('mbstring.func_overload') & 2));
         $headers['Content-Length'] = $cacheIsReady
             ? $cacheContentLength
-            : ($hasMbOverload
+            : ((function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2))
                 ? mb_strlen($content, '8bit')
                 : strlen($content)
             );

@@ -7,7 +7,7 @@ function test_Minify_Cache_File()
 {
     global $minifyCachePath;
     
-    $data = str_repeat(md5(time()), 160);
+    $data = str_repeat(md5(time()) . 'í', 100); // 3400 bytes in UTF-8
     $id = 'Minify_test_cache_noLock';
     $prefix = 'Minify_Cache_File : ';
     
@@ -16,8 +16,8 @@ function test_Minify_Cache_File()
     echo "NOTE: Minify_Cache_File : path is set to: '" . $cache->getPath() . "'.\n";
     
     assertTrue(true === $cache->store($id, $data), $prefix . 'store');
-    
-    assertTrue(strlen($data) === $cache->getSize($id), $prefix . 'getSize');
+
+    assertTrue(countBytes($data) === $cache->getSize($id), $prefix . 'getSize');
     
     assertTrue(true === $cache->isValid($id, $_SERVER['REQUEST_TIME'] - 10), $prefix . 'isValid');
     
@@ -37,7 +37,7 @@ function test_Minify_Cache_File()
     
     assertTrue(true === $cache->store($id, $data), $prefix . 'store w/ lock');
     
-    assertTrue(strlen($data) === $cache->getSize($id), $prefix . 'getSize');
+    assertTrue(countBytes($data) === $cache->getSize($id), $prefix . 'getSize');
     
     assertTrue(true === $cache->isValid($id, $_SERVER['REQUEST_TIME'] - 10), $prefix . 'isValid');
     

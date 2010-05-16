@@ -27,9 +27,9 @@ function test_Minify_ImportProcessor()
     $passed = assertTrue($expected === $actual, 'ImportProcessor');
     
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
-        echo "\n---Output: " .strlen($actual). " bytes\n\n{$actual}\n\n";
+        echo "\n---Output: " .countBytes($actual). " bytes\n\n{$actual}\n\n";
         if (!$passed) {
-            echo "---Expected: " .strlen($expected). " bytes\n\n{$expected}\n\n\n";
+            echo "---Expected: " .countBytes($expected). " bytes\n\n{$expected}\n\n\n";
         }
     }
     

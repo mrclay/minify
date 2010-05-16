@@ -1,4 +1,4 @@
-﻿// http://mrclay.org/
+// http://mrclay.org/
 (function(){
 	var
 		reMailto = /^mailto:my_name_is_(\S+)_and_the_domain_is_(\S+)$/,

@@ -84,16 +84,6 @@ class JSMin {
             // likely pre-minified and would be broken by JSMin
             return $js;
         }
-        if (function_exists('mb_strlen')
-            && (ini_get('mbstring.func_overload') !== '')
-            && ((int)ini_get('mbstring.func_overload') & 2)) {
-            $enc = mb_internal_encoding();
-            mb_internal_encoding('8bit');
-            $jsmin = new JSMin($js);
-            $ret = $jsmin->min();
-            mb_internal_encoding($enc);
-            return $ret;
-        }
         $jsmin = new JSMin($js);
         return $jsmin->min();
     }
@@ -107,8 +97,7 @@ class JSMin {
      */
     public function __construct($input)
     {
-        $this->input = str_replace("\r\n", "\n", $input);
-        $this->inputLength = strlen($this->input);
+        $this->input = $input;
     }
     
     /**
@@ -119,6 +108,15 @@ class JSMin {
         if ($this->output !== '') { // min already run
             return $this->output;
         }
+
+        $mbIntEnc = null;
+        if (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2)) {
+            $mbIntEnc = mb_internal_encoding();
+            mb_internal_encoding('8bit');
+        }
+        $this->input = str_replace("\r\n", "\n", $this->input);
+        $this->inputLength = strlen($this->input);
+
         $this->action(self::ACTION_DELETE_A_B);
         
         while ($this->a !== null) {
@@ -131,8 +129,11 @@ class JSMin {
             } elseif ($this->a === "\n") {
                 if ($this->b === ' ') {
                     $command = self::ACTION_DELETE_A_B;
-                } elseif (false === strpos('{[(+-', $this->b) 
-                          && ! $this->isAlphaNum($this->b)) {
+                // in case of mbstring.func_overload & 2, must check for null b,
+                // otherwise mb_strpos will give WARNING
+                } elseif ($this->b === null
+                          || (false === strpos('{[(+-', $this->b)
+                              && ! $this->isAlphaNum($this->b))) {
                     $command = self::ACTION_DELETE_A;
                 }
             } elseif (! $this->isAlphaNum($this->a)) {
@@ -145,6 +146,10 @@ class JSMin {
             $this->action($command);
         }
         $this->output = trim($this->output);
+
+        if ($mbIntEnc !== null) {
+            mb_internal_encoding($mbIntEnc);
+        }
         return $this->output;
     }
     

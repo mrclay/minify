@@ -1,3 +1,6 @@
+/*!
+ * Minify URI Builder
+ */
 var MUB = {
     _uid : 0
     ,_minRoot : '/min/?'

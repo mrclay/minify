@@ -71,7 +71,7 @@ function test_Minify()
             'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
             'ETag' => "\"pub{$lastModified}\"",
             'Cache-Control' => 'max-age=86400',
-            'Content-Length' => strlen($content),
+            'Content-Length' => countBytes($content),
             'Content-Type' => 'application/x-javascript; charset=utf-8',
         )
     );
@@ -170,9 +170,17 @@ function test_Minify()
         }    
     }
 
-    // Test minifying CSS and responding with Etag/Last-Modified
+    // Test Issue 132
+    if (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2)) {
+        $output = Minify::serve('Files', array(
+            'files' => array(dirname(__FILE__) . '/_test_files/js/issue132.js')
+            ,'quiet' => true
+            ,'encodeOutput' => false
+        ));
+        $passed = assertTrue($output['headers']['Content-Length'] == 77, 'Minify : Issue 132 : mbstring.func_overload shouldn\'t cause incorrect Content-Length');
+    }
 
-    Minify::setCache(null);
+    // Test minifying CSS and responding with Etag/Last-Modified
 
     // don't allow conditional headers
     unset($_SERVER['HTTP_IF_NONE_MATCH'], $_SERVER['HTTP_IF_MODIFIED_SINCE']);
@@ -188,7 +196,7 @@ function test_Minify()
             'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
             'ETag' => "\"pub{$lastModified}\"",
             'Cache-Control' => 'max-age=0',
-            'Content-Length' => strlen($expectedContent),
+            'Content-Length' => countBytes($expectedContent),
             'Content-Type' => 'text/css; charset=utf-8',
         )
     );
