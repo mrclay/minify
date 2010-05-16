@@ -1,6 +1,6 @@
 <?php
 /**
- * Utility functions for generating group URIs in HTML files
+ * Utility functions for generating URIs in HTML files
  *
  * Before including this file, /min/lib must be in your include_path.
  * 
@@ -22,19 +22,19 @@ require_once 'Minify/Build.php';
  * before using this function.
  *
  * @param string $group a key from groupsConfig.php
- * @param boolean $forceAmpersand (default false) Set to true if the RewriteRule
+ * @param boolean $modRewriteWorking (default false) Set to true if the RewriteRule
  * directives in .htaccess are functional. This will remove the "?" from URIs, making them
  * more cacheable by proxies.
  * @return string
  */ 
-function Minify_groupUri($group, $forceAmpersand = false)
+function Minify_groupUri($group, $modRewriteWorking = false)
 {
-    $path = $forceAmpersand
+    $path = $modRewriteWorking
         ? "/g={$group}"
         : "/?g={$group}";
     return _Minify_getBuild($group)->uri(
         '/' . basename(dirname(__FILE__)) . $path
-        ,$forceAmpersand
+        ,$modRewriteWorking
     );
 }
 
