@@ -15,7 +15,7 @@ class Minify_Cache_File {
         $this->_locking = $fileLocking;
         $this->_path = $path;
     }
-    
+
     /**
      * Write data to cache.
      *
@@ -30,15 +30,18 @@ class Minify_Cache_File {
         $flag = $this->_locking
             ? LOCK_EX
             : null;
-        if (is_file($this->_path . '/' . $id)) {
-            @unlink($this->_path . '/' . $id);
+        $file = $this->_path . '/' . $id;
+        if (is_file($file)) {
+            @unlink($file);
         }
-        if (! @file_put_contents($this->_path . '/' . $id, $data, $flag)) {
+        if (! @file_put_contents($file, $data, $flag)) {
+            $this->_log("Minify_Cache_File: Write failed to '$file'");
             return false;
         }
         // write control
         if ($data !== $this->fetch($id)) {
             @unlink($file);
+            $this->_log("Minify_Cache_File: Post-write read failed for '$file'");
             return false;
         }
         return true;
@@ -118,6 +121,17 @@ class Minify_Cache_File {
     public function getPath()
     {
         return $this->_path;
+    }
+
+    /**
+     * Send message to the Minify logger
+     * @param string $msg
+     * @return null
+     */
+    protected function _log($msg)
+    {
+        require_once 'Minify/Logger.php';
+        Minify_Logger::log($msg);
     }
     
     private $_path = null;

@@ -118,6 +118,8 @@ abstract class Minify_Controller_Base {
      * be in subdirectories of these directories.
      * 
      * @return bool file is safe
+     *
+     * @deprecated use checkAllowDirs, checkNotHidden instead
      */
     public static function _fileIsSafe($file, $safeDirs)
     {
@@ -135,7 +137,28 @@ abstract class Minify_Controller_Base {
         list($revExt) = explode('.', strrev($base));
         return in_array(strrev($revExt), array('js', 'css', 'html', 'txt'));
     }
+
     
+    public static function checkAllowDirs($file, $allowDirs, $uri)
+    {
+        foreach ((array)$allowDirs as $allowDir) {
+            if (strpos($file, $allowDir) === 0) {
+                return true;
+            }
+        }
+        throw new Exception("File '$file' is outside \$allowDirs. If the path is"
+            . " resolved via an alias/symlink, look into the \$min_symlinks option."
+            . " E.g. \$min_symlinks = array('/" . dirname($uri) . "' => '" . dirname($file) . "');");
+    }
+
+    public static function checkNotHidden($file)
+    {
+        $b = basename($file);
+        if (0 === strpos($b, '.')) {
+            throw new Exception("Filename '$b' starts with period (may be hidden)");
+        }
+    }
+
     /**
      * @var array instances of Minify_Source, which provide content and
      * any individual minification needs.
