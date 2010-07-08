@@ -9,10 +9,10 @@ function test_Minify_CommentPreserver()
     global $thisDir;
     
     $inOut = array(
-        '/*!*/' => "\n/**/\n"
-        ,'/*!*/a' => "\n/**/\n1A"
-        ,'a/*!*//*!*/b' => "2A\n/**/\n\n/**/\n3B"
-        ,'a/*!*/b/*!*/' => "4A\n/**/\n5B\n/**/\n"
+        '/*!*/' => "\n/*!*/\n"
+        ,'/*!*/a' => "\n/*!*/\n1A"
+        ,'a/*!*//*!*/b' => "2A\n/*!*/\n\n/*!*/\n3B"
+        ,'a/*!*/b/*!*/' => "4A\n/*!*/\n5B\n/*!*/\n"
     );
 
     foreach ($inOut as $in => $expected) {

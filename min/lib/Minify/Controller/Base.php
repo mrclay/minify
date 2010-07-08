@@ -52,7 +52,7 @@ abstract class Minify_Controller_Base {
             ,'quiet' => false // serve() will send headers and output
             ,'debug' => false
             
-            // if you override this, the response code MUST be directly after 
+            // if you override these, the response codes MUST be directly after
             // the first space.
             ,'badRequestHeader' => 'HTTP/1.0 400 Bad Request'
             ,'errorHeader'      => 'HTTP/1.0 500 Internal Server Error'
@@ -148,7 +148,7 @@ abstract class Minify_Controller_Base {
         }
         throw new Exception("File '$file' is outside \$allowDirs. If the path is"
             . " resolved via an alias/symlink, look into the \$min_symlinks option."
-            . " E.g. \$min_symlinks = array('/" . dirname($uri) . "' => '" . dirname($file) . "');");
+            . " E.g. \$min_symlinks['/" . dirname($uri) . "'] = '" . dirname($file) . "';");
     }
 
     public static function checkNotHidden($file)

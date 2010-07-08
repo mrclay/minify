@@ -29,12 +29,34 @@ if (! $min_enableBuilder) {
     exit();
 }
 
+$setIncludeSuccess = set_include_path(dirname(__FILE__) . '/../lib' . PATH_SEPARATOR . get_include_path());
+// we do it this way because we want the builder to work after the user corrects
+// include_path. (set_include_path returning FALSE is OK).
+try {
+    require_once 'Solar/Dir.php';    
+} catch (Exception $e) {
+    if (! $setIncludeSuccess) {
+        echo "Minify: set_include_path() failed. You may need to set your include_path "
+            ."outside of PHP code, e.g., in php.ini.";    
+    } else {
+        echo $e->getMessage();
+    }
+    exit();
+}
+require 'Minify.php';
+
+$cachePathCode = '';
+if (! isset($min_cachePath)) {
+    $detectedTmp = rtrim(Solar_Dir::tmp(), DIRECTORY_SEPARATOR);
+    $cachePathCode = "\$min_cachePath = " . var_export($detectedTmp, 1) . ';';
+}
+
 ob_start();
 ?>
 <!DOCTYPE HTML>
 <title>Minify URI Builder</title>
 <meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
-<style type="text/css">
+<style>
 body {margin:1em 60px;}
 h1, h2, h3 {margin-left:-25px; position:relative;}
 h1 {margin-top:0;}
@@ -54,7 +76,7 @@ b {color:#c00}
 </style>
 <body>
 <?php if ($symlinkOption): ?>
-<div class=topNote><strong>Note:</strong> It looks like you're running Minify in a user
+    <div class=topNote><strong>Note:</strong> It looks like you're running Minify in a user
  directory. You may need the following option in /min/config.php to have URIs
  correctly rewritten in CSS output:
  <br><textarea id=symlinkOpt rows=3 cols=80 readonly><?php echo htmlspecialchars($symlinkOption); ?></textarea>
@@ -62,15 +84,17 @@ b {color:#c00}
 <?php endif; ?>
 
 <p class=topWarning id=jsDidntLoad><strong>Uh Oh.</strong> Minify was unable to
-    serve the Javascript for this app. To troubleshoot this,
+    serve Javascript for this app. To troubleshoot this,
     <a href="http://code.google.com/p/minify/wiki/Debugging">enable FirePHP debugging</a>
     and request the <a id=builderScriptSrc href=#>Minify URL</a> directly. Hopefully the
     FirePHP console will report the cause of the error.
 </p>
 
-<?php if (! isset($min_cachePath)): ?>
-<p class=topNote><strong>Note:</strong> You can set <code>$min_cachePath</code>
-in /min/config.php to slightly improve performance.</p>
+<?php if ($cachePathCode): ?>
+<p class=topNote><strong>Note:</strong> <code><?php echo
+    htmlspecialchars($detectedTmp); ?></code> was discovered as a usable temp directory.<br>To
+    slightly improve performance you can hardcode this in /min/config.php:
+    <code><?php echo htmlspecialchars($cachePathCode); ?></code></p>
 <?php endIf; ?>
 
 <p id=minRewriteFailed class="hide"><strong>Note:</strong> Your webserver does not seem to
@@ -138,8 +162,8 @@ by Minify. E.g. <code>@import "<span class=minRoot>/min/?</span>g=css2";</code><
 <h3>Debug Mode</h3>
 <p>When /min/config.php has <code>$min_allowDebugFlag = <strong>true</strong>;</code>
  you can get debug output by appending <code>&amp;debug</code> to a Minify URL, or
- by sending the cookie <code>minDebug=&lt;match&gt;</code>, where <code>minDebug=&lt;match&gt;</code>
- should match the Minify URIs you'd like to debug. This bookmarklet will allow you to
+ by sending the cookie <code>minDebug=&lt;match&gt;</code>, where <code>&lt;match&gt;</code>
+ should be a string in the Minify URIs you'd like to debug. This bookmarklet will allow you to
  set this cookie.</p>
 <p><a id=bm2>Minify Debug</a> <small>(right-click, add to bookmarks)</small></p>
 
@@ -149,13 +173,20 @@ by Minify. E.g. <code>@import "<span class=minRoot>/min/?</span>g=css2";</code><
 <p>Need help? Check the <a href="http://code.google.com/p/minify/w/list?can=3">wiki</a>,
  or post to the <a class=ext href="http://groups.google.com/group/minify">discussion
  list</a>.</p>
-<p><small>This app is minified :)</small></p>
+ <p><small>Powered by Minify <?php echo Minify::VERSION; ?></small></p>
 
-<script type="text/javascript" 
-src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
-
-<script type="text/javascript">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+<script>
 $(function () {
+    // give Minify a few seconds to serve _index.js before showing scary red warning
+    $('#jsDidntLoad').hide();
+    setTimeout(function () {
+        if (! window.MUB) {
+            // Minify didn't load
+            $('#jsDidntLoad').show();
+        }
+    }, 3000);
+
     // detection of double output encoding
     var msg = '<\p class=topWarning><\strong>Warning:<\/strong> ';
     var url = 'ocCheck.php?' + (new Date()).getTime();
@@ -183,7 +214,7 @@ $(function () {
     });
 });
 </script>
-<script type="text/javascript">
+<script>
 // workaround required to test when /min isn't child of web root
 var src = location.pathname.replace(/\/[^\/]*$/, '/_index.js').substr(1);
 src = "../?f=" + src;
@@ -197,8 +228,6 @@ $(function () {
 $content = ob_get_clean();
 
 // setup Minify
-set_include_path(dirname(__FILE__) . '/../lib' . PATH_SEPARATOR . get_include_path());
-require 'Minify.php';
 if (0 === stripos(PHP_OS, 'win')) {
     Minify::setDocRoot(); // we may be on IIS
 }
@@ -212,9 +241,10 @@ Minify::serve('Page', array(
     'content' => $content
     ,'id' => __FILE__
     ,'lastModifiedTime' => max(
-        // regenerate cache if either of these change
+        // regenerate cache if any of these change
         filemtime(__FILE__)
         ,filemtime(dirname(__FILE__) . '/../config.php')
+        ,filemtime(dirname(__FILE__) . '/../lib/Minify.php')
     )
     ,'minifyAll' => true
     ,'encodeOutput' => $encodeOutput

@@ -8,6 +8,14 @@ and tell clients to cache the file for a period of time.
 More info: http://code.google.com/p/minify/
 
 
+WORDPRESS USER?
+
+These WP plugins integrate Minify into WordPress's style and script hooks to
+get you set up faster.
+  http://wordpress.org/extend/plugins/wp-minify/
+  http://wordpress.org/extend/plugins/w3-total-cache/
+
+
 UPGRADING
 
 See UPGRADING.txt for instructions.

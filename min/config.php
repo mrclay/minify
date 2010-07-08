@@ -62,7 +62,7 @@ $min_enableBuilder = true;
  * second line. The third line might work on some Apache servers.
  */
 $min_documentRoot = '';
-//$min_documentRoot = substr(__FILE__, 0, strlen(__FILE__) - 15);
+//$min_documentRoot = substr(__FILE__, 0, -15);
 //$min_documentRoot = $_SERVER['SUBDOMAIN_DOCUMENT_ROOT'];
 
 
