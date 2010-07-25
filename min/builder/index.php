@@ -33,7 +33,7 @@ $setIncludeSuccess = set_include_path(dirname(__FILE__) . '/../lib' . PATH_SEPAR
 // we do it this way because we want the builder to work after the user corrects
 // include_path. (set_include_path returning FALSE is OK).
 try {
-    require_once 'Solar/Dir.php';    
+    require_once 'Minify/Cache/File.php';
 } catch (Exception $e) {
     if (! $setIncludeSuccess) {
         echo "Minify: set_include_path() failed. You may need to set your include_path "
@@ -46,8 +46,8 @@ try {
 require 'Minify.php';
 
 $cachePathCode = '';
-if (! isset($min_cachePath)) {
-    $detectedTmp = rtrim(Solar_Dir::tmp(), DIRECTORY_SEPARATOR);
+if (! isset($min_cachePath) && ! function_exists('sys_get_temp_dir')) {
+    $detectedTmp = Minify_Cache_File::tmp();
     $cachePathCode = "\$min_cachePath = " . var_export($detectedTmp, 1) . ';';
 }
 
@@ -73,6 +73,7 @@ b {color:#c00}
 .topNote {background: #ff9; display:inline-block; padding:.5em .6em; margin:0 0 1em;}
 .topWarning {background:#c00; color:#fff; padding:.5em .6em; margin:0 0 1em;}
 .topWarning a {color:#fff;}
+#jsDidntLoad {display:none;}
 </style>
 <body>
 <?php if ($symlinkOption): ?>
@@ -179,11 +180,10 @@ by Minify. E.g. <code>@import "<span class=minRoot>/min/?</span>g=css2";</code><
 <script>
 $(function () {
     // give Minify a few seconds to serve _index.js before showing scary red warning
-    $('#jsDidntLoad').hide();
     setTimeout(function () {
         if (! window.MUB) {
             // Minify didn't load
-            $('#jsDidntLoad').show();
+            $('#jsDidntLoad').css({display:'block'});
         }
     }, 3000);
 

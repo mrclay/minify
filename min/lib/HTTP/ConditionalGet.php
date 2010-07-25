@@ -211,7 +211,9 @@ class HTTP_ConditionalGet {
     {
         $headers = $this->_headers;
         if (array_key_exists('_responseCode', $headers)) {
-            header($headers['_responseCode']);
+            // FastCGI environments require 3rd arg to header() to be set
+            list(, $code) = explode(' ', $headers['_responseCode'], 3);
+            header($headers['_responseCode'], true, $code);
             unset($headers['_responseCode']);
         }
         foreach ($headers as $name => $val) {

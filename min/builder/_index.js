@@ -200,7 +200,7 @@ var MUB = {
      * Runs on DOMready
      */
     ,init : function () {
-        $('#jsDidntLoad').hide();
+        $('#jsDidntLoad').remove();
         $('#app').show();
         $('#sources').html('');
         $('#add button').click(MUB.addButtonClick);
