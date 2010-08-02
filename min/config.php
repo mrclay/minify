@@ -103,6 +103,18 @@ $min_serveOptions['maxAge'] = 1800;
 
 
 /**
+ * To use Google's Closure Compiler API (falling back to JSMin on failure),
+ * uncomment the following lines:
+ */
+/*function closureCompiler($js) {
+    require_once 'Minify/JS/ClosureCompiler.php';
+    return Minify_JS_ClosureCompiler::minify($js);
+}
+$min_serveOptions['minifiers']['application/x-javascript'] = 'closureCompiler';
+//*/
+
+
+/**
  * If you'd like to restrict the "f" option to files within/below
  * particular directories below DOCUMENT_ROOT, set this here.
  * You will still need to include the directory in the

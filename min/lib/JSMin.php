@@ -308,7 +308,7 @@ class JSMin {
                     $this->get();
                     // if comment preserved by YUI Compressor
                     if (0 === strpos($comment, '!')) {
-                        return "\n/*" . substr($comment, 1) . "*/\n";
+                        return "\n/*!" . substr($comment, 1) . "*/\n";
                     }
                     // if IE conditional comment
                     if (preg_match('/^@(?:cc_on|if|elif|else|end)\\b/', $comment)) {

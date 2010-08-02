@@ -1,6 +1,7 @@
 Minify Release History
 
 Version 2.1.4
+    * Option to minify JS with Closure Compiler API w/ JSMin failover
     * Cookie/bookmarklet-based debug mode. No HTML editing!
     * Allows 1 file to be missing w/o complete failure
     * Combine multiple groups and files in single URI
