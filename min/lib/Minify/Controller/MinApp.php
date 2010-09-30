@@ -65,11 +65,11 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                     if (0 === strpos($file, '//')) {
                         $file = $_SERVER['DOCUMENT_ROOT'] . substr($file, 1);
                     }
-                    $file = realpath($file);
-                    if ($file && is_file($file)) {
-                        $sources[] = $this->_getFileSource($file, $cOptions);
+                    $realpath = realpath($file);
+                    if ($realpath && is_file($realpath)) {
+                        $sources[] = $this->_getFileSource($realpath, $cOptions);
                     } else {
-                        $this->log("The path \"{$file}\" could not be found (or was not a file)");
+                        $this->log("The path \"{$file}\" (realpath \"{$realpath}\") could not be found (or was not a file)");
                         return $options;
                     }
                 }
@@ -97,7 +97,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 // no "./"
                 || preg_match('/(?:^|[^\\.])\\.\\//', $_GET['f'])
             ) {
-                $this->log("GET param 'f' invalid (see MinApp.php line 63)");
+                $this->log("GET param 'f' was invalid");
                 return $options;
             }
             $ext = ".{$m[1]}";
@@ -109,7 +109,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             }
             $files = explode(',', $_GET['f']);
             if ($files != array_unique($files)) {
-                $this->log("Duplicate files specified");
+                $this->log("Duplicate files were specified");
                 return $options;
             }
             if (isset($_GET['b'])) {
@@ -120,7 +120,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                     // valid base
                     $base = "/{$_GET['b']}/";       
                 } else {
-                    $this->log("GET param 'b' invalid (see MinApp.php line 84)");
+                    $this->log("GET param 'b' was invalid");
                     return $options;
                 }
             } else {
@@ -134,25 +134,26 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             foreach ($files as $file) {
                 $uri = $base . $file;
                 $path = $_SERVER['DOCUMENT_ROOT'] . $uri;
-                $file = realpath($path);
-                if (false === $file || ! is_file($file)) {
+                $realpath = realpath($path);
+                if (false === $realpath || ! is_file($realpath)) {
+                    $this->log("The path \"{$path}\" (realpath \"{$realpath}\") could not be found (or was not a file)");
                     if (! $missingUri) {
                         $missingUri = $uri;
                         continue;
                     } else {
-                        $this->log("At least two files missing: '$missingUri', '$uri'");
+                        $this->log("More than one file was missing: '$missingUri', '$uri'");
                         return $options;
                     }
                 }
                 try {
-                    parent::checkNotHidden($file);
-                    parent::checkAllowDirs($file, $allowDirs, $uri);
+                    parent::checkNotHidden($realpath);
+                    parent::checkAllowDirs($realpath, $allowDirs, $uri);
                 } catch (Exception $e) {
                     $this->log($e->getMessage());
                     return $options;
                 }
-                $sources[] = $this->_getFileSource($file, $cOptions);
-                $basenames[] = basename($file, $ext);
+                $sources[] = $this->_getFileSource($realpath, $cOptions);
+                $basenames[] = basename($realpath, $ext);
             }
             if ($this->selectionId) {
                 $this->selectionId .= '_f=';

@@ -14,14 +14,12 @@
  *
  * If you want to use a custom error logger, set this to your logger
  * instance. Your object should have a method log(string $message).
- *
- * @todo cache system does not have error logging yet.
  */
 $min_errorLogger = false;
 
 
 /**
- * To allow debugging, you must set this option to true.
+ * To allow debug mode output, you must set this option to true.
  *
  * Once true, you can send the cookie minDebug to request debug mode output. The
  * cookie value should match the URIs you'd like to debug. E.g. to debug

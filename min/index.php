@@ -54,10 +54,9 @@ if ($min_errorLogger) {
     require_once 'Minify/Logger.php';
     if (true === $min_errorLogger) {
         require_once 'FirePHP.php';
-        Minify_Logger::setLogger(FirePHP::getInstance(true));
-    } else {
-        Minify_Logger::setLogger($min_errorLogger);
+        $min_errorLogger = FirePHP::getInstance(true);
     }
+    Minify_Logger::setLogger($min_errorLogger);
 }
 
 // check for URI versioning
@@ -70,7 +69,12 @@ if (isset($_GET['g'])) {
 }
 if (isset($_GET['f']) || isset($_GET['g'])) {
     // serve!   
-    Minify::serve('MinApp', $min_serveOptions);
+
+    if (! isset($min_serveController)) {
+        require 'Minify/Controller/MinApp.php';
+        $min_serveController = new Minify_Controller_MinApp();
+    }
+    Minify::serve($min_serveController, $min_serveOptions);
         
 } elseif ($min_enableBuilder) {
     header('Location: builder/');
