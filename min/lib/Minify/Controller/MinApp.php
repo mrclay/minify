@@ -86,7 +86,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
         if (! $cOptions['groupsOnly'] && isset($_GET['f'])) {
             // try user files
             // The following restrictions are to limit the URLs that minify will
-            // respond to. Ideally there should be only one way to reference a file.
+            // respond to.
             if (// verify at least one file, files are single comma separated, 
                 // and are all same extension
                 ! preg_match('/^[^,]+\\.(css|js)(?:,[^,]+\\.\\1)*$/', $_GET['f'], $m)
@@ -94,8 +94,6 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 || strpos($_GET['f'], '//') !== false
                 // no "\"
                 || strpos($_GET['f'], '\\') !== false
-                // no "./"
-                || preg_match('/(?:^|[^\\.])\\.\\//', $_GET['f'])
             ) {
                 $this->log("GET param 'f' was invalid");
                 return $options;

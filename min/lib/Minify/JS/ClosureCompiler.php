@@ -10,6 +10,8 @@
  * @link http://code.google.com/closure/compiler/
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
+ *
+ * @todo can use a stream wrapper to unit test this?
  */
 class Minify_JS_ClosureCompiler {
     const URL = 'http://closure-compiler.appspot.com/compile';
@@ -42,16 +44,16 @@ class Minify_JS_ClosureCompiler {
 
     public function min($js)
     {
-        $content = $this->_getPostContent($js);
+        $postBody = $this->_buildPostBody($js);
         $bytes = (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2))
-            ? mb_strlen($content, '8bit')
-            : strlen($content);
+            ? mb_strlen($postBody, '8bit')
+            : strlen($postBody);
         if ($bytes > 200000) {
             throw new Minify_JS_ClosureCompiler_Exception(
                 'POST content larger than 200000 bytes'
             );
         }
-        $response = $this->_getResponse($content);
+        $response = $this->_getResponse($postBody);
         if (preg_match('/^Error\(\d\d?\):/', $response)) {
             if (is_callable($this->_fallbackFunc)) {
                 $response = "/* Received errors from Closure Compiler API:\n$response"
@@ -62,7 +64,7 @@ class Minify_JS_ClosureCompiler {
             }
         }
         if ($response === '') {
-            $errors = $this->_getResponse($this->_getPostContent($js, true));
+            $errors = $this->_getResponse($this->_buildPostBody($js, true));
             throw new Minify_JS_ClosureCompiler_Exception($errors);
         }
         return $response;
@@ -70,13 +72,13 @@ class Minify_JS_ClosureCompiler {
     
     protected $_fallbackFunc = null;
 
-    protected function _getResponse($content)
+    protected function _getResponse($postBody)
     {
         $contents = file_get_contents(self::URL, false, stream_context_create(array(
             'http' => array(
                 'method' => 'POST',
                 'header' => 'Content-type: application/x-www-form-urlencoded',
-                'content' => $content,
+                'content' => $postBody,
                 'max_redirects' => 0,
                 'timeout' => 15,
             )
@@ -89,7 +91,7 @@ class Minify_JS_ClosureCompiler {
         return trim($contents);
     }
 
-    protected function _getPostContent($js, $returnErrors = false)
+    protected function _buildPostBody($js, $returnErrors = false)
     {
         return http_build_query(array(
             'js_code' => $js,
@@ -99,6 +101,11 @@ class Minify_JS_ClosureCompiler {
         ), null, '&');
     }
 
+    /**
+     * Default fallback function if CC API fails
+     * @param string $js
+     * @return string
+     */
     protected function _fallback($js)
     {
         require_once 'JSMin.php';
