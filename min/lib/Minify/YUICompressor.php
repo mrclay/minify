@@ -110,7 +110,7 @@ class Minify_YUICompressor {
         );
         $cmd = self::$javaExecutable . ' -jar ' . escapeshellarg(self::$jarFile)
              . " --type {$type}"
-             . (preg_match('/^[a-zA-Z0-9\\-]+$/', $o['charset'])
+             . (preg_match('/^[\\da-zA-Z0-9\\-]+$/', $o['charset'])
                 ? " --charset {$o['charset']}" 
                 : '')
              . (is_numeric($o['line-break']) && $o['line-break'] >= 0
