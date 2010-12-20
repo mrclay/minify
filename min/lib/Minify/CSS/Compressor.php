@@ -236,15 +236,14 @@ class Minify_CSS_Compressor {
      */
     protected function _fontFamilyCB($m)
     {
-        $m[1] = preg_replace('/
-                \\s*
-                (
-                    "[^"]+"      # 1 = family in double qutoes
-                    |\'[^\']+\'  # or 1 = family in single quotes
-                    |[\\w\\-]+   # or 1 = unquoted family
-                )
-                \\s*
-            /x', '$1', $m[1]);
-        return 'font-family:' . $m[1] . $m[2];
+        $pieces = preg_split('@(\'[^\']+\'|"[^"]+")@', $m[1], null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        foreach ($pieces as $i => $piece) {
+            if ($piece[0] !== '"' && $piece[0] !== "'") {
+                $piece = trim(preg_replace('@\\s+@', ' ', $piece));
+                $piece = preg_replace('@\\s*,\\s*@', ',', $piece);
+                $pieces[$i] = $piece;
+            }
+        }
+        return 'font-family:' . implode('', $pieces) . $m[2];
     }
 }
