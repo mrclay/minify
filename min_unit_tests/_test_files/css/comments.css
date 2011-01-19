@@ -1,9 +1,0 @@
-
-/* block comments get removed */
-
-/*! YUI Compressor style comments are preserved */
-
-/* but all other comments are removed */
-
-/* comments that have any surrounding whitespace are replaced by a single space. */
-body{ background:#fff/*eef*/ url(/path/to/image.gif) repeat-y; }

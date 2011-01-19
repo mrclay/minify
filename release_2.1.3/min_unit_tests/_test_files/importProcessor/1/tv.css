@@ -1,4 +1,0 @@
-@import url( adjacent.css ) all;
-@import '../input.css';
-tv foo { background: red url(/red.gif); }
-tv bar { background: url('../green.gif') }
