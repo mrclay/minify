@@ -74,6 +74,7 @@ abstract class Minify_Controller_Base {
     public function getDefaultMinifers() {
         $ret[Minify::TYPE_JS] = array('JSMin', 'minify');
         $ret[Minify::TYPE_CSS] = array('Minify_CSS', 'minify');
+        $ret[Minify::TYPE_LESS] = array('LessCss_Minify', 'minify');
         $ret[Minify::TYPE_HTML] = array('Minify_HTML', 'minify');
         return $ret;
     }
@@ -108,7 +109,7 @@ abstract class Minify_Controller_Base {
             return false;
         }
         list($revExt) = explode('.', strrev($base));
-        return in_array(strrev($revExt), array('js', 'css', 'html', 'txt'));
+        return in_array(strrev($revExt), array('js', 'css', 'less', 'html', 'txt'));
     }
 
     /**

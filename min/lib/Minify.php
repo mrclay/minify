@@ -30,6 +30,8 @@ class Minify {
     // there is some debate over the ideal JS Content-Type, but this is the
     // Apache default and what Yahoo! uses..
     const TYPE_JS = 'application/x-javascript';
+    // Custom type used to recognize .less files
+    const TYPE_LESS = 'text/less';
     const URL_DEBUG = 'http://code.google.com/p/minify/wiki/Debugging';
     
     /**
