@@ -144,6 +144,12 @@ class Minify_HTML {
             ,array_values($this->_placeholders)
             ,$this->_html
         );
+        // issue 229: multi-pass to catch scripts that didn't get replaced in textareas
+        $this->_html = str_replace(
+            array_keys($this->_placeholders)
+            ,array_values($this->_placeholders)
+            ,$this->_html
+        );
         return $this->_html;
     }
     

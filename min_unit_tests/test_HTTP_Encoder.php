@@ -101,9 +101,9 @@ function test_HTTP_Encoder()
     $variedLength = countBytes($variedContent);
     
     $encodingTests = array(
-        array('method' => 'deflate', 'inv' => 'gzinflate', 'exp' => 32157)
-        ,array('method' => 'gzip', 'inv' => '_gzdecode', 'exp' => 32175)
-        ,array('method' => 'compress', 'inv' => 'gzuncompress', 'exp' => 32211)
+        array('method' => 'deflate', 'inv' => 'gzinflate', 'exp' => 32268)
+        ,array('method' => 'gzip', 'inv' => '_gzdecode', 'exp' => 32286)
+        ,array('method' => 'compress', 'inv' => 'gzuncompress', 'exp' => 32325)
     );
     
     foreach ($encodingTests as $test) {
