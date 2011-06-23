@@ -236,14 +236,16 @@ class Minify_CSS_Compressor {
      */
     protected function _fontFamilyCB($m)
     {
-        $pieces = preg_split('@(\'[^\']+\'|"[^"]+")@', $m[1], null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-        foreach ($pieces as $i => $piece) {
+        // Issue 210: must not eliminate WS between words in unquoted families
+        $pieces = preg_split('/(\'[^\']+\'|"[^"]+")/', $m[1], null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $out = 'font-family:';
+        while (null !== ($piece = array_shift($pieces))) {
             if ($piece[0] !== '"' && $piece[0] !== "'") {
-                $piece = trim(preg_replace('@\\s+@', ' ', $piece));
-                $piece = preg_replace('@\\s*,\\s*@', ',', $piece);
-                $pieces[$i] = $piece;
+                $piece = preg_replace('/\\s+/', ' ', $piece);
+                $piece = preg_replace('/\\s?,\\s?/', ',', $piece);
             }
+            $out .= $piece;
         }
-        return 'font-family:' . implode('', $pieces) . $m[2];
+        return $out . $m[2];
     }
 }

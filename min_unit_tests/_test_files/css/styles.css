@@ -5,7 +5,7 @@
 @import     url( /more.css );
 
     body, td, th {
-        font-family: Verdana , "Bitstream Vera Sans" , sans-serif ;
+        font-family: Verdana , "Bitstream Vera Sans" , Arial Narrow, sans-serif ;
 
 	font-size  : 12px;
 }

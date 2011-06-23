@@ -19,7 +19,7 @@ function test_CSS()
     $d->close();
     
     foreach ($list as $item) {
-    
+
         $options = array();
         if ($item === 'paths_prepend') {
             $options = array('prependRelativePath' => '../');

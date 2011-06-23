@@ -16,7 +16,7 @@ function test_Minify_JS_ClosureCompiler()
     window.undefined = undefined;
 })(window);
     ";
-    $minExpected = "(function(a,b){a.addOne=function(c){return 1+c};a.undefined=b})(window);";
+    $minExpected = "(function(a,b){a.addOne=function(a){return 1+a};a.undefined=b})(window);";
     $minOutput = Minify_JS_ClosureCompiler::minify($src);
     if (false !== strpos($minOutput, 'Error(22): Too many compiles')) {
         echo "!NOTE: Too many recent calls to Closure Compiler API to test.\n";
