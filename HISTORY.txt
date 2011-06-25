@@ -1,5 +1,21 @@
 Minify Release History
 
+Version 2.1.4
+    * Option to minify JS with Closure Compiler API w/ JSMin failover
+    * Cookie/bookmarklet-based debug mode. No HTML editing!
+    * Allows 1 file to be missing w/o complete failure
+    * Combine multiple groups and files in single URI
+    * More useful HTML helpers for writing versioned URIs
+    * More detailed error logging, including minifier exceptions
+    * Builder offers more helpful messages/PHP environment warnings
+    * Bypass minification based on filename pattern. e.g. foo.min.js / foo-min.css
+    * JSMin won't choke on common Closure compiler syntaxes (i+ ++j)
+    * Better caching in IE6
+    * Cache ids are influenced by group/file names
+    * Debug mode for Javascript doesn't break on common XPath strings (Prototype 1.6)
+    * Removed annoying maxFiles limit
+    * mbstring.func_overload usage is safer
+
 Version 2.1.3
     * HTTP fixes
       * ETag generation now valid (different when gzipped)

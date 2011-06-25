@@ -29,9 +29,16 @@
 ;
 /* lines_bugs.js */
 
-/* 1 */ var triggerBug = {_default: "*/*"};
-/* 2 */ var essentialFunctionality = true;
-/* 3 */ 
+/* 1  */ // sections from Prototype 1.6.1
+/* 2  */ var xpath = ".//"+"*[local-name()='ul' or local-name()='UL']" +
+/* 3  */           "//"+"*[local-name()='li' or local-name()='LI']";
+/* 4  */ this.matcher = ['.//'+'*'];
+/* 5  */ xpath = {
+/* 6  */     descendant:   "//"+"*",
+/* 7  */     child:        "/"+"*",
+/* 8  */     f: 0
+/* 9  */ };
+/* 10 */ document._getElementsByXPath('.//'+'*' + cond, element);
 
 ;
 /* QueryString.js */

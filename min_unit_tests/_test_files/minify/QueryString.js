@@ -1,4 +1,4 @@
-﻿var MrClay = window.MrClay || {};
+var MrClay = window.MrClay || {};
 
 /**
  * Simplified access to/manipulation of the query string

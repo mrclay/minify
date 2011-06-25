@@ -1,4 +1,13 @@
 <IfModule mod_rewrite.c>
 RewriteEngine on
-RewriteRule ^([a-z]=.*)  index.php?$1  [L,NE]
+
+# You may need RewriteBase on some servers
+#RewriteBase /min
+
+# rewrite URLs like "/min/f=..." to "/min/?f=..."
+RewriteRule ^([bfg]=.*)  index.php?$1 [L,NE]
+</IfModule>
+<IfModule mod_env.c>
+# In case AddOutputFilterByType has been added
+SetEnv no-gzip
 </IfModule>

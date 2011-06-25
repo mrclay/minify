@@ -29,7 +29,7 @@ function test_Minify()
             'Vary' => 'Accept-Encoding',
             'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
             'ETag' => "\"pub{$lastModified}\"",
-            'Cache-Control' => 'max-age=1800, public',
+            'Cache-Control' => 'max-age=1800',
             '_responseCode' => 'HTTP/1.0 304 Not Modified',
         )
     );
@@ -49,11 +49,11 @@ function test_Minify()
 
     assertTrue(
         ! class_exists('Minify_CSS', false)
-        && ! class_exists('Minify_Cache', false)
+        && ! class_exists('Minify_Cache_File', false)
         ,'Minify : cache, and minifier classes aren\'t loaded for 304s'
     );
 
-    // Test minifying JS and serving with Expires header
+    // Test JS and Expires
 
     $content = preg_replace('/\\r\\n?/', "\n", file_get_contents($minifyTestPath . '/minified.js'));
     $lastModified = max(
@@ -70,11 +70,13 @@ function test_Minify()
             'Vary' => 'Accept-Encoding',
             'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
             'ETag' => "\"pub{$lastModified}\"",
-            'Cache-Control' => 'max-age=86400, public',
-            'Content-Length' => strlen($content),
+            'Cache-Control' => 'max-age=86400',
+            'Content-Length' => countBytes($content),
             'Content-Type' => 'application/x-javascript; charset=utf-8',
         )
     );
+    unset($_SERVER['HTTP_IF_NONE_MATCH']);
+    unset($_SERVER['HTTP_IF_MODIFIED_SINCE']);
     $output = Minify::serve('Files', array(
         'files' => array(
             $minifyTestPath . '/email.js'
@@ -96,7 +98,7 @@ function test_Minify()
     // test for Issue 73
     Minify::setCache(null);
     
-    $expected = ";function h(){}";
+    $expected = "\n;function h(){}";
     $output = Minify::serve('Files', array(
         'files' => array(
             $minifyTestPath . '/issue73_1.js'
@@ -168,9 +170,17 @@ function test_Minify()
         }    
     }
 
-    // Test minifying CSS and responding with Etag/Last-Modified
+    // Test Issue 132
+    if (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2)) {
+        $output = Minify::serve('Files', array(
+            'files' => array(dirname(__FILE__) . '/_test_files/js/issue132.js')
+            ,'quiet' => true
+            ,'encodeOutput' => false
+        ));
+        $passed = assertTrue($output['headers']['Content-Length'] == 77, 'Minify : Issue 132 : mbstring.func_overload shouldn\'t cause incorrect Content-Length');
+    }
 
-    Minify::setCache(null);
+    // Test minifying CSS and responding with Etag/Last-Modified
 
     // don't allow conditional headers
     unset($_SERVER['HTTP_IF_NONE_MATCH'], $_SERVER['HTTP_IF_MODIFIED_SINCE']);
@@ -185,8 +195,8 @@ function test_Minify()
             'Vary' => 'Accept-Encoding',
             'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
             'ETag' => "\"pub{$lastModified}\"",
-            'Cache-Control' => 'max-age=0, public',
-            'Content-Length' => strlen($expectedContent),
+            'Cache-Control' => 'max-age=0',
+            'Content-Length' => countBytes($expectedContent),
             'Content-Type' => 'text/css; charset=utf-8',
         )
     );

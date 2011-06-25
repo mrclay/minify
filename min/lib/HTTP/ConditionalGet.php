@@ -75,9 +75,8 @@ class HTTP_ConditionalGet {
     /**
      * @param array $spec options
      * 
-     * 'isPublic': (bool) if true, the Cache-Control header will contain 
-     * "public", allowing proxies to cache the content. Otherwise "private" will 
-     * be sent, allowing only browser caching. (default false)
+     * 'isPublic': (bool) if false, the Cache-Control header will contain
+     * "private", allowing only browser caching. (default false)
      * 
      * 'lastModifiedTime': (int) if given, both ETag AND Last-Modified headers
      * will be sent with content. This is recommended.
@@ -150,7 +149,10 @@ class HTTP_ConditionalGet {
         } elseif (isset($spec['contentHash'])) { // Use the hash as the ETag
             $this->_setEtag($spec['contentHash'] . $etagAppend, $scope);
         }
-        $this->_headers['Cache-Control'] = "max-age={$maxAge}, {$scope}";
+        $privacy = ($scope === 'private')
+            ? ', private'
+            : '';
+        $this->_headers['Cache-Control'] = "max-age={$maxAge}{$privacy}";
         // invalidate cache if disabled, otherwise check
         $this->cacheIsValid = (isset($spec['invalidate']) && $spec['invalidate'])
             ? false
@@ -209,7 +211,9 @@ class HTTP_ConditionalGet {
     {
         $headers = $this->_headers;
         if (array_key_exists('_responseCode', $headers)) {
-            header($headers['_responseCode']);
+            // FastCGI environments require 3rd arg to header() to be set
+            list(, $code) = explode(' ', $headers['_responseCode'], 3);
+            header($headers['_responseCode'], true, $code);
             unset($headers['_responseCode']);
         }
         foreach ($headers as $name => $val) {
@@ -332,12 +336,9 @@ class HTTP_ConditionalGet {
         if (!isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
             return false;
         }
-        $ifModifiedSince = $_SERVER['HTTP_IF_MODIFIED_SINCE'];
-        if (false !== ($semicolon = strrpos($ifModifiedSince, ';'))) {
-            // IE has tacked on extra data to this header, strip it
-            $ifModifiedSince = substr($ifModifiedSince, 0, $semicolon);
-        }
-        if ($ifModifiedSince == self::gmtDate($this->_lmTime)) {
+        // strip off IE's extra data (semicolon)
+        list($ifModifiedSince) = explode(';', $_SERVER['HTTP_IF_MODIFIED_SINCE'], 2);
+        if (strtotime($ifModifiedSince) >= $this->_lmTime) {
             // Apache 2.2's behavior. If there was no ETag match, send the 
             // non-encoded version of the ETag value.
             $this->_headers['ETag'] = $this->normalizeEtag($this->_etag);

@@ -23,12 +23,12 @@ function test_HTML()
     
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         if ($passed) {
-            echo "\n---Source: ", strlen($src), " bytes\n"
-               , "---Output: ", strlen($minOutput), " bytes (", round($time * 1000), " ms)\n\n{$minOutput}\n\n\n";
+            echo "\n---Source: ", countBytes($src), " bytes\n"
+               , "---Output: ", countBytes($minOutput), " bytes (", round($time * 1000), " ms)\n\n{$minOutput}\n\n\n";
         } else {
-            echo "\n---Output: ", strlen($minOutput), " bytes (", round($time * 1000), " ms)\n\n{$minOutput}\n\n"
-               , "---Expected: ", strlen($minExpected), " bytes\n\n{$minExpected}\n\n"
-               , "---Source: ", strlen($src), " bytes\n\n{$src}\n\n\n";
+            echo "\n---Output: ", countBytes($minOutput), " bytes (", round($time * 1000), " ms)\n\n{$minOutput}\n\n"
+               , "---Expected: ", countBytes($minExpected), " bytes\n\n{$minExpected}\n\n"
+               , "---Source: ", countBytes($src), " bytes\n\n{$src}\n\n\n";
         }
     }
     
@@ -46,12 +46,12 @@ function test_HTML()
     
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         if ($passed) {
-            echo "\n---Source: ", strlen($src), " bytes\n"
-               , "---Output: ", strlen($minOutput), " bytes (", round($time * 1000), " ms)\n\n{$minOutput}\n\n\n";
+            echo "\n---Source: ", countBytes($src), " bytes\n"
+               , "---Output: ", countBytes($minOutput), " bytes (", round($time * 1000), " ms)\n\n{$minOutput}\n\n\n";
         } else {
-            echo "\n---Output: ", strlen($minOutput), " bytes (", round($time * 1000), " ms)\n\n{$minOutput}\n\n"
-               , "---Expected: ", strlen($minExpected), " bytes\n\n{$minExpected}\n\n"
-               , "---Source: ", strlen($src), " bytes\n\n{$src}\n\n\n";
+            echo "\n---Output: ", countBytes($minOutput), " bytes (", round($time * 1000), " ms)\n\n{$minOutput}\n\n"
+               , "---Expected: ", countBytes($minExpected), " bytes\n\n{$minExpected}\n\n"
+               , "---Source: ", countBytes($src), " bytes\n\n{$src}\n\n\n";
         }
     }
 }

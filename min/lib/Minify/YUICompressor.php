@@ -110,7 +110,7 @@ class Minify_YUICompressor {
         );
         $cmd = self::$javaExecutable . ' -jar ' . escapeshellarg(self::$jarFile)
              . " --type {$type}"
-             . (preg_match('/^[a-zA-Z\\-]+$/', $o['charset']) 
+             . (preg_match('/^[\\da-zA-Z0-9\\-]+$/', $o['charset'])
                 ? " --charset {$o['charset']}" 
                 : '')
              . (is_numeric($o['line-break']) && $o['line-break'] >= 0
@@ -128,11 +128,14 @@ class Minify_YUICompressor {
     
     private static function _prepare()
     {
-        if (! is_file(self::$jarFile) 
-            || ! is_dir(self::$tempDir)
-            || ! is_writable(self::$tempDir)
-        ) {
-            throw new Exception('Minify_YUICompressor : $jarFile and $tempDir must be set.');
+        if (! is_file(self::$jarFile)) {
+            throw new Exception('Minify_YUICompressor : $jarFile('.self::$jarFile.') is not a valid file.');
+        }
+        if (! is_dir(self::$tempDir)) {
+            throw new Exception('Minify_YUICompressor : $tempDir('.self::$tempDir.') is not a valid direcotry.');
+        }
+        if (! is_writable(self::$tempDir)) {
+            throw new Exception('Minify_YUICompressor : $tempDir('.self::$tempDir.') is not writable.');
         }
     }
 }

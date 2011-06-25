@@ -26,9 +26,9 @@ function test_Lines()
     $passed = assertTrue($exp === $ret['content'], 'Minify_Lines');
         
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
-        echo "\n---Output: " .strlen($ret['content']). " bytes\n\n{$ret['content']}\n\n";
+        echo "\n---Output: " .countBytes($ret['content']). " bytes\n\n{$ret['content']}\n\n";
         if (!$passed) {
-            echo "---Expected: " .strlen($exp). " bytes\n\n{$exp}\n\n\n";
+            echo "---Expected: " .countBytes($exp). " bytes\n\n{$exp}\n\n\n";
         }
     }
 }

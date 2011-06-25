@@ -66,9 +66,9 @@ to the /js and /themes/default directories, use:
 $min_serveOptions['minApp']['allowDirs'] = array('//js', '//themes/default');
 
 
-GROUPS: FASTER PERFORMANCE AND BETTER URLS
+GROUPS: NICER URLS
 
-For the best performance, edit groupsConfig.php to pre-specify groups of files 
+For nicer URLs, edit groupsConfig.php to pre-specify groups of files
 to be combined under preset keys. E.g., here's an example configuration in 
 groupsConfig.php:
 
@@ -82,7 +82,7 @@ This pre-selects the following files to be combined under the key "js":
   
 You can now serve these files with this simple URL:
   http://example.com/min/?g=js
-  
+
 
 GROUPS: SPECIFYING FILES OUTSIDE THE DOC_ROOT
 
@@ -99,6 +99,14 @@ return array(
 );
 
 
+COMBINE MULTIPLE GROUPS AND FILES IN ONE URL
+
+E.g.: http://example.com/min/?g=js&f=more/scripts.js
+
+Separate group keys with commas:
+  http://example.com/min/?g=baseCss,css1&f=moreStyles.css
+
+
 FAR-FUTURE EXPIRES HEADERS
 
 Minify can send far-future (one year) Expires headers. To enable this you must
@@ -106,15 +114,20 @@ add a number to the querystring (e.g. /min/?g=js&1234 or /min/f=file.js&1234)
 and alter it whenever a source file is changed. If you have a build process you 
 can use a build/source control revision number.
 
-If you serve files as a group, you can use the utility function Minify_groupUri()
-to get a "versioned" Minify URI for use in your HTML. E.g.:
+You can alternately use the utility function Minify_getUri() to get a "versioned"
+Minify URI for use in your HTML. E.g.:
 
 <?php
-// add /min/lib to your include_path first!
 require $_SERVER['DOCUMENT_ROOT'] . '/min/utils.php';
 
-$jsUri = Minify_groupUri('js'); 
-echo "<script type='text/javascript' src='{$jsUri}'></script>";
+$jsUri = Minify_getUri('js'); // a key in groupsConfig.php
+echo "<script src='{$jsUri}'></script>";
+
+$cssUri = Minify_getUri(array(
+     '//css/styles1.css'
+    ,'//css/styles2.css'
+)); // a list of files
+echo "<link rel=stylesheet href='{$cssUri}'>";
 
 
 DEBUG MODE
