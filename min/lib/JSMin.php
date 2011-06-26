@@ -1,20 +1,20 @@
 <?php
 /**
- * jsmin.php - extended PHP implementation of Douglas Crockford's JSMin.
+ * JSMin.php - modified PHP implementation of Douglas Crockford's JSMin.
  *
  * <code>
  * $minifiedJs = JSMin::minify($js);
  * </code>
  *
- * This is a direct port of jsmin.c to PHP with a few PHP performance tweaks and
- * modifications to preserve some comments (see below). Also, rather than using
- * stdin/stdout, JSMin::minify() accepts a string as input and returns another
- * string as output.
+ * This is a modified port of jsmin.c. Improvements:
+ * 
+ * Does not choke on some regexp literals containing quote characters. E.g. /'/
+ * 
+ * Spaces are preserved after some add/sub operators, so they are not mistakenly 
+ * converted to post-inc/dec. E.g. a + ++b -> a+ ++b
  *
- * Comments containing IE conditional compilation are preserved, as are multi-line
- * comments that begin with "/*!" (for documentation purposes). In the latter case
- * newlines are inserted around the comment to enhance readability.
- *
+ * Preserves multi-line comments that begin with /*!
+ * 
  * PHP 5 or higher is required.
  *
  * Permission is hereby granted to use this version of the library under the
@@ -68,6 +68,7 @@ class JSMin {
     protected $inputLength = 0;
     protected $lookAhead   = null;
     protected $output      = '';
+    protected $lastByteOut  = '';
 
     /**
      * Minify Javascript.
@@ -87,13 +88,6 @@ class JSMin {
     public function __construct($input)
     {
         $this->input = $input;
-        // look out for syntax like "++ +" and "- ++"
-        $p = '\\+';
-        $m = '\\-';
-        if (preg_match("/([$p$m])(?:\\1 [$p$m]| (?:$p$p|$m$m))/", $input)) {
-            // likely pre-minified and would be broken by JSMin
-            $this->output = $input;
-        }
     }
 
     /**
@@ -119,7 +113,11 @@ class JSMin {
             // determine next command
             $command = self::ACTION_KEEP_A; // default
             if ($this->a === ' ') {
-                if (! $this->isAlphaNum($this->b)) {
+                if (($this->lastByteOut === '+' || $this->lastByteOut === '-') 
+                    && ($this->b === $this->lastByteOut)) {
+                    // Don't delete this space. If we do, the addition/subtraction
+                    // could be parsed as a post-increment
+                } elseif (! $this->isAlphaNum($this->b)) {
                     $command = self::ACTION_DELETE_A;
                 }
             } elseif ($this->a === "\n") {
@@ -134,7 +132,7 @@ class JSMin {
                 }
             } elseif (! $this->isAlphaNum($this->a)) {
                 if ($this->b === ' '
-                    || ($this->b === "\n"
+                    || ($this->b === "\n" 
                         && (false === strpos('}])+-"\'', $this->a)))) {
                     $command = self::ACTION_DELETE_A_B;
                 }
@@ -156,9 +154,21 @@ class JSMin {
      */
     protected function action($command)
     {
+        if ($command === self::ACTION_DELETE_A_B 
+            && $this->b === ' '
+            && ($this->a === '+' || $this->a === '-')) {
+            // Note: we're at an addition/substraction operator; the inputIndex
+            // will certainly be a valid index
+            if ($this->input[$this->inputIndex] === $this->a) {
+                // This is "+ +" or "- -". Don't delete the space.
+                $command = self::ACTION_KEEP_A;
+            }
+        }
         switch ($command) {
             case self::ACTION_KEEP_A:
                 $this->output .= $this->a;
+                $this->lastByteOut = $this->a;
+                
                 // fallthrough
             case self::ACTION_DELETE_A:
                 $this->a = $this->b;
@@ -166,6 +176,8 @@ class JSMin {
                     $str = $this->a; // in case needed for exception
                     while (true) {
                         $this->output .= $this->a;
+                        $this->lastByteOut = $this->a;
+                        
                         $this->a       = $this->get();
                         if ($this->a === $this->b) { // end quote
                             break;
@@ -178,6 +190,8 @@ class JSMin {
                         $str .= $this->a;
                         if ($this->a === '\\') {
                             $this->output .= $this->a;
+                            $this->lastByteOut = $this->a;
+                            
                             $this->a       = $this->get();
                             $str .= $this->a;
                         }
@@ -204,6 +218,7 @@ class JSMin {
                                 . $this->inputIndex .": {$pattern}");
                         }
                         $this->output .= $this->a;
+                        $this->lastByteOut = $this->a;
                     }
                     $this->b = $this->next();
                 }

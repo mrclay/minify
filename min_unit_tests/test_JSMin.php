@@ -6,7 +6,7 @@ require_once 'JSMin.php';
 function test_JSMin()
 {
     global $thisDir;
-    
+   
     $src = file_get_contents($thisDir . '/_test_files/js/before.js');
     $minExpected = file_get_contents($thisDir . '/_test_files/js/before.min.js');
     $minOutput = JSMin::minify($src);
@@ -16,11 +16,16 @@ function test_JSMin()
         echo "---Expected: " .countBytes($minExpected). " bytes\n\n{$minExpected}\n\n";
         echo "---Source: " .countBytes($src). " bytes\n\n{$src}\n\n\n";
     }
-    
+
     $src = file_get_contents($thisDir . '/_test_files/js/issue144.js');
     $minExpected = file_get_contents($thisDir . '/_test_files/js/issue144.min.js');
     $minOutput = JSMin::minify($src);
-    $passed = assertTrue($minExpected == $minOutput, 'JSMin : Don\'t minify files with + ++ (Issue 144)');
+    $passed = assertTrue($minExpected == $minOutput, 'JSMin : Handle "+ ++a" syntax (Issue 144)');
+    if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
+        echo "\n---Output: " .countBytes($minOutput). " bytes\n\n{$minOutput}\n\n";
+        echo "---Expected: " .countBytes($minExpected). " bytes\n\n{$minExpected}\n\n";
+        echo "---Source: " .countBytes($src). " bytes\n\n{$src}\n\n\n";
+    }
 
     if (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2)) {
         $src = file_get_contents($thisDir . '/_test_files/js/issue132.js');
