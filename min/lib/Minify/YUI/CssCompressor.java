@@ -1,13 +1,13 @@
 /*
  * YUI Compressor
+ * http://developer.yahoo.com/yui/compressor/
  * Author: Julien Lecomte -  http://www.julienlecomte.net/
- * Author: Isaac Schlueter - http://foohack.com/ 
+ * Author: Isaac Schlueter - http://foohack.com/
  * Author: Stoyan Stefanov - http://phpied.com/
- * Copyright (c) 2009 Yahoo! Inc.  All rights reserved.
+ * Copyright (c) 2011 Yahoo! Inc.  All rights reserved.
  * The copyrights embodied in the content of this file are licensed
  * by Yahoo! Inc. under the BSD (revised) open source license.
  */
-
 package com.yahoo.platform.yui.compressor;
 
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.util.ArrayList; 
+import java.util.ArrayList;
 
 public class CssCompressor {
 
@@ -36,7 +36,7 @@ public class CssCompressor {
         Matcher m;
         String css = srcsb.toString();
         StringBuffer sb = new StringBuffer(css);
-        
+
         int startIndex = 0;
         int endIndex = 0;
         int i = 0;
@@ -47,6 +47,19 @@ public class CssCompressor {
         int totallen = css.length();
         String placeholder;
 
+        // // leave data urls alone to increase parse performance.
+        // sb = new StringBuffer();
+        // p = Pattern.compile("url\\(.*data\\:(.*)\\)");
+        // m = p.matcher(css);
+        // while (m.find()) {
+        //     token = m.group();
+        //     token = token.substring(1, token.length() - 1);
+        //     preservedTokens.add(token);
+        //     String preserver = "___YUICSSMIN_PRESERVED_TOKEN_" + (preservedTokens.size() - 1) + "___";
+        //     m.appendReplacement(sb, preserver);
+        // }
+        // m.appendTail(sb);
+        // css = sb.toString();
 
         // collect all comment blocks...
         while ((startIndex = sb.indexOf("/*", startIndex)) >= 0) {
@@ -54,7 +67,7 @@ public class CssCompressor {
             if (endIndex < 0) {
                 endIndex = totallen;
             }
-            
+
             token = sb.substring(startIndex + 2, endIndex);
             comments.add(token);
             sb.replace(startIndex + 2, endIndex, "___YUICSSMIN_PRESERVE_CANDIDATE_COMMENT_" + (comments.size() - 1) + "___");
@@ -70,7 +83,7 @@ public class CssCompressor {
             token = m.group();
             char quote = token.charAt(0);
             token = token.substring(1, token.length() - 1);
-            
+
             // maybe the string contains a comment-like substring?
             // one, maybe more? put'em back then
             if (token.indexOf("___YUICSSMIN_PRESERVE_CANDIDATE_COMMENT_") >= 0) {
@@ -78,10 +91,10 @@ public class CssCompressor {
                     token = token.replace("___YUICSSMIN_PRESERVE_CANDIDATE_COMMENT_" + i + "___", comments.get(i).toString());
                 }
             }
-            
+
             // minify alpha opacity in filter strings
             token = token.replaceAll("(?i)progid:DXImageTransform.Microsoft.Alpha\\(Opacity=", "alpha(opacity=");
-            
+
             preservedTokens.add(token);
             String preserver = quote + "___YUICSSMIN_PRESERVED_TOKEN_" + (preservedTokens.size() - 1) + "___" + quote;
             m.appendReplacement(sb, preserver);
@@ -95,7 +108,7 @@ public class CssCompressor {
 
             token = comments.get(i).toString();
             placeholder = "___YUICSSMIN_PRESERVE_CANDIDATE_COMMENT_" + i + "___";
-            
+
             // ! in the first position of the comment means preserve
             // so push to the preserved tokens while stripping the !
             if (token.startsWith("!")) {
@@ -103,7 +116,7 @@ public class CssCompressor {
                 css = css.replace(placeholder,  "___YUICSSMIN_PRESERVED_TOKEN_" + (preservedTokens.size() - 1) + "___");
                 continue;
             }
-            
+
             // \ in the last position looks like hack for Mac/IE5
             // shorten that to /*\*/ and the next one to /**/
             if (token.endsWith("\\")) {
@@ -111,10 +124,10 @@ public class CssCompressor {
                 css = css.replace(placeholder,  "___YUICSSMIN_PRESERVED_TOKEN_" + (preservedTokens.size() - 1) + "___");
                 i = i + 1; // attn: advancing the loop
                 preservedTokens.add("");
-                css = css.replace("___YUICSSMIN_PRESERVE_CANDIDATE_COMMENT_" + i + "___",  "___YUICSSMIN_PRESERVED_TOKEN_" + (preservedTokens.size() - 1) + "___");            
+                css = css.replace("___YUICSSMIN_PRESERVE_CANDIDATE_COMMENT_" + i + "___",  "___YUICSSMIN_PRESERVED_TOKEN_" + (preservedTokens.size() - 1) + "___");
                 continue;
             }
-            
+
             // keep empty comments after child selectors (IE7 hack)
             // e.g. html >/**/ body
             if (token.length() == 0) {
@@ -126,7 +139,7 @@ public class CssCompressor {
                     }
                 }
             }
-            
+
             // in all other cases kill the comment
             css = css.replace("/*" + placeholder + "*/", "");
         }
@@ -153,20 +166,20 @@ public class CssCompressor {
         css = css.replaceAll("\\s+([!{};:>+\\(\\)\\],])", "$1");
         // bring back the colon
         css = css.replaceAll("___YUICSSMIN_PSEUDOCLASSCOLON___", ":");
-        
+
         // retain space for special IE6 cases
         css = css.replaceAll(":first\\-(line|letter)(\\{|,)", ":first-$1 $2");
-        
+
         // no space after the end of a preserved comment
-        css = css.replaceAll("\\*/ ", "*/"); 
-        
+        css = css.replaceAll("\\*/ ", "*/");
+
         // If there is a @charset, then only allow one, and push to the top of the file.
         css = css.replaceAll("^(.*)(@charset \"[^\"]*\";)", "$2$1");
         css = css.replaceAll("^(\\s*@charset [^;]+;\\s*)+", "$1");
-        
+
         // Put the space back in some cases, to support stuff like
         // @media screen and (-webkit-min-device-pixel-ratio:0){
-        css = css.replaceAll("\\band\\(", "and (");       
+        css = css.replaceAll("\\band\\(", "and (");
 
         // Remove the spaces after the things that should not have spaces after them.
         css = css.replaceAll("([!{}:;>+\\(\\[,])\\s+", "$1");
@@ -181,8 +194,8 @@ public class CssCompressor {
         css = css.replaceAll(":0 0 0 0(;|})", ":0$1");
         css = css.replaceAll(":0 0 0(;|})", ":0$1");
         css = css.replaceAll(":0 0(;|})", ":0$1");
-        
-        
+
+
         // Replace background-position:0; with background-position:0 0;
         // same for transform-origin
         sb = new StringBuffer();
@@ -193,7 +206,7 @@ public class CssCompressor {
         }
         m.appendTail(sb);
         css = sb.toString();
-        
+
         // Replace 0.6 to .6, but only when preceded by : or a white-space
         css = css.replaceAll("(:|\\s)0+\\.(\\d+)", "$1.$2");
 
@@ -227,12 +240,17 @@ public class CssCompressor {
         m = p.matcher(css);
         sb = new StringBuffer();
         while (m.find()) {
-            // Test for AABBCC pattern
-            if (m.group(3).equalsIgnoreCase(m.group(4)) &&
+            if (m.group(1).equals("}")) {
+                // Likely an ID selector. Don't touch.
+                // #AABBCC is a valid ID. IDs are case-sensitive.
+                m.appendReplacement(sb, m.group());
+            } else if (m.group(3).equalsIgnoreCase(m.group(4)) &&
                     m.group(5).equalsIgnoreCase(m.group(6)) &&
                     m.group(7).equalsIgnoreCase(m.group(8))) {
+                // #AABBCC pattern
                 m.appendReplacement(sb, (m.group(1) + m.group(2) + "#" + m.group(3) + m.group(5) + m.group(7)).toLowerCase());
             } else {
+                // Any other color.
                 m.appendReplacement(sb, m.group().toLowerCase());
             }
         }
