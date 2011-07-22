@@ -13,8 +13,6 @@
  * by Yahoo! Inc. under the BSD (revised) open source license.
  */
 
-require_once dirname(__FILE__) . '/Java/String.php';
-
 /**
  * Compress CSS (incomplete DO NOT USE)
  *
