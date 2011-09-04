@@ -25,8 +25,7 @@ Minify::setCache(
 
 if ($min_documentRoot) {
     $_SERVER['DOCUMENT_ROOT'] = $min_documentRoot;
-} elseif (0 === stripos(PHP_OS, 'win')) {
-    Minify::setDocRoot(); // IIS may need help
+    Minify::$isDocRootSet = true;
 }
 
 $min_serveOptions['minifierOptions']['text/css']['symlinks'] = $min_symlinks;

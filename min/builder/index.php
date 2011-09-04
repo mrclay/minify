@@ -228,9 +228,6 @@ $(function () {
 $content = ob_get_clean();
 
 // setup Minify
-if (0 === stripos(PHP_OS, 'win')) {
-    Minify::setDocRoot(); // we may be on IIS
-}
 Minify::setCache(
     isset($min_cachePath) ? $min_cachePath : ''
     ,$min_cacheFileLocking
