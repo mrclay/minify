@@ -25,8 +25,7 @@ Minify::setCache(
 
 if ($min_documentRoot) {
     $_SERVER['DOCUMENT_ROOT'] = $min_documentRoot;
-} elseif (0 === stripos(PHP_OS, 'win')) {
-    Minify::setDocRoot(); // IIS may need help
+    Minify::$isDocRootSet = true;
 }
 
 $min_serveOptions['minifierOptions']['text/css']['symlinks'] = $min_symlinks;
@@ -36,18 +35,8 @@ foreach ($min_symlinks as $uri => $target) {
 }
 
 if ($min_allowDebugFlag) {
-    if (! empty($_COOKIE['minDebug'])) {
-        foreach (preg_split('/\\s+/', $_COOKIE['minDebug']) as $debugUri) {
-            if (false !== strpos($_SERVER['REQUEST_URI'], $debugUri)) {
-                $min_serveOptions['debug'] = true;
-                break;
-            }
-        }
-    }
-    // allow GET to override
-    if (isset($_GET['debug'])) {
-        $min_serveOptions['debug'] = true;
-    }
+    require_once 'Minify/DebugDetector.php';
+    $min_serveOptions['debug'] = Minify_DebugDetector::shouldDebugRequest($_COOKIE, $_GET, $_SERVER['REQUEST_URI']);
 }
 
 if ($min_errorLogger) {

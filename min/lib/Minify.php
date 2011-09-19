@@ -59,7 +59,14 @@ class Minify {
      * @var string $importWarning
      */
     public static $importWarning = "/* See http://code.google.com/p/minify/wiki/CommonProblems#@imports_can_appear_in_invalid_locations_in_combined_CSS_files */\n";
-    
+
+    /**
+     * Has the DOCUMENT_ROOT been set in user code?
+     * 
+     * @var bool
+     */
+    public static $isDocRootSet = false;
+
     /**
      * Specify a cache object (with identical interface as Minify_Cache_File) or
      * a path to use with Minify_Cache_File.
@@ -160,6 +167,10 @@ class Minify {
      */
     public static function serve($controller, $options = array())
     {
+        if (! self::$isDocRootSet && 0 === stripos(PHP_OS, 'win')) {
+            self::setDocRoot();
+        }
+
         if (is_string($controller)) {
             // make $controller into object
             $class = 'Minify_Controller_' . $controller;
@@ -252,7 +263,6 @@ class Minify {
         
         if (self::$_options['contentType'] === self::TYPE_CSS
             && self::$_options['rewriteCssUris']) {
-            reset($controller->sources);
             foreach($controller->sources as $key => $source) {
                 if ($source->filepath 
                     && !isset($source->minifyOptions['currentDir'])
@@ -401,6 +411,7 @@ class Minify {
             require_once 'Minify/Logger.php';
             Minify_Logger::log("setDocRoot() set DOCUMENT_ROOT to \"{$_SERVER['DOCUMENT_ROOT']}\"");
         }
+        self::$isDocRootSet = true;
     }
     
     /**
