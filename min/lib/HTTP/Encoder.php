@@ -318,6 +318,9 @@ class HTTP_Encoder {
      */
     public static function isBuggyIe()
     {
+        if (empty($_SERVER['HTTP_USER_AGENT'])) {
+            return false;
+        }
         $ua = $_SERVER['HTTP_USER_AGENT'];
         // quick escape for non-IEs
         if (0 !== strpos($ua, 'Mozilla/4.0 (compatible; MSIE ')
