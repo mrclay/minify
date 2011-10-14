@@ -291,7 +291,8 @@ class Minify {
             } else {
                 // generate & cache content
                 try {
-                    $content = self::_combineMinify();
+                    require_once dirname(__FILE__) . '/Minify/Processor.php';
+                    $content = Minify_Processor::process($controller, self::$_options, self::$importWarning);
                 } catch (Exception $e) {
                     self::$_controller->log($e->getMessage());
                     if (! self::$_options['quiet']) {
@@ -308,7 +309,8 @@ class Minify {
             // no cache
             $cacheIsReady = false;
             try {
-                $content = self::_combineMinify();
+                require_once dirname(__FILE__) . '/Minify/Processor.php';
+                $content = Minify_Processor::process($controller, self::$_options, self::$importWarning);
             } catch (Exception $e) {
                 self::$_controller->log($e->getMessage());
                 if (! self::$_options['quiet']) {
@@ -457,103 +459,6 @@ class Minify {
     }
     
     /**
-     * Combines sources and minifies the result.
-     *
-     * @return string
-     */
-    protected static function _combineMinify()
-    {
-        $type = self::$_options['contentType']; // ease readability
-        
-        // when combining scripts, make sure all statements separated and
-        // trailing single line comment is terminated
-        $implodeSeparator = ($type === self::TYPE_JS)
-            ? "\n;"
-            : '';
-        // allow the user to pass a particular array of options to each
-        // minifier (designated by type). source objects may still override
-        // these
-        $defaultOptions = isset(self::$_options['minifierOptions'][$type])
-            ? self::$_options['minifierOptions'][$type]
-            : array();
-        // if minifier not set, default is no minification. source objects
-        // may still override this
-        $defaultMinifier = isset(self::$_options['minifiers'][$type])
-            ? self::$_options['minifiers'][$type]
-            : false;
-
-        // process groups of sources with identical minifiers/options
-        $content = array();
-        $i = 0;
-        $l = count(self::$_controller->sources);
-        $groupToProcessTogether = array();
-        $lastMinifier = null;
-        $lastOptions = null;
-        do {
-            // get next source
-            $source = null;
-            if ($i < $l) {
-                $source = self::$_controller->sources[$i];
-                /* @var Minify_Source $source */
-                $sourceContent = $source->getContent();
-
-                // allow the source to override our minifier and options
-                $minifier = (null !== $source->minifier)
-                    ? $source->minifier
-                    : $defaultMinifier;
-                $options = (null !== $source->minifyOptions)
-                    ? array_merge($defaultOptions, $source->minifyOptions)
-                    : $defaultOptions;
-            }
-            // do we need to process our group right now?
-            if ($i > 0                               // yes, we have at least the first group populated
-                && (
-                    ! $source                        // yes, we ran out of sources
-                    || $type === self::TYPE_CSS      // yes, to process CSS individually (avoiding PCRE bugs/limits)
-                    || $minifier !== $lastMinifier   // yes, minifier changed
-                    || $options !== $lastOptions)    // yes, options changed
-                )
-            {
-                // minify previous sources with last settings
-                $imploded = implode($implodeSeparator, $groupToProcessTogether);
-                $groupToProcessTogether = array();
-                if ($lastMinifier) {
-                    self::$_controller->loadMinifier($lastMinifier);
-                    try {
-                        $content[] = call_user_func($lastMinifier, $imploded, $lastOptions);
-                    } catch (Exception $e) {
-                        throw new Exception("Exception in minifier: " . $e->getMessage());
-                    }
-                } else {
-                    $content[] = $imploded;
-                }
-            }
-            // add content to the group
-            if ($source) {
-                $groupToProcessTogether[] = $sourceContent;
-                $lastMinifier = $minifier;
-                $lastOptions = $options;
-            }
-            $i++;
-        } while ($source);
-
-        $content = implode($implodeSeparator, $content);
-        
-        if ($type === self::TYPE_CSS && false !== strpos($content, '@import')) {
-            $content = self::_handleCssImports($content);
-        }
-        
-        // do any post-processing (esp. for editing build URIs)
-        if (self::$_options['postprocessorRequire']) {
-            require_once self::$_options['postprocessorRequire'];
-        }
-        if (self::$_options['postprocessor']) {
-            $content = call_user_func(self::$_options['postprocessor'], $content, $type);
-        }
-        return $content;
-    }
-    
-    /**
      * Make a unique cache id for for this request.
      * 
      * Any settings that could affect output are taken into consideration  
@@ -575,31 +480,5 @@ class Minify {
             ,self::$_options['bubbleCssImports']
         )));
         return "{$prefix}_{$name}_{$md5}";
-    }
-    
-    /**
-     * Bubble CSS @imports to the top or prepend a warning if an
-     * @import is detected not at the top.
-     */
-    protected static function _handleCssImports($css)
-    {
-        if (self::$_options['bubbleCssImports']) {
-            // bubble CSS imports
-            preg_match_all('/@import.*?;/', $css, $imports);
-            $css = implode('', $imports[0]) . preg_replace('/@import.*?;/', '', $css);
-        } else if ('' !== self::$importWarning) {
-            // remove comments so we don't mistake { in a comment as a block
-            $noCommentCss = preg_replace('@/\\*[\\s\\S]*?\\*/@', '', $css);
-            $lastImportPos = strrpos($noCommentCss, '@import');
-            $firstBlockPos = strpos($noCommentCss, '{');
-            if (false !== $lastImportPos
-                && false !== $firstBlockPos
-                && $firstBlockPos < $lastImportPos
-            ) {
-                // { appears before @import : prepend warning
-                $css = self::$importWarning . $css;
-            }
-        }
-        return $css;
     }
 }
