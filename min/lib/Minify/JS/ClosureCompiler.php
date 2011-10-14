@@ -74,15 +74,32 @@ class Minify_JS_ClosureCompiler {
 
     protected function _getResponse($postBody)
     {
-        $contents = file_get_contents(self::URL, false, stream_context_create(array(
-            'http' => array(
-                'method' => 'POST',
-                'header' => 'Content-type: application/x-www-form-urlencoded',
-                'content' => $postBody,
-                'max_redirects' => 0,
-                'timeout' => 15,
-            )
-        )));
+        $allowUrlFopen = preg_match('/1|yes|on|true/i', ini_get('allow_url_fopen'));
+        if ($allowUrlFopen) {
+            $contents = file_get_contents(self::URL, false, stream_context_create(array(
+                'http' => array(
+                    'method' => 'POST',
+                    'header' => 'Content-type: application/x-www-form-urlencoded',
+                    'content' => $postBody,
+                    'max_redirects' => 0,
+                    'timeout' => 15,
+                )
+            )));
+        } elseif (defined('CURLOPT_POST')) {
+            $ch = curl_init(self::URL);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded'));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postBody);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+            $contents = curl_exec($ch);
+            curl_close($ch);
+        } else {
+            throw new Minify_JS_ClosureCompiler_Exception(
+               "Could not make HTTP request: allow_url_open is false and cURL not available"
+            );
+        }
         if (false === $contents) {
             throw new Minify_JS_ClosureCompiler_Exception(
                "No HTTP response from server"
