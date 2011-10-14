@@ -388,30 +388,24 @@ class Minify {
     }
     
     /**
-     * On IIS, create $_SERVER['DOCUMENT_ROOT']
+     * Set $_SERVER['DOCUMENT_ROOT']. On IIS, the value is created from SCRIPT_FILENAME and SCRIPT_NAME.
      * 
-     * @param bool $unsetPathInfo (default false) if true, $_SERVER['PATH_INFO']
-     * will be unset (it is inconsistent with Apache's setting)
-     * 
-     * @return null
+     * @param string $docRoot value to use for DOCUMENT_ROOT
      */
-    public static function setDocRoot($unsetPathInfo = false)
+    public static function setDocRoot($docRoot = '')
     {
-        if (isset($_SERVER['SERVER_SOFTWARE'])
-            && 0 === strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/')
+        self::$isDocRootSet = true;
+        if ($docRoot) {
+            $_SERVER['DOCUMENT_ROOT'] = $docRoot;
+        } elseif (isset($_SERVER['SERVER_SOFTWARE'])
+                  && 0 === strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/')
         ) {
             $_SERVER['DOCUMENT_ROOT'] = rtrim(substr(
                 $_SERVER['SCRIPT_FILENAME']
                 ,0
                 ,strlen($_SERVER['SCRIPT_FILENAME']) - strlen($_SERVER['SCRIPT_NAME'])
             ), '\\');
-            if ($unsetPathInfo) {
-                unset($_SERVER['PATH_INFO']);
-            }
-            require_once 'Minify/Logger.php';
-            Minify_Logger::log("setDocRoot() set DOCUMENT_ROOT to \"{$_SERVER['DOCUMENT_ROOT']}\"");
         }
-        self::$isDocRootSet = true;
     }
     
     /**
@@ -511,7 +505,7 @@ class Minify {
                     : $defaultOptions;
             }
             // do we need to process our group right now?
-            if ($i > 0                               // no, the first group doesn't exist yet
+            if ($i > 0                               // yes, we have at least the first group populated
                 && (
                     ! $source                        // yes, we ran out of sources
                     || $type === self::TYPE_CSS      // yes, to process CSS individually (avoiding PCRE bugs/limits)
