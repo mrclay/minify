@@ -98,7 +98,7 @@ function test_Minify()
     // test for Issue 73
     Minify::setCache(null);
     
-    $expected = "\n;function h(){}";
+    $expected = ";function h(){}";
     $output = Minify::serve('Files', array(
         'files' => array(
             $minifyTestPath . '/issue73_1.js'
