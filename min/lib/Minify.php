@@ -487,32 +487,63 @@ class Minify {
         $defaultMinifier = isset(self::$_options['minifiers'][$type])
             ? self::$_options['minifiers'][$type]
             : false;
-       
-        // minify each source with its own options and minifier, then combine.
-        // Here we used to combine all first but this was probably
-        // bad for PCRE performance, esp. in CSS.
-        foreach (self::$_controller->sources as $source) {
-            // allow the source to override our minifier and options
-            $minifier = (null !== $source->minifier)
-                ? $source->minifier
-                : $defaultMinifier;
-            $options = (null !== $source->minifyOptions)
-                ? array_merge($defaultOptions, $source->minifyOptions)
-                : $defaultOptions;
-            if ($minifier) {
-                self::$_controller->loadMinifier($minifier);
-                // get source content and minify it
-                try {
-                    $pieces[] = call_user_func($minifier, $source->getContent(), $options);
-                } catch (Exception $e) {
-                    throw new Exception("Exception in " . $source->getId() .
-                        ": " . $e->getMessage());
-                }
-            } else {
-                $pieces[] = $source->getContent();
+
+        // process groups of sources with identical minifiers/options
+        $content = array();
+        $i = 0;
+        $l = count(self::$_controller->sources);
+        $groupToProcessTogether = array();
+        $lastMinifier = null;
+        $lastOptions = null;
+        do {
+            // get next source
+            $source = null;
+            if ($i < $l) {
+                $source = self::$_controller->sources[$i];
+                /* @var Minify_Source $source */
+                $sourceContent = $source->getContent();
+
+                // allow the source to override our minifier and options
+                $minifier = (null !== $source->minifier)
+                    ? $source->minifier
+                    : $defaultMinifier;
+                $options = (null !== $source->minifyOptions)
+                    ? array_merge($defaultOptions, $source->minifyOptions)
+                    : $defaultOptions;
             }
-        }
-        $content = implode($implodeSeparator, $pieces);
+            // do we need to process our group right now?
+            if ($i > 0                               // no, the first group doesn't exist yet
+                && (
+                    ! $source                        // yes, we ran out of sources
+                    || $type === self::TYPE_CSS      // yes, to process CSS individually (avoiding PCRE bugs/limits)
+                    || $minifier !== $lastMinifier   // yes, minifier changed
+                    || $options !== $lastOptions)    // yes, options changed
+                )
+            {
+                // minify previous sources with last settings
+                $imploded = implode($implodeSeparator, $groupToProcessTogether);
+                $groupToProcessTogether = array();
+                if ($lastMinifier) {
+                    self::$_controller->loadMinifier($lastMinifier);
+                    try {
+                        $content[] = call_user_func($lastMinifier, $imploded, $lastOptions);
+                    } catch (Exception $e) {
+                        throw new Exception("Exception in minifier: " . $e->getMessage());
+                    }
+                } else {
+                    $content[] = $imploded;
+                }
+            }
+            // add content to the group
+            if ($source) {
+                $groupToProcessTogether[] = $sourceContent;
+                $lastMinifier = $minifier;
+                $lastOptions = $options;
+            }
+            $i++;
+        } while ($source);
+
+        $content = implode($implodeSeparator, $content);
         
         if ($type === self::TYPE_CSS && false !== strpos($content, '@import')) {
             $content = self::_handleCssImports($content);
