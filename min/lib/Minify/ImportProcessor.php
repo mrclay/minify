@@ -16,6 +16,7 @@
  *
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
+ * @author Simon Schick <simonsimcity@gmail.com>
  */
 class Minify_ImportProcessor {
     
@@ -32,17 +33,21 @@ class Minify_ImportProcessor {
     // allows callback funcs to know the current directory
     private $_currentDir = null;
     
+    // allows callback funcs to know the directory of the file that inherits this one
+    private $_previewsDir = null;
+    
     // allows _importCB to write the fetched content back to the obj
     private $_importedContent = '';
     
     private static $_isCss = null;
     
-    private function __construct($currentDir)
+    private function __construct($currentDir, $previewsDir)
     {
         $this->_currentDir = $currentDir;
+        $this->_previewsDir = $previewsDir;
     }
     
-    private function _getContent($file)
+    private function _getContent($file, $is_imported = false)
     {
         $file = realpath($file);
         if (! $file
@@ -78,7 +83,8 @@ class Minify_ImportProcessor {
             ,$content
         );
         
-        if (self::$_isCss) {
+        // You only need to rework the import-path if the script is imported
+        if (self::$_isCss && $is_imported) {
             // rewrite remaining relative URIs
             $content = preg_replace_callback(
                 '/url\\(\\s*([^\\)\\s]+)\\s*\\)/'
@@ -111,13 +117,13 @@ class Minify_ImportProcessor {
             $file = $this->_currentDir . DIRECTORY_SEPARATOR 
                 . strtr($url, '/', DIRECTORY_SEPARATOR);
         }
-        $obj = new Minify_ImportProcessor(dirname($file));
-        $content = $obj->_getContent($file);
+        $obj = new Minify_ImportProcessor(dirname($file), $this->__currentDir);
+        $content = $obj->_getContent($file, true);
         if ('' === $content) {
             // failed. leave in place for CSS, comment for JS
             return self::$_isCss
                 ? $m[0]
-                : "/* Minify_ImportProcessor could not fetch '{$file}' */";;
+                : "/* Minify_ImportProcessor could not fetch '{$file}' */";
         }
         return (!self::$_isCss || preg_match('@(?:^$|\\ball\\b)@', $mediaList))
             ? $content
@@ -140,18 +146,21 @@ class Minify_ImportProcessor {
                 // prepend path with current dir separator (OS-independent)
                 $path = $this->_currentDir 
                     . DIRECTORY_SEPARATOR . strtr($url, '/', DIRECTORY_SEPARATOR);
-                // strip doc root
-                $path = substr($path, strlen(realpath($_SERVER['DOCUMENT_ROOT'])));
-                // fix to absolute URL
-                $url = strtr($path, '/\\', '//');
-                // remove /./ and /../ where possible
-                $url = str_replace('/./', '/', $url);
-                // inspired by patch from Oleg Cherniy
-                do {
-                    $url = preg_replace('@/[^/]+/\\.\\./@', '/', $url, 1, $changed);
-                } while ($changed);
+                // update the relative path by the directory of the file that imported this one
+                $url = self::getPathDiff(realpath($this->_previewsDir), $path);
             }
         }
         return "url({$quote}{$url}{$quote})";
     }
+
+    private function getPathDiff($from, $to, $ps = '/') {
+		$arFrom = explode($ps, rtrim($from, $ps));
+		$arTo = explode($ps, rtrim($to, $ps));
+		while(count($arFrom) && count($arTo) && ($arFrom[0] == $arTo[0]))
+		{
+		  array_shift($arFrom);
+		  array_shift($arTo);
+		}
+		return str_pad("", count($arFrom) * 3, '..'.$ps).implode($ps, $arTo);
+	}
 }
