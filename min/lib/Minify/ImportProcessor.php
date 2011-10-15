@@ -41,7 +41,11 @@ class Minify_ImportProcessor {
     
     private static $_isCss = null;
     
-    private function __construct($currentDir, $previewsDir)
+    /**
+     * @param String $currentDir
+     * @param String $previewsDir Is only used internally
+     */
+    private function __construct($currentDir, $previewsDir = "")
     {
         $this->_currentDir = $currentDir;
         $this->_previewsDir = $previewsDir;
