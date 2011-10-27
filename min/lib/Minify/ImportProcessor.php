@@ -148,7 +148,7 @@ class Minify_ImportProcessor {
                 $url = str_replace('/./', '/', $url);
                 // inspired by patch from Oleg Cherniy
                 do {
-                    $url = preg_replace('@/[^/]+/\\.\\./@', '/', $url, 1, $changed);
+                    $url = preg_replace('@/(?!\\.\\.?)[^/]+/\\.\\.@', '/', $url, 1, $changed);
                 } while ($changed);
             }
         }
