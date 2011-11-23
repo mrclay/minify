@@ -1,4 +1,0 @@
-@import url( adjacent.css ) screen;
-@import "1/tv.css" tv, projection;
-input foo { background: red url(/red.gif); }
-input bar { background: url('../green.gif') }
