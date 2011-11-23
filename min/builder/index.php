@@ -53,7 +53,7 @@ if (! isset($min_cachePath) && ! function_exists('sys_get_temp_dir')) {
 
 ob_start();
 ?>
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <title>Minify URI Builder</title>
 <meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
 <style>
@@ -176,52 +176,51 @@ by Minify. E.g. <code>@import "<span class=minRoot>/min/?</span>g=css2";</code><
  list</a>.</p>
  <p><small>Powered by Minify <?php echo Minify::VERSION; ?></small></p>
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.3/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="jquery-1.6.3.min.js"><\/script>')</script>
 <script>
-$(function () {
-    // give Minify a few seconds to serve _index.js before showing scary red warning
-    setTimeout(function () {
-        if (! window.MUB) {
-            // Minify didn't load
-            $('#jsDidntLoad').css({display:'block'});
-        }
-    }, 3000);
+(function () {
+    // workaround required to test when /min isn't child of web root
+    var src = "../?f=" + location.pathname.replace(/\/[^\/]*$/, '/_index.js').substr(1);
+    // load script immediately
+    document.write('<\script src="' + src + '"><\/script>');
+    $(function () {
+        $('#builderScriptSrc')[0].href = src;
+        // give Minify a few seconds to serve _index.js before showing scary red warning
+        setTimeout(function () {
+            if (! window.MUB) {
+                // Minify didn't load
+                $('#jsDidntLoad').css({display:'block'});
+            }
+        }, 3000);
 
-    // detection of double output encoding
-    var msg = '<\p class=topWarning><\strong>Warning:<\/strong> ';
-    var url = 'ocCheck.php?' + (new Date()).getTime();
-    $.get(url, function (ocStatus) {
-        $.get(url + '&hello=1', function (ocHello) {
-            if (ocHello != 'World!') {
-                msg += 'It appears output is being automatically compressed, interfering ' 
-                     + ' with Minify\'s own compression. ';
-                if (ocStatus == '1')
-                    msg += 'The option "zlib.output_compression" is enabled in your PHP configuration. '
-                         + 'Minify set this to "0", but it had no effect. This option must be disabled ' 
-                         + 'in php.ini or .htaccess.';
-                else
-                    msg += 'The option "zlib.output_compression" is disabled in your PHP configuration '
-                         + 'so this behavior is likely due to a server option.';
-                $(document.body).prepend(msg + '<\/p>');
-            } else
-                if (ocStatus == '1')
-                    $(document.body).prepend('<\p class=topNote><\strong>Note:</\strong> The option '
-                        + '"zlib.output_compression" is enabled in your PHP configuration, but has been '
-                        + 'successfully disabled via ini_set(). If you experience mangled output you '
-                        + 'may want to consider disabling this option in your PHP configuration.<\/p>'
-                    );
+        // detection of double output encoding
+        var msg = '<\p class=topWarning><\strong>Warning:<\/strong> ';
+        var url = 'ocCheck.php?' + (new Date()).getTime();
+        $.get(url, function (ocStatus) {
+            $.get(url + '&hello=1', function (ocHello) {
+                if (ocHello != 'World!') {
+                    msg += 'It appears output is being automatically compressed, interfering '
+                         + ' with Minify\'s own compression. ';
+                    if (ocStatus == '1')
+                        msg += 'The option "zlib.output_compression" is enabled in your PHP configuration. '
+                             + 'Minify set this to "0", but it had no effect. This option must be disabled '
+                             + 'in php.ini or .htaccess.';
+                    else
+                        msg += 'The option "zlib.output_compression" is disabled in your PHP configuration '
+                             + 'so this behavior is likely due to a server option.';
+                    $(document.body).prepend(msg + '<\/p>');
+                } else
+                    if (ocStatus == '1')
+                        $(document.body).prepend('<\p class=topNote><\strong>Note:</\strong> The option '
+                            + '"zlib.output_compression" is enabled in your PHP configuration, but has been '
+                            + 'successfully disabled via ini_set(). If you experience mangled output you '
+                            + 'may want to consider disabling this option in your PHP configuration.<\/p>'
+                        );
+            });
         });
     });
-});
-</script>
-<script>
-// workaround required to test when /min isn't child of web root
-var src = location.pathname.replace(/\/[^\/]*$/, '/_index.js').substr(1);
-src = "../?f=" + src;
-document.write('<\script type="text/javascript" src="' + src + '"><\/script>');
-$(function () {
-    $('#builderScriptSrc')[0].href = src;
-});
+})();
 </script>
 </body>
 <?php
