@@ -1,0 +1,52 @@
+@media screen {
+@charset "utf-8";
+
+/* some CSS to try to exercise things in general */
+
+@import     url(/more.css);
+
+    body, td, th {
+        font-family: Verdana , "Bitstream Vera Sans" , Arial Narrow, sans-serif ;
+
+	font-size  : 12px;
+}
+
+.nav {
+    margin-left: 20%;
+}
+#main-nav {
+    background-color: red;
+    border: 1px solid #00ff77;
+}
+
+div#content 
+h1 + p {
+    padding-top: 0;
+    margin-top: 0;
+}
+
+@media all and (min-width: 640px) {
+	#media-queries-1 { background-color: #0f0; }
+}	
+
+@media screen and (max-width: 2000px) {
+	#media-queries-2 { background-color: #0f0; }
+}
+@import url(http://example.com/hello.css);
+adjacent foo { background: red url(/red.gif); }
+adjacent bar { background: url('../green.gif') }
+}
+
+@media tv,projection {
+/* @import url('1/bad.css') bad; */
+adjacent2 foo { background: red url(/red.gif); }
+adjacent2 bar { background: url('green.gif') }
+@import '../input.css';
+tv foo { background: red url(/red.gif); }
+tv bar { background: url('green.gif') }
+}
+
+input.test bar { background: url('../lib/img/green.gif') }
+
+input foo { background: red url(/red.gif); }
+input bar { background: url('../green.gif') }
