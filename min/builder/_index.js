@@ -26,8 +26,8 @@ var MUB = {
      */
     newLi : function () {
         return '<li id="li' + MUB._uid + '">http://' + location.host + '/<input type=text size=20>' +
-        ' <button title="Remove">x</button> <button title="Include Earlier">&uarr;</button>' +
-        ' <button title="Include Later">&darr;</button> <span></span></li>';
+        ' <button title="Remove" class="btn small default">x</button> <button title="Include Earlier" class="btn small default">&uarr;</button>' +
+        ' <button title="Include Later" class="btn small default">&darr;</button> <span></span></li>';
     },
     /**
      * Add new empty source LI and attach handlers to buttons
@@ -77,9 +77,9 @@ var MUB = {
             url : url,
             complete : function (xhr, stat) {
                 if ('success' === stat)
-                    $('span', li).html('&#x2713;');
+                    $('span', li).html('<a href="#" class="btn small success disabled">&#x2713;</a>');
                 else {
-                    $('span', li).html('<button><b>404! </b> recheck</button>')
+                    $('span', li).html('<button class="btn small danger"><b>404! </b> recheck</button>')
                         .find('button').click(function () {
                             MUB.liUpdateTestLink.call(li);
                         });

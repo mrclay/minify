@@ -56,25 +56,7 @@ ob_start();
 <!DOCTYPE html>
 <title>Minify URI Builder</title>
 <meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
-<style>
-body {margin:1em 60px;}
-h1, h2, h3 {margin-left:-25px; position:relative;}
-h1 {margin-top:0;}
-#sources {margin:0; padding:0;}
-#sources li {margin:0 0 0 40px}
-#sources li input {margin-left:2px}
-#add {margin:5px 0 1em 40px}
-.hide {display:none}
-#uriTable {border-collapse:collapse;}
-#uriTable td, #uriTable th {padding-top:10px;}
-#uriTable th {padding-right:10px;}
-#groupConfig {font-family:monospace;}
-b {color:#c00}
-.topNote {background: #ff9; display:inline-block; padding:.5em .6em; margin:0 0 1em;}
-.topWarning {background:#c00; color:#fff; padding:.5em .6em; margin:0 0 1em;}
-.topWarning a {color:#fff;}
-#jsDidntLoad {display:none;}
-</style>
+<link href="css/bootstrap.min.css" rel="stylesheet">
 <body>
 <?php if ($symlinkOption): ?>
     <div class=topNote><strong>Note:</strong> It looks like you're running Minify in a user
@@ -84,7 +66,7 @@ b {color:#c00}
 </div>
 <?php endif; ?>
 
-<p class=topWarning id=jsDidntLoad><strong>Uh Oh.</strong> Minify was unable to
+<p class="alert-message error" id=jsDidntLoad><strong>Uh Oh.</strong> Minify was unable to
     serve Javascript for this app. To troubleshoot this,
     <a href="http://code.google.com/p/minify/wiki/Debugging">enable FirePHP debugging</a>
     and request the <a id=builderScriptSrc href=#>Minify URL</a> directly. Hopefully the
@@ -97,7 +79,7 @@ b {color:#c00}
     slightly improve performance you can hardcode this in /min/config.php:
     <code><?php echo htmlspecialchars($cachePathCode); ?></code></p>
 <?php endIf; ?>
-
+<div class="container">	
 <p id=minRewriteFailed class="hide"><strong>Note:</strong> Your webserver does not seem to
  support mod_rewrite (used in /min/.htaccess). Your Minify URIs will contain "?", which 
 <a href="http://www.stevesouders.com/blog/2008/08/23/revving-filenames-dont-use-querystring/"
@@ -114,11 +96,13 @@ for this application.</p></noscript>
 and click [Update].</p>
 
 <ol id=sources><li></li></ol>
-<div id=add><button>Add file +</button></div>
+
+<div>
+	<p id="add" style="float:left"><button class="btn primary">Add file +</button>&nbsp;</p>
+    <p><button id=update class="btn success">Update</button></p>
+</div>
 
 <div id=bmUris></div>
-
-<p><button id=update class=hide>Update</button></p>
 
 <div id=results class=hide>
 
@@ -126,8 +110,8 @@ and click [Update].</p>
 <p>Place this URI in your HTML to serve the files above combined, minified, compressed and
 with cache headers.</p>
 <table id=uriTable>
-    <tr><th>URI</th><td><a id=uriA class=ext>/min</a> <small>(opens in new window)</small></td></tr>
-    <tr><th>HTML</th><td><input id=uriHtml type=text size=100 readonly></td></tr>
+    <tr><th><span class="label warning">URI</span></th><td><a id=uriA class=ext>/min</a> <small>(opens in new window)</small></td></tr>
+    <tr><th><span class="label warning">HTML</span></th><td><input id="uriHtml" class="span14 uneditable-input" type="text" placeholder=".span14"></td></tr>
 </table>
 
 <h2>How to serve these files as a group</h2>
@@ -137,7 +121,7 @@ like: <code><span class=minRoot>/min/?</span>g=keyName</code></p>
 
 <pre><code>return array(
     <span style="color:#666">... your existing groups here ...</span>
-<input id=groupConfig size=100 type=text readonly>
+<input id=groupConfig class="span14 uneditable-input" type="text" placeholder=".span14">
 );</code></pre>
 
 <p><em>Make sure to replace <code>keyName</code> with a unique key for this group.</em></p>
@@ -195,7 +179,7 @@ by Minify. E.g. <code>@import "<span class=minRoot>/min/?</span>g=css2";</code><
         }, 3000);
 
         // detection of double output encoding
-        var msg = '<\p class=topWarning><\strong>Warning:<\/strong> ';
+        var msg = '<\p class="alert-message error"><\strong>Warning:<\/strong> ';
         var url = 'ocCheck.php?' + (new Date()).getTime();
         $.get(url, function (ocStatus) {
             $.get(url + '&hello=1', function (ocHello) {
@@ -222,6 +206,7 @@ by Minify. E.g. <code>@import "<span class=minRoot>/min/?</span>g=css2";</code><
     });
 })();
 </script>
+</div>
 </body>
 <?php
 $content = ob_get_clean();
