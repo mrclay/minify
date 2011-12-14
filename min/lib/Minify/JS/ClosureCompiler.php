@@ -30,15 +30,6 @@ class Minify_JS_ClosureCompiler {
     }
 
     /**
-     * Get maximum # of bytes the minify function can handle (0 = no limit)
-     * @return int
-     */
-    public static function getMaxBytes()
-    {
-        return 200000;
-    }
-
-    /**
      *
      * @param array $options
      *

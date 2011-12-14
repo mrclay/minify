@@ -15,6 +15,8 @@
 
 /**
  * Compress CSS (incomplete DO NOT USE)
+ * 
+ * @see https://github.com/yui/yuicompressor/blob/master/src/com/yahoo/platform/yui/compressor/CssCompressor.java
  *
  * @package Minify
  */

@@ -9,20 +9,10 @@ function test_Minify_ImportProcessor()
     global $thisDir;
     
     $linDir = $thisDir . '/_test_files/importProcessor';
-    
-    $testFilesUri = substr(
-        realpath($thisDir . '/_test_files')
-        ,strlen(realpath($_SERVER['DOCUMENT_ROOT']))
-    );
-    $testFilesUri = str_replace('\\', '/', $testFilesUri);
         
-    $expected = str_replace(
-        '%TEST_FILES_URI%'
-        ,$testFilesUri
-        ,file_get_contents($linDir . '/output.css')
-    );
+    $expected = file_get_contents($linDir . '/css/output.css');
     
-    $actual = Minify_ImportProcessor::process($linDir . '/input.css');
+    $actual = Minify_ImportProcessor::process($linDir . '/css/input.css');
 
     $passed = assertTrue($expected === $actual, 'ImportProcessor');
     
@@ -34,11 +24,12 @@ function test_Minify_ImportProcessor()
     }
     
     $expectedIncludes = array (
-        realpath($linDir .  '/input.css')
-        ,realpath($linDir . '/adjacent.css')
+        realpath($linDir .  '/css/input.css')
+        ,realpath($linDir . '/css/adjacent.css')
         ,realpath($linDir . '/../css/styles.css')
-        ,realpath($linDir . '/1/tv.css')
-        ,realpath($linDir . '/1/adjacent.css')
+        ,realpath($linDir . '/css/1/tv.css')
+        ,realpath($linDir . '/css/1/adjacent.css')
+        ,realpath($linDir . '/lib/css/example.css')
     );
     
     $passed = assertTrue($expectedIncludes === Minify_ImportProcessor::$filesIncluded
