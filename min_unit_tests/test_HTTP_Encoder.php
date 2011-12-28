@@ -6,7 +6,7 @@ require_once 'HTTP/Encoder.php';
 function test_HTTP_Encoder()
 {
     global $thisDir;
-    
+
     HTTP_Encoder::$encodeToIe6 = true;
     $methodTests = array(
         array(
@@ -58,7 +58,7 @@ function test_HTTP_Encoder()
         $exp = $test['exp'];
         $ret = HTTP_Encoder::getAcceptedEncoding();
         $passed = assertTrue($exp == $ret, 'HTTP_Encoder : ' . $test['desc']);
-        
+
         if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
             echo "\n--- AE | UA = {$test['ae']} | {$test['ua']}\n";
             echo "Expected = " . preg_replace('/\\s+/', ' ', var_export($exp, 1)) . "\n";
@@ -80,32 +80,32 @@ function test_HTTP_Encoder()
         $exp = $test['exp'];
         $ret = HTTP_Encoder::getAcceptedEncoding();
         $passed = assertTrue($exp == $ret, 'HTTP_Encoder : ' . $test['desc']);
-        
+
         if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
             echo "\n--- AE | UA = {$test['ae']} | {$test['ua']}\n";
             echo "Expected = " . preg_replace('/\\s+/', ' ', var_export($exp, 1)) . "\n";
             echo "Returned = " . preg_replace('/\\s+/', ' ', var_export($ret, 1)) . "\n\n";
         }
     }
-    
+
     if (! function_exists('gzdeflate')) {
         echo "!WARN: HTTP_Encoder : Zlib support is not present in PHP. Encoding cannot be performed/tested.\n";
         return;
     }
-    
+
     // test compression of varied content (HTML,JS, & CSS)
 
     $variedContent = file_get_contents($thisDir . '/_test_files/html/before.html')
         . file_get_contents($thisDir . '/_test_files/css/subsilver.css')
         . file_get_contents($thisDir . '/_test_files/js/jquery-1.2.3.js');
     $variedLength = countBytes($variedContent);
-    
+
     $encodingTests = array(
         array('method' => 'deflate', 'inv' => 'gzinflate', 'exp' => 32268)
         ,array('method' => 'gzip', 'inv' => '_gzdecode', 'exp' => 32286)
         ,array('method' => 'compress', 'inv' => 'gzuncompress', 'exp' => 32325)
     );
-    
+
     foreach ($encodingTests as $test) {
         $e = new HTTP_Encoder(array(
             'content' => $variedContent
@@ -113,12 +113,12 @@ function test_HTTP_Encoder()
         ));
         $e->encode(9);
         $ret = countBytes($e->getContent());
-        
+
         // test uncompression
         $roundTrip = @call_user_func($test['inv'], $e->getContent());
         $desc = "HTTP_Encoder : {$test['method']} : uncompress possible";
         $passed = assertTrue($variedContent == $roundTrip, $desc);
-        
+
         // test expected compressed size
         $desc = "HTTP_Encoder : {$test['method']} : compressed to "
             . sprintf('%4.2f%% of original', $ret/$variedLength*100);

@@ -6,7 +6,7 @@ require_once 'Minify/JS/ClosureCompiler.php';
 function test_Minify_JS_ClosureCompiler()
 {
     global $thisDir;
-    
+
     $src = "
 (function (window, undefined){
     function addOne(input) {

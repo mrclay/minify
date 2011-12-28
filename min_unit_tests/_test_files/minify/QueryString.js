@@ -2,7 +2,7 @@ var MrClay = window.MrClay || {};
 
 /**
  * Simplified access to/manipulation of the query string
- * 
+ *
  * Based on: http://adamv.com/dev/javascript/files/querystring.js
  * Design pattern: http://www.litotes.demon.co.uk/js_info/private_static.html#wConst
  */
@@ -30,7 +30,7 @@ MrClay.QueryString = function(){
         }
         return obj;
     };
-    
+
     /**
      * Constructor (MrClay.QueryString becomes this)
      *
@@ -47,7 +47,7 @@ MrClay.QueryString = function(){
         }
         this.vars = parse(spec);
     }
-    
+
     /**
      * Reload the window
      *
@@ -70,7 +70,7 @@ MrClay.QueryString = function(){
             l.assign(newUrl);
         }
     };
-    
+
     /**
      * Get the value of a querystring var
      *
@@ -85,7 +85,7 @@ MrClay.QueryString = function(){
         window_ = window_ || window;
         return (new MrClay.QueryString(window_)).get(key, default_);
     };
-    
+
     /**
      * Reload the page setting one or multiple querystring vars
      *
@@ -100,7 +100,7 @@ MrClay.QueryString = function(){
         window_ = window_ || window;
         (new MrClay.QueryString(window_)).set(key, value).reload();
     };
-    
+
     /**
      * Convert an object of query vars/values to a querystring
      *
@@ -116,7 +116,7 @@ MrClay.QueryString = function(){
         }
         return pieces.join('&');
     };
-    
+
     /**
      * @public
      */
@@ -124,7 +124,7 @@ MrClay.QueryString = function(){
         MrClay.QueryString.reload(this.vars, this.window);
         return this;
     };
-    
+
     /**
      * @public
      */
@@ -136,7 +136,7 @@ MrClay.QueryString = function(){
             ? default_
             : this.vars[key];
     };
-    
+
     /**
      * @public
      */
@@ -156,13 +156,13 @@ MrClay.QueryString = function(){
         }
         return this;
     };
-    
+
     /**
      * @public
      */
     construct_.prototype.toString = function() {
         return QueryString.toString(this.vars);
     };
-    
+
     return construct_;
 }(); // define and execute

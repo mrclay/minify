@@ -1,7 +1,7 @@
 /* This is invalid CSS, but frequently happens as a result of concatenation. */
 @charset "utf-8";
 #foo {
-	border-width:1px;
+  border-width:1px;
 }
 /*
 Note that this is erroneous!
@@ -11,5 +11,5 @@ The compressor should not get involved.
 */
 @charset "another one";
 #bar {
-	border-width:10px;
+  border-width:10px;
 }

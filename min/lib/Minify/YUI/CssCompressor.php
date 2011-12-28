@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Minify_YUI_CssCompressor 
+ * Class Minify_YUI_CssCompressor
  * @package Minify
  *
  * YUI Compressor
@@ -15,7 +15,7 @@
 
 /**
  * Compress CSS (incomplete DO NOT USE)
- * 
+ *
  * @see https://github.com/yui/yuicompressor/blob/master/src/com/yahoo/platform/yui/compressor/CssCompressor.java
  *
  * @package Minify

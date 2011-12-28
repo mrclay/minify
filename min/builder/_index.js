@@ -16,7 +16,7 @@ var MUB = {
                     MUB._minRoot = '/min/';
                     $('span.minRoot').html('/min/');
                 } else
-                    fail();                
+                    fail();
             },
             error : fail
         });
@@ -67,7 +67,7 @@ var MUB = {
      * the INPUT and check the URL on the site.
      */
     liUpdateTestLink : function () { // call in context of li element
-        if (! $('input', this)[0].value) 
+        if (! $('input', this)[0].value)
             return;
         var li = this;
         $('span', this).html('');
@@ -159,7 +159,7 @@ var MUB = {
             if (! fail && this.value && (m = this.value.match(/\.(css|js)$/))) {
                 var thisExt = m[1];
                 if (ext === false)
-                    ext = thisExt; 
+                    ext = thisExt;
                 else if (thisExt !== ext) {
                     fail = true;
                     return alert('extensions must match!');
@@ -170,7 +170,7 @@ var MUB = {
                     return alert('duplicate file!');
                 }
                 sources.push(this.value);
-            } 
+            }
         });
         if (fail || ! sources.length)
             return;

@@ -6,7 +6,7 @@ require_once 'JSMin.php';
 function test_JSMin()
 {
     global $thisDir;
-   
+
     $src = file_get_contents($thisDir . '/_test_files/js/before.js');
     $minExpected = file_get_contents($thisDir . '/_test_files/js/before.min.js');
     $minOutput = JSMin::minify($src);
@@ -72,7 +72,7 @@ function test_JSMin_exception($js, $label, $expClass, $expMessage) {
         $eClass = get_class($e);
         $eMsg = $e->getMessage();
     }
-    $passed = assertTrue($eClass === $expClass && $eMsg === $expMessage, 
+    $passed = assertTrue($eClass === $expClass && $eMsg === $expMessage,
         'JSMin : throw on ' . $label);
     if (! $passed && __FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         echo "\n  ---" , $e, "\n\n";

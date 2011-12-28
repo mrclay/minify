@@ -6,11 +6,11 @@ emptiness {}
 empty { ;}
 
 @media print {
-	.noprint { display: none; }
+  .noprint { display: none; }
 }
 
 @media screen {
-	/* this rule should be removed, not simply minified.*/
-	.breakme {}
-	.printonly { display: none; }
+  /* this rule should be removed, not simply minified.*/
+  .breakme {}
+  .printonly { display: none; }
 }

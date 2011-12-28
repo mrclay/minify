@@ -6,11 +6,11 @@ require_once 'Minify.php';
 function test_Lines()
 {
     global $thisDir;
-    
+
     $exp = file_get_contents("{$thisDir}/_test_files/minify/lines_output.js");
 
     Minify::setCache(null); // no cache
-    
+
     $ret = Minify::serve('Files', array(
         'debug' => true
         ,'quiet' => true
@@ -22,9 +22,9 @@ function test_Lines()
             ,"{$thisDir}/_test_files/js/before.js"
         )
     ));
-    
+
     $passed = assertTrue($exp === $ret['content'], 'Minify_Lines');
-        
+
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         echo "\n---Output: " .countBytes($ret['content']). " bytes\n\n{$ret['content']}\n\n";
         if (!$passed) {

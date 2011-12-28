@@ -6,9 +6,9 @@ require_once 'Minify/CSS.php';
 function test_CSS()
 {
     global $thisDir;
-    
+
     $cssPath = dirname(__FILE__) . '/_test_files/css';
-    
+
     // build test file list
     $d = dir($cssPath);
     while (false !== ($entry = $d->read())) {
@@ -17,7 +17,7 @@ function test_CSS()
         }
     }
     $d->close();
-    
+
     foreach ($list as $item) {
 
         $options = array();
@@ -28,18 +28,18 @@ function test_CSS()
             $tempDocRoot = $_SERVER['DOCUMENT_ROOT'];
             $_SERVER['DOCUMENT_ROOT'] = $thisDir;
         }
-        
+
         $src = file_get_contents($cssPath . "/{$item}.css");
         $minExpected = file_get_contents($cssPath . "/{$item}.min.css");
         $minOutput = Minify_CSS::minify($src, $options);
-        
+
         // reset doc root as configured
         if ($item === 'paths_rewrite') {
             $_SERVER['DOCUMENT_ROOT'] = $tempDocRoot;
         }
-        
+
         $passed = assertTrue($minExpected === $minOutput, 'Minify_CSS : ' . $item);
-        
+
         if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
             echo "\n---Output: " .countBytes($minOutput). " bytes\n\n{$minOutput}\n\n";
             if (!$passed) {
@@ -47,7 +47,7 @@ function test_CSS()
                 echo "---Source: " .countBytes($src). " bytes\n\n{$src}\n\n\n";
             }
         }
-    }    
+    }
 }
 
 test_CSS();

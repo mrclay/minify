@@ -22,17 +22,17 @@
 
 /* hide props from various IE/win */
 div {
-    width: 140px; 
-    width/* */:/**/100px; 
+    width: 140px;
+    width/* */:/**/100px;
     width: /**/100px;
 }
 
 html>/**/body {}
 
 /* Tantek's box model hack */
-div { 
-  width:400px; 
-  voice-family: "\"}\""; 
+div {
+  width:400px;
+  voice-family: "\"}\"";
   voice-family:inherit;
   width:300px;
 }

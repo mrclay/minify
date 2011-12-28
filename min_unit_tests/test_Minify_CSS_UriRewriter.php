@@ -16,7 +16,7 @@ function test_Minify_CSS_UriRewriter()
         ,$thisDir . '/_test_files/css_uriRewriter' // currentDir
         ,$thisDir // use DOCUMENT_ROOT = '/full/path/to/min_unit_tests'
     );
-    
+
     $passed = assertTrue($expected === $actual, 'Minify_CSS_UriRewriter : rewrite');
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         echo "\n---Input:\n\n{$in}\n";
@@ -24,7 +24,7 @@ function test_Minify_CSS_UriRewriter()
         if (!$passed) {
             echo "---Expected: " .countBytes($expected). " bytes\n\n{$expected}\n\n\n";
         }
-        
+
         // show debugging only when test run directly
         echo "--- Minify_CSS_UriRewriter::\$debugText\n\n"
             , Minify_CSS_UriRewriter::$debugText;
@@ -68,7 +68,7 @@ function test_Minify_CSS_UriRewriter()
             , Minify_CSS_UriRewriter::$debugText;
     }
 
-    
+
     Minify_CSS_UriRewriter::$debugText = '';
     $in = '../../../../assets/skins/sam/sprite.png';
     $exp = '/yui/assets/skins/sam/sprite.png';
@@ -77,7 +77,7 @@ function test_Minify_CSS_UriRewriter()
         ,'sf_root_dir\web\yui\menu\assets\skins\sam'
         ,'sf_root_dir\web'
     );
-    
+
     $passed = assertTrue($exp === $actual, 'Minify_CSS_UriRewriter : Issue 99');
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         echo "\n---Input:\n\n{$in}\n";
@@ -85,7 +85,7 @@ function test_Minify_CSS_UriRewriter()
         if (!$passed) {
             echo "---Expected: " .countBytes($exp). " bytes\n\n{$exp}\n\n\n";
         }
-        
+
         // show debugging only when test run directly
         echo "--- Minify_CSS_UriRewriter::\$debugText\n\n"
             , Minify_CSS_UriRewriter::$debugText;

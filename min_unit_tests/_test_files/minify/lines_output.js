@@ -44,10 +44,10 @@
 /* QueryString.js */
 
 /* 1   */ var MrClay = window.MrClay || {};
-/* 2   */ 
+/* 2   */
 /* 3   */ /**
 /* 4   *|  * Simplified access to/manipulation of the query string
-/* 5   *|  * 
+/* 5   *|  *
 /* 6   *|  * Based on: http://adamv.com/dev/javascript/files/querystring.js
 /* 7   *|  * Design pattern: http://www.litotes.demon.co.uk/js_info/private_static.html#wConst
 /* 8   *|  */
@@ -75,7 +75,7 @@
 /* 30  */         }
 /* 31  */         return obj;
 /* 32  */     };
-/* 33  */     
+/* 33  */
 /* 34  */     /**
 /* 35  *|      * Constructor (MrClay.QueryString becomes this)
 /* 36  *|      *
@@ -92,7 +92,7 @@
 /* 47  */         }
 /* 48  */         this.vars = parse(spec);
 /* 49  */     }
-/* 50  */     
+/* 50  */
 
 /* QueryString.js */
 
@@ -118,7 +118,7 @@
 /* 70  */             l.assign(newUrl);
 /* 71  */         }
 /* 72  */     };
-/* 73  */     
+/* 73  */
 /* 74  */     /**
 /* 75  *|      * Get the value of a querystring var
 /* 76  *|      *
@@ -133,7 +133,7 @@
 /* 85  */         window_ = window_ || window;
 /* 86  */         return (new MrClay.QueryString(window_)).get(key, default_);
 /* 87  */     };
-/* 88  */     
+/* 88  */
 /* 89  */     /**
 /* 90  *|      * Reload the page setting one or multiple querystring vars
 /* 91  *|      *
@@ -151,7 +151,7 @@
 
 /* 101 */         (new MrClay.QueryString(window_)).set(key, value).reload();
 /* 102 */     };
-/* 103 */     
+/* 103 */
 /* 104 */     /**
 /* 105 *|      * Convert an object of query vars/values to a querystring
 /* 106 *|      *
@@ -167,7 +167,7 @@
 /* 116 */         }
 /* 117 */         return pieces.join('&');
 /* 118 */     };
-/* 119 */     
+/* 119 */
 /* 120 */     /**
 /* 121 *|      * @public
 /* 122 *|      */
@@ -175,7 +175,7 @@
 /* 124 */         MrClay.QueryString.reload(this.vars, this.window);
 /* 125 */         return this;
 /* 126 */     };
-/* 127 */     
+/* 127 */
 /* 128 */     /**
 /* 129 *|      * @public
 /* 130 *|      */
@@ -187,7 +187,7 @@
 /* 136 */             ? default_
 /* 137 */             : this.vars[key];
 /* 138 */     };
-/* 139 */     
+/* 139 */
 /* 140 */     /**
 /* 141 *|      * @public
 /* 142 *|      */
@@ -210,14 +210,14 @@
 /* 156 */         }
 /* 157 */         return this;
 /* 158 */     };
-/* 159 */     
+/* 159 */
 /* 160 */     /**
 /* 161 *|      * @public
 /* 162 *|      */
 /* 163 */     construct_.prototype.toString = function() {
 /* 164 */         return QueryString.toString(this.vars);
 /* 165 */     };
-/* 166 */     
+/* 166 */
 /* 167 */     return construct_;
 /* 168 */ }(); // define and execute
 
@@ -225,19 +225,19 @@
 /* before.js */
 
 /* 1  */ /*! is.js
-/* 2  *| 
+/* 2  *|
 /* 3  *|  (c) 2001 Douglas Crockford
 /* 4  *|  2001 June 3
 /* 5  *| */
-/* 6  */ 
+/* 6  */
 /* 7  */ // is
-/* 8  */ 
+/* 8  */
 /* 9  */ // The -is- object is used to identify the browser.  Every browser edition
 /* 10 */ // identifies itself, but there is no standard way of doing it, and some of
 /* 11 */ // the identification is deceptive. This is because the authors of web
 /* 12 */ // browsers are liars. For example, Microsoft's IE browsers claim to be
 /* 13 */ // Mozilla 4. Netscape 6 claims to be version 5.
-/* 14 */ 
+/* 14 */
 /* 15 */ var is = {
 /* 16 */     ie:      navigator.appName == 'Microsoft Internet Explorer',
 /* 17 */     java:    navigator.javaEnabled(),
@@ -259,7 +259,7 @@
 /* 33 */     is.ie = is.ns = false;
 /* 34 */     is.gecko = true;
 /* 35 */ }
-/* 36 */ 
+/* 36 */
 /* 37 */ /*@cc_on
 /* 38 *|    /*@if (@_win32)
 /* 39 *|     if (is.ie && is.win)
@@ -267,11 +267,11 @@
 /* 41 *|    @else @*/
 /* 42 */     if (is.ie && is.win)
 /* 43 */         document.write("FAIL: IE/win did not honor multi-line conditional comment.<br>");
-/* 44 */     else 
+/* 44 */     else
 /* 45 */         document.write("PASS: Non-IE/win browser ignores multi-line conditional comment.<br>");
 /* 46 */    /*@end
 /* 47 *| @*/
-/* 48 */ 
+/* 48 */
 /* 49 */ var recognizesCondComm = true;
 /* 50 */ //@cc_on/*
 
@@ -279,9 +279,9 @@
 
 /* 51 *| recognizesCondComm = false;
 /* 52 *| //@cc_on*/
-/* 53 */ 
+/* 53 */
 /* 54 */ if ((is.ie && is.win) == recognizesCondComm)
 /* 55 */     document.write("PASS: IE/win honored single-line conditional comment.<br>");
-/* 56 */ else 
+/* 56 */ else
 /* 57 */     document.write("FAIL: Non-IE/win browser did not ignore single-line conditional comment.<br>");
-/* 58 */ 
+/* 58 */

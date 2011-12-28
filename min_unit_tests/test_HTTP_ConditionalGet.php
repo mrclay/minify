@@ -6,10 +6,10 @@ require_once 'HTTP/ConditionalGet.php';
 function test_HTTP_ConditionalGet()
 {
     global $thisDir;
-    
+
     $lmTime = time() - 900;
     $gmtTime = gmdate('D, d M Y H:i:s \G\M\T', $lmTime);
-    
+
     $tests = array(
         array(
             'desc' => 'client has valid If-Modified-Since'
@@ -17,7 +17,7 @@ function test_HTTP_ConditionalGet()
             ,'ims' => $gmtTime
             ,'exp' => array(
                 'Vary' => 'Accept-Encoding'
-            	,'Last-Modified' => $gmtTime
+              ,'Last-Modified' => $gmtTime
                 ,'ETag' => "\"pri{$lmTime}\""
                 ,'Cache-Control' => 'max-age=0, private'
                 ,'_responseCode' => 'HTTP/1.0 304 Not Modified'
@@ -29,8 +29,8 @@ function test_HTTP_ConditionalGet()
             ,'inm' => null
             ,'ims' => $gmtTime . ';'
             ,'exp' => array(
-            	'Vary' => 'Accept-Encoding'
-            	,'Last-Modified' => $gmtTime
+              'Vary' => 'Accept-Encoding'
+              ,'Last-Modified' => $gmtTime
                 ,'ETag' => "\"pri{$lmTime}\""
                 ,'Cache-Control' => 'max-age=0, private'
                 ,'_responseCode' => 'HTTP/1.0 304 Not Modified'
@@ -43,7 +43,7 @@ function test_HTTP_ConditionalGet()
             ,'ims' => null
             ,'exp' => array(
                 'Vary' => 'Accept-Encoding'
-            	,'Last-Modified' => $gmtTime
+              ,'Last-Modified' => $gmtTime
                 ,'ETag' => "\"pri{$lmTime}\""
                 ,'Cache-Control' => 'max-age=0, private'
                 ,'_responseCode' => 'HTTP/1.0 304 Not Modified'
@@ -56,7 +56,7 @@ function test_HTTP_ConditionalGet()
             ,'ims' => null
             ,'exp' => array(
                 'Vary' => 'Accept-Encoding'
-            	,'Last-Modified' => $gmtTime
+              ,'Last-Modified' => $gmtTime
                 ,'ETag' => "\"pri{$lmTime};gz\""
                 ,'Cache-Control' => 'max-age=0, private'
                 ,'_responseCode' => 'HTTP/1.0 304 Not Modified'
@@ -69,7 +69,7 @@ function test_HTTP_ConditionalGet()
             ,'ims' => null
             ,'exp' => array(
                 'Vary' => 'Accept-Encoding'
-            	,'Last-Modified' => $gmtTime
+              ,'Last-Modified' => $gmtTime
                 ,'ETag' => "\"pri{$lmTime};gz\""
                 ,'Cache-Control' => 'max-age=0, private'
                 ,'isValid' => false
@@ -81,7 +81,7 @@ function test_HTTP_ConditionalGet()
             ,'ims' => null
             ,'exp' => array(
                 'Vary' => 'Accept-Encoding'
-            	,'Last-Modified' => $gmtTime
+              ,'Last-Modified' => $gmtTime
                 ,'ETag' => "\"pri{$lmTime};gz\""
                 ,'Cache-Control' => 'max-age=0, private'
                 ,'isValid' => false
@@ -93,14 +93,14 @@ function test_HTTP_ConditionalGet()
             ,'ims' => gmdate('D, d M Y H:i:s \G\M\T', $lmTime - 300)
             ,'exp' => array(
                 'Vary' => 'Accept-Encoding'
-            	,'Last-Modified' => $gmtTime
+              ,'Last-Modified' => $gmtTime
                 ,'ETag' => "\"pri{$lmTime};gz\""
                 ,'Cache-Control' => 'max-age=0, private'
                 ,'isValid' => false
             )
         )
     );
-    
+
     foreach ($tests as $test) {
         // setup env
         if (null === $test['inm']) {
@@ -116,16 +116,16 @@ function test_HTTP_ConditionalGet()
             $_SERVER['HTTP_IF_MODIFIED_SINCE'] = $test['ims'];
         }
         $exp = $test['exp'];
-        
+
         $cg = new HTTP_ConditionalGet(array(
             'lastModifiedTime' => $lmTime
             ,'encoding' => 'x-gzip'
         ));
         $ret = $cg->getHeaders();
         $ret['isValid'] = $cg->cacheIsValid;
-        
+
         $passed = assertTrue($exp == $ret, 'HTTP_ConditionalGet : ' . $test['desc']);
-        
+
         if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
             echo "\n--- INM = {$test['inm']} / IMS = {$test['ims']}\n";
             echo "Expected = " . preg_replace('/\\s+/', ' ', var_export($exp, 1)) . "\n";

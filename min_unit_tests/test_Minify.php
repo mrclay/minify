@@ -86,18 +86,18 @@ function test_Minify()
         ,'maxAge' => 86400
         ,'encodeOutput' => false
     ));
-    
+
     $passed = assertTrue($expected === $output, 'Minify : JS and Expires');
     if ($thisFileActive) {
         echo "\nOutput: " .var_export($output, 1). "\n\n";
         if (! $passed) {
             echo "\n\n\n\n---Expected: " .var_export($expected, 1). "\n\n";
-        }    
+        }
     }
-    
+
     // test for Issue 73
     Minify::setCache(null);
-    
+
     $expected = ";function h(){}";
     $output = Minify::serve('Files', array(
         'files' => array(
@@ -108,15 +108,15 @@ function test_Minify()
         ,'encodeOutput' => false
     ));
     $output = $output['content'];
-    
+
     $passed = assertTrue($expected === $output, 'Minify : Issue 73');
     if ($thisFileActive) {
         if (! $passed) {
             echo "\n---Output  : " .var_export($output, 1). "\n";
             echo "---Expected: " .var_export($expected, 1). "\n\n";
-        }    
+        }
     }
-    
+
     // test for Issue 89
     $expected = file_get_contents($minifyTestPath . '/issue89_out.min.css');
     $output = Minify::serve('Files', array(
@@ -134,9 +134,9 @@ function test_Minify()
         if (! $passed) {
             echo "\n---Output  : " .var_export($output, 1). "\n";
             echo "---Expected: " .var_export($expected, 1). "\n\n";
-        }    
+        }
     }
-    
+
     $output = Minify::serve('Files', array(
         'files' => array(
             $minifyTestPath . '/issue89_1.css'
@@ -151,9 +151,9 @@ function test_Minify()
         if (! $passed) {
             echo "\n---Output  : " .var_export($output, 1). "\n";
             echo "---Expected: " .var_export($expected, 1). "\n\n";
-        }    
+        }
     }
-    
+
     $output = Minify::serve('Files', array(
         'files' => array(
             $minifyTestPath . '/issue89_1.css'
@@ -167,7 +167,7 @@ function test_Minify()
         if (! $passed) {
             echo "\n---Output  : " .var_export($output, 1). "\n";
             echo "---Expected: " .var_export($expected, 1). "\n\n";
-        }    
+        }
     }
 
     // Test Issue 132

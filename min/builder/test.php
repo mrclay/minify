@@ -37,7 +37,7 @@ if (isset($_GET['oc'])) {
         echo "<p class=topNote><strong>\$_SERVER['SUBDOMAIN_DOCUMENT_ROOT'] is set.</strong> "
            . "You may need to set \$min_documentRoot to this in config.php</p>";
     }
-    
+
 }
 
 //*/

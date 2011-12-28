@@ -5,8 +5,8 @@ require dirname(__FILE__) . '/../min/config.php';
 set_include_path($min_libPath . PATH_SEPARATOR . get_include_path());
 
 // set cache path and doc root if configured
-$minifyCachePath = isset($min_cachePath) 
-    ? $min_cachePath 
+$minifyCachePath = isset($min_cachePath)
+    ? $min_cachePath
     : '';
 if ($min_documentRoot) {
     $_SERVER['DOCUMENT_ROOT'] = $min_documentRoot;
@@ -36,15 +36,15 @@ $thisDir = dirname(__FILE__);
  */
 function assertTrue($test, $message)
 {
-	static $count;
-	if (!isset($count)) $count = array('pass'=>0, 'fail'=>0, 'total'=>0);
+  static $count;
+  if (!isset($count)) $count = array('pass'=>0, 'fail'=>0, 'total'=>0);
 
-	$mode = $test ? 'pass' : 'fail';
-	$outMode = $test ? 'PASS' : '!FAIL';
-	printf("%s: %s (%d of %d tests run so far have %sed)\n",
-		$outMode, $message, ++$count[$mode], ++$count['total'], $mode);
-	
-	return (bool)$test;
+  $mode = $test ? 'pass' : 'fail';
+  $outMode = $test ? 'PASS' : '!FAIL';
+  printf("%s: %s (%d of %d tests run so far have %sed)\n",
+    $outMode, $message, ++$count[$mode], ++$count['total'], $mode);
+
+  return (bool)$test;
 }
 
 /**

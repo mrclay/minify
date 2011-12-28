@@ -1,12 +1,12 @@
 <?php
 /**
- * Class Minify_Logger  
+ * Class Minify_Logger
  * @package Minify
  */
 
-/** 
+/**
  * Message logging class
- * 
+ *
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  *
@@ -15,7 +15,7 @@
 class Minify_Logger {
 
     /**
-     * Set logger object. 
+     * Set logger object.
      *
      * The object should have a method "log" that accepts a value as 1st argument and
      * an optional string label as the 2nd.
@@ -28,7 +28,7 @@ class Minify_Logger {
             ? $obj
             : null;
     }
-    
+
     /**
      * Pass a message to the logger (if set)
      *
@@ -39,7 +39,7 @@ class Minify_Logger {
         if (! self::$_logger) return;
         self::$_logger->log($msg, $label);
     }
-    
+
     /**
      * @var mixed logger object (like FirePHP) or null (i.e. no logger available)
      */

@@ -41,7 +41,7 @@ if (is.ua.indexOf('gecko') >= 0) {
    @else @*/
     if (is.ie && is.win)
         document.write("FAIL: IE/win did not honor multi-line conditional comment.<br>");
-    else 
+    else
         document.write("PASS: Non-IE/win browser ignores multi-line conditional comment.<br>");
    /*@end
 @*/
@@ -53,5 +53,5 @@ recognizesCondComm = false;
 
 if ((is.ie && is.win) == recognizesCondComm)
     document.write("PASS: IE/win honored single-line conditional comment.<br>");
-else 
+else
     document.write("FAIL: Non-IE/win browser did not ignore single-line conditional comment.<br>");

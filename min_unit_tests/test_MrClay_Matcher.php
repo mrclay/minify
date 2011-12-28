@@ -7,7 +7,7 @@ require_once 'MrClay/Matcher.php';
 function test_MrClay_Matcher()
 {
     global $thisDir;
-   
+
     $tests = array(
         array(
             'pattern' => '/cat/',

@@ -53,11 +53,11 @@ function test_environment()
     $thisUrl = 'http://'
         . $_SERVER['HTTP_HOST'] // avoid redirects when SERVER_NAME doesn't match
         . ('80' === $_SERVER['SERVER_PORT'] ? '' : ":{$_SERVER['SERVER_PORT']}")
-        . dirname($_SERVER['REQUEST_URI']) 
+        . dirname($_SERVER['REQUEST_URI'])
         . '/test_environment.php';
-    
+
     $oc = @file_get_contents($thisUrl . '?getOutputCompression=1');
-    
+
     if (false === $oc || ! preg_match('/^[01]$/', $oc)) {
         echo "!WARN: environment : Local HTTP request failed. Testing cannot continue.\n";
         return;

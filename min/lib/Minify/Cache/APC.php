@@ -6,11 +6,11 @@
 
 /**
  * APC-based cache class for Minify
- * 
+ *
  * <code>
  * Minify::setCache(new Minify_Cache_APC());
  * </code>
- * 
+ *
  * @package Minify
  * @author Chris Edwards
  **/

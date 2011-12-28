@@ -69,7 +69,7 @@ class Minify_JS_ClosureCompiler {
         }
         return $response;
     }
-    
+
     protected $_fallbackFunc = null;
 
     protected function _getResponse($postBody)

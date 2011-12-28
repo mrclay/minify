@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Minify_Controller_Version1  
+ * Class Minify_Controller_Version1
  * @package Minify
  */
 
@@ -8,22 +8,22 @@ require_once 'Minify/Controller/Base.php';
 
 /**
  * Controller class for emulating version 1 of minify.php (mostly a proof-of-concept)
- * 
+ *
  * <code>
  * Minify::serve('Version1');
  * </code>
- * 
+ *
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_Controller_Version1 extends Minify_Controller_Base {
-    
+
     /**
      * Set up groups of files as sources
-     * 
+     *
      * @param array $options controller and Minify options
      * @return array Minify options
-     * 
+     *
      */
     public function setupSources($options) {
         self::_setupDefines();
@@ -39,7 +39,7 @@ class Minify_Controller_Version1 extends Minify_Controller_Base {
         // The following restrictions are to limit the URLs that minify will
         // respond to. Ideally there should be only one way to reference a file.
         if (! isset($_GET['files'])
-            // verify at least one file, files are single comma separated, 
+            // verify at least one file, files are single comma separated,
             // and are all same extension
             || ! preg_match('/^[^,]+\\.(css|js)(,[^,]+\\.\\1)*$/', $_GET['files'], $m)
             // no "//" (makes URL rewriting easier)
@@ -52,33 +52,33 @@ class Minify_Controller_Version1 extends Minify_Controller_Base {
             return $options;
         }
         $extension = $m[1];
-        
+
         $files = explode(',', $_GET['files']);
         if (count($files) > MINIFY_MAX_FILES) {
             return $options;
         }
-        
+
         // strings for prepending to relative/absolute paths
         $prependRelPaths = dirname($_SERVER['SCRIPT_FILENAME'])
             . DIRECTORY_SEPARATOR;
         $prependAbsPaths = $_SERVER['DOCUMENT_ROOT'];
-        
+
         $sources = array();
         $goodFiles = array();
         $hasBadSource = false;
-        
+
         $allowDirs = isset($options['allowDirs'])
             ? $options['allowDirs']
             : MINIFY_BASE_DIR;
-        
+
         foreach ($files as $file) {
             // prepend appropriate string for abs/rel paths
             $file = ($file[0] === '/' ? $prependAbsPaths : $prependRelPaths) . $file;
             // make sure a real file!
             $file = realpath($file);
             // don't allow unsafe or duplicate files
-            if (parent::_fileIsSafe($file, $allowDirs) 
-                && !in_array($file, $goodFiles)) 
+            if (parent::_fileIsSafe($file, $allowDirs)
+                && !in_array($file, $goodFiles))
             {
                 $goodFiles[] = $file;
                 $srcOptions = array(
@@ -98,7 +98,7 @@ class Minify_Controller_Version1 extends Minify_Controller_Base {
         }
         return $options;
     }
-    
+
     private static function _setupDefines()
     {
         $defaults = array(

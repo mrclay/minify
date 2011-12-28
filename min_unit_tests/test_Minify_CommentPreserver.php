@@ -7,7 +7,7 @@ require_once 'Minify/CommentPreserver.php';
 function test_Minify_CommentPreserver()
 {
     global $thisDir;
-    
+
     $inOut = array(
         '/*!*/' => "\n/*!*/\n"
         ,'/*!*/a' => "\n/*!*/\n1A"
@@ -23,7 +23,7 @@ function test_Minify_CommentPreserver()
             if (!$passed) {
                 echo "---Expected: " .countBytes($expected). " bytes\n\n{$expected}\n\n\n";
             }
-        }    
+        }
     }
 }
 

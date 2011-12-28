@@ -27,11 +27,11 @@ function get_content($data)
 <h2><?php echo $data['title']; ?></h2>
 <?php echo $data['explain']; ?>
 <ul>
-	<li><a href="./">Last-Modified is known : simple usage</a></li>
-	<li><a href="2.php">Last-Modified is known : add Content-Length</a></li>
-	<li><a href="3.php">Last-Modified is unknown : use hash of content for ETag</a></li>
-	<li><a href="4.php">ConditionalGet + Encoder</a></li>
-	<li><a href="5.php">Last-Modified + Expires</a></li>
+  <li><a href="./">Last-Modified is known : simple usage</a></li>
+  <li><a href="2.php">Last-Modified is known : add Content-Length</a></li>
+  <li><a href="3.php">Last-Modified is unknown : use hash of content for ETag</a></li>
+  <li><a href="4.php">ConditionalGet + Encoder</a></li>
+  <li><a href="5.php">Last-Modified + Expires</a></li>
 </ul>
 <h2>Notes</h2>
 <h3>How to distinguish 200 and 304 responses</h3>
@@ -42,17 +42,17 @@ like <a href="http://www.fiddlertool.com/">Fiddler (win)</a> and
 to verify headers and content being sent.</p>
 <h3>Browser notes</h3>
 <dl>
-	<dt>Opera</dt>
-	<dd>Opera has a couple behaviors against the HTTP spec: Manual refreshes (F5)
+  <dt>Opera</dt>
+  <dd>Opera has a couple behaviors against the HTTP spec: Manual refreshes (F5)
     prevents the ETag/If-Modified-Since headers from being sent; it only sends
     them when following a link or bookmark. Also, Opera will not honor the
     <code>must-revalidate</code> Cache-Control value unless <code>max-age</code>
     is set. To get Opera to follow the spec, ConditionalGet will send Opera max-age=0
     (if one is not already set).</dd>
-	<dt>Safari</dt>
-	<dd>ETag validation is unsupported, but Safari supports HTTP/1.0 validation via
-		 If-Modified-Since headers as long as the cache is explicitly marked
-		"public" or "private" ("private" is default in ConditionalGet).</dd>
+  <dt>Safari</dt>
+  <dd>ETag validation is unsupported, but Safari supports HTTP/1.0 validation via
+     If-Modified-Since headers as long as the cache is explicitly marked
+    "public" or "private" ("private" is default in ConditionalGet).</dd>
 </dl>
 </body>
 </html>

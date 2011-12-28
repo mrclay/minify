@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 if (phpversion() < 5) {
     exit('Minify requires PHP5 or greater.');
@@ -37,7 +37,7 @@ try {
 } catch (Exception $e) {
     if (! $setIncludeSuccess) {
         echo "Minify: set_include_path() failed. You may need to set your include_path "
-            ."outside of PHP code, e.g., in php.ini.";    
+            ."outside of PHP code, e.g., in php.ini.";
     } else {
         echo $e->getMessage();
     }
@@ -79,9 +79,9 @@ ob_start();
     slightly improve performance you can hardcode this in /min/config.php:
     <code><?php echo htmlspecialchars($cachePathCode); ?></code></p>
 <?php endIf; ?>
-<div class="container">	
+<div class="container">
 <p id=minRewriteFailed class="hide"><strong>Note:</strong> Your webserver does not seem to
- support mod_rewrite (used in /min/.htaccess). Your Minify URIs will contain "?", which 
+ support mod_rewrite (used in /min/.htaccess). Your Minify URIs will contain "?", which
 <a href="http://www.stevesouders.com/blog/2008/08/23/revving-filenames-dont-use-querystring/"
 >may reduce the benefit of proxy cache servers</a>.</p>
 
@@ -98,7 +98,7 @@ and click [Update].</p>
 <ol id=sources><li></li></ol>
 
 <div>
-	<p id="add" style="float:left"><button class="btn primary">Add file +</button>&nbsp;</p>
+  <p id="add" style="float:left"><button class="btn primary">Add file +</button>&nbsp;</p>
     <p><button id=update class="btn success">Update</button></p>
 </div>
 
@@ -137,9 +137,9 @@ available URIs to add.</p>
 </div>
 
 <h3>Combining CSS files that contain <code>@import</code></h3>
-<p>If your CSS files contain <code>@import</code> declarations, Minify will not 
+<p>If your CSS files contain <code>@import</code> declarations, Minify will not
 remove them. Therefore, you will want to remove those that point to files already
-in your list, and move any others to the top of the first file in your list 
+in your list, and move any others to the top of the first file in your list
 (imports below any styles will be ignored by browsers as invalid).</p>
 <p>If you desire, you can use Minify URIs in imports and they will not be touched
 by Minify. E.g. <code>@import "<span class=minRoot>/min/?</span>g=css2";</code></p>

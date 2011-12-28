@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Minify_Processor  
+ * Class Minify_Processor
  * @package Minify
  */
 
@@ -9,7 +9,7 @@
  * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_Processor {
-    
+
     /**
      * @throws Exception
      * @param Minify_Controller_Base $controller
@@ -20,7 +20,7 @@ class Minify_Processor {
     public static function process(Minify_Controller_Base $controller, array $options, $importWarning)
     {
         $type = $options['contentType']; // ease readability
-        
+
         // when combining scripts, make sure all statements separated and
         // trailing single line comment is terminated
         $implodeSeparator = ($type === Minify::TYPE_JS)
@@ -119,13 +119,13 @@ class Minify_Processor {
         } while ($source);
 
         $content = implode($implodeSeparator, $content);
-        
+
         if ($type === Minify::TYPE_CSS
             && false !== strpos($content, '@import')
             ) {
             $content = self::_handleCssImports($content, $options, $importWarning);
         }
-        
+
         // do any post-processing (esp. for editing build URIs)
         if ($options['postprocessorRequire']) {
             require_once $options['postprocessorRequire'];

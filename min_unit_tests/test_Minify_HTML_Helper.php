@@ -6,7 +6,7 @@ require_once 'Minify/HTML/Helper.php';
 function test_Minify_HTML_Helper()
 {
     global $thisDir;
-    
+
     $realDocRoot = $_SERVER['DOCUMENT_ROOT'];
     $_SERVER['DOCUMENT_ROOT'] = $thisDir;
 
