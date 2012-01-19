@@ -92,7 +92,7 @@ class Minify_YUICompressor {
         file_put_contents($tmpFile, $content);
         exec(self::_getCmd($options, $type, $tmpFile), $output, $result_code);
         unlink($tmpFile);
-        if($result_code != 0){
+        if ($result_code != 0) {
             throw new Exception('Minify_YUICompressor : YUI compressor execution failed.');
         }
         return implode("\n", $output);
