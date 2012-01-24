@@ -30,12 +30,8 @@ class Minify_Cache_File {
             ? LOCK_EX
             : null;
         $file = $this->_path . '/' . $id;
-        if (is_file($file)) {
-            @unlink($file);
-        }
         if (! @file_put_contents($file, $data, $flag)) {
             $this->_log("Minify_Cache_File: Write failed to '$file'");
-            return false;
         }
         // write control
         if ($data !== $this->fetch($id)) {
