@@ -92,16 +92,24 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             }
         }
         if (! $cOptions['groupsOnly'] && isset($_GET['f'])) {
+			$fileList = $_GET['f'];
+			
+			// if string subs are enabled and requested, run the sub on the file list first
+			if (isset($_GET['ss']) && isset($cOptions['subs'][$_GET['ss']])) {
+				$stringSub = $cOptions['subs'][$_GET['ss']];
+				$fileList = preg_replace($stringSub[0], $stringSub[1], $fileList);
+			}
+			
             // try user files
             // The following restrictions are to limit the URLs that minify will
             // respond to.
             if (// verify at least one file, files are single comma separated, 
                 // and are all same extension
-                ! preg_match('/^[^,]+\\.(css|js)(?:,[^,]+\\.\\1)*$/', $_GET['f'], $m)
+                ! preg_match('/^[^,]+\\.(css|js)(?:,[^,]+\\.\\1)*$/', $fileList, $m)
                 // no "//"
-                || strpos($_GET['f'], '//') !== false
+                || strpos($fileList, '//') !== false
                 // no "\"
-                || strpos($_GET['f'], '\\') !== false
+                || strpos($fileList, '\\') !== false
             ) {
                 $this->log("GET param 'f' was invalid");
                 return $options;
@@ -113,7 +121,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 $this->log($e->getMessage());
                 return $options;
             }
-            $files = explode(',', $_GET['f']);
+            $files = explode(',', $fileList);
             if ($files != array_unique($files)) {
                 $this->log("Duplicate files were specified");
                 return $options;
