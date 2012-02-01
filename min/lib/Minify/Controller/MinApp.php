@@ -100,6 +100,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
 				$fileList = preg_replace($stringSub[0], $stringSub[1], $fileList);
 			}
 			
+                $fileList = preg_replace($stringSub[0], $stringSub[1], $fileList);
             // try user files
             // The following restrictions are to limit the URLs that minify will
             // respond to.
