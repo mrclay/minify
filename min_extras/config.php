@@ -11,6 +11,6 @@ $minifyCachePath = isset($min_cachePath)
     : '';
 
 function min_autoload($name) {
-    require str_replace('_', DIRECTORY_SEPARATOR, $name) . '.php';
+    require str_replace(array('_', '\\'), DIRECTORY_SEPARATOR, $name) . '.php';
 }
 spl_autoload_register('min_autoload');
