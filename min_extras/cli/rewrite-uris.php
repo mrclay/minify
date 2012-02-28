@@ -25,7 +25,7 @@ if (! $cli->validate()) {
     if ($cli->isHelpRequest) {
         echo $cli->getArgumentsListing();
     }
-    echo "EXAMPLE: ./rewrite-uris.php -t -d../.. ../../min_unit_tests/_test_files/css/paths_rewrite.css ../../min_unit_tests/_test_files/css/comments.css
+    echo "EXAMPLE: ./rewrite-uris.php -v -d../.. ../../min_unit_tests/_test_files/css/paths_rewrite.css ../../min_unit_tests/_test_files/css/comments.css
     \n";
     exit(0);
 }
@@ -39,7 +39,6 @@ $pathRewriter = function($css, $options) {
 };
 
 $paths = $cli->getPathArgs();
-var_export($paths);
 
 $sources = array();
 foreach ($paths as $path) {
@@ -52,7 +51,7 @@ foreach ($paths as $path) {
     } else {
         $sources[] = new Minify_Source(array(
             'id' => $path,
-            'content' => "/* $path not found */\n",
+            'content' => "/*** $path not found ***/\n",
             'minifier' => '',
         ));
     }
