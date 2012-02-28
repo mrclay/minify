@@ -9,54 +9,62 @@ set_include_path($pathToLib . PATH_SEPARATOR . get_include_path());
 // barebones autoloader
 spl_autoload_register(function ($class) use ($pathToLib) {
     $file = $pathToLib . '/' . str_replace(array('_', '\\'), DIRECTORY_SEPARATOR, $class) . '.php';
-    if (is_file($file)) {
-        require $file;
-        return true;
-    }
-    return false;
+    return is_file($file) ? ((require $file) || true) : false;
 });
 
 $cli = new MrClay\Cli;
 
-$cli->addRequiredArg('d')->assertDir()->setDescription('Path of your webserver\'s DOCUMENT_ROOT. Relative paths will be rewritten relative to this path.');
+$cli->addRequiredArg('d')->assertDir()->setDescription('Your webserver\'s DOCUMENT_ROOT: Relative paths will be rewritten relative to this path.');
 
-$cli->addOptionalArg('o')->useAsOutfile()->setDescription('Outfile. If given, output will be placed in this file.');
+$cli->addOptionalArg('o')->useAsOutfile()->setDescription('Outfile: If given, output will be placed in this file.');
 
-$cli->addOptionalArg('v')->setDescription('Verbose: show rewriting algorithm. This is ignored if you don\'t use an outfile.');
+$cli->addOptionalArg('t')->setDescription('Test run: Return output followed by rewriting algorithm.');
 
 if (! $cli->validate()) {
-    echo "USAGE: ./rewrite-uris.php -d DOC_ROOT [-o OUTFILE [-v]] file ...\n";
+    echo "USAGE: ./rewrite-uris.php [-t] -d DOC_ROOT [-o OUTFILE] file ...\n";
     if ($cli->isHelpRequest) {
         echo $cli->getArgumentsListing();
     }
-    echo "EXAMPLE: ./rewrite-uris.php -v -d../.. ../../min_unit_tests/_test_files/css/paths_rewrite.css ../../min_unit_tests/_test_files/css/comments.css
+    echo "EXAMPLE: ./rewrite-uris.php -t -d../.. ../../min_unit_tests/_test_files/css/paths_rewrite.css ../../min_unit_tests/_test_files/css/comments.css
     \n";
     exit(0);
 }
 
 $outfile = $cli->values['o'];
-$verbose = $cli->values['v'];
+$testRun = $cli->values['t'];
 $docRoot = $cli->values['d'];
 
 $pathRewriter = function($css, $options) {
     return Minify_CSS_UriRewriter::rewrite($css, $options['currentDir'], $options['docRoot']);
 };
 
-$fp = $cli->openOutput();
-
 $paths = $cli->getPathArgs();
+var_export($paths);
+
 $sources = array();
 foreach ($paths as $path) {
-    $sources[] = new Minify_Source(array(
-        'filepath' => $path,
-        'minifier' => $pathRewriter,
-        'minifyOptions' => array('docRoot' => $docRoot),
-    ));
+    if (is_file($path)) {
+        $sources[] = new Minify_Source(array(
+            'filepath' => $path,
+            'minifier' => $pathRewriter,
+            'minifyOptions' => array('docRoot' => $docRoot),
+        ));
+    } else {
+        $sources[] = new Minify_Source(array(
+            'id' => $path,
+            'content' => "/* $path not found */\n",
+            'minifier' => '',
+        ));
+    }
 }
-fwrite($fp, Minify::combine($sources) . "\n");
+$combined = Minify::combine($sources) . "\n";
 
-if ($outfile && $verbose) {
+if ($testRun) {
+    echo $combined;
     echo Minify_CSS_UriRewriter::$debugText . "\n";
+} else  {
+    $fp = $cli->openOutput();
+    fwrite($fp, $combined);
+    $cli->closeOutput();
 }
 
-$cli->closeOutput();
