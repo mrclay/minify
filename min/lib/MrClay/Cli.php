@@ -3,7 +3,17 @@
 namespace MrClay;
 
 /**
- * Front controller for a command line app, handling and validating arguments
+ * Forms a front controller for a console app, handling and validating arguments (options)
+ *
+ * Instantiate, add arguments, then call validate(). Afterwards, the user's valid arguments
+ * and their values will be available in $cli->values.
+ *
+ * You may also specify that some arguments be used to provide input/output. By communicating
+ * solely through the file pointers provided by openInput()/openOutput(), you can make your
+ * app more flexible to end users.
+ *
+ * @author Steve Clay <steve@mrclay.org>
+ * @license http://www.opensource.org/licenses/mit-license.php  MIT License
  */
 class Cli {
     
@@ -36,12 +46,23 @@ class Cli {
     public $debug = array();
 
     /**
+     * @var bool The user wants help info
+     */
+    public $isHelpRequest = false;
+
+    /**
      * @var array of Cli\Arg
      */
     protected $_args = array();
 
+    /**
+     * @var resource
+     */
     protected $_stdin = null;
 
+    /**
+     * @var resource
+     */
     protected $_stdout = null;
     
     /**
@@ -51,6 +72,10 @@ class Cli {
     {
         if ($exitIfNoStdin && ! defined('STDIN')) {
             exit('This script is for command-line use only.');
+        }
+        if (isset($GLOBALS['argv'][1])
+             && ($GLOBALS['argv'][1] === '-?' || $GLOBALS['argv'][1] === '--help')) {
+            $this->isHelpRequest = true;
         }
     }
 
@@ -73,23 +98,33 @@ class Cli {
     }
 
     /**
-     * @param Cli\Arg|string $letter
+     * @param string $letter
      * @param bool $required
+     * @param Cli\Arg|null $arg
      * @return Cli\Arg
+     * @throws \InvalidArgumentException
      */
-    public function addArgument($letter, $required)
+    public function addArgument($letter, $required, Cli\Arg $arg = null)
     {
-        if (! $letter instanceof Cli\Arg) {
-            if (is_string($letter)) {
-                $letter = new Cli\Arg($letter, $required);
-            } else {
-                throw new \InvalidArgumentException('Must be letter or MrClay\\Cli\\Arg instance');
-            }
+        if (! preg_match('/^[a-zA-Z]$/', $letter)) {
+            throw new \InvalidArgumentException('$letter must be in [a-zA-z]');
         }
-        $this->_args[$letter->getLetter()] = $letter;
-        return $letter;
+        if (! $arg) {
+            $arg = new Cli\Arg($required);
+        }
+        $this->_args[$letter] = $arg;
+        return $arg;
     }
-    
+
+    /**
+     * @param string $letter
+     * @return Cli\Arg|null
+     */
+    public function getArgument($letter)
+    {
+        return isset($this->_args[$letter]) ? $this->_args[$letter] : null;
+    }
+
     /*
      * Read and validate options
      * 
@@ -102,17 +137,13 @@ class Cli {
         $this->values = array();
         $this->_stdin = null;
         
-        if (isset($GLOBALS['argv'][1]) 
-            && ($GLOBALS['argv'][1] === '-?'
-                || $GLOBALS['argv'][1] === '--help'
-                )) {
+        if ($this->isHelpRequest) {
             return false;
         }
         
         $lettersUsed = '';
-        foreach ($this->_args as $arg) {
+        foreach ($this->_args as $letter => $arg) {
             /* @var Cli\Arg $arg  */
-            $letter = $arg->getLetter();
             $options .= $letter;
             $lettersUsed .= $letter;
             
@@ -127,9 +158,8 @@ class Cli {
         $this->debug['getopt_options'] = $options;
         $this->debug['getopt_return'] = $o;
 
-        foreach ($this->_args as $arg) {
+        foreach ($this->_args as $letter => $arg) {
             /* @var Cli\Arg $arg  */
-            $letter = $arg->getLetter();
             $this->values[$letter] = false;
             if (isset($o[$letter])) {
                 if (is_bool($o[$letter])) {
@@ -209,7 +239,7 @@ class Cli {
                     }
                 }
             } else {
-                if ($arg->isRequired) {
+                if ($arg->isRequired()) {
                     $this->addError($letter, "Missing");
                 }
             }
@@ -250,11 +280,41 @@ class Cli {
         if (empty($this->errors)) {
             return '';
         }
-        $r = "Problems with your options:\n";
+        $r = "Some arguments did not pass validation:\n";
         foreach ($this->errors as $letter => $arr) {
             $r .= "  $letter : " . implode(', ', $arr) . "\n";
         }
         $r .= "\n";
+        return $r;
+    }
+
+    /**
+     * @return string
+     */
+    public function getArgumentsListing()
+    {
+        $r = "\n";
+        foreach ($this->_args as $letter => $arg) {
+            /* @var Cli\Arg $arg  */
+            $desc = $arg->getDescription();
+            $flag = " -$letter ";
+            if ($arg->mayHaveValue) {
+                $flag .= "[VAL]";
+            } elseif ($arg->mustHaveValue) {
+                $flag .= "VAL";
+            }
+            if ($arg->assertFile) {
+                $flag = str_replace('VAL', 'FILE', $flag);
+            } elseif ($arg->assertDir) {
+                $flag = str_replace('VAL', 'DIR', $flag);
+            }
+            if ($arg->isRequired()) {
+                $desc = "(required) $desc";
+            }
+            $flag = str_pad($flag, 12, " ", STR_PAD_RIGHT);
+            $desc = wordwrap($desc, 70);
+            $r .= $flag . str_replace("\n", "\n            ", $desc) . "\n\n";
+        }
         return $r;
     }
     
