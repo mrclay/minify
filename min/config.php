@@ -34,10 +34,9 @@ $min_allowDebugFlag = false;
 
 
 /**
- * Allow use of the Minify URI Builder app. If you no longer need 
- * this, set to false.
+ * Allow use of the Minify URI Builder app. Only set this to true while you need it.
  **/
-$min_enableBuilder = true;
+$min_enableBuilder = false;
 
 
 /**

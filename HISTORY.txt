@@ -1,5 +1,14 @@
 Minify Release History
 
+Version 2.1.5
+    * Removed XSS vulnerability
+    * Disabled builder bby default
+    * command line tools to minify and rewrite URIs in CSS
+    * upgrade (optional) JSMin+ library
+    * more efficient JS minification when using CC/YUIC
+    * Closure Compiler uses cURL when allow_url_fopen is off
+    * Missing file notices when using groups
+
 Version 2.1.4
     * Option to minify JS with Closure Compiler API w/ JSMin failover
     * Cookie/bookmarklet-based debug mode. No HTML editing!
