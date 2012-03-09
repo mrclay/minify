@@ -223,10 +223,6 @@ var MUB = {
                     $p.append(', /');
                 }
             }
-//            $('#bmUris').html('<p><strong>Found by bookmarklet:</strong> /<a href=#>' +
-//                 location.hash.substr(1).split(',').join('</a> | /<a href=#>') +
-//                 '</a></p>'
-//            );
             $('#bmUris a').click(function () {
                 MUB.addButtonClick();
                 $('#sources li:last input').val(this.innerHTML);
