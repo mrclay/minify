@@ -156,8 +156,8 @@ class Minify {
      * 
      * Any controller options are documented in that controller's setupSources() method.
      * 
-     * @param mixed instance of subclass of Minify_Controller_Base or string name of
-     * controller. E.g. 'Files'
+     * @param mixed $controller instance of subclass of Minify_Controller_Base or string
+     * name of controller. E.g. 'Files'
      * 
      * @param array $options controller/serve options
      * 
@@ -179,6 +179,7 @@ class Minify {
                     . str_replace('_', '/', $controller) . ".php";    
             }
             $controller = new $class();
+            /* @var Minify_Controller_Base $controller */
         }
         
         // set up controller sources and mix remaining options with
@@ -398,31 +399,41 @@ class Minify {
         if ($docRoot) {
             $_SERVER['DOCUMENT_ROOT'] = $docRoot;
         } elseif (isset($_SERVER['SERVER_SOFTWARE'])
-                  && 0 === strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/')
-        ) {
-            $_SERVER['DOCUMENT_ROOT'] = rtrim(substr(
+                  && 0 === strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/')) {
+            $_SERVER['DOCUMENT_ROOT'] = substr(
                 $_SERVER['SCRIPT_FILENAME']
                 ,0
-                ,strlen($_SERVER['SCRIPT_FILENAME']) - strlen($_SERVER['SCRIPT_NAME'])
-            ), '\\');
+                ,strlen($_SERVER['SCRIPT_FILENAME']) - strlen($_SERVER['SCRIPT_NAME']));
+            $_SERVER['DOCUMENT_ROOT'] = rtrim($_SERVER['DOCUMENT_ROOT'], '\\');
         }
     }
     
     /**
-     * @var mixed Minify_Cache_* object or null (i.e. no server cache is used)
+     * Any Minify_Cache_* object or null (i.e. no server cache is used)
+     *
+     * @var Minify_Cache_File
      */
     private static $_cache = null;
     
     /**
-     * @var Minify_Controller active controller for current request
+     * Active controller for current request
+     *
+     * @var Minify_Controller_Base
      */
     protected static $_controller = null;
     
     /**
-     * @var array options for current request
+     * Options for current request
+     *
+     * @var array
      */
     protected static $_options = null;
-    
+
+    /**
+     * @param string $header
+     *
+     * @param string $url
+     */
     protected static function _errorExit($header, $url)
     {
         $url = htmlspecialchars($url, ENT_QUOTES);
@@ -441,8 +452,6 @@ class Minify {
      * Set up sources to use Minify_Lines
      *
      * @param array $sources Minify_Source instances
-     *
-     * @return null
      */
     protected static function _setupDebug($sources)
     {
@@ -572,13 +581,17 @@ class Minify {
             ,self::$_options['minifierOptions']
             ,self::$_options['postprocessor']
             ,self::$_options['bubbleCssImports']
+            ,self::VERSION
         )));
         return "{$prefix}_{$name}_{$md5}";
     }
     
     /**
-     * Bubble CSS @imports to the top or prepend a warning if an
-     * @import is detected not at the top.
+     * Bubble CSS @imports to the top or prepend a warning if an import is detected not at the top.
+     *
+     * @param string $css
+     *
+     * @return string
      */
     protected static function _handleCssImports($css)
     {

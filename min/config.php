@@ -8,6 +8,12 @@
 
 
 /**
+ * Allow use of the Minify URI Builder app. Only set this to true while you need it.
+ **/
+$min_enableBuilder = true;
+
+
+/**
  * Set to true to log messages to FirePHP (Firefox Firebug addon).
  * Set to false for no error logging (Minify may be slightly faster).
  * @link http://www.firephp.org/
@@ -31,12 +37,6 @@ $min_errorLogger = false;
  * to indicate line #s of the original files.
  */
 $min_allowDebugFlag = false;
-
-
-/**
- * Allow use of the Minify URI Builder app. Only set this to true while you need it.
- **/
-$min_enableBuilder = false;
 
 
 /**

@@ -105,8 +105,6 @@ class HTTP_ConditionalGet {
      * seconds, and also set the Expires header to the equivalent GMT date. 
      * After the max-age period has passed, the browser will again send a 
      * conditional GET to revalidate its cache.
-     * 
-     * @return null
      */
     public function __construct($spec)
     {
@@ -234,8 +232,6 @@ class HTTP_ConditionalGet {
      * "private" will be sent, allowing only browser caching.
      *
      * @param array $options (default empty) additional options for constructor
-     *
-     * @return null     
      */
     public static function check($lastModifiedTime = null, $isPublic = false, $options = array())
     {
@@ -271,13 +267,21 @@ class HTTP_ConditionalGet {
     protected $_lmTime = null;
     protected $_etag = null;
     protected $_stripEtag = false;
-    
+
+    /**
+     * @param string $hash
+     *
+     * @param string $scope
+     */
     protected function _setEtag($hash, $scope)
     {
         $this->_etag = '"' . substr($scope, 0, 3) . $hash . '"';
         $this->_headers['ETag'] = $this->_etag;
     }
 
+    /**
+     * @param int $time
+     */
     protected function _setLastModified($time)
     {
         $this->_lmTime = (int)$time;
@@ -286,6 +290,8 @@ class HTTP_ConditionalGet {
 
     /**
      * Determine validity of client cache and queue 304 header if valid
+     *
+     * @return bool
      */
     protected function _isCacheValid()
     {
@@ -302,6 +308,9 @@ class HTTP_ConditionalGet {
         return $isValid;
     }
 
+    /**
+     * @return bool
+     */
     protected function resourceMatchedEtag()
     {
         if (!isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
@@ -323,7 +332,12 @@ class HTTP_ConditionalGet {
         }
         return false;
     }
-    
+
+    /**
+     * @param string $etag
+     *
+     * @return string
+     */
     protected function normalizeEtag($etag) {
         $etag = trim($etag);
         return $this->_stripEtag
@@ -331,6 +345,9 @@ class HTTP_ConditionalGet {
             : $etag;
     }
 
+    /**
+     * @return bool
+     */
     protected function resourceNotModified()
     {
         if (!isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {

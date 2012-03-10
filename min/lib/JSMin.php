@@ -74,6 +74,7 @@ class JSMin {
      * Minify Javascript.
      *
      * @param string $js Javascript to be minified
+     *
      * @return string
      */
     public static function minify($js)
@@ -92,6 +93,8 @@ class JSMin {
 
     /**
      * Perform minification, return result
+     *
+     * @return string
      */
     public function min()
     {
@@ -151,6 +154,9 @@ class JSMin {
      * ACTION_KEEP_A = Output A. Copy B to A. Get the next B.
      * ACTION_DELETE_A = Copy B to A. Get the next B.
      * ACTION_DELETE_A_B = Get the next B.
+     *
+     * @param int $command
+     * @throws JSMin_UnterminatedRegExpException|JSMin_UnterminatedStringException
      */
     protected function action($command)
     {
@@ -226,6 +232,9 @@ class JSMin {
         }
     }
 
+    /**
+     * @return bool
+     */
     protected function isRegexpLiteral()
     {
         if (false !== strpos("\n{;(,=:[!&|?", $this->a)) { // we aren't dividing
@@ -253,6 +262,8 @@ class JSMin {
 
     /**
      * Get next char. Convert ctrl char to space.
+     *
+     * @return string
      */
     protected function get()
     {
@@ -277,6 +288,8 @@ class JSMin {
 
     /**
      * Get next char. If is ctrl character, translate to a space or newline.
+     *
+     * @return string
      */
     protected function peek()
     {
@@ -286,12 +299,19 @@ class JSMin {
 
     /**
      * Is $c a letter, digit, underscore, dollar sign, escape, or non-ASCII?
+     *
+     * @param string $c
+     *
+     * @return bool
      */
     protected function isAlphaNum($c)
     {
         return (preg_match('/^[0-9a-zA-Z_\\$\\\\]$/', $c) || ord($c) > 126);
     }
 
+    /**
+     * @return string
+     */
     protected function singleLineComment()
     {
         $comment = '';
@@ -308,6 +328,10 @@ class JSMin {
         }
     }
 
+    /**
+     * @return string
+     * @throws JSMin_UnterminatedCommentException
+     */
     protected function multipleLineComment()
     {
         $this->get();
@@ -339,6 +363,8 @@ class JSMin {
     /**
      * Get the next character, skipping over comments.
      * Some comments may be preserved.
+     *
+     * @return string
      */
     protected function next()
     {

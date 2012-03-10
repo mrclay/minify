@@ -15,14 +15,7 @@ UPGRADING FROM 2.1.*
 
 5. Merge your settings in old_config.php into config.php.
 
-    * If you've set $_SERVER['DOCUMENT_ROOT'], instead set the new option
-      $min_documentRoot. This is advantageous on IIS systems because Minify
-      will no longer overwrite the path you specified.
-
-    * $min_errorLogger adds the ability to enable FirePHP logging.
-
-6. (optional) Delete /min/old_config.php and the Minify files from your cache 
-   directory (specified in $min_cachePath).
+6. (optional) Delete /min/old_config.php.
 
 
 INSTALLING FRESH
