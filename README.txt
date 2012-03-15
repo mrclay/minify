@@ -21,6 +21,12 @@ INSTALLATION
 Place the /min/ directory as a child of your DOCUMENT_ROOT
 directory: i.e. you will have: /home/example/www/min
 
+You can see verify that it is working by visiting these two URLs:
+  http://example.org/min/?f=min/quick-test.js
+  http://example.org/min/?f=min/quick-test.css
+
+If your server supports mod_rewrite, this URL should also work:
+  http://example.org/min/f=min/quick-test.js
 
 CONFIGURATION & USAGE
 
