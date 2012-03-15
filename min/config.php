@@ -9,8 +9,14 @@
 
 /**
  * Allow use of the Minify URI Builder app. Only set this to true while you need it.
- **/
+ */
 $min_enableBuilder = true;
+
+/**
+ * If non-empty, the Builder will be protected with HTTP Digest auth.
+ * The username is "admin".
+ */
+$min_builderPassword = 'admin';
 
 
 /**

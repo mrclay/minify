@@ -25,8 +25,15 @@ if (0 === strpos($_SERVER["SERVER_SOFTWARE"], 'Apache/')
 require dirname(__FILE__) . '/../config.php';
 
 if (! $min_enableBuilder) {
-    header('Location: /');
-    exit();
+    header('Content-Type: text/plain');
+    die('This application is not enabled. See http://code.google.com/p/minify/wiki/BuilderApp');
+}
+
+if (isset($min_builderPassword)
+        && is_string($min_builderPassword)
+        && $min_builderPassword !== '') {
+    require dirname(dirname(__FILE__)) . '/lib/DooDigestAuth.php';
+    DooDigestAuth::http_auth('Minify Builder', array('admin' => $min_builderPassword));
 }
 
 $setIncludeSuccess = set_include_path(dirname(__FILE__) . '/../lib' . PATH_SEPARATOR . get_include_path());
