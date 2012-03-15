@@ -100,15 +100,10 @@ $min_serveOptions['maxAge'] = 1800;
 
 
 /**
- * To use Google's Closure Compiler API (falling back to JSMin on failure),
- * uncomment the following lines:
+ * To use Google's Closure Compiler API to minify Javascript (falling back to JSMin
+ * on failure), uncomment the following line:
  */
-/*function closureCompiler($js) {
-    require_once 'Minify/JS/ClosureCompiler.php';
-    return Minify_JS_ClosureCompiler::minify($js);
-}
-$min_serveOptions['minifiers']['application/x-javascript'] = 'closureCompiler';
-//*/
+//$min_serveOptions['minifiers']['application/x-javascript'] = array('Minify_JS_ClosureCompiler', 'minify');
 
 
 /**
