@@ -28,6 +28,16 @@ class CSSmin
 	private $preserved_tokens = array();
 
 
+    /**
+     * @param bool $raisePhpSettingsLimits if true, raisePhpSettingLimits() will
+     * be called.
+     */
+    public function __construct($raisePhpSettingsLimits = true)
+    {
+        if ($raisePhpSettingsLimits) {
+            $this->raisePhpSettingLimits();
+        }
+    }
 
     /**
      * Minify a string of CSS
@@ -122,8 +132,35 @@ class CSSmin
 		return implode('', $css_chunks);
 	}
 
+    /**
+     * Get the minimum PHP setting values suggested for CSSmin
+     * @return array
+     */
+    public function getSuggestedPhpLimits()
+    {
+        return array(
+            'memory_limit' => '128M',
+            'pcre.backtrack_limit' => 1000 * 1000,
+            'pcre.recursion_limit' =>  500 * 1000,
+        );
+    }
 
 
+    /**
+     * Configure PHP to use at least the suggested minimum settings
+     *
+     * @todo Move this functionality to separate class.
+     */
+    public function raisePhpSettingLimits()
+    {
+        foreach ($this->getSuggestedPhpLimits() as $key => $val) {
+            $current = $this->normalizeInt(ini_get($key));
+            $suggested = $this->normalizeInt($val);
+            if ($current < $suggested) {
+                ini_set($key, $val);
+            }
+        }
+    }
 
     /**
      * Does bulk of the minification
@@ -564,5 +601,21 @@ class CSSmin
 		return ($slice === FALSE) ? '' : $slice;
 	}
 
-
+    /**
+     * Convert strings like "64M" to int values
+     * @param mixed $size
+     * @return int
+     */
+    private function normalizeInt($size)
+    {
+        if (is_string($size)) {
+            switch (substr($size, -1)) {
+                case 'M': case 'm': return (int)$size * 1048576;
+                case 'K': case 'k': return (int)$size * 1024;
+                case 'G': case 'g': return (int)$size * 1073741824;
+                default: return (int) $size;
+            }
+        }
+        return (int) $size;
+    }
 }
