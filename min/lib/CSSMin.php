@@ -23,10 +23,8 @@
 
 class CSSmin
 {
-
 	private $comments         = array();
 	private $preserved_tokens = array();
-
 
     /**
      * @param bool $raisePhpSettingsLimits if true, raisePhpSettingLimits() will
@@ -144,7 +142,6 @@ class CSSmin
             'pcre.recursion_limit' =>  500 * 1000,
         );
     }
-
 
     /**
      * Configure PHP to use at least the suggested minimum settings
@@ -300,16 +297,14 @@ class CSSmin
 		return $css;
 	}
 
-
-
-
 	/**
-	 * Utility method to replace all data urls with tokens before we start
-	 * compressing, to avoid performance issues running some of the subsequent
-	 * regexes against large strings chunks.
-	 */
+     * Utility method to replace all data urls with tokens before we start
+     * compressing, to avoid performance issues running some of the subsequent
+     * regexes against large strings chunks.
+     *
      * @param string $css
      * @return string
+     */
 	private function extract_data_urls($css)
 	{
 		// Leave data urls alone to increase parse performance.
@@ -373,9 +368,6 @@ class CSSmin
 		return implode('', $sb);
 	}
 
-
-
-
 	/**
 	 * Utility method to compress hex color values of the form #AABBCC to #ABC.
 	 *
@@ -428,13 +420,9 @@ class CSSmin
 		return implode('', $sb);
 	}
 
-
-
 	/* CALLBACKS
 	 * ---------------------------------------------------------------------------------------------
 	 */
-
-
 
 	private function callback_one($matches)
 	{
@@ -458,24 +446,15 @@ class CSSmin
 		return $quote . '___YUICSSMIN_PRESERVED_TOKEN_' . (count($this->preserved_tokens) - 1) . '___' . $quote;
 	}
 
-
-
-
 	private function callback_two($matches)
 	{
 		return preg_replace('/\:/', '___YUICSSMIN_PSEUDOCLASSCOLON___', $matches[0]);
 	}
 
-
-
-
 	private function callback_three($matches)
 	{
 		return strtolower($matches[1]) . ':0 0' . $matches[2];
 	}
-
-
-
 
 	private function callback_four($matches)
 	{
@@ -489,22 +468,14 @@ class CSSmin
 		return '#' . implode('', $rgbcolors);
 	}
 
-
-
-
 	private function callback_five($matches)
 	{
 		return strtolower($matches[1]) . ':0' . $matches[2];
 	}
 
-
-
-
 	/* HELPERS
 	 * ---------------------------------------------------------------------------------------------
 	 */
-
-
 
 	/**
 	 * PHP port of Javascript's "indexOf" function
@@ -521,7 +492,6 @@ class CSSmin
 
 		return ($index !== FALSE) ? $index : -1;
 	}
-
 
 	/**
 	 * PHP port of Javascript's "substring" function
