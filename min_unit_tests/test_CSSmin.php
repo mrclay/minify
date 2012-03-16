@@ -8,7 +8,7 @@ function test_CSSmin()
 {
     $files = glob(dirname(__FILE__) . '/_test_files/yuic/*.css');
 
-    // @todo determine why these crash. memroy exhaustion?
+    // some tests may exhaust memory/stack due to string size/PCRE
     $skip = array(
         //'dataurl-base64-doublequotes.css',
         //'dataurl-base64-noquotes.css',
@@ -16,7 +16,7 @@ function test_CSSmin()
     );
 
     foreach ($files as $file) {
-        if (!empty($skip) && in_array(basename($file), $skip)) {
+        if (! empty($skip) && in_array(basename($file), $skip)) {
             echo "INFO: CSSmin: skipping " . basename($file) . "\n";
             continue;
         }
@@ -33,8 +33,6 @@ function test_CSSmin()
             echo "---Expected: " .countBytes($minExpected). " bytes\n\n{$minExpected}\n\n";
             echo "---Source: " .countBytes($src). " bytes\n\n{$src}\n\n\n";
         }
-        
-
     }
 }
 
