@@ -29,6 +29,12 @@ class CSSmin
 
 
 
+    /**
+     * Minify a string of CSS
+     * @param string $css
+     * @param int|bool $linebreak_pos
+     * @return string
+     */
 	public function run($css, $linebreak_pos = FALSE)
 	{
 		// Try to increase the memory limit for this script
@@ -119,6 +125,12 @@ class CSSmin
 
 
 
+    /**
+     * Does bulk of the minification
+     * @param string $css
+     * @param int|bool $linebreak_pos
+     * @return string
+     */
 	private function minify($css, $linebreak_pos)
 	{
 		// strings are safe, now wrestle the comments
@@ -259,6 +271,8 @@ class CSSmin
 	 * compressing, to avoid performance issues running some of the subsequent
 	 * regexes against large strings chunks.
 	 */
+     * @param string $css
+     * @return string
 	private function extract_data_urls($css)
 	{
 		// Leave data urls alone to increase parse performance.
@@ -336,6 +350,9 @@ class CSSmin
 	 *
 	 * DOES NOT compress invalid hex values.
 	 * e.g. background-color: #aabbccdd
+     *
+     * @param string $css
+     * @return string
 	 */
 	private function compress_hex_colors($css)
 	{
@@ -459,6 +476,7 @@ class CSSmin
 	 * @param string $haystack
 	 * @param string $needle
 	 * @param int    $offset index (optional)
+     * @return int
 	 */
 	private function index_of($haystack, $needle, $offset = 0)
 	{
@@ -474,7 +492,8 @@ class CSSmin
 	 *
 	 * @param string $str
 	 * @param int    $from index
-	 * @param int    $to index (optional)
+	 * @param int|bool    $to index (optional)
+     * @return string
 	 */
 	private function substring($str, $from, $to = FALSE)
 	{
@@ -510,7 +529,8 @@ class CSSmin
 	 *
 	 * @param string $str
 	 * @param int    $start index
-	 * @param int    $end index (optional)
+	 * @param int|bool    $end index (optional)
+     * @return string
 	 */
 	private function str_slice($str, $start, $end = FALSE)
 	{
