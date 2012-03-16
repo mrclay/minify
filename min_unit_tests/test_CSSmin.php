@@ -10,13 +10,13 @@ function test_CSSmin()
 
     // @todo determine why these crash. memroy exhaustion?
     $skip = array(
-        'dataurl-base64-doublequotes.css',
-        'dataurl-base64-noquotes.css',
-        'dataurl-base64-singlequotes.css',
+        //'dataurl-base64-doublequotes.css',
+        //'dataurl-base64-noquotes.css',
+        //'dataurl-base64-singlequotes.css',
     );
 
     foreach ($files as $file) {
-        if (in_array(basename($file), $skip)) {
+        if (!empty($skip) && in_array(basename($file), $skip)) {
             echo "INFO: CSSmin: skipping " . basename($file) . "\n";
             continue;
         }
@@ -24,18 +24,16 @@ function test_CSSmin()
         $cssmin = new CSSmin();
 
         $src = file_get_contents($file);
-        $minExpected = file_get_contents($file . '.min');
-
-//        echo "$file\n\n";
-//        ob_flush();
-//        flush();
-        $minOutput = $cssmin->run($src, 100);
+        $minExpected = trim(file_get_contents($file . '.min'));
+        $minOutput = trim($cssmin->run($src));
+        
         $passed = assertTrue($minExpected == $minOutput, 'CSSmin : ' . basename($file));
         if (! $passed && __FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
             echo "\n---Output: " .countBytes($minOutput). " bytes\n\n{$minOutput}\n\n";
             echo "---Expected: " .countBytes($minExpected). " bytes\n\n{$minExpected}\n\n";
             echo "---Source: " .countBytes($src). " bytes\n\n{$src}\n\n\n";
         }
+        
 
     }
 }
