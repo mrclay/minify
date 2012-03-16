@@ -15,13 +15,13 @@ function test_CSSmin()
         //'dataurl-base64-singlequotes.css',
     );
 
+    $cssmin = new CSSmin();
+
     foreach ($files as $file) {
         if (! empty($skip) && in_array(basename($file), $skip)) {
             echo "INFO: CSSmin: skipping " . basename($file) . "\n";
             continue;
         }
-
-        $cssmin = new CSSmin();
 
         $src = file_get_contents($file);
         $minExpected = trim(file_get_contents($file . '.min'));

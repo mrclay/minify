@@ -37,6 +37,9 @@ class CSSmin
 		ini_set('pcre.backtrack_limit', 1000 * 1000);
 		ini_set('pcre.recursion_limit', 500  * 1000);
 
+        $this->comments = array();
+        $this->preserved_tokens = array();
+
 		$start_index = 0;
 		$length = strlen($css);
 
