@@ -491,10 +491,12 @@ class CSSmin
 				$to = $from_copy;
 			}
 
-			return substr($str, $from, $to - $from);
+			$substring = substr($str, $from, $to - $from);
+			return ($substring === FALSE) ? '' : $substring;
 		}
 
-		return substr($str, $from);
+		$substring = substr($str, $from);
+		return ($substring === FALSE) ? '' : $substring;
 	}
 
 
