@@ -9,6 +9,6 @@
     ],
     "require": {},
     "autoload": {
-        "classmap": "min/lib/"
+        "classmap": ["min/lib/"]
     }
 }
