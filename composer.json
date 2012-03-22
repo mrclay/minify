@@ -1,5 +1,5 @@
 {
-    "name": "mrclay/minify",
+    "name": "oyatel/minify",
     "description": "Minify is a PHP5 app that helps you follow several rules for client-side performance. It combines multiple CSS or Javascript files, removes unnecessary whitespace and comments, and serves them with gzip encoding and optimal client-side cache headers",
     "authors": [
         {
