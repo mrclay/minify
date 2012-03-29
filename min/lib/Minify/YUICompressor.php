@@ -134,8 +134,8 @@ class Minify_YUICompressor {
         if (! is_file(self::$jarFile)) {
             throw new Exception('Minify_YUICompressor : $jarFile('.self::$jarFile.') is not a valid file.');
         }
-        if (! is_executable(self::$jarFile)) {
-            throw new Exception('Minify_YUICompressor : $jarFile('.self::$jarFile.') is not executable.');
+        if (! is_readable(self::$jarFile)) {
+            throw new Exception('Minify_YUICompressor : $jarFile('.self::$jarFile.') is not readable.');
         }
         if (! is_dir(self::$tempDir)) {
             throw new Exception('Minify_YUICompressor : $tempDir('.self::$tempDir.') is not a valid direcotry.');
