@@ -86,7 +86,7 @@ class Minify_ClosureCompiler {
         $o = array_merge(
             array(
                 'charset' => 'utf-8',
-                'compilation_level' => '',
+                'compilation_level' => 'SIMPLE_OPTIMIZATIONS',
             ),
             $userOptions
         );
