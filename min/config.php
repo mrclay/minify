@@ -76,6 +76,31 @@ $min_documentRoot = '';
  */
 $min_cacheFileLocking = true;
 
+/**
+ * Override the default cache ID generator. Set this to a function that
+ * returns a string that uniquely identifies the set of cached files
+ */
+/*function getVersionedCacheId($selectionId, $sources, $options, $prefix = 'minify') {
+    require_once 'Minify/Logger.php';
+    
+    // We want to name the cache files with a version number that's specified as
+    // a GET parameter (e.g. "&v=123"). Also, lets generate a key that can be
+    // determined by the web server, so that if the cache file already exists it
+    // doesn't need to execute PHP at all.
+        
+    $name = preg_replace('/[^a-zA-Z0-9\\.=_,]/', '', $_GET['l']);
+    $name = preg_replace('/\\.+/', '.', $name);
+    $name = substr($name, 0, 250 - 34 - strlen($prefix));
+    $version = preg_replace('/[^0-9]/', '', $_GET['v']);
+    
+    $cacheId = "{$prefix}.{$version}.{$name}";
+    
+    Minify_Logger::log("Serving {$cacheId}");
+    
+    return $cacheId;
+}
+$min_serveOptions['customCacheId'] = 'getVersionedCacheId';
+//*/
 
 /**
  * Combining multiple CSS files can place @import declarations after rules, which

@@ -563,6 +563,10 @@ class Minify {
      */
     protected static function _getCacheId($prefix = 'minify')
     {
+        if (isset(self::$_options['customCacheId'])) {
+            return call_user_func(self::$_options['customCacheId'], self::$_controller->selectionId, self::$_controller->sources, self::$_options);
+        }
+            
         $name = preg_replace('/[^a-zA-Z0-9\\.=_,]/', '', self::$_controller->selectionId);
         $name = preg_replace('/\\.+/', '.', $name);
         $name = substr($name, 0, 200 - 34 - strlen($prefix));
@@ -573,6 +577,7 @@ class Minify {
             ,self::$_options['postprocessor']
             ,self::$_options['bubbleCssImports']
         )));
+        
         return "{$prefix}_{$name}_{$md5}";
     }
     
