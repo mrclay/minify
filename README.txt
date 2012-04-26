@@ -1,4 +1,4 @@
-WELCOME TO MINIFY 2.1!
+WELCOME TO MINIFY!
 
 Minify is an HTTP content server. It compresses sources of content 
 (usually files), combines the result and serves it with appropriate 
@@ -12,33 +12,44 @@ WORDPRESS USER?
 
 These WP plugins integrate Minify into WordPress's style and script hooks to
 get you set up faster.
-  http://wordpress.org/extend/plugins/wp-minify/
+  http://wordpress.org/extend/plugins/bwp-minify/
   http://wordpress.org/extend/plugins/w3-total-cache/
 
+
+INSTALLATION
+
+Place the /min/ directory as a child of your DOCUMENT_ROOT
+directory: i.e. you will have: /home/example/www/min
+
+You can see verify that it is working by visiting these two URLs:
+  http://example.org/min/?f=min/quick-test.js
+  http://example.org/min/?f=min/quick-test.css
+
+If your server supports mod_rewrite, this URL should also work:
+  http://example.org/min/f=min/quick-test.js
+
+CONFIGURATION & USAGE
+
+See the MIN.txt file and http://code.google.com/p/minify/wiki/UserGuide
+
+Minify also comes with a URI Builder application that can help you write URLs
+for use with Minify or configure groups of files. See here for details:
+  http://code.google.com/p/minify/wiki/BuilderApp
+
+The cookbook also provides some more advanced options for minification:
+  http://code.google.com/p/minify/wiki/CookBook
 
 UPGRADING
 
 See UPGRADING.txt for instructions.
 
 
-INSTALLATION AND USAGE:
-
-1. Place the /min/ directory as a child of your DOCUMENT_ROOT 
-directory: i.e. you will have: /home/user/www/min
-
-2. Open http://yourdomain/min/ in a web browser. This will forward
-you to the Minify URI Builder application, which will help you
-quickly start using Minify to serve content on your site.
-
-See the User Guide: http://code.google.com/p/minify/wiki/UserGuide
-
-
 UNIT TESTING:
 
 1. Place the /min_unit_tests/ directory as a child of your DOCUMENT_ROOT 
-directory: i.e. you will have: /home/user/www/public_html/min_unit_tests
+directory: i.e. you will have: /home/example/www/min_unit_tests
 
-2. To run unit tests, access: http://yourdomain/min_unit_tests/test_all.php
+2. To run unit tests, access: http://example.org/min_unit_tests/test_all.php
 
 (If you wish, the other test_*.php files can be run to test individual
 components with more verbose output.)

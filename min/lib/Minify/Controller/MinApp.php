@@ -18,8 +18,8 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
      * Set up groups of files as sources
      * 
      * @param array $options controller and Minify options
+     *
      * @return array Minify options
-     * 
      */
     public function setupSources($options) {
         // filter controller options
@@ -185,6 +185,13 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
         return $options;
     }
 
+    /**
+     * @param string $file
+     *
+     * @param array $cOptions
+     *
+     * @return Minify_Source
+     */
     protected function _getFileSource($file, $cOptions)
     {
         $spec['filepath'] = $file;
@@ -197,8 +204,12 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
 
     protected $_type = null;
 
-    /*
+    /**
      * Make sure that only source files of a single type are registered
+     *
+     * @param string $sourceOrExt
+     *
+     * @throws Exception
      */
     public function checkType($sourceOrExt)
     {

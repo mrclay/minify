@@ -12,6 +12,10 @@ define('MINIFY_MIN_DIR', dirname(__FILE__));
 // load config
 require MINIFY_MIN_DIR . '/config.php';
 
+if (isset($_GET['test'])) {
+    include MINIFY_MIN_DIR . '/config-test.php';
+}
+
 // setup include path
 set_include_path($min_libPath . PATH_SEPARATOR . get_include_path());
 

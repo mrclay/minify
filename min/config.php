@@ -8,6 +8,18 @@
 
 
 /**
+ * Allow use of the Minify URI Builder app. Only set this to true while you need it.
+ */
+$min_enableBuilder = false;
+
+/**
+ * If non-empty, the Builder will be protected with HTTP Digest auth.
+ * The username is "admin".
+ */
+$min_builderPassword = 'admin';
+
+
+/**
  * Set to true to log messages to FirePHP (Firefox Firebug addon).
  * Set to false for no error logging (Minify may be slightly faster).
  * @link http://www.firephp.org/
@@ -31,13 +43,6 @@ $min_errorLogger = false;
  * to indicate line #s of the original files.
  */
 $min_allowDebugFlag = false;
-
-
-/**
- * Allow use of the Minify URI Builder app. If you no longer need 
- * this, set to false.
- **/
-$min_enableBuilder = true;
 
 
 /**
@@ -126,15 +131,10 @@ $min_serveOptions['maxAge'] = 1800;
 
 
 /**
- * To use Google's Closure Compiler API (falling back to JSMin on failure),
- * uncomment the following lines:
+ * To use Google's Closure Compiler API to minify Javascript (falling back to JSMin
+ * on failure), uncomment the following line:
  */
-/*function closureCompiler($js) {
-    require_once 'Minify/JS/ClosureCompiler.php';
-    return Minify_JS_ClosureCompiler::minify($js);
-}
-$min_serveOptions['minifiers']['application/x-javascript'] = 'closureCompiler';
-//*/
+//$min_serveOptions['minifiers']['application/x-javascript'] = array('Minify_JS_ClosureCompiler', 'minify');
 
 
 /**

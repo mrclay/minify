@@ -214,10 +214,15 @@ var MUB = {
         if (location.hash) {
             // make links out of URIs from bookmarklet
             $('#getBm').hide();
-            $('#bmUris').html('<p><strong>Found by bookmarklet:</strong> /<a href=#>' +
-                 location.hash.substr(1).split(',').join('</a> | /<a href=#>') +
-                 '</a></p>'
-            );
+            var i = 0, found = location.hash.substr(1).split(','), l = found.length;
+            $('#bmUris').html('<p><strong>Found by bookmarklet:</strong> /</p>');
+            var $p = $('#bmUris p');
+            for (; i < l; i++) {
+                $p.append($('<a href=#></a>').text(found[i])[0]);
+                if (i < (l - 1)) {
+                    $p.append(', /');
+                }
+            }
             $('#bmUris a').click(function () {
                 MUB.addButtonClick();
                 $('#sources li:last input').val(this.innerHTML);

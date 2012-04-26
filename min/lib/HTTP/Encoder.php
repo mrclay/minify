@@ -85,8 +85,6 @@ class HTTP_Encoder {
      * method. If not set, the best method will be chosen by getAcceptedEncoding()
      * The available methods are 'gzip', 'deflate', 'compress', and '' (no
      * encoding)
-     * 
-     * @return null
      */
     public function __construct($spec) 
     {
@@ -114,7 +112,7 @@ class HTTP_Encoder {
      * 
      * Call after encode() for encoded content.
      * 
-     * return string
+     * @return string
      */
     public function getContent() 
     {
@@ -148,8 +146,6 @@ class HTTP_Encoder {
      * not handled purposefully.
      * 
      * @see getHeaders()
-     * 
-     * @return null
      */
     public function sendHeaders()
     {
@@ -166,8 +162,6 @@ class HTTP_Encoder {
      * You must call this before headers are sent and it probably cannot be
      * used in conjunction with zlib output buffering / mod_gzip. Errors are
      * not handled purposefully.
-     * 
-     * @return null
      */
     public function sendAll()
     {
