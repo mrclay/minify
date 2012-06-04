@@ -161,9 +161,11 @@ class Minify {
      * 
      * @param array $options controller/serve options
      * 
-     * @return mixed null, or, if the 'quiet' option is set to true, an array
+     * @return null|array if the 'quiet' option is set to true, an array
      * with keys "success" (bool), "statusCode" (int), "content" (string), and
      * "headers" (array).
+     *
+     * @throws Exception
      */
     public static function serve($controller, $options = array())
     {
@@ -300,7 +302,7 @@ class Minify {
                     throw $e;
                 }
                 self::$_cache->store($cacheId, $content);
-                if (function_exists('gzencode')) {
+                if (function_exists('gzencode') && self::$_options['encodeMethod']) {
                     self::$_cache->store($cacheId . '.gz', gzencode($content, self::$_options['encodeLevel']));
                 }
             }
