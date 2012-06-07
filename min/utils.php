@@ -2,6 +2,11 @@
 /**
  * Utility functions for generating URIs in HTML files
  *
+ * @warning These functions execute min/groupsConfig.php, sometimes multiple times.
+ * You must make sure that functions are not redefined, and if your use custom sources,
+ * you must require_once dirname(__FILE__) . '/lib/Minify/Source.php' so that
+ * class is available.
+ *
  * @package Minify
  */
 
