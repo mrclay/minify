@@ -2,8 +2,6 @@
 
 require_once '_inc.php';
 
-require_once 'Minify/CSS/UriRewriter.php';
-
 function test_Minify_CSS_UriRewriter()
 {
     global $thisDir;

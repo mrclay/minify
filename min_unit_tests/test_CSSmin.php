@@ -2,8 +2,6 @@
 
 require_once '_inc.php';
 
-require_once 'CSSmin.php';
-
 function test_CSSmin()
 {
     $files = glob(dirname(__FILE__) . '/_test_files/yuic/*.css');

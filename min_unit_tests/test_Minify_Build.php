@@ -1,8 +1,6 @@
 <?php
 require_once '_inc.php';
 
-require_once 'Minify/Build.php';
-
 function test_Minify_Build()
 {
     global $thisDir;
@@ -19,7 +17,6 @@ function test_Minify_Build()
     assertTrue($maxTime == $b->lastModified
         ,'Minify_Build : multiple file paths');
     
-    require_once 'Minify.php';
     $b = new Minify_Build(array(
         $file1
         ,new Minify_Source(array('filepath' => $file2))

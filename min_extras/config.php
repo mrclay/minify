@@ -4,13 +4,9 @@
 
 require dirname(__FILE__) . '/../min/config.php';
 
-set_include_path($min_libPath . PATH_SEPARATOR . get_include_path());
+require "$min_libPath/Minify/Loader.php";
+Minify_Loader::register();
 
 $minifyCachePath = isset($min_cachePath) 
     ? $min_cachePath 
     : '';
-
-function min_autoload($name) {
-    require str_replace(array('_', '\\'), DIRECTORY_SEPARATOR, $name) . '.php';
-}
-spl_autoload_register('min_autoload');

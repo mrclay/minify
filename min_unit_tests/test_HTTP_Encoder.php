@@ -1,8 +1,6 @@
 <?php
 require_once '_inc.php';
 
-require_once 'HTTP/Encoder.php';
-
 function test_HTTP_Encoder()
 {
     global $thisDir;

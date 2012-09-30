@@ -1,7 +1,6 @@
 <?php
 
 require_once '_inc.php';
-require_once 'Minify.php';
 
 function test_Lines()
 {

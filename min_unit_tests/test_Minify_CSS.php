@@ -1,8 +1,6 @@
 <?php
 require_once '_inc.php';
 
-require_once 'Minify/CSS.php';
-
 function test_CSS()
 {
     global $thisDir;

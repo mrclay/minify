@@ -65,7 +65,6 @@ class Minify_Lines {
         
         // check for desired URI rewriting
         if (isset($options['currentDir'])) {
-            require_once 'Minify/CSS/UriRewriter.php';
             Minify_CSS_UriRewriter::$debugText = '';
             $content = Minify_CSS_UriRewriter::rewrite(
                  $content

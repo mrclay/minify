@@ -125,7 +125,6 @@ class Minify_JS_ClosureCompiler {
      */
     protected function _fallback($js)
     {
-        require_once 'JSMin.php';
         return JSMin::minify($js);
     }
 }

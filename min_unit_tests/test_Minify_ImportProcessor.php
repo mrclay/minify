@@ -2,8 +2,6 @@
 
 require_once '_inc.php';
 
-require_once 'Minify/ImportProcessor.php';
-
 function test_Minify_ImportProcessor()
 {
     global $thisDir;

@@ -3,14 +3,8 @@
 
 $pathToLib = dirname(dirname(__DIR__)) . '/min/lib';
 
-// needed because of dumb require statements in class files :(
-set_include_path($pathToLib . PATH_SEPARATOR . get_include_path());
-
-// barebones autoloader
-spl_autoload_register(function ($class) use ($pathToLib) {
-    $file = $pathToLib . '/' . str_replace(array('_', '\\'), DIRECTORY_SEPARATOR, $class) . '.php';
-    return is_file($file) ? ((require $file) || true) : false;
-});
+require "$min_libPath/Minify/Loader.php";
+Minify_Loader::register();
 
 $cli = new MrClay\Cli;
 

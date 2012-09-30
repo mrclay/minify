@@ -3,7 +3,6 @@
 // currently these only test serve() when passed the 'quiet' options
 
 require_once '_inc.php';
-require_once 'Minify.php';
 
 function test_Minify()
 {

@@ -1,8 +1,6 @@
 <?php
 require_once '_inc.php';
 
-require_once 'HTTP/ConditionalGet.php';
-
 function test_HTTP_ConditionalGet()
 {
     global $thisDir;

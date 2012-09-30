@@ -1,10 +1,6 @@
 <?php
 require_once '_inc.php';
 
-require_once 'Minify/HTML.php';
-require_once 'Minify/CSS.php';
-require_once 'JSMin.php';
-
 function test_HTML()
 {
     global $thisDir;

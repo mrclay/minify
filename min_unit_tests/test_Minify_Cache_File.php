@@ -1,8 +1,6 @@
 <?php
 require_once '_inc.php';
 
-require_once 'Minify/Cache/File.php';
-
 function test_Minify_Cache_File()
 {
     $data = str_repeat(md5(time()) . 'í', 100); // 3400 bytes in UTF-8

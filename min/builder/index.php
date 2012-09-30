@@ -24,6 +24,9 @@ if (0 === strpos($_SERVER["SERVER_SOFTWARE"], 'Apache/')
 
 require dirname(__FILE__) . '/../config.php';
 
+require "$min_libPath/Minify/Loader.php";
+Minify_Loader::register();
+
 if (! $min_enableBuilder) {
     header('Content-Type: text/plain');
     die('This application is not enabled. See http://code.google.com/p/minify/wiki/BuilderApp');
@@ -32,25 +35,8 @@ if (! $min_enableBuilder) {
 if (isset($min_builderPassword)
         && is_string($min_builderPassword)
         && $min_builderPassword !== '') {
-    require dirname(dirname(__FILE__)) . '/lib/DooDigestAuth.php';
     DooDigestAuth::http_auth('Minify Builder', array('admin' => $min_builderPassword));
 }
-
-$setIncludeSuccess = set_include_path(dirname(__FILE__) . '/../lib' . PATH_SEPARATOR . get_include_path());
-// we do it this way because we want the builder to work after the user corrects
-// include_path. (set_include_path returning FALSE is OK).
-try {
-    require_once 'Minify/Cache/File.php';
-} catch (Exception $e) {
-    if (! $setIncludeSuccess) {
-        echo "Minify: set_include_path() failed. You may need to set your include_path "
-            ."outside of PHP code, e.g., in php.ini.";    
-    } else {
-        echo $e->getMessage();
-    }
-    exit();
-}
-require 'Minify.php';
 
 $cachePathCode = '';
 if (! isset($min_cachePath) && ! function_exists('sys_get_temp_dir')) {

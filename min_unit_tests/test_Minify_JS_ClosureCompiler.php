@@ -1,8 +1,6 @@
 <?php
 require_once '_inc.php';
 
-require_once 'Minify/JS/ClosureCompiler.php';
-
 function test_Minify_JS_ClosureCompiler()
 {
     global $thisDir;

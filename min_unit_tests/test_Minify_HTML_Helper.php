@@ -1,8 +1,6 @@
 <?php
 require_once '_inc.php';
 
-require_once 'Minify/HTML/Helper.php';
-
 function test_Minify_HTML_Helper()
 {
     global $thisDir;

@@ -2,7 +2,8 @@
 
 require dirname(__FILE__) . '/../min/config.php';
 
-set_include_path($min_libPath . PATH_SEPARATOR . get_include_path());
+require "$min_libPath/Minify/Loader.php";
+Minify_Loader::register();
 
 // set cache path and doc root if configured
 $minifyCachePath = isset($min_cachePath) 
@@ -13,11 +14,9 @@ if ($min_documentRoot) {
 }
 
 // default log to FirePHP
-require_once 'Minify/Logger.php';
 if ($min_errorLogger && true !== $min_errorLogger) { // custom logger
     Minify_Logger::setLogger($min_errorLogger);
 } else {
-    require_once 'FirePHP.php';
     Minify_Logger::setLogger(FirePHP::getInstance(true));
 }
 

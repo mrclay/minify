@@ -1,8 +1,6 @@
 <?php
 require_once '_inc.php';
 
-require_once 'Minify/Cache/ZendPlatform.php';
-
 function test_Minify_Cache_ZendPlatform()
 {
     $prefix = 'Minify_Cache_ZendPlatform : ';

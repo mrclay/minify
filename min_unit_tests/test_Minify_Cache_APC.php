@@ -1,8 +1,6 @@
 <?php
 require_once '_inc.php';
 
-require_once 'Minify/Cache/APC.php';
-
 function test_Minify_Cache_APC()
 {
     $prefix = 'Minify_Cache_APC : ';

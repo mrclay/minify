@@ -1,8 +1,6 @@
 <?php
 require_once '_inc.php';
 
-require_once 'JSMin.php';
-
 function test_JSMin()
 {
     global $thisDir;

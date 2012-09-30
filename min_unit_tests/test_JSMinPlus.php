@@ -1,8 +1,6 @@
 <?php
 require_once '_inc.php';
 
-require_once 'JSMinPlus.php';
-
 function test_JSMinPlus()
 {
     global $thisDir;

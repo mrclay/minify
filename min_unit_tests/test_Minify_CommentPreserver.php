@@ -2,8 +2,6 @@
 
 require_once '_inc.php';
 
-require_once 'Minify/CommentPreserver.php';
-
 function test_Minify_CommentPreserver()
 {
     global $thisDir;
