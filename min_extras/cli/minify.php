@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
 
 $pathToLib = dirname(dirname(__DIR__)) . '/min/lib';
