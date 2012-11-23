@@ -3,7 +3,7 @@
 
 $pathToLib = dirname(dirname(__DIR__)) . '/min/lib';
 
-require "$min_libPath/Minify/Loader.php";
+require "$pathToLib/Minify/Loader.php";
 Minify_Loader::register();
 
 $cli = new MrClay\Cli;
