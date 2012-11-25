@@ -17,7 +17,7 @@ if (isset($_POST['method']) && $_POST['method'] === 'Minify and serve') {
     if ($base) {
         $textIn = preg_replace(
             '@(<head\\b[^>]*>)@i'
-            ,'$1<base href="' . htmlentities($base) . '" />'
+            ,'$1<base href="' . htmlspecialchars($base, ENT_QUOTES, 'UTF-8') . '" />'
             ,$textIn
         );
     }
@@ -38,7 +38,7 @@ if (isset($_POST['method']) && $_POST['method'] === 'Minify and serve') {
             ,'contentType' => Minify::TYPE_HTML
         ));
     } catch (Exception $e) {
-        echo htmlspecialchars($e->getMessage());
+        echo htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
     }
     exit();
 }
@@ -56,12 +56,14 @@ if (isset($_POST['method']) && in_array($_POST['method'], $classes)) {
     }
     $func = array($_POST['method'], 'minify');
     $inOutBytes[0] = strlen($textIn);
+    $startTime = microtime(true);
     try {
         $textOut = call_user_func_array($func, $args);
     } catch (Exception $e) {
-        echo htmlspecialchars($e->getMessage());
+        echo htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
         exit;
     }
+    $elapsedTime = microtime(true) - $startTime;
     $inOutBytes[1] = strlen($textOut);
 }
 
@@ -74,6 +76,7 @@ if (isset($inOutBytes)) {
 <table>
     <tr><th>Bytes in</th><td>{$inOutBytes[0]} (after line endings normalized to <code>\\n</code>)</td></tr>
     <tr><th>Bytes out</th><td>{$inOutBytes[1]} (reduced " . round(100 - (100 * $inOutBytes[1] / $inOutBytes[0])) . "%)</td></tr>
+    <tr><th>Time (s)</th><td>" . round($elapsedTime, 5) . "</td></tr>
 </table>
     ";
 }
@@ -81,7 +84,7 @@ if (isset($inOutBytes)) {
 <form action="?2" method="post">
 <p><label>Content<br><textarea name="textIn" cols="80" rows="35" style="width:99%"><?php
 if (isset($textOut)) {
-    echo htmlspecialchars($textOut);
+    echo htmlspecialchars($textOut, ENT_QUOTES, 'UTF-8');
 }
 ?></textarea></label></p>
 <p>Minify with: 

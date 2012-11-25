@@ -84,7 +84,7 @@ if (isset($_POST['url'])) {
         && ! preg_match('@<base\\b@i', $content)) {
         $content = preg_replace(
             '@(<head\\b[^>]*>)@i'
-            ,'$1<base href="' . htmlentities($url) . '" />'
+            ,'$1<base href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '" />'
             ,$content
         );
     }
@@ -119,7 +119,7 @@ if (isset($_POST['url'])) {
         ));
     } catch (Exception $e) {
         header('Content-Type: text/html;charset=utf-8');
-        echo htmlspecialchars($e->getMessage());
+        echo htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
     }
     exit();
 }
@@ -156,7 +156,7 @@ The fetched resource Content-Type will determine the minifier used.</p>
 
 <fieldset><legend>Retreival options</legend>
 <ul>
-    <li><label>User-Agent: <input type="text" name="ua" size="60" value="<?php echo htmlspecialchars($ua); ?>"></label>
+    <li><label>User-Agent: <input type="text" name="ua" size="60" value="<?php echo htmlspecialchars($ua, ENT_QUOTES, 'UTF-8'); ?>"></label>
     <li><label>Cookie: <input type="text" name="cook" size="60"></label>
 </ul>
 </fieldset>
