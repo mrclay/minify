@@ -103,8 +103,11 @@ class Minify_HTML_Helper {
             }
             if (is_file($this->groupsConfigFile)) {
                 $gc = (require $this->groupsConfigFile);
-                if (isset($gc[$key])) {
-                    $this->_lastModified = self::getLastModified($gc[$key]);
+                $keys = explode(',', $key);
+                foreach ($keys as $key) {
+                    if (isset($gc[$key])) {
+                        $this->_lastModified = self::getLastModified($gc[$key], $this->_lastModified);
+                    }
                 }
             }
         }
