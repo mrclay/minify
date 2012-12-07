@@ -8,7 +8,8 @@
 	"authors": [
 		{
 			"name": "Stephen Clay",
-			"email": "steve@mrclay.org"
+			"email": "steve@mrclay.org",
+			"role": "Developer"
 		}
 	],
 	"require": {
