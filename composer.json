@@ -1,13 +1,19 @@
 {
 	"name": "mrclay/minify",
+	"type": "library",
 	"description": "Minify is a PHP5 app that helps you follow several rules for client-side performance. It combines multiple CSS or Javascript files, removes unnecessary whitespace and comments, and serves them with gzip encoding and optimal client-side cache headers",
+	"homepage": "http://code.google.com/p/minify/",
+	"license": "BSD-3-Clause",
 	"authors": [
 		{
 			"name": "Stephen Clay",
 			"email": "steve@mrclay.org"
 		}
 	],
-	"require": {},
+	"require": {
+		"php": ">=5.2.1",
+		"ext-pcre": "*"
+	},
 	"autoload": {
 		"classmap": ["min/lib/"]
 	}
