@@ -26,7 +26,7 @@ class Minify_Cache_XCache {
      * @param int $expire seconds until expiration (default = 0
      * meaning the item will not get an expiration date)
      */
-	public function __construct($expire = 0)
+    public function __construct($expire = 0)
     {
         $this->_exp = $expire;
     }
