@@ -71,7 +71,7 @@ var MUB = {
             return;
         var li = this;
         $('span', this).html('');
-        var url = 'http://' + location.host + '/' +
+        var url = location.protocol + '//' + location.host + '/' +
                 $('input', this)[0].value.replace(/^\//, '');
         $.ajax({
             url : url,
