@@ -116,8 +116,8 @@ class JSMin {
             // determine next command
             $command = self::ACTION_KEEP_A; // default
             if ($this->a === ' ') {
-                if (($this->lastByteOut === '+' || $this->lastByteOut === '-') 
-                    && ($this->b === $this->lastByteOut)) {
+                if (($this->lastByteOut === '+' || $this->lastByteOut === '-')
+                        && ($this->b === $this->lastByteOut)) {
                     // Don't delete this space. If we do, the addition/subtraction
                     // could be parsed as a post-increment
                 } elseif (! $this->isAlphaNum($this->b)) {
@@ -129,13 +129,13 @@ class JSMin {
                 // in case of mbstring.func_overload & 2, must check for null b,
                 // otherwise mb_strpos will give WARNING
                 } elseif ($this->b === null
-                          || (false === strpos('{[(+-', $this->b)
+                          || (false === strpos('{[(+-!~', $this->b)
                               && ! $this->isAlphaNum($this->b))) {
                     $command = self::ACTION_DELETE_A;
                 }
             } elseif (! $this->isAlphaNum($this->a)) {
                 if ($this->b === ' '
-                    || ($this->b === "\n" 
+                    || ($this->b === "\n"
                         && (false === strpos('}])+-"\'', $this->a)))) {
                     $command = self::ACTION_DELETE_A_B;
                 }
@@ -160,7 +160,7 @@ class JSMin {
      */
     protected function action($command)
     {
-        if ($command === self::ACTION_DELETE_A_B 
+        if ($command === self::ACTION_DELETE_A_B
             && $this->b === ' '
             && ($this->a === '+' || $this->a === '-')) {
             // Note: we're at an addition/substraction operator; the inputIndex
@@ -175,20 +175,20 @@ class JSMin {
                 $this->output .= $this->a;
                 $this->lastByteOut = $this->a;
                 
-                // fallthrough
+                // fallthrough intentional
             case self::ACTION_DELETE_A:
                 $this->a = $this->b;
                 if ($this->a === "'" || $this->a === '"') { // string literal
                     $str = $this->a; // in case needed for exception
-                    while (true) {
+                    for(;;) {
                         $this->output .= $this->a;
                         $this->lastByteOut = $this->a;
                         
-                        $this->a       = $this->get();
+                        $this->a = $this->get();
                         if ($this->a === $this->b) { // end quote
                             break;
                         }
-                        if (ord($this->a) <= self::ORD_LF) {
+                        if ($this->isEOF($this->a)) {
                             throw new JSMin_UnterminatedStringException(
                                 "JSMin: Unterminated String at byte "
                                 . $this->inputIndex . ": {$str}");
@@ -198,27 +198,49 @@ class JSMin {
                             $this->output .= $this->a;
                             $this->lastByteOut = $this->a;
                             
-                            $this->a       = $this->get();
+                            $this->a = $this->get();
                             $str .= $this->a;
                         }
                     }
                 }
-                // fallthrough
+
+                // fallthrough intentional
             case self::ACTION_DELETE_A_B:
                 $this->b = $this->next();
-                if ($this->b === '/' && $this->isRegexpLiteral()) { // RegExp literal
+                if ($this->b === '/' && $this->isRegexpLiteral()) {
                     $this->output .= $this->a . $this->b;
-                    $pattern = '/'; // in case needed for exception
-                    while (true) {
+                    $pattern = '/'; // keep entire pattern in case we need to report it in the exception
+                    for(;;) {
                         $this->a = $this->get();
                         $pattern .= $this->a;
+                        if ($this->a === '[') {
+                            for(;;) {
+                                $this->output .= $this->a;
+                                $this->a = $this->get();
+                                $pattern .= $this->a;
+                                if ($this->a === ']') {
+                                    break;
+                                }
+                                if ($this->a === '\\') {
+                                    $this->output .= $this->a;
+                                    $this->a = $this->get();
+                                    $pattern .= $this->a;
+                                }
+                                if ($this->isEOF($this->a)) {
+                                    throw new JSMin_UnterminatedRegExpException(
+                                        "JSMin: Unterminated set in RegExp at byte "
+                                            . $this->inputIndex .": {$pattern}");
+                                }
+                            }
+                        }
+
                         if ($this->a === '/') { // end pattern
                             break; // while (true)
                         } elseif ($this->a === '\\') {
                             $this->output .= $this->a;
-                            $this->a       = $this->get();
-                            $pattern      .= $this->a;
-                        } elseif (ord($this->a) <= self::ORD_LF) {
+                            $this->a = $this->get();
+                            $pattern .= $this->a;
+                        } elseif ($this->isEOF($this->a)) {
                             throw new JSMin_UnterminatedRegExpException(
                                 "JSMin: Unterminated RegExp at byte "
                                 . $this->inputIndex .": {$pattern}");
@@ -287,6 +309,17 @@ class JSMin {
     }
 
     /**
+     * Does $a indicate end of input?
+     *
+     * @param string $a
+     * @return bool
+     */
+    protected function isEOF($a)
+    {
+        return ord($a) <= self::ORD_LF;
+    }
+
+    /**
      * Get next char. If is ctrl character, translate to a space or newline.
      *
      * @return string
@@ -336,7 +369,7 @@ class JSMin {
     {
         $this->get();
         $comment = '';
-        while (true) {
+        for(;;) {
             $get = $this->get();
             if ($get === '*') {
                 if ($this->peek() === '/') { // end of comment reached
