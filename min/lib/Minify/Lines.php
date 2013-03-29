@@ -55,7 +55,11 @@ class Minify_Lines {
         $newLines = array();
         while (null !== ($line = array_shift($lines))) {
             if (('' !== $id) && (0 == $i % 50)) {
-                array_push($newLines, '', "/* {$id} */", '');
+                if ($inComment) {
+                    array_push($newLines, '', "/* {$id} *|", '');
+                } else {
+                    array_push($newLines, '', "/* {$id} */", '');
+                }
             }
             ++$i;
             $newLines[] = self::_addNote($line, $i, $inComment, $padTo);
@@ -92,6 +96,9 @@ class Minify_Lines {
      */
     private static function _eolInComment($line, $inComment)
     {
+        // crude way to avoid things like // */
+        $line = preg_replace('~//.*?(\\*/|/\\*).*~', '', $line);
+
         while (strlen($line)) {
             $search = $inComment
                 ? '*/'

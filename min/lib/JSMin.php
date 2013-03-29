@@ -7,14 +7,14 @@
  * </code>
  *
  * This is a modified port of jsmin.c. Improvements:
- * 
+ *
  * Does not choke on some regexp literals containing quote characters. E.g. /'/
- * 
- * Spaces are preserved after some add/sub operators, so they are not mistakenly 
+ *
+ * Spaces are preserved after some add/sub operators, so they are not mistakenly
  * converted to post-inc/dec. E.g. a + ++b -> a+ ++b
  *
  * Preserves multi-line comments that begin with /*!
- * 
+ *
  * PHP 5 or higher is required.
  *
  * Permission is hereby granted to use this version of the library under the
@@ -69,6 +69,7 @@ class JSMin {
     protected $lookAhead   = null;
     protected $output      = '';
     protected $lastByteOut  = '';
+    protected $keptComment = '';
 
     /**
      * Minify Javascript.
@@ -126,8 +127,9 @@ class JSMin {
             } elseif ($this->a === "\n") {
                 if ($this->b === ' ') {
                     $command = self::ACTION_DELETE_A_B;
-                // in case of mbstring.func_overload & 2, must check for null b,
-                // otherwise mb_strpos will give WARNING
+
+                    // in case of mbstring.func_overload & 2, must check for null b,
+                    // otherwise mb_strpos will give WARNING
                 } elseif ($this->b === null
                           || (false === strpos('{[(+-!~', $this->b)
                               && ! $this->isAlphaNum($this->b))) {
@@ -160,6 +162,7 @@ class JSMin {
      */
     protected function action($command)
     {
+        // make sure we don't compress "a + ++b" to "a+++b", etc.
         if ($command === self::ACTION_DELETE_A_B
             && $this->b === ' '
             && ($this->a === '+' || $this->a === '-')) {
@@ -170,42 +173,49 @@ class JSMin {
                 $command = self::ACTION_KEEP_A;
             }
         }
+
         switch ($command) {
-            case self::ACTION_KEEP_A:
+            case self::ACTION_KEEP_A: // 1
                 $this->output .= $this->a;
+
+                if ($this->keptComment) {
+                    $this->output = rtrim($this->output, "\n");
+                    $this->output .= $this->keptComment;
+                    $this->keptComment = '';
+                }
+
                 $this->lastByteOut = $this->a;
-                
+
                 // fallthrough intentional
-            case self::ACTION_DELETE_A:
+            case self::ACTION_DELETE_A: // 2
                 $this->a = $this->b;
                 if ($this->a === "'" || $this->a === '"') { // string literal
                     $str = $this->a; // in case needed for exception
                     for(;;) {
                         $this->output .= $this->a;
                         $this->lastByteOut = $this->a;
-                        
+
                         $this->a = $this->get();
                         if ($this->a === $this->b) { // end quote
                             break;
                         }
                         if ($this->isEOF($this->a)) {
                             throw new JSMin_UnterminatedStringException(
-                                "JSMin: Unterminated String at byte "
-                                . $this->inputIndex . ": {$str}");
+                                "JSMin: Unterminated String at byte {$this->inputIndex}: {$str}");
                         }
                         $str .= $this->a;
                         if ($this->a === '\\') {
                             $this->output .= $this->a;
                             $this->lastByteOut = $this->a;
-                            
-                            $this->a = $this->get();
+
+                            $this->a       = $this->get();
                             $str .= $this->a;
                         }
                     }
                 }
 
                 // fallthrough intentional
-            case self::ACTION_DELETE_A_B:
+            case self::ACTION_DELETE_A_B: // 3
                 $this->b = $this->next();
                 if ($this->b === '/' && $this->isRegexpLiteral()) {
                     $this->output .= $this->a . $this->b;
@@ -242,8 +252,7 @@ class JSMin {
                             $pattern .= $this->a;
                         } elseif ($this->isEOF($this->a)) {
                             throw new JSMin_UnterminatedRegExpException(
-                                "JSMin: Unterminated RegExp at byte "
-                                . $this->inputIndex .": {$pattern}");
+                                "JSMin: Unterminated RegExp at byte {$this->inputIndex}: {$pattern}");
                         }
                         $this->output .= $this->a;
                         $this->lastByteOut = $this->a;
@@ -259,7 +268,8 @@ class JSMin {
      */
     protected function isRegexpLiteral()
     {
-        if (false !== strpos("\n{;(,=:[!&|?", $this->a)) { // we aren't dividing
+        if (false !== strpos("(,=:[!&|?+-~*\n{", $this->a)) {
+            // we obviously aren't dividing
             return true;
         }
         if (' ' === $this->a) {
@@ -283,7 +293,8 @@ class JSMin {
     }
 
     /**
-     * Get next char. Convert ctrl char to space.
+     * Return the next character from stdin. Watch out for lookahead. If the character is a control character,
+     * translate it to a space or linefeed.
      *
      * @return string
      */
@@ -292,20 +303,21 @@ class JSMin {
         $c = $this->lookAhead;
         $this->lookAhead = null;
         if ($c === null) {
+            // getc(stdin)
             if ($this->inputIndex < $this->inputLength) {
                 $c = $this->input[$this->inputIndex];
                 $this->inputIndex += 1;
             } else {
-                return null;
+                $c = null;
             }
         }
-        if ($c === "\r" || $c === "\n") {
+        if (ord($c) >= self::ORD_SPACE || $c === "\n" || $c === null) {
+            return $c;
+        }
+        if ($c === "\r") {
             return "\n";
         }
-        if (ord($c) < self::ORD_SPACE) { // control char
-            return ' ';
-        }
-        return $c;
+        return ' ';
     }
 
     /**
@@ -320,7 +332,7 @@ class JSMin {
     }
 
     /**
-     * Get next char. If is ctrl character, translate to a space or newline.
+     * Get next char (without getting it). If is ctrl character, translate to a space or newline.
      *
      * @return string
      */
@@ -331,7 +343,7 @@ class JSMin {
     }
 
     /**
-     * Is $c a letter, digit, underscore, dollar sign, escape, or non-ASCII?
+     * Return true if the character is a letter, digit, underscore, dollar sign, or non-ASCII character.
      *
      * @param string $c
      *
@@ -339,33 +351,34 @@ class JSMin {
      */
     protected function isAlphaNum($c)
     {
-        return (preg_match('/^[0-9a-zA-Z_\\$\\\\]$/', $c) || ord($c) > 126);
+        return (preg_match('/^[a-z0-9A-Z_\\$\\\\]$/', $c) || ord($c) > 126);
     }
 
     /**
-     * @return string
+     * Consume a single line comment from input (possibly retaining it)
      */
-    protected function singleLineComment()
+    protected function consumeSingleLineComment()
     {
         $comment = '';
         while (true) {
             $get = $this->get();
             $comment .= $get;
-            if (ord($get) <= self::ORD_LF) { // EOL reached
+            if (ord($get) <= self::ORD_LF) { // end of line reached
                 // if IE conditional comment
                 if (preg_match('/^\\/@(?:cc_on|if|elif|else|end)\\b/', $comment)) {
-                    return "/{$comment}";
+                    $this->keptComment .= "/{$comment}";
                 }
-                return $get;
+                return;
             }
         }
     }
 
     /**
-     * @return string
+     * Consume a multiple line comment from input (possibly retaining it)
+     *
      * @throws JSMin_UnterminatedCommentException
      */
-    protected function multipleLineComment()
+    protected function consumeMultipleLineComment()
     {
         $this->get();
         $comment = '';
@@ -374,42 +387,48 @@ class JSMin {
             if ($get === '*') {
                 if ($this->peek() === '/') { // end of comment reached
                     $this->get();
-                    // if comment preserved by YUI Compressor
                     if (0 === strpos($comment, '!')) {
-                        return "\n/*!" . substr($comment, 1) . "*/\n";
+                        // preserved by YUI Compressor
+                        if (!$this->keptComment) {
+                            // don't prepend a newline if two comments right after one another
+                            $this->keptComment = "\n";
+                        }
+                        $this->keptComment .= "/*!" . substr($comment, 1) . "*/\n";
+                    } else if (preg_match('/^@(?:cc_on|if|elif|else|end)\\b/', $comment)) {
+                        // IE conditional
+                        $this->keptComment .= "/*{$comment}*/";
                     }
-                    // if IE conditional comment
-                    if (preg_match('/^@(?:cc_on|if|elif|else|end)\\b/', $comment)) {
-                        return "/*{$comment}*/";
-                    }
-                    return ' ';
+                    return;
                 }
             } elseif ($get === null) {
                 throw new JSMin_UnterminatedCommentException(
-                    "JSMin: Unterminated comment at byte "
-                    . $this->inputIndex . ": /*{$comment}");
+                    "JSMin: Unterminated comment at byte {$this->inputIndex}: /*{$comment}");
             }
             $comment .= $get;
         }
     }
 
     /**
-     * Get the next character, skipping over comments.
-     * Some comments may be preserved.
+     * Get the next character, skipping over comments. Some comments may be preserved.
      *
      * @return string
      */
     protected function next()
     {
         $get = $this->get();
-        if ($get !== '/') {
-            return $get;
+        if ($get === '/') {
+            switch ($this->peek()) {
+                case '/':
+                    $this->consumeSingleLineComment();
+                    $get = "\n";
+                    break;
+                case '*':
+                    $this->consumeMultipleLineComment();
+                    $get = ' ';
+                    break;
+            }
         }
-        switch ($this->peek()) {
-            case '/': return $this->singleLineComment();
-            case '*': return $this->multipleLineComment();
-            default: return $get;
-        }
+        return $get;
     }
 }
 

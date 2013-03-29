@@ -55,3 +55,12 @@ if ((is.ie && is.win) == recognizesCondComm)
     document.write("PASS: IE/win honored single-line conditional comment.<br>");
 else 
     document.write("FAIL: Non-IE/win browser did not ignore single-line conditional comment.<br>");
+
+// hello
+//@cc_on/*
+// world
+//@cc_on*/
+//@cc_on/*
+'hello';
+/*!* preserved */
+/*!* preserved */
