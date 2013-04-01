@@ -47,10 +47,10 @@ function test_JSMin()
         }
     }
 
-    $src = file_get_contents($thisDir . '/_test_files/js/issue74.js');
-    $minExpected = file_get_contents($thisDir . '/_test_files/js/issue74.min.js');
+    $src = file_get_contents($thisDir . '/_test_files/js/regexes.js');
+    $minExpected = file_get_contents($thisDir . '/_test_files/js/regexes.min.js');
     $minOutput = JSMin::minify($src);
-    assertTrue($minExpected == $minOutput, 'JSMin : Quotes in RegExp literals (Issue 74)');
+    assertTrue($minExpected == $minOutput, 'JSMin : Identify RegExp literals');
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         echo "\n---Output: " .countBytes($minOutput). " bytes\n\n{$minOutput}\n\n";
         echo "---Expected: " .countBytes($minExpected). " bytes\n\n{$minExpected}\n\n";

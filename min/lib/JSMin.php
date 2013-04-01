@@ -268,11 +268,11 @@ class JSMin {
      */
     protected function isRegexpLiteral()
     {
-        if (false !== strpos("(,=:[!&|?+-~*\n{", $this->a)) {
+        if (false !== strpos("(,=:[!&|?+-~*{;", $this->a)) {
             // we obviously aren't dividing
             return true;
         }
-        if (' ' === $this->a) {
+        if ($this->a === ' ' || $this->a === "\n") {
             $length = strlen($this->output);
             if ($length < 2) { // weird edge case
                 return true;
