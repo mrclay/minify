@@ -35,8 +35,8 @@ class Minify_HTML {
      * 'jsMinifier' : (optional) callback function to process content of SCRIPT
      * elements. Note: the type attribute is ignored.
      *
-     * 'xhtml' : (optional boolean) should content be treated as XHTML1.0? If
-     * unset, minify will sniff for an XHTML doctype.
+     * 'doctype' : (optional) what the doctype is of the content. If
+     * unset, minify will sniff for a doctype.
      *
      * @return string
      */
@@ -81,9 +81,6 @@ class Minify_HTML {
         }
         if (isset($options['jsCleanComments'])) {
             $this->_jsCleanComments = (bool)$options['jsCleanComments'];
-        }
-        if (isset($options['html5'])) {
-            $this->_isHtml5 = (bool)$options['html5'];
         }
     }
 
