@@ -59,18 +59,19 @@ class Minify_HTML {
      * 'jsMinifier' : (optional) callback function to process content of SCRIPT
      * elements. Note: the type attribute is ignored.
      *
-     * 'jsCleanComments' : (optional) whether to remove HTML comments beginning and end of script block
+     * 'jsCleanComments' : (optional) whether to remove HTML comments
+     * beginning and end of script block
      *
-     * 'xhtml' : (optional boolean) should content be treated as XHTML1.0? If
-     * unset, minify will sniff for an XHTML doctype.
+     * 'doctype' : (optional) what the doctype is of the content. If
+     * unset, minify will sniff for a doctype.
      *
      * @return null
      */
     public function __construct($html, $options = array())
     {
         $this->_html = str_replace("\r\n", "\n", trim($html));
-        if (isset($options['xhtml'])) {
-            $this->_isXhtml = (bool)$options['xhtml'];
+        if (isset($options['doctype'])) {
+            $this->_doctype = strtolower($options['doctype']);
         }
         if (isset($options['cssMinifier'])) {
             $this->_cssMinifier = $options['cssMinifier'];
@@ -80,6 +81,9 @@ class Minify_HTML {
         }
         if (isset($options['jsCleanComments'])) {
             $this->_jsCleanComments = (bool)$options['jsCleanComments'];
+        }
+        if (isset($options['html5'])) {
+            $this->_isHtml5 = (bool)$options['html5'];
         }
     }
 
@@ -91,8 +95,18 @@ class Minify_HTML {
      */
     public function process()
     {
-        if ($this->_isXhtml === null) {
-            $this->_isXhtml = (false !== strpos($this->_html, '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML'));
+        if ($this->_doctype === null || (
+            $this->_doctype !== 'xhtml' &&
+            $this->_doctype !== 'html' &&
+            $this->_doctype !== 'html5'
+        )) {
+            if (false !== strpos($this->_html, '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML')) {
+                $this->_doctype = 'xhtml';
+            } else if (false !== strpos($this->_html, '<!DOCTYPE html>')) {
+                $this->_doctype = 'html5';
+            } else {
+                $this->_doctype = 'html';
+            }
         }
         
         $this->_replacementHash = 'MINIFYHTML' . md5($_SERVER['REQUEST_TIME']);
@@ -131,12 +145,23 @@ class Minify_HTML {
         // @todo take into account attribute values that span multiple lines.
         $this->_html = preg_replace('/^\\s+|\\s+$/m', '', $this->_html);
         
-        // remove ws around block/undisplayed elements
-        $this->_html = preg_replace('/\\s+(<\\/?(?:area|base(?:font)?|blockquote|body'
-            .'|caption|center|cite|col(?:group)?|dd|dir|div|dl|dt|fieldset|form'
-            .'|frame(?:set)?|h[1-6]|head|hr|html|legend|li|link|map|menu|meta'
-            .'|ol|opt(?:group|ion)|p|param|t(?:able|body|head|d|h||r|foot|itle)'
-            .'|ul)\\b[^>]*>)/i', '$1', $this->_html);
+        if ($this->_doctype === 'html5') {
+            // remove ws around block/undisplayed html5 elements
+            $this->_html = preg_replace('/\\s+(<\\/?(?:'
+                .'area|base|blockquote|body|caption|cite|col(?:group)?|div|d(?:d|l|t)|fieldset'
+                .'|form|h[1-6]|head|hr|html|legend|li|link|map|menu|meta|ol|opt(?:group|ion)|p'
+                .'|param|t(?:able|body|head|d|h||r|foot|itle)|ul|section|article|aside|hgroup'
+                .'|header|footer|nav|fig(?:ure|caption)|dialog|r(?:uby|t|p)|details|summary|datalist'
+                .')\\b[^>]*>)/i', '$1', $this->_html);
+        } else {
+            // remove ws around block/undisplayed elements
+            $this->_html = preg_replace('/\\s+(<\\/?(?:'
+                .'area|base(?:font)?|blockquote|body|caption|center|cite|col(?:group)?|div'
+                .'|d(?:d|l|t)|fieldset|form|frame(?:set)?|h[1-6]|head|hr|html|legend|li|link'
+                .'|map|menu|meta|ol|opt(?:group|ion)|p|param'
+                .'|t(?:able|body|head|d|h||r|foot|itle)|ul'
+                .')\\b[^>]*>)/i', '$1', $this->_html);
+        }
         
         // remove ws outside of all elements
         $this->_html = preg_replace(
@@ -176,7 +201,7 @@ class Minify_HTML {
         return $placeholder;
     }
 
-    protected $_isXhtml = null;
+    protected $_doctype = null;
     protected $_replacementHash = null;
     protected $_placeholders = array();
     protected $_cssMinifier = null;
@@ -252,6 +277,6 @@ class Minify_HTML {
     
     protected function _needsCdata($str)
     {
-        return ($this->_isXhtml && preg_match('/(?:[<&]|\\-\\-|\\]\\]>)/', $str));
+        return ($this->_doctype === 'xhtml' && preg_match('/(?:[<&]|\\-\\-|\\]\\]>)/', $str));
     }
 }
