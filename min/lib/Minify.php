@@ -563,6 +563,10 @@ class Minify {
      */
     protected static function _getCacheId($prefix = 'minify')
     {
+        if (! empty(self::$_options['cacheId'])) {
+            return self::$_options['cacheId'];
+        }
+
         $name = preg_replace('/[^a-zA-Z0-9\\.=_,]/', '', self::$_controller->selectionId);
         $name = preg_replace('/\\.+/', '.', $name);
         $name = substr($name, 0, 200 - 34 - strlen($prefix));
