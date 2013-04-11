@@ -147,6 +147,9 @@ class Minify {
      * js/css/html. The given content-type will be sent regardless of source file
      * extension, so this should not be used in a Groups config with other
      * Javascript/CSS files.
+     *
+     * 'cacheId' : manually set a specific cache ID/filename to be used for this
+     * request (default: null). You will generally not want to set this.
      * 
      * Any controller options are documented in that controller's setupSources() method.
      * 
@@ -553,7 +556,8 @@ class Minify {
     }
     
     /**
-     * Make a unique cache id for for this request.
+     * Get a unique cache ID for this request. Generate one if not given in
+     * options.
      * 
      * Any settings that could affect output are taken into consideration  
      *
@@ -563,6 +567,10 @@ class Minify {
      */
     protected static function _getCacheId($prefix = 'minify')
     {
+        if (! empty(self::$_options['cacheId'])) {
+            return self::$_options['cacheId'];
+        }
+
         $name = preg_replace('/[^a-zA-Z0-9\\.=_,]/', '', self::$_controller->selectionId);
         $name = preg_replace('/\\.+/', '.', $name);
         $name = substr($name, 0, 200 - 34 - strlen($prefix));
