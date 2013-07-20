@@ -24,7 +24,7 @@
  */
 class Minify {
     
-    const VERSION = '2.1.5';
+    const VERSION = '2.1.6';
     const TYPE_CSS = 'text/css';
     const TYPE_HTML = 'text/html';
     // there is some debate over the ideal JS Content-Type, but this is the
@@ -441,7 +441,7 @@ class Minify {
     /**
      * Set up sources to use Minify_Lines
      *
-     * @param array $sources Minify_Source instances
+     * @param Minify_Source[] $sources Minify_Source instances
      */
     protected static function _setupDebug($sources)
     {
@@ -458,6 +458,8 @@ class Minify {
      * Combines sources and minifies the result.
      *
      * @return string
+     *
+     * @throws Exception
      */
     protected static function _combineMinify()
     {

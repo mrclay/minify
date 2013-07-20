@@ -1,5 +1,17 @@
 Minify Release History
 
+Version 2.1.6
+    * JSMin fixes
+    * Prevents some Closure Compiler API failures
+    * Uses autoloading for all class loading
+    * Multiple group support in HTML Helper
+    * Cache adaptor for XCache
+    * Allow setting stack-size in YUI Compressor wrapper
+    * Adds jsCleanComments option to HTML minifier
+    * Upgrades CSSmin
+    * CLI script more portable
+    * Adds composer.json
+
 Version 2.1.5
     * Removed XSS vulnerability
     * Disabled builder bby default
