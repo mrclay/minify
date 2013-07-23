@@ -1,5 +1,9 @@
 Minify Release History
 
+Version 2.1.7
+    * Fixes arbitrary file inclusion vulnerability on some systems.
+      * Thanks to Matt Mecham for reporting this.
+
 Version 2.1.6
     * JSMin fixes
     * Prevents some Closure Compiler API failures
