@@ -81,6 +81,9 @@ class Minify_Source {
                 $this->_content = $spec['content'];
             } else {
                 $this->_getContentFunc = $spec['getContentFunc'];
+                $this->_getContentFuncParams = isset($spec['getContentFuncParams'])
+                    ? $spec['getContentFuncParams']
+                    : array();
             }
             $this->lastModified = isset($spec['lastModified'])
                 ? $spec['lastModified']
@@ -108,7 +111,7 @@ class Minify_Source {
             ? file_get_contents($this->filepath)
             : ((null !== $this->_content)
                 ? $this->_content
-                : call_user_func($this->_getContentFunc, $this->_id)
+                : call_user_func_array($this->_getContentFunc, array_merge(array($this->_id), $this->_getContentFuncParams))
             );
         // remove UTF-8 BOM if present
         return (pack("CCC",0xef,0xbb,0xbf) === substr($content, 0, 3))
@@ -182,6 +185,7 @@ class Minify_Source {
     
     protected $_content = null;
     protected $_getContentFunc = null;
+    protected $_getContentFuncParams = array();
     protected $_id = null;
 }
 
