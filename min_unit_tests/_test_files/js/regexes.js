@@ -18,3 +18,7 @@ x = / [/] /;
 (2)
 
 / foo;
+
+function(){return/foo/};
+
+function(){return typeof/foo/};

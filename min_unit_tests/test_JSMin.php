@@ -55,21 +55,39 @@ function test_JSMin()
         echo "\n---Output: " .countBytes($minOutput). " bytes\n\n{$minOutput}\n\n";
         echo "---Expected: " .countBytes($minExpected). " bytes\n\n{$minExpected}\n\n";
         echo "---Source: " .countBytes($src). " bytes\n\n{$src}\n\n\n";
-
-        // only test exceptions on this page
-        test_JSMin_exception('"Hello'
-                            ,'Unterminated String'
-                            ,'JSMin_UnterminatedStringException'
-                            ,"JSMin: Unterminated String at byte 6: \"Hello");
-        test_JSMin_exception("return /regexp\n}"
-                            ,'Unterminated RegExp'
-                            ,'JSMin_UnterminatedRegExpException'
-                            ,"JSMin: Unterminated RegExp at byte 15: /regexp\n");
-        test_JSMin_exception("/* Comment "
-                            ,'Unterminated Comment'
-                            ,'JSMin_UnterminatedCommentException'
-                            ,"JSMin: Unterminated comment at byte 11: /* Comment ");
     }
+
+    test_JSMin_exception('"Hello'
+                        ,'Unterminated String'
+                        ,'JSMin_UnterminatedStringException'
+                        ,"JSMin: Unterminated String at byte 6: \"Hello");
+
+    test_JSMin_exception("return /regexp\n}"
+                        ,'Unterminated RegExp'
+                        ,'JSMin_UnterminatedRegExpException'
+                        ,"JSMin: Unterminated RegExp at byte 15: /regexp\n");
+    test_JSMin_exception("return/regexp\n}"
+                        ,'Unterminated RegExp'
+                        ,'JSMin_UnterminatedRegExpException'
+                        ,"JSMin: Unterminated RegExp at byte 14: /regexp\n");
+    test_JSMin_exception(";return/regexp\n}"
+                        ,'Unterminated RegExp'
+                        ,'JSMin_UnterminatedRegExpException'
+                        ,"JSMin: Unterminated RegExp at byte 15: /regexp\n");
+    test_JSMin_exception(";return /regexp\n}"
+                        ,'Unterminated RegExp'
+                        ,'JSMin_UnterminatedRegExpException'
+                        ,"JSMin: Unterminated RegExp at byte 16: /regexp\n");
+
+    test_JSMin_exception("typeof/regexp\n}"
+                        ,'Unterminated RegExp'
+                        ,'JSMin_UnterminatedRegExpException'
+                        ,"JSMin: Unterminated RegExp at byte 14: /regexp\n");
+
+    test_JSMin_exception("/* Comment "
+                        ,'Unterminated Comment'
+                        ,'JSMin_UnterminatedCommentException'
+                        ,"JSMin: Unterminated comment at byte 11: /* Comment ");
 }
 
 function test_JSMin_exception($js, $label, $expClass, $expMessage) {
@@ -82,7 +100,7 @@ function test_JSMin_exception($js, $label, $expClass, $expMessage) {
     }
     $passed = assertTrue($eClass === $expClass && $eMsg === $expMessage, 
         'JSMin : throw on ' . $label);
-    if (! $passed && __FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
+    if (! $passed && isset($e) && (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME']))) {
         echo "\n  ---" , $e, "\n\n";
     }
 }
