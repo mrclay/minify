@@ -70,7 +70,7 @@ class Minify_ClosureCompiler {
     {
         self::_prepare();
         if (! ($tmpFile = tempnam(self::$tempDir, 'cc_'))) {
-            throw new Exception('Minify_ClosureCompiler : could not create temp file.');
+            throw new Exception('Minify_ClosureCompiler : could not create temp file in "'.self::$tempDir.'".');
         }
         file_put_contents($tmpFile, $js);
         exec(self::_getCmd($options, $tmpFile), $output, $result_code);
