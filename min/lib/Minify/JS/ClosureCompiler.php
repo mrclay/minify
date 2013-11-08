@@ -14,7 +14,10 @@
  * @todo can use a stream wrapper to unit test this?
  */
 class Minify_JS_ClosureCompiler {
-    const URL = 'http://closure-compiler.appspot.com/compile';
+    /**
+     * @var $url URL to compiler server. defaults to google server
+     */
+    protected $url = 'http://closure-compiler.appspot.com/compile';
 
     /**
      * Minify Javascript code via HTTP request to the Closure Compiler API
@@ -34,12 +37,17 @@ class Minify_JS_ClosureCompiler {
      * @param array $options
      *
      * fallbackFunc : default array($this, 'fallback');
+     * compilerUrl : URL to closure compiler server
      */
     public function __construct(array $options = array())
     {
         $this->_fallbackFunc = isset($options['fallbackMinifier'])
             ? $options['fallbackMinifier']
             : array($this, '_fallback');
+
+        if (isset($options['compilerUrl'])) {
+            $this->url = $options['compilerUrl'];
+        }
     }
 
     public function min($js)
@@ -76,7 +84,7 @@ class Minify_JS_ClosureCompiler {
     {
         $allowUrlFopen = preg_match('/1|yes|on|true/i', ini_get('allow_url_fopen'));
         if ($allowUrlFopen) {
-            $contents = file_get_contents(self::URL, false, stream_context_create(array(
+            $contents = file_get_contents($this->url, false, stream_context_create(array(
                 'http' => array(
                     'method' => 'POST',
                     'header' => "Content-type: application/x-www-form-urlencoded\r\nConnection: close\r\n",
@@ -86,7 +94,7 @@ class Minify_JS_ClosureCompiler {
                 )
             )));
         } elseif (defined('CURLOPT_POST')) {
-            $ch = curl_init(self::URL);
+            $ch = curl_init($this->url);
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded'));
