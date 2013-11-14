@@ -106,6 +106,12 @@ $min_serveOptions['maxAge'] = 1800;
 
 
 /**
+ * To use CSSmin (Túbal Martín's port of the YUI CSS compressor), uncomment the following line:
+ */
+//$min_serveOptions['minifiers']['text/css'] = array('Minify_CSSmin', 'minify');
+
+
+/**
  * To use Google's Closure Compiler API to minify Javascript (falling back to JSMin
  * on failure), uncomment the following line:
  */
