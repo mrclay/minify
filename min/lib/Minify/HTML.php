@@ -63,8 +63,6 @@ class Minify_HTML {
      *
      * 'xhtml' : (optional boolean) should content be treated as XHTML1.0? If
      * unset, minify will sniff for an XHTML doctype.
-     *
-     * @return null
      */
     public function __construct($html, $options = array())
     {

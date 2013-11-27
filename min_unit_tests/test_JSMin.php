@@ -60,29 +60,29 @@ function test_JSMin()
     test_JSMin_exception('"Hello'
                         ,'Unterminated String'
                         ,'JSMin_UnterminatedStringException'
-                        ,"JSMin: Unterminated String at byte 6: \"Hello");
+                        ,"JSMin: Unterminated String at byte 5: \"Hello");
 
     test_JSMin_exception("return /regexp\n}"
                         ,'Unterminated RegExp'
                         ,'JSMin_UnterminatedRegExpException'
-                        ,"JSMin: Unterminated RegExp at byte 15: /regexp\n");
+                        ,"JSMin: Unterminated RegExp at byte 14: /regexp\n");
     test_JSMin_exception("return/regexp\n}"
                         ,'Unterminated RegExp'
                         ,'JSMin_UnterminatedRegExpException'
-                        ,"JSMin: Unterminated RegExp at byte 14: /regexp\n");
+                        ,"JSMin: Unterminated RegExp at byte 13: /regexp\n");
     test_JSMin_exception(";return/regexp\n}"
                         ,'Unterminated RegExp'
                         ,'JSMin_UnterminatedRegExpException'
-                        ,"JSMin: Unterminated RegExp at byte 15: /regexp\n");
+                        ,"JSMin: Unterminated RegExp at byte 14: /regexp\n");
     test_JSMin_exception(";return /regexp\n}"
                         ,'Unterminated RegExp'
                         ,'JSMin_UnterminatedRegExpException'
-                        ,"JSMin: Unterminated RegExp at byte 16: /regexp\n");
+                        ,"JSMin: Unterminated RegExp at byte 15: /regexp\n");
 
     test_JSMin_exception("typeof/regexp\n}"
                         ,'Unterminated RegExp'
                         ,'JSMin_UnterminatedRegExpException'
-                        ,"JSMin: Unterminated RegExp at byte 14: /regexp\n");
+                        ,"JSMin: Unterminated RegExp at byte 13: /regexp\n");
 
     test_JSMin_exception("/* Comment "
                         ,'Unterminated Comment'

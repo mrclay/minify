@@ -200,8 +200,9 @@ class JSMin {
                             break;
                         }
                         if ($this->isEOF($this->a)) {
+                            $byte = $this->inputIndex - 1;
                             throw new JSMin_UnterminatedStringException(
-                                "JSMin: Unterminated String at byte {$this->inputIndex}: {$str}");
+                                "JSMin: Unterminated String at byte {$byte}: {$str}");
                         }
                         $str .= $this->a;
                         if ($this->a === '\\') {
@@ -251,8 +252,9 @@ class JSMin {
                             $this->a = $this->get();
                             $pattern .= $this->a;
                         } elseif ($this->isEOF($this->a)) {
+                            $byte = $this->inputIndex - 1;
                             throw new JSMin_UnterminatedRegExpException(
-                                "JSMin: Unterminated RegExp at byte {$this->inputIndex}: {$pattern}");
+                                "JSMin: Unterminated RegExp at byte {$byte}: {$pattern}");
                         }
                         $this->output .= $this->a;
                         $this->lastByteOut = $this->a;
