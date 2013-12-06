@@ -14,10 +14,31 @@
  * @todo can use a stream wrapper to unit test this?
  */
 class Minify_JS_ClosureCompiler {
+
+    /**
+    * @var string the option for the maximum POST byte size
+    */
+    const OPTION_MAX_BYTES = 'maxBytes';
+
+    /**
+    * @var int the default maximum POST byte size according to https://developers.google.com/closure/compiler/docs/api-ref
+    */
+    const OPTION_MAX_BYTES_DEFAULT = 200000;
+
+    /**
+    * @var int set this for the max bytes option to disable the check
+    */
+    const OPTION_MAX_BYTES_NO_LIMIT = -1;
+
     /**
      * @var $url URL to compiler server. defaults to google server
      */
     protected $url = 'http://closure-compiler.appspot.com/compile';
+
+    /**
+    * @var $maxBytes The maximum JS size that can be sent to the compiler server in bytes
+    */
+    protected $maxBytes = self::OPTION_MAX_BYTES_DEFAULT;
 
     /**
      * Minify Javascript code via HTTP request to the Closure Compiler API
@@ -48,18 +69,24 @@ class Minify_JS_ClosureCompiler {
         if (isset($options['compilerUrl'])) {
             $this->url = $options['compilerUrl'];
         }
+
+        if (isset($options[self::OPTION_MAX_BYTES])) {
+            $this->maxBytes = (int) $options[self::OPTION_MAX_BYTES];
+        }
     }
 
     public function min($js)
     {
         $postBody = $this->_buildPostBody($js);
-        $bytes = (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2))
-            ? mb_strlen($postBody, '8bit')
-            : strlen($postBody);
-        if ($bytes > 200000) {
-            throw new Minify_JS_ClosureCompiler_Exception(
-                'POST content larger than 200000 bytes'
-            );
+        if ($this->maxBytes !== self::OPTION_MAX_BYTES_NO_LIMIT) {
+            $bytes = (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2))
+                ? mb_strlen($postBody, '8bit')
+                : strlen($postBody);
+            if ($bytes > $this->maxBytes) {
+                throw new Minify_JS_ClosureCompiler_Exception(
+                    'POST content larger than ' . $this->maxBytes . ' bytes'
+                );
+            }
         }
         $response = $this->_getResponse($postBody);
         if (preg_match('/^Error\(\d\d?\):/', $response)) {
