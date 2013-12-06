@@ -20,6 +20,26 @@ class Minify_JS_ClosureCompiler {
     protected $url = 'http://closure-compiler.appspot.com/compile';
 
     /**
+    * @var $additionalOptions array additional options to pass to the compiler service
+    */
+    protected $additionalOptions = array();
+
+    /**
+    * @var $DEFAULT_OPTIONS array the default options to pass to the compiler service
+    */
+    private static $DEFAULT_OPTIONS = array(
+                            'output_format' => 'text',
+                            'compilation_level' => 'SIMPLE_OPTIMIZATIONS');
+
+    /**
+    * @var string the option for additional params.
+    * Read more about additional params here: https://developers.google.com/closure/compiler/docs/api-ref
+    * This also allows you to override the output_format or the compilation_level.
+    * The parameters js_code and output_info can not be set in this way
+    */
+    const OPTION_ADDITIONAL_HTTP_PARAMS = 'additionalParams';
+
+    /**
      * Minify Javascript code via HTTP request to the Closure Compiler API
      *
      * @param string $js input code
@@ -47,6 +67,10 @@ class Minify_JS_ClosureCompiler {
 
         if (isset($options['compilerUrl'])) {
             $this->url = $options['compilerUrl'];
+        }
+
+        if (isset($options[self::OPTION_ADDITIONAL_HTTP_PARAMS]) && is_array($options[self::OPTION_ADDITIONAL_HTTP_PARAMS])) {
+            $this->additionalOptions = $options[self::OPTION_ADDITIONAL_HTTP_PARAMS];
         }
     }
 
@@ -118,12 +142,18 @@ class Minify_JS_ClosureCompiler {
 
     protected function _buildPostBody($js, $returnErrors = false)
     {
-        return http_build_query(array(
-            'js_code' => $js,
-            'output_info' => ($returnErrors ? 'errors' : 'compiled_code'),
-            'output_format' => 'text',
-            'compilation_level' => 'SIMPLE_OPTIMIZATIONS'
-        ), null, '&');
+        return http_build_query(
+            array_merge(
+                self::$DEFAULT_OPTIONS,
+                $this->additionalOptions,
+                array(
+                    'js_code' => $js,
+                    'output_info' => ($returnErrors ? 'errors' : 'compiled_code')
+                )
+            ),
+            null,
+            '&'
+        );
     }
 
     /**
