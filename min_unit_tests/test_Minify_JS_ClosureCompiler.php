@@ -42,6 +42,31 @@ function test_Minify_JS_ClosureCompiler()
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         echo "\n---Message: " . var_export($exc->getMessage(), 1) . "\n\n\n";
     }
+
+    // Test additional options passed to HTTP request
+    $ecmascript5 = "[1,].length;";
+    $exc = null;
+    try {
+        $minOutput = Minify_JS_ClosureCompiler::minify($ecmascript5);
+    } catch (Exception $e) {
+        $exc = $e;
+    }
+    $passed = assertTrue(
+        $exc instanceof Minify_JS_ClosureCompiler_Exception
+        , 'Minify_JS_ClosureCompiler : Throws Minify_JS_ClosureCompiler_Exception');
+    if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
+        echo "\n---Message: " . var_export($exc->getMessage(), 1) . "\n\n\n";
+    }
+
+    $minExpected = '1;';
+    $minOutput = Minify_JS_ClosureCompiler::minify($ecmascript5, array(
+        Minify_JS_ClosureCompiler::OPTION_ADDITIONAL_HTTP_PARAMS => array(
+            'language' => 'ECMASCRIPT5'
+            )
+    ));
+    $passed = assertTrue(
+        $minOutput === $minExpected
+        , 'Minify_JS_ClosureCompiler : Language option should make it compile');
 }
 
 test_Minify_JS_ClosureCompiler();
