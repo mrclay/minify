@@ -14,10 +14,46 @@
  * @todo can use a stream wrapper to unit test this?
  */
 class Minify_JS_ClosureCompiler {
+
+    /**
+    * @var string the option for the maximum POST byte size
+    */
+    const OPTION_MAX_BYTES = 'maxBytes';
+
+    /**
+    * @var int the default maximum POST byte size according to https://developers.google.com/closure/compiler/docs/api-ref
+    */
+    const MAX_BYTES_DEFAULT = 200000;
+
     /**
      * @var $url URL to compiler server. defaults to google server
      */
     protected $url = 'http://closure-compiler.appspot.com/compile';
+
+    /**
+    * @var $maxBytes The maximum JS size that can be sent to the compiler server in bytes
+    */
+    protected $maxBytes = self::MAX_BYTES_DEFAULT;
+
+    /**
+    * @var $additionalOptions array additional options to pass to the compiler service
+    */
+    protected $additionalOptions = array();
+
+    /**
+    * @var $DEFAULT_OPTIONS array the default options to pass to the compiler service
+    */
+    private static $DEFAULT_OPTIONS = array(
+                            'output_format' => 'text',
+                            'compilation_level' => 'SIMPLE_OPTIMIZATIONS');
+
+    /**
+    * @var string the option for additional params.
+    * Read more about additional params here: https://developers.google.com/closure/compiler/docs/api-ref
+    * This also allows you to override the output_format or the compilation_level.
+    * The parameters js_code and output_info can not be set in this way
+    */
+    const OPTION_ADDITIONAL_HTTP_PARAMS = 'additionalParams';
 
     /**
      * Minify Javascript code via HTTP request to the Closure Compiler API
@@ -36,8 +72,10 @@ class Minify_JS_ClosureCompiler {
      *
      * @param array $options
      *
-     * fallbackFunc : default array($this, 'fallback');
-     * compilerUrl : URL to closure compiler server
+     * fallbackFunc : array default array($this, '_fallback');
+     * compilerUrl : string URL to closure compiler server
+     * maxBytes : int The maximum amount of bytes to be sent as js_code in the POST request. Defaults to 200000.
+     * additionalParams: array The additional parameters to pass to the compiler server. Can be anything named in https://developers.google.com/closure/compiler/docs/api-ref except for js_code and output_info
      */
     public function __construct(array $options = array())
     {
@@ -48,18 +86,27 @@ class Minify_JS_ClosureCompiler {
         if (isset($options['compilerUrl'])) {
             $this->url = $options['compilerUrl'];
         }
+
+        if (isset($options[self::OPTION_ADDITIONAL_HTTP_PARAMS]) && is_array($options[self::OPTION_ADDITIONAL_HTTP_PARAMS])) {
+            $this->additionalOptions = $options[self::OPTION_ADDITIONAL_HTTP_PARAMS];
+        }
+        if (isset($options[self::OPTION_MAX_BYTES])) {
+            $this->maxBytes = (int) $options[self::OPTION_MAX_BYTES];
+        }
     }
 
     public function min($js)
     {
         $postBody = $this->_buildPostBody($js);
-        $bytes = (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2))
-            ? mb_strlen($postBody, '8bit')
-            : strlen($postBody);
-        if ($bytes > 200000) {
-            throw new Minify_JS_ClosureCompiler_Exception(
-                'POST content larger than 200000 bytes'
-            );
+        if ($this->maxBytes > 0) {
+            $bytes = (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2))
+                ? mb_strlen($postBody, '8bit')
+                : strlen($postBody);
+            if ($bytes > $this->maxBytes) {
+                throw new Minify_JS_ClosureCompiler_Exception(
+                    'POST content larger than ' . $this->maxBytes . ' bytes'
+                );
+            }
         }
         $response = $this->_getResponse($postBody);
         if (preg_match('/^Error\(\d\d?\):/', $response)) {
@@ -118,12 +165,18 @@ class Minify_JS_ClosureCompiler {
 
     protected function _buildPostBody($js, $returnErrors = false)
     {
-        return http_build_query(array(
-            'js_code' => $js,
-            'output_info' => ($returnErrors ? 'errors' : 'compiled_code'),
-            'output_format' => 'text',
-            'compilation_level' => 'SIMPLE_OPTIMIZATIONS'
-        ), null, '&');
+        return http_build_query(
+            array_merge(
+                self::$DEFAULT_OPTIONS,
+                $this->additionalOptions,
+                array(
+                    'js_code' => $js,
+                    'output_info' => ($returnErrors ? 'errors' : 'compiled_code')
+                )
+            ),
+            null,
+            '&'
+        );
     }
 
     /**
