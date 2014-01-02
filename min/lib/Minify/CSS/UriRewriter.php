@@ -284,7 +284,7 @@ class Minify_CSS_UriRewriter {
         }
         // analyze URI
         if ('/' !== $uri[0]                  // root-relative
-            && 0 !== strpos($uri, 'about:blank') //about:blank
+            && !preg_match('~about\:blank(#.*)?$~', $uri) //about:blank
             && false === strpos($uri, '//')  // protocol (non-data)
             && 0 !== strpos($uri, 'data:')   // data protocol
         ) {
