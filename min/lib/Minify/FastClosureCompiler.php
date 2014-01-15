@@ -26,10 +26,8 @@
  * @todo more options support (or should just passthru them all?)
  *
  * @package Minify
- * @author Stephen Clay <steve@mrclay.org>
- * @author Elan Ruusamäe <glen@delfi.ee>
  */
-class Minify_ClosureCompiler {
+class Minify_FastClosureCompiler {
 
     /**
      * Filepath of the Closure Compiler jar file. This must be set before
@@ -81,7 +79,7 @@ class Minify_ClosureCompiler {
             ),
             $userOptions
         );
-        $cmd = self::$binPath . ' ' . 
+        $cmd = self::$binPath . ' '
              . (preg_match('/^[\\da-zA-Z0-9\\-]+$/', $o['charset'])
                 ? " --charset {$o['charset']}"
                 : '');
