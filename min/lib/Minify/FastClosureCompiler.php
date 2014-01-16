@@ -64,7 +64,11 @@ class Minify_FastClosureCompiler {
         file_put_contents($tmpFile, $js);
         exec(self::_getCmd($options, $tmpFile), $output, $result_code);
         unlink($tmpFile);
-        if ($result_code != 0) {
+        // For some reasons Nailgun thinks that it's server
+        // broke the connection and returns 227 instead of 0
+        // We'll just handle this here instead of fixing
+        // the nailgun client itself.
+        if ($result_code != 0 || $result_code != 227) {
             throw new Exception('Minify_FastClosureCompiler : Closure Compiler execution failed.');
         }
         return implode("\n", $output);
