@@ -59,7 +59,7 @@ if (preg_match('/&\\d/', $_SERVER['QUERY_STRING'])) {
 }
 if (isset($_GET['g'])) {
     // well need groups config
-    $min_serveOptions['minApp']['groups'] = (require MINIFY_MIN_DIR . '/groupsConfig.php');
+    $min_serveOptions['minApp']['groups'] = (require MINIFY_CONFIG_DIR . '/groupsConfig.php');
 }
 if (isset($_GET['f']) || isset($_GET['g'])) {
     // serve!   
