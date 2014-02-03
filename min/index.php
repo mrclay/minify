@@ -9,11 +9,17 @@
 
 define('MINIFY_MIN_DIR', dirname(__FILE__));
 
+if (defined('MINIFY_CUSTOM_CONFIG_DIR')) {
+    define('MINIFY_CONFIG_DIR', MINIFY_CUSTOM_CONFIG_DIR);
+} else {
+    define('MINIFY_CONFIG_DIR', MINIFY_MIN_DIR);
+}
+
 // load config
-require MINIFY_MIN_DIR . '/config.php';
+require MINIFY_CONFIG_DIR . '/config.php';
 
 if (isset($_GET['test'])) {
-    include MINIFY_MIN_DIR . '/config-test.php';
+    include MINIFY_CONFIG_DIR . '/config-test.php';
 }
 
 require "$min_libPath/Minify/Loader.php";
