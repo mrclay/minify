@@ -147,9 +147,9 @@ this file could look like this:
 <?php
 $customConfigDirectory = dirname(__FILE__) . '/min-configs';
 $min_customConfigPaths = array(
-    'standard' => $customConfigDirectory . '/config.php',
-    'test'     => $customConfigDirectory . '/config-test.php',
-    'groups'   => $customConfigDirectory . '/groupsConfig.php'
+    'base'   => $customConfigDirectory . '/config.php',
+    'test'   => $customConfigDirectory . '/config-test.php',
+    'groups' => $customConfigDirectory . '/groupsConfig.php'
 );
 
 include_once 'min/index.php';
