@@ -36,10 +36,10 @@ if (!empty($min_customConfigPaths)) {
 }
 
 // load config
-require $min_configPaths['config.php'] . '/config.php';
+require $min_configPaths['config.php'];
 
 if (isset($_GET['test'])) {
-    include $min_configPaths['config-test.php'] . '/config-test.php';
+    include $min_configPaths['config-test.php'];
 }
 
 require "$min_libPath/Minify/Loader.php";
@@ -79,7 +79,7 @@ if (preg_match('/&\\d/', $_SERVER['QUERY_STRING'])) {
 }
 if (isset($_GET['g'])) {
     // well need groups config
-    $min_serveOptions['minApp']['groups'] = (require $min_configPaths['groupsConfig.php'] . '/groupsConfig.php');
+    $min_serveOptions['minApp']['groups'] = (require $min_configPaths['groupsConfig.php']);
 }
 if (isset($_GET['f']) || isset($_GET['g'])) {
     // serve!   
