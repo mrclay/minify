@@ -9,11 +9,37 @@
 
 define('MINIFY_MIN_DIR', dirname(__FILE__));
 
+// set config path defaults
+$min_configPaths = array(
+    'base'   => MINIFY_MIN_DIR . '/config.php',
+    'test'   => MINIFY_MIN_DIR . '/config-test.php',
+    'groups' => MINIFY_MIN_DIR . '/groupsConfig.php'
+);
+
+// check for custom config paths
+if (!empty($min_customConfigPaths)) {
+    // check for each config in the custom path
+    foreach ($min_configPaths as $key => $path) {
+        if (!empty($min_customConfigPaths[$key])) {
+            continue;
+        }
+        if (!file_exists($min_customConfigPaths[$key])) {
+            continue;   
+        }
+        if (!is_readable($min_customConfigPaths[$key])) {
+            continue;   
+        }
+        // reassign the path for this config to custom
+        $min_configPaths[$key] = $min_customConfigPaths[$key];
+    }
+    unset($key, $path);
+}
+
 // load config
-require MINIFY_MIN_DIR . '/config.php';
+require $min_configPaths['base'];
 
 if (isset($_GET['test'])) {
-    include MINIFY_MIN_DIR . '/config-test.php';
+    include $min_configPaths['test'];
 }
 
 require "$min_libPath/Minify/Loader.php";
@@ -53,7 +79,7 @@ if (preg_match('/&\\d/', $_SERVER['QUERY_STRING'])) {
 }
 if (isset($_GET['g'])) {
     // well need groups config
-    $min_serveOptions['minApp']['groups'] = (require MINIFY_MIN_DIR . '/groupsConfig.php');
+    $min_serveOptions['minApp']['groups'] = (require $min_configPaths['groups']);
 }
 if (isset($_GET['f']) || isset($_GET['g'])) {
     // serve!   
