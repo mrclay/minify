@@ -45,7 +45,7 @@ function test_Minify_JS_ClosureCompiler()
 
     // Test maximum byte size check (default)
     $fn = "(function() {})();";
-    $src = str_repeat($fn, ceil(Minify_JS_ClosureCompiler::MAX_BYTES_DEFAULT / strlen($fn)));
+    $src = str_repeat($fn, ceil(Minify_JS_ClosureCompiler::DEFAULT_MAX_BYTES / strlen($fn)));
     $exc = null;
     try {
         $minOutput = Minify_JS_ClosureCompiler::minify($src);
@@ -56,7 +56,7 @@ function test_Minify_JS_ClosureCompiler()
         $exc instanceof Minify_JS_ClosureCompiler_Exception
         , 'Minify_JS_ClosureCompiler : Throws Minify_JS_ClosureCompiler_Exception');
     assertTrue(
-        $exc->getMessage() === 'POST content larger than ' . Minify_JS_ClosureCompiler::MAX_BYTES_DEFAULT . ' bytes'
+        $exc->getMessage() === 'POST content larger than ' . Minify_JS_ClosureCompiler::DEFAULT_MAX_BYTES . ' bytes'
         , 'Minify_JS_ClosureCompiler : Message must tell how big maximum byte size is');
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         echo "\n---Message: " . var_export($exc->getMessage(), 1) . "\n\n\n";
@@ -113,7 +113,7 @@ function test_Minify_JS_ClosureCompiler()
 
     $minExpected = '1;';
     $minOutput = Minify_JS_ClosureCompiler::minify($ecmascript5, array(
-        Minify_JS_ClosureCompiler::OPTION_ADDITIONAL_HTTP_PARAMS => array(
+        Minify_JS_ClosureCompiler::OPTION_ADDITIONAL_OPTIONS => array(
             'language' => 'ECMASCRIPT5'
             )
     ));
