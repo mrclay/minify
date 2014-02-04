@@ -282,11 +282,8 @@ class Minify_CSS_UriRewriter {
                 ? $m[1]
                 : substr($m[1], 1, strlen($m[1]) - 2);
         }
-        // analyze URI
-        if ('/' !== $uri[0]                  // root-relative
-            && false === strpos($uri, '//')  // protocol (non-data)
-            && 0 !== strpos($uri, 'data:')   // data protocol
-        ) {
+        // if not root/scheme relative and not starts with scheme
+        if (!preg_match('~^(/|[a-z]+\:)~', $uri)) {
             // URI is file-relative: rewrite depending on options
             if (self::$_prependPath === null) {
                 $uri = self::rewriteRelative($uri, self::$_currentDir, self::$_docRoot, self::$_symlinks);
