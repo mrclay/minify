@@ -110,9 +110,9 @@ Separate group keys with commas:
 FAR-FUTURE EXPIRES HEADERS
 
 Minify can send far-future (one year) Expires headers. To enable this you must
-add a number to the querystring (e.g. /min/?g=js&1234 or /min/f=file.js&1234)
-and alter it whenever a source file is changed. If you have a build process you
-can use a build/source control revision number.
+add a number or the parameter "v" to the querystring (e.g. /min/?g=js&1234 or
+/min/?g=js&v=1234) and alter it whenever a source file is changed. If you have a
+build process you can use a build/source control revision number.
 
 You can alternately use the utility function Minify_getUri() to get a "versioned"
 Minify URI for use in your HTML. E.g.:

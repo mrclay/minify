@@ -60,7 +60,7 @@ if ($min_errorLogger) {
 }
 
 // check for URI versioning
-if (preg_match('/&\\d/', $_SERVER['QUERY_STRING'])) {
+if (preg_match('/&\\d/', $_SERVER['QUERY_STRING']) || isset($_GET['v'])) {
     $min_serveOptions['maxAge'] = 31536000;
 }
 if (isset($_GET['g'])) {
