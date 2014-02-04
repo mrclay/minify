@@ -63,13 +63,15 @@ if ($min_errorLogger) {
 if (preg_match('/&\\d/', $_SERVER['QUERY_STRING']) || isset($_GET['v'])) {
     $min_serveOptions['maxAge'] = 31536000;
 }
+
+// need groups config?
 if (isset($_GET['g'])) {
     // well need groups config
     $min_serveOptions['minApp']['groups'] = (require $min_configPaths['groups']);
 }
-if (isset($_GET['f']) || isset($_GET['g'])) {
-    // serve!   
 
+// serve or redirect
+if (isset($_GET['f']) || isset($_GET['g'])) {
     if (! isset($min_serveController)) {
         $min_serveController = new Minify_Controller_MinApp();
     }
