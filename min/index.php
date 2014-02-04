@@ -74,8 +74,12 @@ if ($min_errorLogger) {
 }
 
 // check for URI versioning
-if (preg_match('/&\\d/', $_SERVER['QUERY_STRING'])) {
+if (preg_match('/(?:^|&)\\d/', $_SERVER['QUERY_STRING'])) {
     $min_serveOptions['maxAge'] = 31536000;
+}
+if (isset($_GET['ss'])) {
+	// we'll need string subs config
+	$min_serveOptions['minApp']['subs'] = (require MINIFY_MIN_DIR . '/subsConfig.php');
 }
 if (isset($_GET['g'])) {
     // well need groups config
