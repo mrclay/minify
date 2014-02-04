@@ -11,9 +11,9 @@ define('MINIFY_MIN_DIR', dirname(__FILE__));
 
 // set config path defaults
 $min_configPaths = array(
-    'standard' => MINIFY_MIN_DIR . '/config.php',
-    'test'     => MINIFY_MIN_DIR . '/config-test.php',
-    'groups'   => MINIFY_MIN_DIR . '/groupsConfig.php'
+    'base'   => MINIFY_MIN_DIR . '/config.php',
+    'test'   => MINIFY_MIN_DIR . '/config-test.php',
+    'groups' => MINIFY_MIN_DIR . '/groupsConfig.php'
 );
 
 // check for custom config paths
@@ -36,7 +36,7 @@ if (!empty($min_customConfigPaths)) {
 }
 
 // load config
-require $min_configPaths['standard'];
+require $min_configPaths['base'];
 
 if (isset($_GET['test'])) {
     include $min_configPaths['test'];
