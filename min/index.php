@@ -17,22 +17,8 @@ $min_configPaths = array(
 );
 
 // check for custom config paths
-if (!empty($min_customConfigPaths)) {
-    // check for each config in the custom path
-    foreach ($min_configPaths as $key => $path) {
-        if (!empty($min_customConfigPaths[$key])) {
-            continue;
-        }
-        if (!file_exists($min_customConfigPaths[$key])) {
-            continue;   
-        }
-        if (!is_readable($min_customConfigPaths[$key])) {
-            continue;   
-        }
-        // reassign the path for this config to custom
-        $min_configPaths[$key] = $min_customConfigPaths[$key];
-    }
-    unset($key, $path);
+if (!empty($min_customConfigPaths) && is_array($min_customConfigPaths)) {
+    $min_configPaths = array_merge($min_configPaths, $min_customConfigPaths);
 }
 
 // load config
