@@ -68,7 +68,12 @@ class Minify_FastClosureCompiler {
         // broke the connection and returns 227 instead of 0
         // We'll just handle this here instead of fixing
         // the nailgun client itself.
-        if ($result_code != 0 && $result_code != 227) {
+        //
+        // It also sometimes breaks on 229 on the devbox.
+        // To complete this whole madness and made future
+        // 'fixes' easier I added this nice little array...
+        $allowed_result_codes = array(0, 227, 229);
+        if (!in_array($result_code, $allowed_result_codes)) {
             throw new Exception('Minify_FastClosureCompiler : Closure Compiler execution failed.');
 
         }
