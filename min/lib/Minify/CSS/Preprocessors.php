@@ -16,7 +16,11 @@ class Minify_CSS_Preprocessors {
 		$importStatements = array();
 		$collect = function($matches) use (&$importStatements) {
 			$importStatements[] = $matches[0];
-			return '/* replaced import "'.$matches[1].'" */';
+			$media = '';
+			if (trim($matches[2])) {
+				$media = ' for media:' . $matches[2];
+			}
+			return '/* replaced import "'.$matches[1].'"'.$media.' */';
 		};
 
 		$css = preg_replace_callback(Minify_ImportProcessor::IMPORT_STATEMENT_REGEX, $collect, $css);
