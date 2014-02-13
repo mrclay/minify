@@ -15,6 +15,8 @@
  * @author http://code.google.com/u/1stvamp/ (Issue 64 patch)
  */
 class Minify_CSS {
+
+    const OPTION_PREPROCESSOR = 'preprocessor';
     
     /**
      * Minify a CSS string
@@ -63,8 +65,13 @@ class Minify_CSS {
             'docRoot' => $_SERVER['DOCUMENT_ROOT'],
             'prependRelativePath' => null,
             'symlinks' => array(),
+            self::OPTION_PREPROCESSOR => null
         ), $options);
         
+        if (is_callable($options[self::OPTION_PREPROCESSOR])) {
+            $css = call_user_func($options[self::OPTION_PREPROCESSOR], $css);
+        }
+
         if ($options['removeCharsets']) {
             $css = preg_replace('/@charset[^;]+;\\s*/', '', $css);
         }
