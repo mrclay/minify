@@ -70,7 +70,7 @@ function test_CSS_Preprocessing()
             )
     );
     
-    $passed = assertTrue($expected === $actual, 'Minify_CSS_Preprocessing : noop');
+    $passed = assertTrue($expected === $actual, 'Minify_CSS_Preprocessing : prependImportStatements');
 
     if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
         echo "\n---Input:\n\n{$in}\n";
