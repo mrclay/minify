@@ -20,6 +20,17 @@
  */
 class Minify_ImportProcessor {
 
+    const IMPORT_STATEMENT_REGEX = '/
+                                    @import\\s+
+                                    (?:url\\(\\s*)?      # maybe url(
+                                    [\'"]?               # maybe quote
+                                    (.*?)                # 1 = URI
+                                    [\'"]?               # maybe end quote
+                                    (?:\\s*\\))?         # maybe )
+                                    ([a-zA-Z,\\s]*)?     # 2 = media list
+                                    ;                    # end token
+                                /x';
+
     public static $filesIncluded = array();
 
     public static function process($file)
@@ -73,16 +84,7 @@ class Minify_ImportProcessor {
 
         // process @imports
         $content = preg_replace_callback(
-            '/
-                @import\\s+
-                (?:url\\(\\s*)?      # maybe url(
-                [\'"]?               # maybe quote
-                (.*?)                # 1 = URI
-                [\'"]?               # maybe end quote
-                (?:\\s*\\))?         # maybe )
-                ([a-zA-Z,\\s]*)?     # 2 = media list
-                ;                    # end token
-            /x'
+            self::IMPORT_STATEMENT_REGEX
             ,array($this, '_importCB')
             ,$content
         );

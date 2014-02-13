@@ -1,0 +1,26 @@
+@import "foo.css";
+@import 'bar/foo.css' print;
+@import '../bar/foo.css' print;
+@import '../../foo.css' print;
+@import '/css/foo.css';
+@import 'http://foo.com/css/foo.css';
+@import url(../foo.css) tv, projection;
+@import url("/css/foo.css");
+@import url(/css2/foo.css);
+@import url(foo:bar);
+@import 'something.css' print;
+/* replaced import "foo.css" */
+/* replaced import "bar/foo.css" */
+/* replaced import "../bar/foo.css" */
+/* replaced import "../../foo.css" */
+/* replaced import "/css/foo.css" */ /* abs, should not alter */
+/* replaced import "http://foo.com/css/foo.css" */ /* scheme, should not alter */
+/* replaced import "../foo.css" */
+/* replaced import "/css/foo.css" */ /* abs, should not alter */
+/* replaced import "/css2/foo.css" */ /* abs, should not alter */
+/* replaced import "foo:bar" */ /* scheme, should not alter */
+foo {background:url('bar/foo.png')}
+foo {background:url('http://foo.com/css/foo.css');} /* scheme, should not alter */
+foo {background:url("//foo.com/css/foo.css");} /* protocol relative, should not alter */
+foo {background:url(foo:bar);} /* scheme, should not alter */
+/* replaced import "something.css" */
