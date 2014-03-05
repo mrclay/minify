@@ -24,7 +24,7 @@
  */
 class Minify {
     
-    const VERSION = '2.1.7';
+    const VERSION = '2.2.0';
     const TYPE_CSS = 'text/css';
     const TYPE_HTML = 'text/html';
     // there is some debate over the ideal JS Content-Type, but this is the
