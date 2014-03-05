@@ -50,7 +50,7 @@ function test_Minify_ClosureCompiler()
         }
 
 
-        // --- Test minifaction with advanced compilation level ---
+        // --- Test minification with advanced compilation level ---
 
         $src = "function unused() {};";
         $minExpected = '';
