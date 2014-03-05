@@ -17,22 +17,8 @@ $min_configPaths = array(
 );
 
 // check for custom config paths
-if (!empty($min_customConfigPaths)) {
-    // check for each config in the custom path
-    foreach ($min_configPaths as $key => $path) {
-        if (!empty($min_customConfigPaths[$key])) {
-            continue;
-        }
-        if (!file_exists($min_customConfigPaths[$key])) {
-            continue;   
-        }
-        if (!is_readable($min_customConfigPaths[$key])) {
-            continue;   
-        }
-        // reassign the path for this config to custom
-        $min_configPaths[$key] = $min_customConfigPaths[$key];
-    }
-    unset($key, $path);
+if (!empty($min_customConfigPaths) && is_array($min_customConfigPaths)) {
+    $min_configPaths = array_merge($min_configPaths, $min_customConfigPaths);
 }
 
 // load config
@@ -74,16 +60,18 @@ if ($min_errorLogger) {
 }
 
 // check for URI versioning
-if (preg_match('/&\\d/', $_SERVER['QUERY_STRING'])) {
+if (preg_match('/&\\d/', $_SERVER['QUERY_STRING']) || isset($_GET['v'])) {
     $min_serveOptions['maxAge'] = 31536000;
 }
+
+// need groups config?
 if (isset($_GET['g'])) {
     // well need groups config
     $min_serveOptions['minApp']['groups'] = (require $min_configPaths['groups']);
 }
-if (isset($_GET['f']) || isset($_GET['g'])) {
-    // serve!   
 
+// serve or redirect
+if (isset($_GET['f']) || isset($_GET['g'])) {
     if (! isset($min_serveController)) {
         $min_serveController = new Minify_Controller_MinApp();
     }
