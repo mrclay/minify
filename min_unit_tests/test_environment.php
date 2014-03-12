@@ -43,11 +43,11 @@ function test_environment()
            . "cannot modify this, consider setting \$min_documentRoot in config.php\n\n";
     }
     if (isset($_SERVER['SUBDOMAIN_DOCUMENT_ROOT'])) {
-        echo "\n!NOTE: environment : \$_SERVER['SUBDOMAIN_DOCUMENT_ROOT'] is set. "
+        echo "\n      environment : \$_SERVER['SUBDOMAIN_DOCUMENT_ROOT'] is set. "
            . "You may need to set \$min_documentRoot to this in config.php\n";
     }
     if (realpath(__FILE__) !== realpath($_SERVER['DOCUMENT_ROOT'] . '/min_unit_tests/test_environment.php')) {
-        echo "!NOTE: environment : /min_unit_tests/ is not directly inside DOCUMENT_ROOT\n";
+        echo "      environment : /min_unit_tests/ is not directly inside DOCUMENT_ROOT\n";
     }
 
     $thisUrl = 'http://'
@@ -59,11 +59,11 @@ function test_environment()
     $oc = @file_get_contents($thisUrl . '?getOutputCompression=1');
     
     if (false === $oc || ! preg_match('/^[01]$/', $oc)) {
-        echo "!WARN: environment : Local HTTP request failed. Testing cannot continue.\n";
+        echo "!---: environment : Local HTTP request failed. Testing cannot continue.\n";
         return;
     }
     if ('1' === $oc) {
-        echo "!WARN: environment : zlib.output_compression is enabled in php.ini"
+        echo "!---: environment : zlib.output_compression is enabled in php.ini"
            . " or .htaccess.\n";
     }
 
@@ -88,9 +88,9 @@ function test_environment()
     if (! $passed) {
         $testFake = _test_environment_getHello($thisUrl . '?hello=faketype');
         if ($testFake['length'] == 6) {
-            echo "!NOTE: environment : Server does not auto-encode arbitrary types. This\n"
-               . "       may indicate that the auto-encoding is caused by Apache's \n"
-               . "       AddOutputFilterByType.";
+            echo "      environment : Server does not auto-encode arbitrary types. This\n"
+               . "                    may indicate that the auto-encoding is caused by Apache's\n"
+               . "                    AddOutputFilterByType.";
         }
     }
 }

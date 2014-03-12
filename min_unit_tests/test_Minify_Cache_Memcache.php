@@ -8,14 +8,14 @@ function test_Minify_Cache_Memcache()
 
     if (! function_exists('memcache_set')) {
         if ($thisFileActive) {
-            echo "NOTE: {$prefix}PHP lacks memcache support\n";
+            echo "      {$prefix}To test this component, install memcache in PHP\n";
         }
         return;
     }
     $mc = new Memcache;
     if (! @$mc->connect('localhost', 11211)) {
         if ($thisFileActive) {
-            echo "NOTE: {$prefix}Could not connect to localhost:11211\n";
+            echo "      {$prefix}Memcache server not found on localhost:11211\n";
         }
         return;
     }
