@@ -61,6 +61,9 @@ abstract class Minify_Controller_Base {
             ,'postprocessor' => null
             // file to require to load preprocessor
             ,'postprocessorRequire' => null
+
+            // cache ID / cache file name - if empty a hash is used
+            ,'cacheId' => null
         );
     }  
 
