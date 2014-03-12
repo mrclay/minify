@@ -22,7 +22,7 @@ function test_Minify_YuiCSS()
         $minOutput = Minify_YUICompressor::minifyCss($src);
         assertTrue(false, "Expected exception Not thrown");
     } catch (Exception $e) {
-        assertTrue($e->getMessage() == 'Minify_YUICompressor : YUI compressor execution failed.', 'got expected Exception');
+        assertTrue($e->getMessage() == 'Minify_YUICompressor : YUI compressor execution failed.', 'Minify_YUICompressor : got expected Exception');
     }
 
     try {

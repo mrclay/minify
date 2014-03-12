@@ -65,10 +65,10 @@ function test_Minify_ClosureCompiler()
         }
 
     } else {
-        echo "NONE: Minify_ClosureCompiler : Please download a compiler.jar from
-                               https://code.google.com/p/closure-compiler/wiki/BinaryDownloads
-                               put it under '${compiler_jar_path}' and make it readable by your webserver
-                               to test more functionality\n";
+        echo "      Minify_ClosureCompiler : To test more functionality, download a compiler.jar from\n";
+        echo "                               https://code.google.com/p/closure-compiler/wiki/BinaryDownloads,\n";
+        echo "                               put it under '${compiler_jar_path}',\n";
+        echo "                               and make it readable by your webserver\n";
     }
 }
 
