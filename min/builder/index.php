@@ -49,6 +49,7 @@ ob_start();
 <!DOCTYPE html>
 <title>Minify URI Builder</title>
 <meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 <style>
 body {margin:1em 60px;}
 h1, h2, h3 {margin-left:-25px; position:relative;}
@@ -111,7 +112,7 @@ and click [Update].</p>
 
 <div id=bmUris></div>
 
-<p><button id=update class=hide>Update</button></p>
+<p><button class="btn btn-primary" id=update class=hide>Update</button></p>
 
 <div id=results class=hide>
 

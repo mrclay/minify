@@ -26,8 +26,8 @@ var MUB = {
      */
     newLi : function () {
         return '<li id="li' + MUB._uid + '">http://' + location.host + '/<input type=text size=20>' +
-        ' <button title="Remove">x</button> <button title="Include Earlier">&uarr;</button>' +
-        ' <button title="Include Later">&darr;</button> <span></span></li>';
+        ' <button class="btn btn-danger btn-sm" title="Remove">x</button> <button class="btn btn-default btn-sm" title="Include Earlier">&uarr;</button>' +
+        ' <button class="btn btn-default btn-sm" title="Include Later">&darr;</button> <span></span></li>';
     },
     /**
      * Add new empty source LI and attach handlers to buttons
@@ -36,13 +36,13 @@ var MUB = {
         $('#sources').append(MUB.newLi());
         var li = $('#li' + MUB._uid)[0];
         $('button[title=Remove]', li).click(function () {
-            $('#results').hide();
+            $('#results').addClass('hide');
             var hadValue = !!$('input', li)[0].value;
             $(li).remove();
         });
         $('button[title$=Earlier]', li).click(function () {
             $(li).prev('li').find('input').each(function () {
-                $('#results').hide();
+                $('#results').addClass('hide');
                 // this = previous li input
                 var tmp = this.value;
                 this.value = $('input', li).val();
@@ -52,7 +52,7 @@ var MUB = {
         });
         $('button[title$=Later]', li).click(function () {
             $(li).next('li').find('input').each(function () {
-                $('#results').hide();
+                $('#results').addClass('hide');
                 // this = next li input
                 var tmp = this.value;
                 this.value = $('input', li).val();
@@ -77,9 +77,9 @@ var MUB = {
             url : url,
             complete : function (xhr, stat) {
                 if ('success' === stat)
-                    $('span', li).html('&#x2713;');
+                    $('span', li).html('<a href="#" class="btn btn-success btn-sm disabled">&#x2713;</a>');
                 else {
-                    $('span', li).html('<button><b>404! </b> recheck</button>')
+                    $('span', li).html('<button class="btn btn-warning btn-sm"><b>404! </b> recheck</button>')
                         .find('button').click(function () {
                             MUB.liUpdateTestLink.call(li);
                         });
@@ -184,16 +184,16 @@ var MUB = {
             markup = '<link type="text/css" rel="stylesheet" href="' + uriH + '" />';
         }
         $('#uriHtml').val(markup);
-        $('#results').show();
+        $('#results').removeClass('hide');
     },
     /**
      * Handler for the "Add file +" button
      */
     addButtonClick : function () {
-        $('#results').hide();
+        $('#results').addClass('hide');
         MUB.addLi();
         MUB.updateAllTestLinks();
-        $('#update').show().click(MUB.update);
+        $('#update').removeClass('hide').click(MUB.update);
         $('#sources li:last input')[0].focus();
     },
     /**
@@ -201,7 +201,7 @@ var MUB = {
      */
     init : function () {
         $('#jsDidntLoad').remove();
-        $('#app').show();
+        $('#app').removeClass('hide');
         $('#sources').html('');
         $('#add button').click(MUB.addButtonClick);
         // make easier to copy text out of
@@ -213,7 +213,7 @@ var MUB = {
         $('a.ext').attr({target:'_blank'});
         if (location.hash) {
             // make links out of URIs from bookmarklet
-            $('#getBm').hide();
+            $('#getBm').addClass('hide');
             var i = 0, found = location.hash.substr(1).split(','), l = found.length;
             $('#bmUris').html('<p><strong>Found by bookmarklet:</strong> /</p>');
             var $p = $('#bmUris p');
@@ -227,7 +227,7 @@ var MUB = {
                 MUB.addButtonClick();
                 $('#sources li:last input').val(this.innerHTML);
                 MUB.liUpdateTestLink.call($('#sources li:last')[0]);
-                $('#results').hide();
+                $('#results').addClass('hide');
                 return false;
             }).attr({title:'Add file +'});
         } else {
