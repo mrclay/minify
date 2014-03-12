@@ -70,6 +70,8 @@ class Minify_ClosureCompiler {
      * @see https://code.google.com/p/closure-compiler/source/browse/trunk/README
      *
      * @return string
+     *
+     * @throws Minify_ClosureCompiler_Exception
      */
     public static function minify($js, $options = array())
     {
@@ -79,7 +81,7 @@ class Minify_ClosureCompiler {
         }
         file_put_contents($tmpFile, $js);
         $cmd = self::_getCmd($options, $tmpFile);
-        $result = exec($cmd, $output, $result_code);
+        exec($cmd, $output, $result_code);
         unlink($tmpFile);
         if ($result_code != 0) {
             $message = 'Minify_ClosureCompiler : Closure Compiler execution failed.';
