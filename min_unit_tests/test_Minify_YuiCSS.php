@@ -1,10 +1,20 @@
 <?php
 require_once '_inc.php';
 
+// customize this as needed
+define('MINIFY_TESTS_YUICOMPRESSOR_JAR_FILE', '/usr/share/java/yuicompressor.jar');
+
+
+
 function test_Minify_YuiCSS()
 {
-    // XXX this may need customizing
-    Minify_YUICompressor::$jarFile = '/usr/share/java/yuicompressor.jar';
+    if (!is_file(MINIFY_TESTS_YUICOMPRESSOR_JAR_FILE)) {
+        echo "      Minify_YUICompressor : To test this, install the .jar file and customize the constant in:\n";
+        echo "                             " . __FILE__ . "\n";
+        return;
+    }
+
+    Minify_YUICompressor::$jarFile = MINIFY_TESTS_YUICOMPRESSOR_JAR_FILE;
     Minify_YUICompressor::$tempDir = sys_get_temp_dir();
 
     $src = "/* stack overflow test */
@@ -20,7 +30,7 @@ function test_Minify_YuiCSS()
     // unfortunately error output is not caught from yui, so have to guess
     try {
         $minOutput = Minify_YUICompressor::minifyCss($src);
-        assertTrue(false, "Expected exception Not thrown");
+        echo "      Minify_YUICompressor : Correctly handles input which caused stack overflow in 2.4.6\n";
     } catch (Exception $e) {
         assertTrue($e->getMessage() == 'Minify_YUICompressor : YUI compressor execution failed.', 'Minify_YUICompressor : got expected Exception');
     }
