@@ -1,8 +1,30 @@
 Minify Release History
 
+Version 2.2.0
+    * Fix handling of RegEx in certain situations in JSMin
+      * Thanks to Vovan-VE for reporting this
+    * Update composer.json with support info
+    * Add ability to set ClosureCompiler URL
+      * Thanks Elan Ruusamäe for the pull request
+    * Better report of temp directory errors
+      * Also thanks to Elan Ruusamäe for anatoher pull request
+    * Updated CSSmin and added Minify_CSSmin wrapper
+    * Fix windows issue associated with long cache filenames
+    * Fix issue with web-based tool
+    * Fix bug in JSMin exceptions
+    * Fix "about:blank" bug in CSS_UriRewriter
+    * Cite is no longer a block element in HTML minification
+    * Allow for definition of custom config locations outside of the min directory
+      * Thanks Sam Bauers for the pull request
+    * Allow option for overriding the maximum byte size POST limit for ClosureCompiler and other additions
+      * Thanks Joscha Feth for the code
+    * Fixes to file-relative URL identification in UriRewriter
+    * Allow far-future expiration and file versioning with the "v" querystirng parameter in addition to existing method
+    * Lots of general code tidy ups
+
 Version 2.1.7
-    * Fixes arbitrary file inclusion vulnerability on some systems.
-      * Thanks to Matt Mecham for reporting this.
+    * Fixes arbitrary file inclusion vulnerability on some systems
+      * Thanks to Matt Mecham for reporting this
 
 Version 2.1.6
     * JSMin fixes
