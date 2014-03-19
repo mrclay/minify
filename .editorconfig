@@ -11,3 +11,8 @@ trim_trailing_whitespace = false
 [*.php]
 indent_style = space
 indent_size = 4
+
+[vendor/**]
+; Use editor default (possible autodetection).
+indent_style =
+indent_size =
