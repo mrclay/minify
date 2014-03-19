@@ -1,0 +1,13 @@
+# top-most EditorConfig file
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+
+; temporary
+trim_trailing_whitespace = false
+
+[*.php]
+indent_style = space
+indent_size = 4
