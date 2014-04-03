@@ -12,3 +12,6 @@ foo {background:url('//cnd.com/A/B/bar/foo.png')}
 foo {background:url('http://foo.com/css/foo.css');} /* scheme, should not alter */
 foo {background:url("//foo.com/css/foo.css");} /* protocol relative, should not alter */
 foo {background:url(foo:bar);} /* scheme, should not alter */
+foo {background:url("//cnd.com/A/B/foo bar.jpg");}
+@import url('//cnd.com/A/B/foo bar.css');
+@import "//cnd.com/A/B/foo bar.css";
