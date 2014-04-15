@@ -120,6 +120,26 @@ function test_Minify_JS_ClosureCompiler()
     $passed = assertTrue(
         $minOutput === $minExpected
         , 'Minify_JS_ClosureCompiler : Language option should make it compile');
+
+
+    $exc = null;
+    try {
+      $minOutput = @Minify_JS_ClosureCompiler::minify('', array(
+          Minify_JS_ClosureCompiler::OPTION_READ_TIMEOUT => 0,
+          Minify_JS_ClosureCompiler::OPTION_CONNECTION_TIMEOUT => 0
+      ));
+    } catch (Exception $e) {
+        $exc = $e;
+    }
+    $passed = assertTrue(
+        $exc instanceof Minify_JS_ClosureCompiler_Exception
+        , 'Minify_JS_ClosureCompiler : Throws Minify_JS_ClosureCompiler_Exception');
+    assertTrue(
+        $exc->getMessage() === 'No HTTP response from server'
+        , 'Minify_JS_ClosureCompiler : Message must tell that the operation timed out');
+    if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
+        echo "\n---Message: " . var_export($exc->getMessage(), 1) . "\n\n\n";
+    }
 }
 
 test_Minify_JS_ClosureCompiler();
