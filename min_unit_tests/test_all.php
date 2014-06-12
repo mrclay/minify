@@ -6,6 +6,7 @@ require 'test_Minify_HTML_Helper.php';
 require 'test_Minify_Cache_APC.php';
 require 'test_Minify_Cache_File.php';
 require 'test_Minify_Cache_Memcache.php';
+require 'test_Minify_Cache_WinCache.php';
 require 'test_Minify_Cache_ZendPlatform.php';
 require 'test_Minify_CSS.php';
 require 'test_Minify_CSS_UriRewriter.php';
