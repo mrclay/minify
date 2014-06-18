@@ -10,7 +10,7 @@
 /**
  * Allow use of the Minify URI Builder app. Only set this to true while you need it.
  */
-$min_enableBuilder = false;
+$min_enableBuilder = true;
 
 /**
  * If non-empty, the Builder will be protected with HTTP Digest auth.
@@ -42,7 +42,7 @@ $min_errorLogger = false;
  * In 'debug' mode, Minify combines files with no minification and adds comments
  * to indicate line #s of the original files.
  */
-$min_allowDebugFlag = false;
+$min_allowDebugFlag = true;
 
 
 /**
@@ -142,7 +142,8 @@ $min_serveOptions['minApp']['groupsOnly'] = false;
  * To minify all files, set this option to null. You could also specify your
  * own pattern that is matched against the filename.
  */
-//$min_serveOptions['minApp']['noMinPattern'] = '@[-\\.]min\\.(?:js|css)$@i';
+
+$min_serveOptions['minApp']['noMinPattern'] = '@[-\\.]min\\.(?:js|css)$@i';
 
 
 /**
