@@ -35,6 +35,8 @@ class Gen
 	
 	public function build ($files)
 	{
+		$cssMin = new CSSmin();
+		
 		$output = '';
 		
 		try
@@ -69,7 +71,14 @@ class Gen
 				
 				if ($this->minContent)
 				{
-					$content = ($ext == 'JS') ? JSMin::minify($content) : CSSmin::minify($content); 	
+					if ($ext == 'JS')
+					{
+						$content = JSMin::minify($content);
+					}
+					else
+					{
+						$content = $cssMin->run($content);	
+					}
 				} 
 				
 				$output .= $content;
