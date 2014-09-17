@@ -4,8 +4,6 @@
  * @package LessCss
  */
 
-require_once 'Minify/CSS.php';
-
 /**
  * Minify CSS
  *
@@ -30,7 +28,9 @@ class LessCss_Minify extends Minify_CSS {
      */
     public static function minify($less, $options = array())
     {
-        require_once 'lessphp/lessc.inc.php';
+        if (!class_exists('lessc')) {
+            require_once 'lessphp/lessc.inc.php';
+        }
         $lessc = new lessc();
         return parent::minify($lessc->parse($less), $options);
     }
