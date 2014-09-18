@@ -40,9 +40,11 @@ function test_Minify_HTML_Helper()
         require_once $utilsFile;
 
         $fiveSecondsAgo = $_SERVER['REQUEST_TIME'] - 5;
-        // TODO: use Minify_Source();
-        $obj = new stdClass();
-        $obj->lastModified = $fiveSecondsAgo;
+        $obj = new Minify_Source(array(
+            'id' => '1',
+            'content' => '1',
+            'lastModified' => $fiveSecondsAgo,
+        ));
 
         $output = Minify_mtime(array(
             $uri1
@@ -51,9 +53,11 @@ function test_Minify_HTML_Helper()
         ));
         $passed = assertTrue($output === $fiveSecondsAgo, 'utils.php : Minify_mtime w/ files & obj');
 
-        // TODO: use Minify_Source();
-        $obj = new stdClass();
-        $obj->lastModified = strtotime('2000-01-01');
+        $obj = new Minify_Source(array(
+            'id' => '2',
+            'content' => '2',
+            'lastModified' => strtotime('2000-01-01'),
+        ));
         $output = Minify_mtime(array(
             $obj
             ,'css'
