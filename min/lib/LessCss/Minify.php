@@ -11,7 +11,7 @@
  *
  * @package LessCss
  * @author Marco Pivetta <ocramius@gmail.com>
- * @author http://marco-pivetta.com/
+ * @author Elan Ruusamäe <glen@delfi.ee>
  */
 class LessCss_Minify extends Minify_CSS {
 
