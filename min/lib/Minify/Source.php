@@ -18,7 +18,7 @@ class Minify_Source {
     /**
      * @var int time of last modification
      */
-    public $lastModified = null;
+    protected $lastModified = null;
     
     /**
      * @var callback minifier function specifically for this source.
@@ -115,7 +115,16 @@ class Minify_Source {
             ? substr($content, 3)
             : $content;
     }
-    
+
+    /**
+     * Get last modified timestamp
+     *
+     * @return int
+     */
+    public function getLastModified() {
+        return $this->lastModified;
+    }
+
     /**
      * Get id
      *

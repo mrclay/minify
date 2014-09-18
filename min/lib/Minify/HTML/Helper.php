@@ -139,8 +139,11 @@ class Minify_HTML_Helper {
     public static function getLastModified($sources, $lastModified = 0)
     {
         $max = $lastModified;
+        /** @var Minify_Source $source */
         foreach ((array)$sources as $source) {
-            if (is_object($source) && isset($source->lastModified)) {
+            if ($source instanceof Minify_Source && $source->getLastModified() !== null) {
+                $max = max($max, $source->getLastModified());
+            } elseif (is_object($source) && isset($source->lastModified)) {
                 $max = max($max, $source->lastModified);
             } elseif (is_string($source)) {
                 if (0 === strpos($source, '//')) {
