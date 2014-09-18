@@ -143,8 +143,6 @@ class Minify_HTML_Helper {
         foreach ((array)$sources as $source) {
             if ($source instanceof Minify_Source) {
                 $max = max($max, $source->getLastModified());
-            } elseif (is_object($source) && isset($source->lastModified)) {
-                $max = max($max, $source->lastModified);
             } elseif (is_string($source)) {
                 if (0 === strpos($source, '//')) {
                     $source = $_SERVER['DOCUMENT_ROOT'] . substr($source, 1);
