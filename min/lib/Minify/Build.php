@@ -86,7 +86,7 @@ class Minify_Build {
         $max = 0;
         foreach ((array)$sources as $source) {
             if ($source instanceof Minify_Source) {
-                $max = max($max, $source->lastModified);
+                $max = max($max, $source->getLastModified());
             } elseif (is_string($source)) {
                 if (0 === strpos($source, '//')) {
                     $source = $_SERVER['DOCUMENT_ROOT'] . substr($source, 1);

@@ -17,7 +17,7 @@ class Minify_HTML_Helper {
 
     /**
      * Get an HTML-escaped Minify URI for a group or set of files
-     * 
+     *
      * @param string|array $keyOrFiles a group key or array of filepaths/URIs
      * @param array $opts options:
      *   'farExpires' : (default true) append a modified timestamp for cache revving
@@ -139,9 +139,10 @@ class Minify_HTML_Helper {
     public static function getLastModified($sources, $lastModified = 0)
     {
         $max = $lastModified;
+        /** @var Minify_Source $source */
         foreach ((array)$sources as $source) {
-            if (is_object($source) && isset($source->lastModified)) {
-                $max = max($max, $source->lastModified);
+            if ($source instanceof Minify_Source) {
+                $max = max($max, $source->getLastModified());
             } elseif (is_string($source)) {
                 if (0 === strpos($source, '//')) {
                     $source = $_SERVER['DOCUMENT_ROOT'] . substr($source, 1);
@@ -158,7 +159,7 @@ class Minify_HTML_Helper {
     protected $_filePaths = array();
     protected $_lastModified = null;
 
-    
+
     /**
      * In a given array of strings, find the character they all have at
      * a particular index
@@ -205,7 +206,7 @@ class Minify_HTML_Helper {
         }
         $base = preg_replace('@[^/]+$@', '', $base);
         $uri = $minRoot . 'f=' . implode(',', $paths);
-        
+
         if (substr($base, -1) === '/') {
             // we have a base dir!
             $basedPaths = $paths;
