@@ -32,7 +32,10 @@ require "$min_libPath/Minify/Loader.php";
 Minify_Loader::register();
 
 Minify::$uploaderHoursBehind = $min_uploaderHoursBehind;
-Minify::setCache(isset($min_cachePath) ? $min_cachePath : '' , $min_cacheFileLocking);
+Minify::setCache(
+    isset($min_cachePath) ? $min_cachePath : ''
+    ,$min_cacheFileLocking
+);
 
 if ($min_documentRoot) {
     $_SERVER['DOCUMENT_ROOT'] = $min_documentRoot;
