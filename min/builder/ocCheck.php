@@ -1,4 +1,4 @@
-<?php
+<?php 
 /**
  * AJAX checks for zlib.output_compression
  * 
