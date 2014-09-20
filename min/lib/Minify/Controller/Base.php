@@ -200,8 +200,9 @@ abstract class Minify_Controller_Base {
             // last modified is needed for caching, even if setExpires is set
             if (! isset($options['lastModifiedTime'])) {
                 $max = 0;
+                /** @var Minify_Source $source */
                 foreach ($this->sources as $source) {
-                    $max = max($source->lastModified, $max);
+                    $max = max($source->getLastModified(), $max);
                 }
                 $options['lastModifiedTime'] = $max;
             }    
