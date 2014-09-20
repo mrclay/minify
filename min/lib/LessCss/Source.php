@@ -1,11 +1,24 @@
 <?php
 
 class LessCss_Source extends Minify_Source {
+    /**
+     * @var Minify_Cache_Abstract
+     */
+    private $cache;
+
+    /**
+     * @inheritdoc
+     */
+    public function __construct($spec) {
+        parent::__construct($spec);
+
+        $this->cache = Minify::getCache();
+    }
 
     /**
      * Get last modified of all parsed files
      *
-     * @return int|mixed
+     * @return int
      */
     public function getLastModified() {
         $cache = $this->getCache();
@@ -24,7 +37,6 @@ class LessCss_Source extends Minify_Source {
      */
     public function getContent() {
         $cache = $this->getCache();
-
         return $cache['compiled'];
     }
 
@@ -34,8 +46,36 @@ class LessCss_Source extends Minify_Source {
      * @return array
      */
     private function getCache() {
+        // check from cache first
+        $cache = null;
+        $cacheId = $this->getCacheId();
+        // TODO: validate with mtime?
+        if ($this->cache->isValid($cacheId, 0)) {
+            if ($cache = $this->cache->fetch($cacheId)) {
+                $cache = unserialize($cache);
+            }
+        }
+
         $less = $this->getCompiler();
-        return $less->cachedCompile($this->filepath);
+        $input = $cache ? $cache : $this->filepath;
+        $cache = $less->cachedCompile($input);
+
+        if (!is_array($input) || $cache['updated'] > $input['updated']) {
+            $this->cache->store($cacheId, serialize($cache));
+        }
+
+        return $cache;
+    }
+
+    /**
+     * Make a unique cache id for for this source.
+     *
+     * @param string $prefix
+     * @return string
+     */
+    private function getCacheId($prefix = 'minify') {
+        $md5 = md5($this->filepath);
+        return "{$prefix}_less_{$md5}";
     }
 
     /**
