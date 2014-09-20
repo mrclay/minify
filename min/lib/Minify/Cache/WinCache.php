@@ -14,8 +14,7 @@
  * @package Minify
  * @author Matthias Fax
  **/
-class Minify_Cache_WinCache
-{
+class Minify_Cache_WinCache extends Minify_Cache_Abstract {
     
     /**
      * Create a Minify_Cache_Wincache object, to be passed to

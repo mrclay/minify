@@ -17,7 +17,7 @@
  * }
  * </code>
  **/
-class Minify_Cache_Memcache {
+class Minify_Cache_Memcache extends Minify_Cache_Abstract {
     
     /**
      * Create a Minify_Cache_Memcache object, to be passed to 

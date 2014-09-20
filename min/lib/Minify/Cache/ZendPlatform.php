@@ -17,7 +17,7 @@
  * @package Minify
  * @author Patrick van Dissel
  */
-class Minify_Cache_ZendPlatform {
+class Minify_Cache_ZendPlatform extends Minify_Cache_Abstract {
 
 
     /**

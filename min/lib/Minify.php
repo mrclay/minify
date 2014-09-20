@@ -85,6 +85,16 @@ class Minify {
             self::$_cache = $cache;
         }
     }
+
+    /**
+     * Get Minify cache
+     *
+     * @return Minify_Cache_Abstract|null
+     */
+    public static function getCache()
+    {
+        return self::$_cache;
+    }
     
     /**
      * Serve a request for a minified file. 
@@ -396,7 +406,7 @@ class Minify {
     /**
      * Any Minify_Cache_* object or null (i.e. no server cache is used)
      *
-     * @var Minify_Cache_File
+     * @var Minify_Cache_Abstract
      */
     private static $_cache = null;
     

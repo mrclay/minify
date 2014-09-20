@@ -4,7 +4,7 @@
  * @package Minify
  */
 
-class Minify_Cache_File {
+class Minify_Cache_File extends Minify_Cache_Abstract {
     
     public function __construct($path = '', $fileLocking = false)
     {
