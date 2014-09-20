@@ -430,7 +430,7 @@ class Minify {
         header('Content-Type: text/html; charset=utf-8');
         echo "<h1>$h1</h1>";
         echo "<p>Please see <a href='$url'>$url</a>.</p>";
-        exit();
+        exit;
     }
 
     /**

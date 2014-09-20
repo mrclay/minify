@@ -79,8 +79,8 @@ if (isset($_GET['f']) || isset($_GET['g'])) {
         
 } elseif ($min_enableBuilder) {
     header('Location: builder/');
-    exit();
+    exit;
 } else {
-    header("Location: /");
-    exit();
+    header('Location: /');
+    exit;
 }
