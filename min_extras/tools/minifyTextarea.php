@@ -44,7 +44,7 @@ if (isset($_POST['method']) && $_POST['method'] === 'Minify and serve') {
     } catch (Exception $e) {
         echo h($e->getMessage());
     }
-    exit();
+    exit;
 }
 
 $tpl = array();
