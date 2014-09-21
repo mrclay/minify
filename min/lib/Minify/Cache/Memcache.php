@@ -17,7 +17,7 @@
  * }
  * </code>
  **/
-class Minify_Cache_Memcache extends Minify_Cache_Abstract {
+class Minify_Cache_Memcache implements Minify_Cache_Interface {
     
     /**
      * Create a Minify_Cache_Memcache object, to be passed to 
@@ -27,8 +27,6 @@ class Minify_Cache_Memcache extends Minify_Cache_Abstract {
      * 
      * @param int $expire seconds until expiration (default = 0
      * meaning the item will not get an expiration date)
-     * 
-     * @return null
      */
     public function __construct($memcache, $expire = 0)
     {
@@ -49,7 +47,6 @@ class Minify_Cache_Memcache extends Minify_Cache_Abstract {
     {
         return $this->_mc->set($id, "{$_SERVER['REQUEST_TIME']}|{$data}", 0, $this->_exp);
     }
-    
     
     /**
      * Get the size of a cache entry

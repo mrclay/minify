@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Class Minify_Cache_Abstract
+ * Class Minify_Cache_Interface
  *
  * @package Minify
  */
-abstract class Minify_Cache_Abstract {
+interface Minify_Cache_Interface {
     /**
      * Write data to cache.
      *
@@ -14,9 +14,7 @@ abstract class Minify_Cache_Abstract {
      *
      * @return bool success
      */
-    public function store($id, $data)
-    {
-    }
+    public function store($id, $data);
 
     /**
      * Get the size of a cache entry
@@ -25,9 +23,7 @@ abstract class Minify_Cache_Abstract {
      *
      * @return int size in bytes
      */
-    public function getSize($id)
-    {
-    }
+    public function getSize($id);
 
     /**
      * Does a valid cache entry exist?
@@ -37,18 +33,14 @@ abstract class Minify_Cache_Abstract {
      *
      * @return bool exists
      */
-    public function isValid($id, $srcMtime)
-    {
-    }
+    public function isValid($id, $srcMtime);
 
     /**
      * Send the cached content to output
      *
      * @param string $id cache id (e.g. a filename)
      */
-    public function display($id)
-    {
-    }
+    public function display($id);
 
     /**
      * Fetch the cached content
@@ -57,7 +49,5 @@ abstract class Minify_Cache_Abstract {
      *
      * @return string
      */
-    public function fetch($id)
-    {
-    }
+    public function fetch($id);
 }
