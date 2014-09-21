@@ -17,7 +17,7 @@
  * @package Minify
  * @author Elan Ruusamäe <glen@delfi.ee>
  **/
-class Minify_Cache_XCache extends Minify_Cache_Abstract {
+class Minify_Cache_XCache implements Minify_Cache_Interface {
 
     /**
      * Create a Minify_Cache_XCache object, to be passed to

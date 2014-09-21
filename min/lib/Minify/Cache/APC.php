@@ -14,7 +14,7 @@
  * @package Minify
  * @author Chris Edwards
  **/
-class Minify_Cache_APC extends Minify_Cache_Abstract {
+class Minify_Cache_APC implements Minify_Cache_Interface {
 
     /**
      * Create a Minify_Cache_APC object, to be passed to

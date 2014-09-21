@@ -17,7 +17,7 @@
  * @package Minify
  * @author Patrick van Dissel
  */
-class Minify_Cache_ZendPlatform extends Minify_Cache_Abstract {
+class Minify_Cache_ZendPlatform implements Minify_Cache_Interface {
 
 
     /**
@@ -27,7 +27,6 @@ class Minify_Cache_ZendPlatform extends Minify_Cache_Abstract {
      * @param int $expire seconds until expiration (default = 0
      * meaning the item will not get an expiration date)
      *
-     * @return null
      */
     public function __construct($expire = 0)
     {
@@ -64,7 +63,6 @@ class Minify_Cache_ZendPlatform extends Minify_Cache_Abstract {
             : false;
     }
 
-
     /**
      * Does a valid cache entry exist?
      *
@@ -79,7 +77,6 @@ class Minify_Cache_ZendPlatform extends Minify_Cache_Abstract {
         $ret = ($this->_fetch($id) && ($this->_lm >= $srcMtime));
         return $ret;
     }
-
 
     /**
      * Send the cached content to output
@@ -108,15 +105,12 @@ class Minify_Cache_ZendPlatform extends Minify_Cache_Abstract {
             : '';
     }
 
-
     private $_exp = null;
-
 
     // cache of most recently fetched id
     private $_lm = null;
     private $_data = null;
     private $_id = null;
-
 
     /**
      * Fetch data and timestamp from ZendPlatform, store in instance
