@@ -18,7 +18,7 @@ class Minify_Source {
     /**
      * @var int time of last modification
      */
-    public $lastModified = null;
+    protected $lastModified = null;
     
     /**
      * @var callback minifier function specifically for this source.
@@ -65,6 +65,8 @@ class Minify_Source {
             case 'js'   : $this->contentType = 'application/x-javascript';
                           break;
             case 'css'  : $this->contentType = 'text/css';
+                          break;
+            case 'less' : $this->contentType = 'text/less';
                           break;
             case 'htm'  : // fallthrough
             case 'html' : $this->contentType = 'text/html';
@@ -115,7 +117,16 @@ class Minify_Source {
             ? substr($content, 3)
             : $content;
     }
-    
+
+    /**
+     * Get last modified timestamp
+     *
+     * @return int
+     */
+    public function getLastModified() {
+        return $this->lastModified;
+    }
+
     /**
      * Get id
      *

@@ -16,11 +16,17 @@
 		"issues": "http://code.google.com/p/minify/issues/list",
 		"wiki": "http://code.google.com/p/minify/w/list"
 	},
+	"autoload": {
+		"classmap": ["min/lib/"]
+	},
 	"require": {
 		"php": ">=5.2.1",
 		"ext-pcre": "*"
 	},
-	"autoload": {
-		"classmap": ["min/lib/"]
+	"require-dev": {
+		"leafo/lessphp": "~0.4.0"
+	},
+	"suggest": {
+		"leafo/lessphp": "LESS support"
 	}
 }
