@@ -17,7 +17,7 @@
  * @package Minify
  * @author Patrick van Dissel
  */
-class Minify_Cache_ZendPlatform implements Minify_Cache_Interface {
+class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
 
 
     /**

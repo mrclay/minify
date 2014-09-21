@@ -89,7 +89,7 @@ class Minify {
     /**
      * Get Minify cache, if no Cache is defined, create Minify_Cache_Null
      *
-     * @return Minify_Cache_Interface
+     * @return Minify_CacheInterface
      */
     public static function getCache()
     {
@@ -409,7 +409,7 @@ class Minify {
     /**
      * Any Minify_Cache_* object or null (i.e. no server cache is used)
      *
-     * @var Minify_Cache_Interface
+     * @var Minify_CacheInterface
      */
     private static $_cache = null;
     

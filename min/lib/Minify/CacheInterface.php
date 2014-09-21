@@ -1,11 +1,16 @@
 <?php
+/**
+ * Interface Minify_CacheInterface
+ * @package Minify
+ */
+
 
 /**
- * Class Minify_Cache_Interface
+ * Interface for Minify cache adapters
  *
  * @package Minify
  */
-interface Minify_Cache_Interface {
+interface Minify_CacheInterface {
     /**
      * Write data to cache.
      *

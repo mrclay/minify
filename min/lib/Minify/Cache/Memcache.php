@@ -17,7 +17,7 @@
  * }
  * </code>
  **/
-class Minify_Cache_Memcache implements Minify_Cache_Interface {
+class Minify_Cache_Memcache implements Minify_CacheInterface {
     
     /**
      * Create a Minify_Cache_Memcache object, to be passed to 
