@@ -7,6 +7,13 @@ class LessCss_Source extends Minify_Source {
     private $cache;
 
     /**
+     * Parsed lessphp cache object
+     *
+     * @var array
+     */
+    private $parsed;
+
+    /**
      * @inheritdoc
      */
     public function __construct($spec) {
@@ -46,6 +53,12 @@ class LessCss_Source extends Minify_Source {
      * @return array
      */
     private function getCache() {
+        // cache for single run
+        // so that getLastModified and getContent in single request do not add additional cache roundtrips (i.e memcache)
+        if (isset($this->parsed)) {
+            return $this->parsed;
+        }
+
         // check from cache first
         $cache = null;
         $cacheId = $this->getCacheId();
@@ -64,13 +77,14 @@ class LessCss_Source extends Minify_Source {
             $this->cache->store($cacheId, serialize($cache));
         }
 
-        return $cache;
+        return $this->parsed = $cache;
     }
 
     /**
      * Make a unique cache id for for this source.
      *
      * @param string $prefix
+     *
      * @return string
      */
     private function getCacheId($prefix = 'minify') {
