@@ -255,12 +255,7 @@ class Minify {
         if (self::$_options['contentType'] === self::TYPE_CSS
             && self::$_options['rewriteCssUris']) {
             foreach($controller->sources as $key => $source) {
-                if ($source->filepath 
-                    && !isset($source->minifyOptions['currentDir'])
-                    && !isset($source->minifyOptions['prependRelativePath'])
-                ) {
-                    $source->minifyOptions['currentDir'] = dirname($source->filepath);
-                }
+                $source->setupUriRewrites();
             }
         }
         
@@ -446,11 +441,11 @@ class Minify {
     protected static function _setupDebug($sources)
     {
         foreach ($sources as $source) {
-            $source->minifier = array('Minify_Lines', 'minify');
+            $source->setMinifier(array('Minify_Lines', 'minify'));
             $id = $source->getId();
-            $source->minifyOptions = array(
+            $source->setMinifierOptions(array(
                 'id' => (is_file($id) ? basename($id) : $id)
-            );
+            ));
         }
     }
     
@@ -498,12 +493,11 @@ class Minify {
                 $sourceContent = $source->getContent();
 
                 // allow the source to override our minifier and options
-                $minifier = (null !== $source->minifier)
-                    ? $source->minifier
-                    : $defaultMinifier;
-                $options = (null !== $source->minifyOptions)
-                    ? array_merge($defaultOptions, $source->minifyOptions)
-                    : $defaultOptions;
+                $minifier = $source->getMinifier();
+                if (!$minifier) {
+                    $minifier = $defaultMinifier;
+                }
+                $options = array_merge($defaultOptions, $source->getMinifierOptions());
             }
             // do we need to process our group right now?
             if ($i > 0                               // yes, we have at least the first group populated
@@ -567,7 +561,7 @@ class Minify {
         $name = preg_replace('/\\.+/', '.', $name);
         $name = substr($name, 0, 100 - 34 - strlen($prefix));
         $md5 = md5(serialize(array(
-            Minify_Source::getDigest(self::$_controller->sources)
+            Minify_SourceSet::getDigest(self::$_controller->sources)
             ,self::$_options['minifiers'] 
             ,self::$_options['minifierOptions']
             ,self::$_options['postprocessor']

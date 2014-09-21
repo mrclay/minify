@@ -145,9 +145,7 @@ abstract class Minify_Controller_Base {
     /**
      * instances of Minify_Source, which provide content and any individual minification needs.
      *
-     * @var array
-     * 
-     * @see Minify_Source
+     * @var Minify_SourceInterface[]
      */
     public $sources = array();
     
@@ -195,7 +193,7 @@ abstract class Minify_Controller_Base {
     {
         if ($this->sources) {
             if (! isset($options['contentType'])) {
-                $options['contentType'] = Minify_Source::getContentType($this->sources);
+                $options['contentType'] = Minify_SourceSet::getContentType($this->sources);
             }
             // last modified is needed for caching, even if setExpires is set
             if (! isset($options['lastModifiedTime'])) {
