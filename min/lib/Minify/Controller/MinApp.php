@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Minify_Controller_MinApp  
+ * Class Minify_Controller_MinApp
  * @package Minify
  */
 
@@ -214,21 +214,27 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
     /**
      * Make sure that only source files of a single type are registered
      *
-     * @param string $sourceOrExt
+     * @param Minify_SourceInterface|string $sourceOrExt
      *
      * @throws Exception
      */
     public function checkType($sourceOrExt)
     {
-        if ($sourceOrExt === 'js') {
-            $type = Minify::TYPE_JS;
-        } elseif ($sourceOrExt === 'css') {
-            $type = Minify::TYPE_CSS;
-        } elseif ($sourceOrExt->contentType !== null) {
-            $type = $sourceOrExt->contentType;
+        if ($sourceOrExt instanceof Minify_SourceInterface) {
+            $type = $sourceOrExt->getContentType();
+            if (!$type) {
+                return;
+            }
         } else {
-            return;
+            if ($sourceOrExt === 'js') {
+                $type = Minify::TYPE_JS;
+            } elseif ($sourceOrExt === 'css') {
+                $type = Minify::TYPE_CSS;
+            } else {
+                $type = "text/$sourceOrExt";
+            }
         }
+
         if ($this->_type === null) {
             $this->_type = $type;
         } elseif ($this->_type !== $type) {

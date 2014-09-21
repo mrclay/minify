@@ -13,33 +13,50 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_Source {
+class Minify_Source implements Minify_SourceInterface {
 
     /**
-     * @var int time of last modification
+     * {@inheritdoc}
      */
-    protected $lastModified = null;
-    
-    /**
-     * @var callback minifier function specifically for this source.
-     */
-    public $minifier = null;
-    
-    /**
-     * @var array minification options specific to this source.
-     */
-    public $minifyOptions = null;
+    public function getLastModified() {
+        return $this->lastModified;
+    }
 
     /**
-     * @var string full path of file
+     * {@inheritdoc}
      */
-    public $filepath = null;
-    
+    public function getMinifier() {
+        return $this->minifier;
+    }
+
     /**
-     * @var string HTTP Content Type (Minify requires one of the constants Minify::TYPE_*)
+     * {@inheritdoc}
      */
-    public $contentType = null;
-    
+    public function setMinifier($minifier) {
+        $this->minifier = $minifier;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMinifierOptions() {
+        return $this->minifyOptions;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setMinifierOptions(array $options) {
+        $this->minifyOptions = $options;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getContentType() {
+        return $this->contentType;
+    }
+
     /**
      * Create a Minify_Source
      * 
@@ -96,11 +113,9 @@ class Minify_Source {
             $this->minifyOptions = $spec['minifyOptions'];
         }
     }
-    
+
     /**
-     * Get content
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getContent()
     {
@@ -117,80 +132,63 @@ class Minify_Source {
     }
 
     /**
-     * Get last modified timestamp
-     *
-     * @return int
-     */
-    public function getLastModified() {
-        return $this->lastModified;
-    }
-
-    /**
-     * Get id
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getId()
     {
         return $this->_id;
     }
-    
+
     /**
-     * Verifies a single minification call can handle all sources
-     *
-     * @param array $sources Minify_Source instances
-     * 
-     * @return bool true iff there no sources with specific minifier preferences.
+     * {@inheritdoc}
      */
-    public static function haveNoMinifyPrefs($sources)
-    {
-        foreach ($sources as $source) {
-            if (null !== $source->minifier
-                || null !== $source->minifyOptions) {
-                return false;
-            }
+    public function setupUriRewrites() {
+        if ($this->filepath
+            && !isset($this->minifyOptions['currentDir'])
+            && !isset($this->minifyOptions['prependRelativePath'])
+        ) {
+            $this->minifyOptions['currentDir'] = dirname($this->filepath);
         }
-        return true;
     }
-    
+
     /**
-     * Get unique string for a set of sources
-     *
-     * @param array $sources Minify_Source instances
-     * 
-     * @return string
+     * @var int time of last modification
      */
-    public static function getDigest($sources)
-    {
-        foreach ($sources as $source) {
-            $info[] = array(
-                $source->_id, $source->minifier, $source->minifyOptions
-            );
-        }
-        return md5(serialize($info));
-    }
-    
+    protected $lastModified = null;
+
     /**
-     * Get content type from a group of sources
-     * 
-     * This is called if the user doesn't pass in a 'contentType' options  
-     * 
-     * @param array $sources Minify_Source instances
-     * 
-     * @return string content type. e.g. 'text/css'
+     * @var callback minifier function specifically for this source.
      */
-    public static function getContentType($sources)
-    {
-        foreach ($sources as $source) {
-            if ($source->contentType !== null) {
-                return $source->contentType;
-            }
-        }
-        return 'text/plain';
-    }
-    
+    protected $minifier = null;
+
+    /**
+     * @var array minification options specific to this source.
+     */
+    protected $minifyOptions = array();
+
+    /**
+     * @var string full path of file
+     */
+    protected $filepath = null;
+
+    /**
+     * @var string HTTP Content Type (Minify requires one of the constants Minify::TYPE_*)
+     */
+    protected $contentType = null;
+
+    /**
+     * @var string
+     */
     protected $_content = null;
+
+    /**
+     * @var callable
+     */
     protected $_getContentFunc = null;
+
+    /**
+     * @var string
+     */
     protected $_id = null;
 }
 
