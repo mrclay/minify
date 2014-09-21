@@ -126,7 +126,7 @@ class Minify_Source implements Minify_SourceInterface {
                 : call_user_func($this->_getContentFunc, $this->_id)
             );
         // remove UTF-8 BOM if present
-        return (pack("CCC",0xef,0xbb,0xbf) === substr($content, 0, 3))
+        return ("\xEF\xBB\xBF" === substr($content, 0, 3))
             ? substr($content, 3)
             : $content;
     }
