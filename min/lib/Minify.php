@@ -87,12 +87,15 @@ class Minify {
     }
 
     /**
-     * Get Minify cache
+     * Get Minify cache, if no Cache is defined, create Minify_Cache_Null
      *
-     * @return Minify_Cache_Abstract|null
+     * @return Minify_Cache_Abstract
      */
     public static function getCache()
     {
+        if (!self::$_cache) {
+            self::$_cache = new Minify_Cache_Null();
+        }
         return self::$_cache;
     }
     
@@ -360,7 +363,7 @@ class Minify {
             );
         }
     }
-    
+
     /**
      * Return combined minified content for a set of sources
      *
