@@ -14,16 +14,16 @@
  * @package Minify
  * @author Matthias Fax
  **/
-class Minify_Cache_WinCache
-{
+class Minify_Cache_WinCache implements Minify_Cache_Interface {
     
     /**
      * Create a Minify_Cache_Wincache object, to be passed to
      * Minify::setCache().
      *
-     *
      * @param int $expire seconds until expiration (default = 0
      * meaning the item will not get an expiration date)
+     *
+     * @throws Exception
      */
     public function __construct($expire = 0)
     {
