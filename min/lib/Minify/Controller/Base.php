@@ -38,7 +38,8 @@ abstract class Minify_Controller_Base {
      *
      * @return array options for Minify
      */
-    public function getDefaultMinifyOptions() {
+    public function getDefaultMinifyOptions()
+    {
         return array(
             'isPublic' => true
             ,'encodeOutput' => function_exists('gzdeflate')
@@ -71,7 +72,8 @@ abstract class Minify_Controller_Base {
      *
      * @return array minifier callbacks for common types
      */
-    public function getDefaultMinifers() {
+    public function getDefaultMinifers()
+    {
         $ret[Minify::TYPE_JS] = array('JSMin', 'minify');
         $ret[Minify::TYPE_CSS] = array('Minify_CSS', 'minify');
         $ret[Minify::TYPE_HTML] = array('Minify_HTML', 'minify');
@@ -215,7 +217,8 @@ abstract class Minify_Controller_Base {
      *
      * @return null
      */
-    public function log($msg) {
+    public function log($msg)
+    {
         Minify_Logger::log($msg);
     }
 }

@@ -18,42 +18,48 @@ class Minify_Source implements Minify_SourceInterface {
     /**
      * {@inheritdoc}
      */
-    public function getLastModified() {
+    public function getLastModified()
+    {
         return $this->lastModified;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getMinifier() {
+    public function getMinifier()
+    {
         return $this->minifier;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setMinifier($minifier) {
+    public function setMinifier($minifier)
+    {
         $this->minifier = $minifier;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getMinifierOptions() {
+    public function getMinifierOptions()
+    {
         return $this->minifyOptions;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setMinifierOptions(array $options) {
+    public function setMinifierOptions(array $options)
+    {
         $this->minifyOptions = $options;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getContentType() {
+    public function getContentType()
+    {
         return $this->contentType;
     }
 
@@ -89,9 +95,12 @@ class Minify_Source implements Minify_SourceInterface {
             }
             $this->filepath = $spec['filepath'];
             $this->_id = $spec['filepath'];
-            $this->lastModified = filemtime($spec['filepath'])
+
+            $this->lastModified = filemtime($spec['filepath']);
+            if (!empty($spec['uploaderHoursBehind'])) {
                 // offset for Windows uploaders with out of sync clocks
-                + round(Minify::$uploaderHoursBehind * 3600);
+                $this->lastModified += round($spec['uploaderHoursBehind'] * 3600);
+            }
         } elseif (isset($spec['id'])) {
             $this->_id = 'id::' . $spec['id'];
             if (isset($spec['content'])) {
@@ -191,4 +200,3 @@ class Minify_Source implements Minify_SourceInterface {
      */
     protected $_id = null;
 }
-

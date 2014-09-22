@@ -31,16 +31,29 @@ if (isset($_GET['test'])) {
 require "$min_libPath/Minify/Loader.php";
 Minify_Loader::register();
 
-Minify::$uploaderHoursBehind = $min_uploaderHoursBehind;
-Minify::setCache(
-    isset($min_cachePath) ? $min_cachePath : ''
-    ,$min_cacheFileLocking
-);
-
+$server = $_SERVER;
 if ($min_documentRoot) {
-    $_SERVER['DOCUMENT_ROOT'] = $min_documentRoot;
-    Minify::$isDocRootSet = true;
+    $server['DOCUMENT_ROOT'] = $min_documentRoot;
 }
+
+$env = new Minify_Env(array(
+    'server' => $server,
+
+    // move these...
+    'allowDebug' => $min_allowDebugFlag,
+    'uploaderHoursBehind' => $min_uploaderHoursBehind,
+));
+
+if (!isset($min_cachePath)) {
+    $cache = new Minify_Cache_File('', $min_cacheFileLocking);
+} elseif (is_object($min_cachePath)) {
+    // let type hinting catch type error
+    $cache = $min_cachePath;
+} else {
+    $cache = new Minify_Cache_File($min_cachePath, $min_cacheFileLocking);
+}
+
+$server = new Minify($env, $cache);
 
 $min_serveOptions['minifierOptions']['text/css']['symlinks'] = $min_symlinks;
 // auto-add targets to allowDirs
@@ -73,13 +86,30 @@ if (isset($_GET['g'])) {
 // serve or redirect
 if (isset($_GET['f']) || isset($_GET['g'])) {
     if (! isset($min_serveController)) {
+
+        $sourceFactoryOptions = array(
+            'noMinPattern' => '@[-\\.]min\\.(?:js|css)$@i', // matched against basename
+            'uploaderHoursBehind' => 0,
+            'fileChecker' => array($this, 'checkIsFile'),
+            'resolveDocRoot' => true,
+            'checkAllowDirs' => true,
+            'allowDirs' => array($env->getDocRoot()),
+        );
+
+        if (isset($min_serveOptions['minApp']['noMinPattern'])) {
+            $sourceFactoryOptions['noMinPattern'] = $min_serveOptions['minApp']['noMinPattern'];
+        }
+
+        $sourceFactory = new Minify_Source_Factory($env, $sourceFactoryOptions);
+
         $min_serveController = new Minify_Controller_MinApp();
     }
-    Minify::serve($min_serveController, $min_serveOptions);
+    $server->serve($min_serveController, $min_serveOptions);
         
 } elseif ($min_enableBuilder) {
     header('Location: builder/');
     exit;
+
 } else {
     header('Location: /');
     exit;
