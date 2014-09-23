@@ -25,11 +25,6 @@ abstract class Minify_Controller_Base implements Minify_ControllerInterface {
     protected $sourceFactory;
 
     /**
-     * @var string
-     */
-    protected $type;
-
-    /**
      * @param Minify_Env            $env
      * @param Minify_Source_Factory $sourceFactory
      */

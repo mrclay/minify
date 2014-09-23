@@ -1,6 +1,6 @@
 <?php
 /**
- * Front controller for default Minify implementation
+ * Sets up MinApp controller and serves files
  * 
  * DO NOT EDIT! Configure this utility via config.php and groupsConfig.php
  * 
@@ -31,30 +31,28 @@ if (isset($_GET['test'])) {
 require "$min_libPath/Minify/Loader.php";
 Minify_Loader::register();
 
+// use an environment object to encapsulate all input
 $server = $_SERVER;
 if ($min_documentRoot) {
     $server['DOCUMENT_ROOT'] = $min_documentRoot;
 }
-
 $env = new Minify_Env(array(
     'server' => $server,
-
-    // move these...
-    'allowDebug' => $min_allowDebugFlag,
-    'uploaderHoursBehind' => $min_uploaderHoursBehind,
 ));
 
+// setup cache
 if (!isset($min_cachePath)) {
-    $cache = new Minify_Cache_File('', $min_cacheFileLocking);
-} elseif (is_object($min_cachePath)) {
-    // let type hinting catch type error
-    $cache = $min_cachePath;
-} else {
+    $min_cachePath = '';
+}
+if (is_string($min_cachePath)) {
     $cache = new Minify_Cache_File($min_cachePath, $min_cacheFileLocking);
+} else {
+    $cache = $min_cachePath;
 }
 
 $server = new Minify($cache);
 
+// TODO probably should do this elsewhere...
 $min_serveOptions['minifierOptions']['text/css']['docRoot'] = $env->getDocRoot();
 $min_serveOptions['minifierOptions']['text/css']['symlinks'] = $min_symlinks;
 // auto-add targets to allowDirs
@@ -63,6 +61,7 @@ foreach ($min_symlinks as $uri => $target) {
 }
 
 if ($min_allowDebugFlag) {
+    // TODO get rid of static stuff
     $min_serveOptions['debug'] = Minify_DebugDetector::shouldDebugRequest($env);
 }
 
@@ -70,6 +69,7 @@ if ($min_errorLogger) {
     if (true === $min_errorLogger) {
         $min_errorLogger = FirePHP::getInstance(true);
     }
+    // TODO get rid of global state
     Minify_Logger::setLogger($min_errorLogger);
 }
 
@@ -89,6 +89,8 @@ if ($env->get('f') || null !== $env->get('g')) {
     if (! isset($min_serveController)) {
 
         $sourceFactoryOptions = array();
+
+        // translate legacy setting to option for source factory
         if (isset($min_serveOptions['minApp']['noMinPattern'])) {
             $sourceFactoryOptions['noMinPattern'] = $min_serveOptions['minApp']['noMinPattern'];
         }

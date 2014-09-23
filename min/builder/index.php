@@ -220,12 +220,13 @@ by Minify. E.g. <code>@import "<span class=minRoot>/min/?</span>g=css2";</code><
 <?php
 $content = ob_get_clean();
 
-if (empty($min_cachePath)) {
-    $cache = new Minify_Cache_File('', $min_cacheFileLocking);
-} elseif (is_object($min_cachePath)) {
-    $cache = $min_cachePath;
-} else {
+if (!isset($min_cachePath)) {
+    $min_cachePath = '';
+}
+if (is_string($min_cachePath)) {
     $cache = new Minify_Cache_File($min_cachePath, $min_cacheFileLocking);
+} else {
+    $cache = $min_cachePath;
 }
 
 $env = new Minify_Env();
