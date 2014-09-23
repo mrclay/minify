@@ -170,37 +170,4 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
 
         return new Minify_ServeConfiguration($options, $sources, $selectionId);
     }
-
-    protected $_type = null;
-
-    /**
-     * Make sure that only source files of a single type are registered
-     *
-     * @param Minify_SourceInterface|string $sourceOrExt
-     *
-     * @throws Exception
-     */
-    public function checkType($sourceOrExt)
-    {
-        if ($sourceOrExt instanceof Minify_SourceInterface) {
-            $type = $sourceOrExt->getContentType();
-            if (!$type) {
-                return;
-            }
-        } else {
-            if ($sourceOrExt === 'js') {
-                $type = Minify::TYPE_JS;
-            } elseif ($sourceOrExt === 'css') {
-                $type = Minify::TYPE_CSS;
-            } else {
-                $type = "text/$sourceOrExt";
-            }
-        }
-
-        if ($this->_type === null) {
-            $this->_type = $type;
-        } elseif ($this->_type !== $type) {
-            throw new Exception('Content-Type mismatch');
-        }
-    }
 }
