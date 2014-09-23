@@ -2,25 +2,70 @@
 
 class Minify_Source_Factory {
 
+    /**
+     * @var array
+     */
     protected $options;
+
+    /**
+     * @var callable[]
+     */
     protected $handlers = array();
+
+    /**
+     * @var Minify_Env
+     */
     protected $env;
 
+    /**
+     * @param Minify_Env $env
+     * @param array      $options
+     *
+     *   noMinPattern        : Pattern matched against basename of the filepath (if present). If the pattern
+     *                         matches, Minify will try to avoid re-compressing the resource.
+     *
+     *   fileChecker         : Callable responsible for verifying the existence of the file.
+     *
+     *   resolveDocRoot      : If true, a leading "//" will be replaced with the document root.
+     *
+     *   checkAllowDirs      : If true, the filepath will be verified to be within one of the directories
+     *                         specified by allowDirs.
+     *
+     *   allowDirs           : Directory paths in which sources can be served.
+     *
+     *   uploaderHoursBehind : How many hours behind are the file modification times of uploaded files?
+     *                         If you upload files from Windows to a non-Windows server, Windows may report
+     *                         incorrect mtimes for the files. Immediately after modifying and uploading a
+     *                         file, use the touch command to update the mtime on the server. If the mtime
+     *                         jumps ahead by a number of hours, set this variable to that number. If the mtime
+     *                         moves back, this should not be needed.
+     *
+     */
     public function __construct(Minify_Env $env, array $options = array())
     {
         $this->env = $env;
         $this->options = array_merge(array(
-            'noMinPattern' => '@[-\\.]min\\.(?:js|css)$@i', // matched against basename
-            'uploaderHoursBehind' => 0,
+            'noMinPattern' => '@[-\\.]min\\.(?:[a-zA-Z]+)$@i', // matched against basename
             'fileChecker' => array($this, 'checkIsFile'),
             'resolveDocRoot' => true,
             'checkAllowDirs' => true,
-            'allowDirs' => array($env->getDocRoot()),
+            'allowDirs' => array('//'),
+            'uploaderHoursBehind' => 0,
         ), $options);
+
+        // resolve // in allowDirs
+        $docRoot = $env->getDocRoot();
+        foreach ($this->options['allowDirs'] as $i => $dir) {
+            $this->options['allowDirs'][$i] = $docRoot . substr($dir, 1);
+        }
 
         if ($this->options['fileChecker'] && !is_callable($this->options['fileChecker'])) {
             throw new InvalidArgumentException("fileChecker option is not callable");
         }
+
+        $this->setHandler('~\.(js|css)$~i', function ($spec) {
+            return new Minify_Source($spec);
+        });
     }
 
     /**
@@ -77,10 +122,8 @@ class Minify_Source_Factory {
             return new Minify_Source($spec);
         }
 
-        if ($this->options['resolveDocRoot']) {
-            if (0 === strpos($spec['filepath'], '//')) {
-                $spec['filepath'] = $this->env->getDocRoot() . substr($spec['filepath'], 1);
-            }
+        if ($this->options['resolveDocRoot'] && 0 === strpos($spec['filepath'], '//')) {
+            $spec['filepath'] = $this->env->getDocRoot() . substr($spec['filepath'], 1);
         }
 
         if (!empty($this->options['fileChecker'])) {
@@ -114,17 +157,13 @@ class Minify_Source_Factory {
 
         foreach ($this->handlers as $basenamePattern => $handler) {
             if (preg_match($basenamePattern, $basename)) {
-                $source = $handler($spec);
+                $source = call_user_func($handler, $spec);
                 break;
             }
         }
 
         if (!$source) {
-            if (in_array(pathinfo($spec['filepath'], PATHINFO_EXTENSION), array('css', 'js'))) {
-                $source = new Minify_Source($spec);
-            } else {
-                throw new Minify_Source_FactoryException("Handler not found for file: {$spec['filepath']}");
-            }
+            throw new Minify_Source_FactoryException("Handler not found for file: $basename");
         }
 
         return $source;

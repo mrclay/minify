@@ -220,22 +220,33 @@ by Minify. E.g. <code>@import "<span class=minRoot>/min/?</span>g=css2";</code><
 <?php
 $content = ob_get_clean();
 
-// setup Minify
-Minify::setCache(
-    isset($min_cachePath) ? $min_cachePath : ''
-    ,$min_cacheFileLocking
-);
-Minify::$uploaderHoursBehind = $min_uploaderHoursBehind;
+if (empty($min_cachePath)) {
+    $cache = new Minify_Cache_File('', $min_cacheFileLocking);
+} elseif (is_object($min_cachePath)) {
+    $cache = $min_cachePath;
+} else {
+    $cache = new Minify_Cache_File($min_cachePath, $min_cacheFileLocking);
+}
 
-Minify::serve('Page', array(
-    'content' => $content
-    ,'id' => __FILE__
-    ,'lastModifiedTime' => max(
+$env = new Minify_Env();
+
+$sourceFactory = new Minify_Source_Factory($env, array(
+    'uploaderHoursBehind' => $min_uploaderHoursBehind,
+));
+
+$controller = new Minify_Controller_Page($env, $sourceFactory);
+
+$server = new Minify($cache);
+
+$server->serve($controller, array(
+    'content' => $content,
+    'id' => __FILE__,
+    'lastModifiedTime' => max(
         // regenerate cache if any of these change
-        filemtime(__FILE__)
-        ,filemtime(dirname(__FILE__) . '/../config.php')
-        ,filemtime(dirname(__FILE__) . '/../lib/Minify.php')
-    )
-    ,'minifyAll' => true
-    ,'encodeOutput' => $encodeOutput
+        filemtime(__FILE__),
+        filemtime(dirname(__FILE__) . '/../config.php'),
+        filemtime(dirname(__FILE__) . '/../lib/Minify.php')
+    ),
+    'minifyAll' => true,
+    'encodeOutput' => $encodeOutput,
 ));

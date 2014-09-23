@@ -3,19 +3,6 @@
 class Minify_Env {
 
     /**
-     * How many hours behind are the file modification times of uploaded files?
-     *
-     * If you upload files from Windows to a non-Windows server, Windows may report
-     * incorrect mtimes for the files. Immediately after modifying and uploading a
-     * file, use the touch command to update the mtime on the server. If the mtime
-     * jumps ahead by a number of hours, set this variable to that number. If the mtime
-     * moves back, this should not be needed.
-     *
-     * @var int $uploaderHoursBehind
-     */
-    protected $uploaderHoursBehind = 0;
-
-    /**
      * @return null
      */
     public function getDocRoot()
@@ -47,22 +34,31 @@ class Minify_Env {
         $this->cookie = $options['cookie'];
     }
 
-    public function server($key)
+    public function server($key = null)
     {
+        if (null === $key) {
+            return $this->server;
+        }
         return isset($this->server[$key])
             ? $this->server[$key]
             : null;
     }
 
-    public function cookie($key)
+    public function cookie($key = null)
     {
+        if (null === $key) {
+            return $this->cookie;
+        }
         return isset($this->cookie[$key])
             ? $this->cookie[$key]
             : null;
     }
 
-    public function get($key)
+    public function get($key = null)
     {
+        if (null === $key) {
+            return $this->get;
+        }
         return isset($this->get[$key])
             ? $this->get[$key]
             : null;
@@ -80,16 +76,15 @@ class Minify_Env {
      */
     protected function computeDocRoot(array $server)
     {
-        if (isset($server['SERVER_SOFTWARE'])
-                && 0 === strpos($server['SERVER_SOFTWARE'], 'Microsoft-IIS/')) {
-            $docRoot = substr(
-                $server['SCRIPT_FILENAME']
-                ,0
-                ,strlen($server['SCRIPT_FILENAME']) - strlen($server['SCRIPT_NAME']));
-            $docRoot = rtrim($docRoot, '\\');
-        } else {
+        if (empty($server['SERVER_SOFTWARE'])
+                || 0 !== strpos($server['SERVER_SOFTWARE'], 'Microsoft-IIS/')) {
             throw new InvalidArgumentException('DOCUMENT_ROOT is not provided and could not be computed');
         }
-        return $docRoot;
+        $docRoot = substr(
+            $server['SCRIPT_FILENAME']
+            ,0
+            ,strlen($server['SCRIPT_FILENAME']) - strlen($server['SCRIPT_NAME'])
+        );
+        return rtrim($docRoot, '\\');
     }
 }

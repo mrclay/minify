@@ -13,7 +13,7 @@ define('MINIFY_MIN_DIR', dirname(__FILE__));
 $min_configPaths = array(
     'base'   => MINIFY_MIN_DIR . '/config.php',
     'test'   => MINIFY_MIN_DIR . '/config-test.php',
-    'groups' => MINIFY_MIN_DIR . '/groupsConfig.php'
+    'groups' => MINIFY_MIN_DIR . '/groupsConfig.php',
 );
 
 // check for custom config paths
@@ -53,8 +53,9 @@ if (!isset($min_cachePath)) {
     $cache = new Minify_Cache_File($min_cachePath, $min_cacheFileLocking);
 }
 
-$server = new Minify($env, $cache);
+$server = new Minify($cache);
 
+$min_serveOptions['minifierOptions']['text/css']['docRoot'] = $env->getDocRoot();
 $min_serveOptions['minifierOptions']['text/css']['symlinks'] = $min_symlinks;
 // auto-add targets to allowDirs
 foreach ($min_symlinks as $uri => $target) {
@@ -62,7 +63,7 @@ foreach ($min_symlinks as $uri => $target) {
 }
 
 if ($min_allowDebugFlag) {
-    $min_serveOptions['debug'] = Minify_DebugDetector::shouldDebugRequest($_COOKIE, $_GET, $_SERVER['REQUEST_URI']);
+    $min_serveOptions['debug'] = Minify_DebugDetector::shouldDebugRequest($env);
 }
 
 if ($min_errorLogger) {
@@ -73,44 +74,37 @@ if ($min_errorLogger) {
 }
 
 // check for URI versioning
-if (preg_match('/&\\d/', $_SERVER['QUERY_STRING']) || isset($_GET['v'])) {
+if (null !== $env->get('v') || preg_match('/&\\d/', $env->server('QUERY_STRING'))) {
     $min_serveOptions['maxAge'] = 31536000;
 }
 
 // need groups config?
-if (isset($_GET['g'])) {
+if (null !== $env->get('g')) {
     // well need groups config
     $min_serveOptions['minApp']['groups'] = (require $min_configPaths['groups']);
 }
 
-// serve or redirect
-if (isset($_GET['f']) || isset($_GET['g'])) {
+if ($env->get('f') || null !== $env->get('g')) {
+    // serving!
     if (! isset($min_serveController)) {
 
-        $sourceFactoryOptions = array(
-            'noMinPattern' => '@[-\\.]min\\.(?:js|css)$@i', // matched against basename
-            'uploaderHoursBehind' => 0,
-            'fileChecker' => array($this, 'checkIsFile'),
-            'resolveDocRoot' => true,
-            'checkAllowDirs' => true,
-            'allowDirs' => array($env->getDocRoot()),
-        );
-
+        $sourceFactoryOptions = array();
         if (isset($min_serveOptions['minApp']['noMinPattern'])) {
             $sourceFactoryOptions['noMinPattern'] = $min_serveOptions['minApp']['noMinPattern'];
         }
-
         $sourceFactory = new Minify_Source_Factory($env, $sourceFactoryOptions);
 
-        $min_serveController = new Minify_Controller_MinApp();
+        $min_serveController = new Minify_Controller_MinApp($env, $sourceFactory);
     }
     $server->serve($min_serveController, $min_serveOptions);
-        
-} elseif ($min_enableBuilder) {
-    header('Location: builder/');
-    exit;
-
-} else {
-    header('Location: /');
     exit;
 }
+
+// not serving
+if ($min_enableBuilder) {
+    header('Location: builder/');
+    exit;
+}
+
+header('Location: /');
+exit;

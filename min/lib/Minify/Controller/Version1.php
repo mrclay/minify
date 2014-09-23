@@ -23,7 +23,7 @@ class Minify_Controller_Version1 extends Minify_Controller_Base {
      * @return array Minify options
      * 
      */
-    public function setupSources($options) {
+    public function createConfiguration($options) {
         // PHP insecure by default: realpath() and other FS functions can't handle null bytes.
         if (isset($_GET['files'])) {
             $_GET['files'] = str_replace("\x00", '', (string)$_GET['files']);

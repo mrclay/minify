@@ -38,7 +38,7 @@ class Minify_Controller_Groups extends Minify_Controller_Base {
      *
      * @return array Minify options
      */
-    public function setupSources($options) {
+    public function createConfiguration($options) {
         // strip controller options
         $groups = $options['groups'];
         unset($options['groups']);
