@@ -16,11 +16,17 @@
 		"issues": "http://code.google.com/p/minify/issues/list",
 		"wiki": "http://code.google.com/p/minify/w/list"
 	},
+	"autoload": {
+		"classmap": ["min/lib/"]
+	},
 	"require": {
 		"php": ">=5.2.1",
 		"ext-pcre": "*"
 	},
-	"autoload": {
-		"classmap": ["min/lib/"]
+	"require-dev": {
+		"tubalmartin/cssmin": "~2.4.8"
+	},
+	"suggest": {
+		"tubalmartin/cssmin": "Support minify with CSSMin (YUI PHP port)"
 	}
 }
