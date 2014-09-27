@@ -94,7 +94,7 @@ if ($env->get('f') || null !== $env->get('g')) {
         if (isset($min_serveOptions['minApp']['noMinPattern'])) {
             $sourceFactoryOptions['noMinPattern'] = $min_serveOptions['minApp']['noMinPattern'];
         }
-        $sourceFactory = new Minify_Source_Factory($env, $sourceFactoryOptions);
+        $sourceFactory = new Minify_Source_Factory($env, $sourceFactoryOptions, $cache);
 
         $min_serveController = new Minify_Controller_MinApp($env, $sourceFactory);
     }

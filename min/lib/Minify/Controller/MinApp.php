@@ -93,7 +93,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             // respond to.
             if (// verify at least one file, files are single comma separated, 
                 // and are all same extension
-                ! preg_match('/^[^,]+\\.(css|js)(?:,[^,]+\\.\\1)*$/', $get['f'], $m)
+                ! preg_match('/^[^,]+\\.(css|less|js)(?:,[^,]+\\.\\1)*$/', $get['f'], $m)
                 // no "//"
                 || strpos($get['f'], '//') !== false
                 // no "\"
