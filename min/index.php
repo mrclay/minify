@@ -1,6 +1,6 @@
 <?php
 /**
- * Front controller for default Minify implementation
+ * Sets up MinApp controller and serves files
  * 
  * DO NOT EDIT! Configure this utility via config.php and groupsConfig.php
  * 
@@ -13,7 +13,7 @@ define('MINIFY_MIN_DIR', dirname(__FILE__));
 $min_configPaths = array(
     'base'   => MINIFY_MIN_DIR . '/config.php',
     'test'   => MINIFY_MIN_DIR . '/config-test.php',
-    'groups' => MINIFY_MIN_DIR . '/groupsConfig.php'
+    'groups' => MINIFY_MIN_DIR . '/groupsConfig.php',
 );
 
 // check for custom config paths
@@ -31,17 +31,29 @@ if (isset($_GET['test'])) {
 require "$min_libPath/Minify/Loader.php";
 Minify_Loader::register();
 
-Minify::$uploaderHoursBehind = $min_uploaderHoursBehind;
-Minify::setCache(
-    isset($min_cachePath) ? $min_cachePath : ''
-    ,$min_cacheFileLocking
-);
-
+// use an environment object to encapsulate all input
+$server = $_SERVER;
 if ($min_documentRoot) {
-    $_SERVER['DOCUMENT_ROOT'] = $min_documentRoot;
-    Minify::$isDocRootSet = true;
+    $server['DOCUMENT_ROOT'] = $min_documentRoot;
+}
+$env = new Minify_Env(array(
+    'server' => $server,
+));
+
+// setup cache
+if (!isset($min_cachePath)) {
+    $min_cachePath = '';
+}
+if (is_string($min_cachePath)) {
+    $cache = new Minify_Cache_File($min_cachePath, $min_cacheFileLocking);
+} else {
+    $cache = $min_cachePath;
 }
 
+$server = new Minify($cache);
+
+// TODO probably should do this elsewhere...
+$min_serveOptions['minifierOptions']['text/css']['docRoot'] = $env->getDocRoot();
 $min_serveOptions['minifierOptions']['text/css']['symlinks'] = $min_symlinks;
 // auto-add targets to allowDirs
 foreach ($min_symlinks as $uri => $target) {
@@ -49,38 +61,52 @@ foreach ($min_symlinks as $uri => $target) {
 }
 
 if ($min_allowDebugFlag) {
-    $min_serveOptions['debug'] = Minify_DebugDetector::shouldDebugRequest($_COOKIE, $_GET, $_SERVER['REQUEST_URI']);
+    // TODO get rid of static stuff
+    $min_serveOptions['debug'] = Minify_DebugDetector::shouldDebugRequest($env);
 }
 
 if ($min_errorLogger) {
     if (true === $min_errorLogger) {
         $min_errorLogger = FirePHP::getInstance(true);
     }
+    // TODO get rid of global state
     Minify_Logger::setLogger($min_errorLogger);
 }
 
 // check for URI versioning
-if (preg_match('/&\\d/', $_SERVER['QUERY_STRING']) || isset($_GET['v'])) {
+if (null !== $env->get('v') || preg_match('/&\\d/', $env->server('QUERY_STRING'))) {
     $min_serveOptions['maxAge'] = 31536000;
 }
 
 // need groups config?
-if (isset($_GET['g'])) {
+if (null !== $env->get('g')) {
     // well need groups config
     $min_serveOptions['minApp']['groups'] = (require $min_configPaths['groups']);
 }
 
-// serve or redirect
-if (isset($_GET['f']) || isset($_GET['g'])) {
+if ($env->get('f') || null !== $env->get('g')) {
+    // serving!
     if (! isset($min_serveController)) {
-        $min_serveController = new Minify_Controller_MinApp();
+
+        $sourceFactoryOptions = array();
+
+        // translate legacy setting to option for source factory
+        if (isset($min_serveOptions['minApp']['noMinPattern'])) {
+            $sourceFactoryOptions['noMinPattern'] = $min_serveOptions['minApp']['noMinPattern'];
+        }
+        $sourceFactory = new Minify_Source_Factory($env, $sourceFactoryOptions, $cache);
+
+        $min_serveController = new Minify_Controller_MinApp($env, $sourceFactory);
     }
-    Minify::serve($min_serveController, $min_serveOptions);
-        
-} elseif ($min_enableBuilder) {
-    header('Location: builder/');
-    exit;
-} else {
-    header('Location: /');
+    $server->serve($min_serveController, $min_serveOptions);
     exit;
 }
+
+// not serving
+if ($min_enableBuilder) {
+    header('Location: builder/');
+    exit;
+}
+
+header('Location: /');
+exit;

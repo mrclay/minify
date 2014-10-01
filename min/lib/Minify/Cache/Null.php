@@ -3,6 +3,9 @@
 /**
  * Class Minify_Cache_Null
  *
+ * If this is used, Minify will not use a cache and, for each 200 response, will
+ * need to recombine files, minify and encode the output.
+ *
  * @package Minify
  */
 class Minify_Cache_Null implements Minify_CacheInterface {

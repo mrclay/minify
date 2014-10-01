@@ -73,9 +73,9 @@ interface Minify_SourceInterface {
     public function getId();
 
     /**
-     * Setup the current source for URI rewrites
+     * Get the path of the file that this source is based on (may be null)
      *
-     * @return void
+     * @return string|null
      */
-    public function setupUriRewrites();
+    public function getFilePath();
 }

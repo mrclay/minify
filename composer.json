@@ -16,11 +16,21 @@
 		"issues": "http://code.google.com/p/minify/issues/list",
 		"wiki": "http://code.google.com/p/minify/w/list"
 	},
+	"autoload": {
+		"classmap": ["min/lib/"]
+	},
 	"require": {
 		"php": ">=5.2.1",
 		"ext-pcre": "*"
 	},
-	"autoload": {
-		"classmap": ["min/lib/"]
+	"require-dev": {
+		"leafo/lessphp": "~0.4.0",
+		"meenie/javascript-packer": "~1.1",
+		"tubalmartin/cssmin": "~2.4.8"
+	},
+	"suggest": {
+		"leafo/lessphp": "LESS support",
+		"meenie/javascript-packer": "Keep track of the Packer PHP port using Composer",
+		"tubalmartin/cssmin": "Support minify with CSSMin (YUI PHP port)"
 	}
 }

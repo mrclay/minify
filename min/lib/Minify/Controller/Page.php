@@ -29,11 +29,9 @@ class Minify_Controller_Page extends Minify_Controller_Base {
      * is recommended to allow both server and client-side caching.
      * 
      * 'minifyAll': should all CSS and Javascript blocks be individually 
-     * minified? (default false) 
-     *
-     * @todo Add 'file' option to read HTML file.
+     * minified? (default false)
      */
-    public function setupSources($options) {
+    public function createConfiguration(array $options) {
         if (isset($options['file'])) {
             $sourceSpec = array(
                 'filepath' => $options['file']
@@ -49,7 +47,7 @@ class Minify_Controller_Page extends Minify_Controller_Base {
             unset($options['content'], $options['id']);
         }
         // something like "builder,index.php" or "directory,file.html"
-        $this->selectionId = strtr(substr($f, 1 + strlen(dirname(dirname($f)))), '/\\', ',,');
+        $selectionId = strtr(substr($f, 1 + strlen(dirname(dirname($f)))), '/\\', ',,');
 
         if (isset($options['minifyAll'])) {
             // this will be the 2nd argument passed to Minify_HTML::minify()
@@ -59,10 +57,11 @@ class Minify_Controller_Page extends Minify_Controller_Base {
             );
             unset($options['minifyAll']);
         }
-        $this->sources[] = new Minify_Source($sourceSpec);
-        
-        $options['contentType'] = Minify::TYPE_HTML;
-        return $options;
+
+        $sourceSpec['contentType'] = Minify::TYPE_HTML;
+        $sources[] = new Minify_Source($sourceSpec);
+
+        return new Minify_ServeConfiguration($options, $sources, $selectionId);
     }
 }
 

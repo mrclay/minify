@@ -26,24 +26,4 @@ class Minify_SourceSet {
         }
         return md5(serialize($info));
     }
-
-    /**
-     * Get content type from a group of sources
-     *
-     * This is called if the user doesn't pass in a 'contentType' options
-     *
-     * @param Minify_SourceInterface[] $sources Minify_Source instances
-     *
-     * @return string content type. e.g. 'text/css'
-     */
-    public static function getContentType($sources)
-    {
-        foreach ($sources as $source) {
-            $contentType = $source->getContentType();
-            if ($contentType) {
-                return $contentType;
-            }
-        }
-        return 'text/plain';
-    }
 }

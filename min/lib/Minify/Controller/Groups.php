@@ -20,13 +20,10 @@
  * If the above code were placed in /serve.php, it would enable the URLs
  * /serve.php/js and /serve.php/css
  * 
- * As a shortcut, the controller will replace "//" at the beginning
- * of a filename with $_SERVER['DOCUMENT_ROOT'] . '/'.
- * 
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_Controller_Groups extends Minify_Controller_Base {
+class Minify_Controller_Groups extends Minify_Controller_Files {
     
     /**
      * Set up groups of files as sources
@@ -38,54 +35,37 @@ class Minify_Controller_Groups extends Minify_Controller_Base {
      *
      * @return array Minify options
      */
-    public function setupSources($options) {
+    public function createConfiguration(array $options) {
         // strip controller options
         $groups = $options['groups'];
         unset($options['groups']);
+
+        $server = $this->env->server();
         
         // mod_fcgid places PATH_INFO in ORIG_PATH_INFO
-        $pi = isset($_SERVER['ORIG_PATH_INFO'])
-            ? substr($_SERVER['ORIG_PATH_INFO'], 1) 
-            : (isset($_SERVER['PATH_INFO'])
-                ? substr($_SERVER['PATH_INFO'], 1) 
+        $pathInfo = isset($server['ORIG_PATH_INFO'])
+            ? substr($server['ORIG_PATH_INFO'], 1)
+            : (isset($server['PATH_INFO'])
+                ? substr($server['PATH_INFO'], 1)
                 : false
             );
-        if (false === $pi || ! isset($groups[$pi])) {
+        if (false === $pathInfo || ! isset($groups[$pathInfo])) {
             // no PATH_INFO or not a valid group
-            $this->log("Missing PATH_INFO or no group set for \"$pi\"");
-            return $options;
+            $this->log("Missing PATH_INFO or no group set for \"$pathInfo\"");
+            return new Minify_ServeConfiguration($options);
         }
-        $sources = array();
-        
-        $files = $groups[$pi];
+
+        $files = $groups[$pathInfo];
         // if $files is a single object, casting will break it
         if (is_object($files)) {
             $files = array($files);
         } elseif (! is_array($files)) {
             $files = (array)$files;
         }
-        foreach ($files as $file) {
-            if ($file instanceof Minify_Source) {
-                $sources[] = $file;
-                continue;
-            }
-            if (0 === strpos($file, '//')) {
-                $file = $_SERVER['DOCUMENT_ROOT'] . substr($file, 1);
-            }
-            $realPath = realpath($file);
-            if (is_file($realPath)) {
-                $sources[] = new Minify_Source(array(
-                    'filepath' => $realPath
-                ));    
-            } else {
-                $this->log("The path \"{$file}\" could not be found (or was not a file)");
-                return $options;
-            }
-        }
-        if ($sources) {
-            $this->sources = $sources;
-        }
-        return $options;
+
+        $options['files'] = $files;
+
+        return parent::createConfiguration($options);
     }
 }
 
