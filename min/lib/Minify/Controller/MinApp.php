@@ -50,7 +50,6 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 $this->log("Duplicate group key found.");
                 return new Minify_ServeConfiguration($options);
             }
-            $keys = explode(',', $get['g']);
             foreach ($keys as $key) {
                 if (! isset($localOptions['groups'][$key])) {
                     $this->log("A group configuration for \"{$key}\" was not found");
