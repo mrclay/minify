@@ -180,12 +180,5 @@ $min_symlinks = array();
 $min_uploaderHoursBehind = 0;
 
 
-/**
- * Path to Minify's lib folder. If you happen to move it, change 
- * this accordingly.
- */
-$min_libPath = dirname(__FILE__) . '/lib';
-
-
 // try to disable output_compression (may not have an effect)
 ini_set('zlib.output_compression', '0');
