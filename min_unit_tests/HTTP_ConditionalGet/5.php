@@ -1,7 +1,6 @@
 <?php
 
-set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . '/../../min/lib'));
-require 'HTTP/ConditionalGet.php';
+require dirname(__FILE__) . '/../../min/lib/Minify/Loader.php';
 
 // far expires
 $cg = new HTTP_ConditionalGet(array(

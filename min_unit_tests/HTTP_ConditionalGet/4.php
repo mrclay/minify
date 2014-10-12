@@ -1,13 +1,11 @@
 <?php
 
-set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . '/../../min/lib'));
-require 'HTTP/ConditionalGet.php';
+require dirname(__FILE__) . '/../../min/lib/Minify/Loader.php';
 
 // emulate regularly updating document
 $every = 20;
 $lastModified = round(time()/$every)*$every - $every;
 
-require 'HTTP/Encoder.php';
 list($enc,) = HTTP_Encoder::getAcceptedEncoding();
 
 $cg = new HTTP_ConditionalGet(array(
