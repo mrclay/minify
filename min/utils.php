@@ -10,9 +10,8 @@
  * @package Minify
  */
 
-if (! class_exists('Minify_Loader', false)) {
+if (!class_exists('Minify_Loader', false)) {
     require dirname(__FILE__) . '/lib/Minify/Loader.php';
-    Minify_Loader::register();
 }
 
 /*

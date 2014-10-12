@@ -1,5 +1,7 @@
 <?php
 
+require dirname(__FILE__) . '/../../min/lib/Minify/Loader.php';
+
 function getPost($key) {
     return get_magic_quotes_gpc()
         ? stripslashes($_POST[$key])

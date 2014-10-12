@@ -14,14 +14,6 @@
  * @package Minify  
  */
 
-if (false === (@include 'class.JavaScriptPacker.php')) {
-    trigger_error(
-        'The script "class.JavaScriptPacker.php" is required. Please see: http:'
-        .'//code.google.com/p/minify/source/browse/trunk/min/lib/Minify/Packer.php'
-        ,E_USER_ERROR
-    );
-}
-
 /**
  * Minify Javascript using Dean Edward's Packer
  * 

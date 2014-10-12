@@ -3,6 +3,8 @@
  * Fetch and minify a URL (auto-detect HTML/JS/CSS)
  */
 
+require dirname(__FILE__) . '/../../min/lib/Minify/Loader.php';
+
 function getPost($key) {
     if (! isset($_POST[$key])) {
         return null;

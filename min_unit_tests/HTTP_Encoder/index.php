@@ -1,8 +1,7 @@
 <?php
 ini_set('display_errors', 'on');
 
-set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . '/../../min/lib'));
-require 'HTTP/Encoder.php';
+require dirname(__FILE__) . '/../../min/lib/Minify/Loader.php';
 
 if (!isset($_GET['test'])) {
     $type = 'text/html';
@@ -56,5 +55,3 @@ $he = new HTTP_Encoder(array(
 ));
 $he->encode();
 $he->sendAll();
-
-?>

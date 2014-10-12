@@ -9,6 +9,8 @@
 
 define('MINIFY_MIN_DIR', dirname(__FILE__));
 
+require MINIFY_MIN_DIR . '/lib/Minify/Loader.php';
+
 // set config path defaults
 $min_configPaths = array(
     'base'   => MINIFY_MIN_DIR . '/config.php',
@@ -27,9 +29,6 @@ require $min_configPaths['base'];
 if (isset($_GET['test'])) {
     include $min_configPaths['test'];
 }
-
-require "$min_libPath/Minify/Loader.php";
-Minify_Loader::register();
 
 // use an environment object to encapsulate all input
 $server = $_SERVER;

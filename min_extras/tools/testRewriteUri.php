@@ -1,4 +1,7 @@
 <?php
+
+require dirname(__FILE__) . '/../../min/lib/Minify/Loader.php';
+
 header('Content-Type: text/html;charset=utf-8');
 
 function h($str) { return htmlspecialchars($str, ENT_QUOTES); }

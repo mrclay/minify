@@ -57,7 +57,6 @@ $min_allowDebugFlag = false;
  * To use APC/Memcache/ZendPlatform for cache storage, require the class and
  * set $min_cachePath to an instance. Example below:
  */
-//require dirname(__FILE__) . '/lib/Minify/Cache/APC.php';
 //$min_cachePath = new Minify_Cache_APC();
 
 
@@ -72,6 +71,7 @@ $min_allowDebugFlag = false;
  * second line. The third line might work on some Apache servers.
  */
 $min_documentRoot = '';
+//$min_documentRoot = dirname(dirname(dirname(__FILE__)));
 //$min_documentRoot = substr(__FILE__, 0, -15);
 //$min_documentRoot = $_SERVER['SUBDOMAIN_DOCUMENT_ROOT'];
 

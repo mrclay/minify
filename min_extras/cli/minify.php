@@ -4,7 +4,6 @@
 $pathToLib = dirname(dirname(__DIR__)) . '/min/lib';
 
 require "$pathToLib/Minify/Loader.php";
-Minify_Loader::register();
 
 $cli = new MrClay\Cli;
 
