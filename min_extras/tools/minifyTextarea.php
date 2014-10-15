@@ -1,6 +1,6 @@
 <?php
 
-require dirname(__FILE__) . '/../../min/lib/Minify/Loader.php';
+require dirname(__FILE__) . '/../../vendor/bootstrap.php';
 
 function getPost($key) {
     return get_magic_quotes_gpc()

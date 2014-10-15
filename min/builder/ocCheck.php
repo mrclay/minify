@@ -5,7 +5,7 @@
  * @package Minify
  */
 
-require dirname(__FILE__) . '/../lib/Minify/Loader.php';
+require dirname(__FILE__) . '/../../vendor/bootstrap.php';
 
 $_oc = ini_get('zlib.output_compression');
  

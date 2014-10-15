@@ -1,7 +1,7 @@
 <?php
 ini_set('display_errors', 'on');
 
-require dirname(__FILE__) . '/../../min/lib/Minify/Loader.php';
+require dirname(__FILE__) . '/../../vendor/bootstrap.php';
 
 if (!isset($_GET['test'])) {
     $type = 'text/html';

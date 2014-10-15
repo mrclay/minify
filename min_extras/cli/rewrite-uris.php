@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-require dirname(dirname(__DIR__)) . '/min/lib/Minify/Loader.php';
+require dirname(dirname(__DIR__)) . '/vendor/bootstrap.php';
 
 $cli = new MrClay\Cli;
 

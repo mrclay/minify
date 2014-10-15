@@ -7,9 +7,9 @@
  * @package Minify
  */
 
-define('MINIFY_MIN_DIR', dirname(__FILE__));
+require dirname(__FILE__). '/../vendor/bootstrap.php';
 
-require MINIFY_MIN_DIR . '/lib/Minify/Loader.php';
+define('MINIFY_MIN_DIR', dirname(__FILE__));
 
 // set config path defaults
 $min_configPaths = array(

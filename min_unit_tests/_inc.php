@@ -1,6 +1,6 @@
 <?php
 
-require dirname(__FILE__) . '/../min/lib/Minify/Loader.php';
+require dirname(__FILE__) . '/../vendor/bootstrap.php';
 require dirname(__FILE__) . '/../min/config.php';
 
 // set cache path and doc root if configured

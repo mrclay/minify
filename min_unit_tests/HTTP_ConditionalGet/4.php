@@ -1,6 +1,6 @@
 <?php
 
-require dirname(__FILE__) . '/../../min/lib/Minify/Loader.php';
+require dirname(__FILE__) . '/../../../vendor/bootstrap.php';
 
 // emulate regularly updating document
 $every = 20;

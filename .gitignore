@@ -1,7 +1,6 @@
-
-# /
 /test
 /docs
-.idea/
+/.idea/
 .DS_Store
-vendor
+/vendor/
+!/vendor/bootstrap.php

@@ -22,7 +22,7 @@ if (0 === strpos($_SERVER["SERVER_SOFTWARE"], 'Apache/')
     }
 }
 
-require dirname(__FILE__) . '/../lib/Minify/Loader.php';
+require dirname(__FILE__) . '/../../vendor/bootstrap.php';
 require dirname(__FILE__) . '/../config.php';
 
 if (! $min_enableBuilder) {
