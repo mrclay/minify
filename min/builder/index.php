@@ -22,10 +22,8 @@ if (0 === strpos($_SERVER["SERVER_SOFTWARE"], 'Apache/')
     }
 }
 
+require dirname(__FILE__) . '/../../vendor/bootstrap.php';
 require dirname(__FILE__) . '/../config.php';
-
-require "$min_libPath/Minify/Loader.php";
-Minify_Loader::register();
 
 if (! $min_enableBuilder) {
     header('Content-Type: text/plain');

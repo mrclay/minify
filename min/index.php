@@ -7,6 +7,8 @@
  * @package Minify
  */
 
+require dirname(__FILE__). '/../vendor/bootstrap.php';
+
 define('MINIFY_MIN_DIR', dirname(__FILE__));
 
 // set config path defaults
@@ -27,9 +29,6 @@ require $min_configPaths['base'];
 if (isset($_GET['test'])) {
     include $min_configPaths['test'];
 }
-
-require "$min_libPath/Minify/Loader.php";
-Minify_Loader::register();
 
 // use an environment object to encapsulate all input
 $server = $_SERVER;

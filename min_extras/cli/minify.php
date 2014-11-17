@@ -1,10 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-$pathToLib = dirname(dirname(__DIR__)) . '/min/lib';
-
-require "$pathToLib/Minify/Loader.php";
-Minify_Loader::register();
+require dirname(dirname(__DIR__)) . '/vendor/bootstrap.php';
 
 $cli = new MrClay\Cli;
 

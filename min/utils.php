@@ -10,10 +10,7 @@
  * @package Minify
  */
 
-if (! class_exists('Minify_Loader', false)) {
-    require dirname(__FILE__) . '/lib/Minify/Loader.php';
-    Minify_Loader::register();
-}
+require dirname(__FILE__) . '/../vendor/bootstrap.php';
 
 /*
  * Get an HTML-escaped Minify URI for a group or set of files. By default, URIs
