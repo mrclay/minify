@@ -48,8 +48,8 @@ class Minify_CSS_UriRewriter {
         );
         self::$_currentDir = self::_realpath($currentDir);
         self::$_symlinks = array();
-        
-        // normalize symlinks
+
+        // normalize symlinks in order to map to link
         foreach ($symlinks as $link => $target) {
             $link = ($link === '//')
                 ? self::$_docRoot

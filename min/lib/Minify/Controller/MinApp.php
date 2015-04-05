@@ -34,10 +34,22 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 ,'groupsOnly' => false
                 ,'groups' => array()
                 ,'noMinPattern' => '@[-\\.]min\\.(?:js|css)$@i' // matched against basename
+                ,'symlinks' => array()
             )
             ,(isset($options['minApp']) ? $options['minApp'] : array())
         );
         unset($options['minApp']);
+
+        // normalize $symlinks in order to map to target
+        $symlinks = array();
+        foreach ($cOptions['symlinks'] as $link => $target) {
+            if (0 === strpos($link, '//')) {
+                $link = rtrim(substr($link, 1), '/') . '/';
+                $target = rtrim($target, '/\\');
+                $symlinks[$link] = $target;
+            }
+        }
+
         $sources = array();
         $this->selectionId = '';
         $firstMissingResource = null;
@@ -143,6 +155,15 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             foreach ($files as $file) {
                 $uri = $base . $file;
                 $path = $_SERVER['DOCUMENT_ROOT'] . $uri;
+
+                // try to rewrite path
+                foreach ($symlinks as $link => $target) {
+                    if (0 === strpos($uri, $link)) {
+                        $path = $target . DIRECTORY_SEPARATOR . substr($uri, strlen($link));
+                        break;
+                    }
+                }
+
                 $realpath = realpath($path);
                 if (false === $realpath || ! is_file($realpath)) {
                     $this->log("The path \"{$path}\" (realpath \"{$realpath}\") could not be found (or was not a file)");
