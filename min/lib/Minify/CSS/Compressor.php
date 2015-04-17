@@ -129,15 +129,15 @@ class Minify_CSS_Compressor {
         
         // remove spaces between font families
         $css = preg_replace_callback('/
-				(					# 1 = CSS declaration
-					font-family:	# select font-family
-					|
-					font:			# select font
-					(?:\w+\s*)+		# if font, also select its properties (style, size..)
-				)
-				([^;}]+)			# select all fonts
-				([;}])				# end declaration
-			/x'
+                (                    # 1 = CSS declaration
+                    font-family:     # select font-family
+                    |
+                    font:            # select font
+                    (?:\w+\s*)+      # if font, also select its properties (style, size..)
+                )
+                ([^;}]+)             # select all fonts
+                ([;}])               # end declaration
+            /x'
             ,array($this, '_fontFamilyCB'), $css);
         
         $css = preg_replace('/@import\\s+url/', '@import url', $css);
