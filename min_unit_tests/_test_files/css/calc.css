@@ -1,0 +1,29 @@
+div.price {
+	color: #33691E;
+	margin: 0.5em 0;
+	font-size: 1.15em;
+	font-weight: bold;
+}
+
+div.overlay {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	background: transparent;
+	top: 100%;
+	margin-top: calc(33% + 24px);
+	pointer-events: none;
+}
+
+.overlay.no-scroll {
+	pointer-events: auto;
+}
+
+a.button {
+	display: inline-block;
+	color: #000000;
+}
+
+a.button:hover {
+	color: #000000;
+}
