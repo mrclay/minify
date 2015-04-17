@@ -1,0 +1,14 @@
+/* Examples from https://developer.mozilla.org/en-US/docs/Web/CSS/font */
+body {
+	/* size | family */
+	font: 2em "Open Sans", sans-serif;
+
+	/* style | size | family */
+	font: italic 2em "Open Sans", sans-serif;
+
+	/* style | variant | weight | size/line-height | family */
+	font: italic small-caps bolder 16px/3 cursive;
+
+	/* The font used in system dialogs */
+	font: message-box;
+}
