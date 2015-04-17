@@ -111,15 +111,15 @@ class Minify_CSS_Compressor {
         
         // remove ws in selectors
         $css = preg_replace_callback('/
-                (?:              # non-capture
+                (?:                  # non-capture
                     \\s*
                     [^{};%~>+,\\s]+  # selector part
                     \\s*
-                    [,>+~]       # combinators
+                    [,>+~]           # combinators
                 )+
                 \\s*
                 [^{};%~>+,\\s]+      # selector part
-                {                # open declaration block
+                {                    # open declaration block
             /x'
             ,array($this, '_selectorsCB'), $css);
         
@@ -128,7 +128,7 @@ class Minify_CSS_Compressor {
             , '$1#$2$3$4$5', $css);
         
         // remove spaces between font families
-        $css = preg_replace_callback('/font-family:([^;}]+)([;}])/'
+        $css = preg_replace_callback('/(font-family:|font:(?:\w+\s*)+)([^;}]+)([;}])/'
             ,array($this, '_fontFamilyCB'), $css);
         
         $css = preg_replace('/@import\\s+url/', '@import url', $css);
@@ -235,8 +235,8 @@ class Minify_CSS_Compressor {
     protected function _fontFamilyCB($m)
     {
         // Issue 210: must not eliminate WS between words in unquoted families
-        $pieces = preg_split('/(\'[^\']+\'|"[^"]+")/', $m[1], null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-        $out = 'font-family:';
+        $pieces = preg_split('/(\'[^\']+\'|"[^"]+")/', $m[2], null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $out = $m[1];
         while (null !== ($piece = array_shift($pieces))) {
             if ($piece[0] !== '"' && $piece[0] !== "'") {
                 $piece = preg_replace('/\\s+/', ' ', $piece);
@@ -244,6 +244,6 @@ class Minify_CSS_Compressor {
             }
             $out .= $piece;
         }
-        return $out . $m[2];
+        return $out . $m[3];
     }
 }
