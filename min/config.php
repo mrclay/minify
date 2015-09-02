@@ -16,7 +16,7 @@ $min_enableBuilder = false;
  * If non-empty, the Builder will be protected with HTTP Digest auth.
  * The username is "admin".
  */
-$min_builderPassword = 'holder1234';
+$min_builderPassword = '';
 
 
 /**
@@ -103,7 +103,7 @@ $min_serveOptions['bubbleCssImports'] = false;
  * Note: Despite this setting, if you include a number at the end of the
  * querystring, maxAge will be set to one year. E.g. /min/f=hello.css&123456
  */
-$min_serveOptions['maxAge'] = 3600;
+$min_serveOptions['maxAge'] = 1800;
 
 
 /**
@@ -133,7 +133,7 @@ $min_serveOptions['maxAge'] = 3600;
  * Set to true to disable the "f" GET parameter for specifying files.
  * Only the "g" parameter will be considered.
  */
-$min_serveOptions['minApp']['groupsOnly'] = true;
+$min_serveOptions['minApp']['groupsOnly'] = false;
 
 
 /**
@@ -194,6 +194,3 @@ ini_set('zlib.output_compression', '0');
  * Just concat the files and disable the minify
  */
 $min_disableMin = 0;
-
-//Encode dos arquivos
-$min_serveOptions['contentTypeCharset'] = 'iso-8859-1';
