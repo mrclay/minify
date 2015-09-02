@@ -176,6 +176,11 @@ file. To enable this, set $min_allowDebugFlag to true in config.php and append
 Known issue: files with comment-like strings/regexps can cause problems in this mode.
 
 
+BYPASSING MINIFICATION
+
+See the $min_concatOnly option in config.php.
+
+
 QUESTIONS?
 
 http://groups.google.com/group/minify

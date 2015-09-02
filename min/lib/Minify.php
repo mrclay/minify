@@ -124,6 +124,9 @@ class Minify {
      * 'debug' : set to true to minify all sources with the 'Lines' controller, which
      * eases the debugging of combined files. This also prevents 304 responses.
      * @see Minify_Lines::minify()
+     *
+     * 'concatOnly' : set to true to disable minification and simply concatenate the files.
+     * For JS, no minifier will be used. For CSS, only URI rewriting is still performed.
      * 
      * 'minifiers' : to override Minify's default choice of minifier function for 
      * a particular content-type, specify your callback under the key of the 
@@ -251,11 +254,21 @@ class Minify {
             $headers = $cg->getHeaders();
             unset($cg);
         }
-        
-        if (self::$_options['contentType'] === self::TYPE_CSS
-            && self::$_options['rewriteCssUris']) {
-            foreach($controller->sources as $key => $source) {
-                if ($source->filepath 
+
+        if (self::$_options['concatOnly']) {
+            foreach ($controller->sources as $key => $source) {
+                if (self::$_options['contentType'] === self::TYPE_JS) {
+                    $source->minifier = "";
+                } elseif (self::$_options['contentType'] === self::TYPE_CSS) {
+                    $source->minifier = array('Minify_CSS', 'minify');
+                    $source->minifyOptions['compress'] = false;
+                }
+            }
+        }
+
+        if (self::$_options['contentType'] === self::TYPE_CSS && self::$_options['rewriteCssUris']) {
+            foreach ($controller->sources as $key => $source) {
+                if ($source->filepath
                     && !isset($source->minifyOptions['currentDir'])
                     && !isset($source->minifyOptions['prependRelativePath'])
                 ) {
@@ -493,7 +506,7 @@ class Minify {
             // get next source
             $source = null;
             if ($i < $l) {
-                $source = self::$_controller->sources[$i];
+                $source = self::$_controller->sources[$i];               
                 /* @var Minify_Source $source */
                 $sourceContent = $source->getContent();
 

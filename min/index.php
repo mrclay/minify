@@ -52,6 +52,10 @@ if ($min_allowDebugFlag) {
     $min_serveOptions['debug'] = Minify_DebugDetector::shouldDebugRequest($_COOKIE, $_GET, $_SERVER['REQUEST_URI']);
 }
 
+if (!empty($min_concatOnly)) {
+    $min_serveOptions['concatOnly'] = true;
+}
+
 if ($min_errorLogger) {
     if (true === $min_errorLogger) {
         $min_errorLogger = FirePHP::getInstance(true);
@@ -74,8 +78,10 @@ if (isset($_GET['g'])) {
 if (isset($_GET['f']) || isset($_GET['g'])) {
     if (! isset($min_serveController)) {
         $min_serveController = new Minify_Controller_MinApp();
-    }
+    } 
+  
     Minify::serve($min_serveController, $min_serveOptions);
+   
         
 } elseif ($min_enableBuilder) {
     header('Location: builder/');
