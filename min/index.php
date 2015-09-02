@@ -70,12 +70,18 @@ if (isset($_GET['g'])) {
     $min_serveOptions['minApp']['groups'] = (require $min_configPaths['groups']);
 }
 
+if(isset($min_disableMin) && $min_disableMin){
+    $min_serveOptions['disableMinify'] = 1;
+}
+
 // serve or redirect
 if (isset($_GET['f']) || isset($_GET['g'])) {
     if (! isset($min_serveController)) {
         $min_serveController = new Minify_Controller_MinApp();
     }
+   
     Minify::serve($min_serveController, $min_serveOptions);
+   
         
 } elseif ($min_enableBuilder) {
     header('Location: builder/');

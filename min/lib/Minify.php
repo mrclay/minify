@@ -505,6 +505,7 @@ class Minify {
                     ? array_merge($defaultOptions, $source->minifyOptions)
                     : $defaultOptions;
             }
+            $no_minify = self::$_options['disableMinify'];
             // do we need to process our group right now?
             if ($i > 0                               // yes, we have at least the first group populated
                 && (
@@ -517,7 +518,7 @@ class Minify {
                 // minify previous sources with last settings
                 $imploded = implode($implodeSeparator, $groupToProcessTogether);
                 $groupToProcessTogether = array();
-                if ($lastMinifier) {
+                if ($lastMinifier && !$no_minify) {
                     try {
                         $content[] = call_user_func($lastMinifier, $imploded, $lastOptions);
                     } catch (Exception $e) {
