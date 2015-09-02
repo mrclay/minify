@@ -16,7 +16,7 @@ $min_enableBuilder = false;
  * If non-empty, the Builder will be protected with HTTP Digest auth.
  * The username is "admin".
  */
-$min_builderPassword = '';
+$min_builderPassword = 'admin';
 
 
 /**
