@@ -494,6 +494,13 @@ class Minify {
             $source = null;
             if ($i < $l) {
                 $source = self::$_controller->sources[$i];
+                
+                //Change the minifier to disable the compression
+                if(!empty(self::$_options['concatOnly'])){
+                    $source->minifier = '';
+                    $source->minifyOptions['compress'] = false;
+                }
+                
                 /* @var Minify_Source $source */
                 $sourceContent = $source->getContent();
 
@@ -505,7 +512,6 @@ class Minify {
                     ? array_merge($defaultOptions, $source->minifyOptions)
                     : $defaultOptions;
             }
-            $no_minify = self::$_options['disableMinify'];
             // do we need to process our group right now?
             if ($i > 0                               // yes, we have at least the first group populated
                 && (
@@ -518,7 +524,7 @@ class Minify {
                 // minify previous sources with last settings
                 $imploded = implode($implodeSeparator, $groupToProcessTogether);
                 $groupToProcessTogether = array();
-                if ($lastMinifier && !$no_minify) {
+                if ($lastMinifier) {
                     try {
                         $content[] = call_user_func($lastMinifier, $imploded, $lastOptions);
                     } catch (Exception $e) {

@@ -191,6 +191,6 @@ $min_libPath = dirname(__FILE__) . '/lib';
 ini_set('zlib.output_compression', '0');
 
 /**
- * Just concat the files and disable the minify
+ * Just concat the files and disable the minify, for js tests or another fast purpose
  */
-$min_disableMin = 0;
+$min_concatOnly = false;
