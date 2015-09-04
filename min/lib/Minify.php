@@ -265,7 +265,6 @@ class Minify {
                 //Change the minifier to disable the compression
                 if(!empty(self::$_options['concatOnly'])){
                     $source->minifier = '';
-                    $source->minifyOptions['compress'] = false;
                 }
             }
         }
