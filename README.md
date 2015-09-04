@@ -7,14 +7,11 @@ HTTP headers. These headers can allow clients to perform conditional
 GETs (serving content only when clients do not have a valid cache)
 and tell clients to cache the file for a period of time.
 
-More info: http://code.google.com/p/minify/
-
-
 Wordpress User?
 ===============
 
-These WP plugins integrate Minify into WordPress's style and script hooks to
-get you set up faster.
+This project cannot provide support for the various WordPress plugins using our
+code. Here are a couple we're aware of:
 - [BWP Minify](http://wordpress.org/extend/plugins/bwp-minify/)
 - [W3 Total Cache](http://wordpress.org/extend/plugins/w3-total-cache/)
 
@@ -35,14 +32,14 @@ If your server supports mod_rewrite, this URL should also work:
 Configuration & Usage
 =====================
 
-See the MIN.txt file and http://code.google.com/p/minify/wiki/UserGuide
+See the MIN.txt file and the [user guide](https://github.com/mrclay/minify/blob/master/docs/UserGuide.wiki.md)
 
 Minify also comes with a URI Builder application that can help you write URLs
 for use with Minify or configure groups of files. See here for details:
-  http://code.google.com/p/minify/wiki/BuilderApp
+  https://github.com/mrclay/minify/blob/master/docs/BuilderApp.wiki.md
 
 The cookbook also provides some more advanced options for minification:
-  http://code.google.com/p/minify/wiki/CookBook
+  https://github.com/mrclay/minify/blob/master/docs/CookBook.wiki.md
 
 Upgrading
 =========
