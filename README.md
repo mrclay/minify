@@ -1,26 +1,24 @@
 Welcome to Minify!
 ==================
 
-Minify is an HTTP content server. It compresses sources of content
-(usually files), combines the result and serves it with appropriate
-HTTP headers. These headers can allow clients to perform conditional
-GETs (serving content only when clients do not have a valid cache)
-and tell clients to cache the file for a period of time.
+Minify is an HTTP server for JS and CSS assets. It compresses and combines files
+and serves it with appropriate headers, allowing conditional GET or long-Expires.
 
 Wordpress User?
 ===============
 
-This project cannot provide support for the various WordPress plugins using our
-code. Here are a couple we're aware of:
+Use a dedicated WordPress plugin for more deep integration and simpler installation.
+Here are a couple we're aware of:
 - [BWP Minify](http://wordpress.org/extend/plugins/bwp-minify/)
 - [W3 Total Cache](http://wordpress.org/extend/plugins/w3-total-cache/)
 
+Unfortunately we can't support the WordPress plugins here.
 
 Installation
 ============
 
-Place the /min/ directory as a child of your DOCUMENT_ROOT
-directory: i.e. you will have: /home/example/www/min
+Place the `/min/` directory as a child of your DOCUMENT_ROOT
+directory: i.e. you will have: `/home/example/www/min`
 
 You can see verify that it is working by visiting these two URLs:
 - http://example.org/min/?f=min/quick-test.js
@@ -41,11 +39,7 @@ for use with Minify or configure groups of files. See here for details:
 The cookbook also provides some more advanced options for minification:
   https://github.com/mrclay/minify/blob/master/docs/CookBook.wiki.md
 
-Upgrading
-=========
-
-See UPGRADING.txt for instructions.
-
+More [docs are available](https://github.com/mrclay/minify/tree/master/docs).
 
 Unit Testing
 ============
