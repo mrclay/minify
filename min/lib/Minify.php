@@ -503,7 +503,7 @@ class Minify {
             // get next source
             $source = null;
             if ($i < $l) {
-                $source = self::$_controller->sources[$i];               
+                $source = self::$_controller->sources[$i];
                 /* @var Minify_Source $source */
                 $sourceContent = $source->getContent();
 
