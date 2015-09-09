@@ -252,9 +252,8 @@ class Minify {
             unset($cg);
         }
         
-        if ((self::$_options['contentType'] === self::TYPE_CSS
-            && self::$_options['rewriteCssUris'])
-            || !empty(self::$_options['concatOnly'])) {
+        if (self::$_options['contentType'] === self::TYPE_CSS
+            && self::$_options['rewriteCssUris']) {
             foreach($controller->sources as $key => $source) {
                 if ($source->filepath 
                     && !isset($source->minifyOptions['currentDir'])
@@ -264,8 +263,14 @@ class Minify {
                 }
                 //Change the minifier to disable the compression
                 if(!empty(self::$_options['concatOnly'])){
-                    $source->minifier = '';
+                    $source->minifyOptions['compress'] = false;
                 }
+            }
+        }else if(!empty(self::$_options['concatOnly'])){
+            //Change the minifier to disable the compression
+            foreach($controller->sources as $key => $source) {
+                $source->minifier = '';
+                $source->minifyOptions['compress'] = false;
             }
         }
         
