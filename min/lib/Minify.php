@@ -274,6 +274,16 @@ class Minify {
                 ) {
                     $source->minifyOptions['currentDir'] = dirname($source->filepath);
                 }
+                //Change the minifier to disable the compression
+                if(!empty(self::$_options['concatOnly'])){
+                    $source->minifyOptions['compress'] = false;
+                }
+            }
+        }else if(!empty(self::$_options['concatOnly'])){
+            //Change the minifier to disable the compression
+            foreach($controller->sources as $key => $source) {
+                $source->minifier = '';
+                $source->minifyOptions['compress'] = false;
             }
         }
         

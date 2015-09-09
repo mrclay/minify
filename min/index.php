@@ -74,6 +74,10 @@ if (isset($_GET['g'])) {
     $min_serveOptions['minApp']['groups'] = (require $min_configPaths['groups']);
 }
 
+if(!empty($min_concatOnly)){
+    $min_serveOptions['concatOnly'] = $min_concatOnly;
+}
+
 // serve or redirect
 if (isset($_GET['f']) || isset($_GET['g'])) {
     if (! isset($min_serveController)) {
