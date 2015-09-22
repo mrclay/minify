@@ -68,7 +68,7 @@ Warnings
 --------
 
   * Minify is designed for efficiency, but, for very high traffic sites, it will probably serve files slower than your HTTPd due to the CGI overhead of PHP. See the [FAQ](https://github.com/mrclay/minify/blob/master/docs/FAQ.wiki.md#how-fast-is-it) and [CookBook](https://github.com/mrclay/minify/blob/master/docs/CookBook.wiki.md) for more info.
-  * If you combine a lot of CSS, watch out for [IE's 4096 selectors-per-file limit](http://www.thecssdiv.co.uk/2009/08/28/another-weird-ie6-bug/), affecting IE 6 through 8.
+  * If you combine a lot of CSS, watch out for [IE's 4096 selectors-per-file limit](http://stackoverflow.com/a/9906889/3779), affects IE 6 through 9.
   * Minify *should* work fine with files encoded in UTF-8 or other 8-bit encodings like ISO 8859/Windows-1252. By default Minify appends ";charset=utf-8" to the Content-Type headers it sends.
 
 Acknowledgments
