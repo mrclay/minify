@@ -53,7 +53,7 @@ Scriptaculous 1.8.2 (and probably all 1.x) has an [autoloader script](http://git
 
 If you upload files using [Coda or Transmit](http://groups.google.com/group/coda-users/browse_thread/thread/572d2dc315ec02e7/) or from a Windows PC to a non-Windows server, your new files may end up with the wrong `mtime` (timestamp) on the server, confusing the cache system.
 
-Setting the [$min\_uploaderHoursBehind option](http://code.google.com/p/minify/source/browse/tags/release_2.1.3/min/config.php#129) in `config.php` can compensate for this.
+Setting the [$min\_uploaderHoursBehind option](https://github.com/mrclay/minify/blob/master/min/config.php#L171) in `config.php` can compensate for this.
 
 WinSCP has a [Daylight Saving Time option](http://winscp.net/eng/docs/ui_login_environment#daylight_saving_time) that can prevent this issue.
 
