@@ -13,7 +13,7 @@ The stats above are from a [brief walkthrough](http://mrclay.org/index.php/2008/
 Relative URLs in CSS files are rewritten to compensate for being served from a different directory.
 
 Wordpress User?
-===============
+---------------
 
 Consider instead using a dedicated WordPress plugin for more deep integration and simpler installation. E.g.:
 - [BWP Minify](http://wordpress.org/extend/plugins/bwp-minify/)
@@ -22,7 +22,7 @@ Consider instead using a dedicated WordPress plugin for more deep integration an
 Unfortunately we can't support the WordPress plugins here.
 
 Installation
-============
+------------
 
 Place the `/min/` directory as a child of your DOCUMENT_ROOT
 directory: i.e. you will have: `/home/example/www/min`
@@ -35,7 +35,7 @@ If your server supports mod_rewrite, this URL should also work:
 - http://example.org/min/f=min/quick-test.js
 
 Configuration & Usage
-=====================
+---------------------
 
 See the MIN.txt file and the [user guide](https://github.com/mrclay/minify/blob/master/docs/UserGuide.wiki.md)
 
@@ -47,12 +47,12 @@ See the [cookbook](https://github.com/mrclay/minify/blob/master/docs/CookBook.wi
 More [docs are available](https://github.com/mrclay/minify/tree/master/docs).
 
 Support
-=======
+-------
 
 [Google Group](http://groups.google.com/group/minify)
 
 Unit Testing
-============
+------------
 
 1. Place the /min_unit_tests/ directory as a child of your DOCUMENT_ROOT
 directory: i.e. you will have: /home/example/www/min_unit_tests
@@ -64,24 +64,15 @@ components with more verbose output.)
 
 3. Remove /min_unit_tests/ from your DOCUMENT_ROOT when you are done.
 
-File Encodings
-==============
-
-Minify *should* work fine with files encoded in UTF-8 or other 8-bit
-encodings like ISO 8859/Windows-1252. By default Minify appends
-";charset=utf-8" to the Content-Type headers it sends.
-
-Leading UTF-8 BOMs are stripped from all sources to prevent
-duplication in output files, and files are converted to Unix newlines.
-
 Warnings
-========
+--------
 
-* Minify is designed for efficiency, but, for very high traffic sites, it will probably serve files slower than your HTTPd due to the CGI overhead of PHP. See the [FAQ](https://github.com/mrclay/minify/blob/master/docs/FAQ.wiki.md#how-fast-is-it) and [CookBook](https://github.com/mrclay/minify/blob/master/docs/CookBook.wiki.md) for more info.
+  * Minify is designed for efficiency, but, for very high traffic sites, it will probably serve files slower than your HTTPd due to the CGI overhead of PHP. See the [FAQ](https://github.com/mrclay/minify/blob/master/docs/FAQ.wiki.md#how-fast-is-it) and [CookBook](https://github.com/mrclay/minify/blob/master/docs/CookBook.wiki.md) for more info.
   * If you combine a lot of CSS, watch out for [IE's 4096 selectors-per-file limit](http://www.thecssdiv.co.uk/2009/08/28/another-weird-ie6-bug/), affecting IE 6 through 8.
+  * Minify *should* work fine with files encoded in UTF-8 or other 8-bit encodings like ISO 8859/Windows-1252. By default Minify appends ";charset=utf-8" to the Content-Type headers it sends.
 
 Acknowledgments
-===============
+---------------
 
 Minify was inspired by [jscsscomp](http://code.google.com/p/jscsscomp/) by Maxim Martynyuk and by the article [Supercharged JavaScript](http://www.hunlock.com/blogs/Supercharged_Javascript) by Patrick Hunlock.
 
