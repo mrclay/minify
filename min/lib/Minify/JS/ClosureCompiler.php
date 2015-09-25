@@ -36,6 +36,26 @@ class Minify_JS_ClosureCompiler {
     const OPTION_COMPILER_URL = 'compilerUrl';
 
     /**
+    * @var string The option key for the connection timeout
+    */
+    const OPTION_CONNECTION_TIMEOUT = 'timeout.connection';
+
+    /**
+    * @var int The default connection timeout in seconds
+    */
+    const DEFAULT_CONNECTION_TIMEOUT = 15;
+
+    /**
+    * @var string The option key for the read timeout
+    */
+    const OPTION_READ_TIMEOUT = 'timeout.read';
+
+    /**
+    * @var int The default read timeout in seconds. Defaults to zero for backwards compatibility.
+    */
+    const DEFAULT_READ_TIMEOUT = 0;
+
+    /**
      * @var int The default maximum POST byte size according to https://developers.google.com/closure/compiler/docs/api-ref
      */
     const DEFAULT_MAX_BYTES = 200000;
@@ -59,6 +79,16 @@ class Minify_JS_ClosureCompiler {
      * @var int $maxBytes The maximum JS size that can be sent to the compiler server in bytes
      */
     protected $maxBytes = self::DEFAULT_MAX_BYTES;
+
+    /**
+     * @var int $connectionTimeout The connection timeout in seconds.
+     */
+    protected $connectionTimeout = self::DEFAULT_CONNECTION_TIMEOUT;
+
+    /**
+     * @var int $readTimeout The read timeout in seconds.
+     */
+    protected $readTimeout = self::DEFAULT_READ_TIMEOUT;
 
     /**
      * @var string[] $additionalOptions Additional options to pass to the compiler service
@@ -97,6 +127,10 @@ class Minify_JS_ClosureCompiler {
      *  additionalParams : (string[]) Additional parameters to pass to the compiler server. Can be anything named
      *                     in https://developers.google.com/closure/compiler/docs/api-ref except for js_code and
      *                     output_info
+     *
+     * timeout.connection: (int) Parameter to specify the connection timeout
+     *
+     * timeout.read      : (int) Parameter to specify the read timeout
      */
     public function __construct(array $options = array())
     {
@@ -111,6 +145,14 @@ class Minify_JS_ClosureCompiler {
         }
         if (isset($options[self::OPTION_MAX_BYTES])) {
             $this->maxBytes = (int) $options[self::OPTION_MAX_BYTES];
+        }
+
+        if (isset($options[self::OPTION_CONNECTION_TIMEOUT])) {
+            $this->connectionTimeout = (int) $options[self::OPTION_CONNECTION_TIMEOUT];
+        }
+
+        if (isset($options[self::OPTION_READ_TIMEOUT])) {
+            $this->readTimeout = (int) $options[self::OPTION_READ_TIMEOUT];
         }
     }
 
@@ -175,7 +217,7 @@ class Minify_JS_ClosureCompiler {
                     'header' => "Content-type: application/x-www-form-urlencoded\r\nConnection: close\r\n",
                     'content' => $postBody,
                     'max_redirects' => 0,
-                    'timeout' => 15,
+                    'timeout' => ($this->connectionTimeout + $this->readTimeout), // file_get_contents does not distinguish between connection and read timeout
                 )
             )));
         } elseif (defined('CURLOPT_POST')) {
@@ -185,7 +227,10 @@ class Minify_JS_ClosureCompiler {
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded'));
             curl_setopt($ch, CURLOPT_POSTFIELDS, $postBody);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->connectionTimeout);
+            if ($this->readTimeout > 0) {
+              curl_setopt($ch, CURLOPT_TIMEOUT, $this->readTimeout);
+            }
             $contents = curl_exec($ch);
             curl_close($ch);
         } else {
