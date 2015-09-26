@@ -16,6 +16,21 @@
 class Minify_JS_ClosureCompiler {
 
     /**
+     * @var string The option key for specifying the HTTP client to be used
+     */
+    const OPTION_HTTP_CLIENT = 'httpClient';
+
+    /**
+     * file_get_contents based HTTP client
+     */
+    const HTTP_CLIENT_FOPEN = 'fopen';
+
+    /**
+     * cURL HTTP client
+     */
+    const HTTP_CLIENT_CURL = 'curl';
+
+    /**
      * @var string The option key for the maximum POST byte size
      */
     const OPTION_MAX_BYTES = 'maxBytes';
@@ -71,6 +86,17 @@ class Minify_JS_ClosureCompiler {
     protected $fallbackMinifier = array('JSMin', 'minify');
 
     /**
+     * @var string The HTTP client to use. Can be 'fopen' or 'curl' or null to fall back from fopen to cURL.
+     */
+    protected $httpClient = null;
+
+    public static $SUPPORTED_HTTP_CLIENTS = array(
+      null, // fallback setting
+      self::HTTP_CLIENT_FOPEN,
+      self::HTTP_CLIENT_CURL
+    );
+
+    /**
      * Minify JavaScript code via HTTP request to a Closure Compiler API
      *
      * @param string $js input code
@@ -111,6 +137,16 @@ class Minify_JS_ClosureCompiler {
         }
         if (isset($options[self::OPTION_MAX_BYTES])) {
             $this->maxBytes = (int) $options[self::OPTION_MAX_BYTES];
+        }
+        if (isset($options[self::OPTION_HTTP_CLIENT])) {
+            $httpClient = $options[self::OPTION_HTTP_CLIENT];
+            if (in_array($httpClient, self::$SUPPORTED_HTTP_CLIENTS)) {
+              $this->httpClient = $httpClient;
+            } else {
+              throw new Minify_JS_ClosureCompiler_Exception(
+                  'HTTP Client "' . $httpClient . '" is not supported'
+              );
+            }
         }
     }
 
@@ -157,19 +193,17 @@ class Minify_JS_ClosureCompiler {
         return $response;
     }
 
-    /**
-     * Get the response for a given POST body
-     *
-     * @param string $postBody
-     * @return string
-     * @throws Minify_JS_ClosureCompiler_Exception
-     */
-    protected function getResponse($postBody)
+    protected function allowFileGetContents()
     {
-        $allowUrlFopen = preg_match('/1|yes|on|true/i', ini_get('allow_url_fopen'));
+        return preg_match('/1|yes|on|true/i', ini_get('allow_url_fopen'));
+    }
+
+    private function httpClientFileGetContents($postBody, $failIfNotAvailable)
+    {
+        $allowUrlFopen = $this->allowFileGetContents();
 
         if ($allowUrlFopen) {
-            $contents = file_get_contents($this->serviceUrl, false, stream_context_create(array(
+            return file_get_contents($this->serviceUrl, false, stream_context_create(array(
                 'http' => array(
                     'method' => 'POST',
                     'header' => "Content-type: application/x-www-form-urlencoded\r\nConnection: close\r\n",
@@ -178,7 +212,25 @@ class Minify_JS_ClosureCompiler {
                     'timeout' => 15,
                 )
             )));
-        } elseif (defined('CURLOPT_POST')) {
+        } elseif ($failIfNotAvailable) {
+            throw new Minify_JS_ClosureCompiler_Exception(
+               'Could not make HTTP request: allow_url_fopen is disabled'
+            );
+        } else {
+            return null;
+        }
+    }
+
+    protected function allowCurl()
+    {
+        return defined('CURLOPT_POST');
+    }
+
+    private function httpClientCurl($postBody, $failIfNotAvailable)
+    {
+        $curlAvailable = $this->allowCurl();
+
+        if ($curlAvailable) {
             $ch = curl_init($this->serviceUrl);
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -188,10 +240,47 @@ class Minify_JS_ClosureCompiler {
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
             $contents = curl_exec($ch);
             curl_close($ch);
-        } else {
+            return $contents;
+        } elseif ($failIfNotAvailable) {
             throw new Minify_JS_ClosureCompiler_Exception(
-               "Could not make HTTP request: allow_url_open is false and cURL not available"
+               'Could not make HTTP request: cURL is not available'
             );
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get the response for a given POST body
+     *
+     * @param string $postBody
+     * @return string
+     * @throws Minify_JS_ClosureCompiler_Exception
+     */
+    protected function getResponse($postBody)
+    {
+        switch($this->httpClient) {
+            case self::HTTP_CLIENT_FOPEN:
+                $contents = $this->httpClientFileGetContents($postBody, true);
+                break;
+            case self::HTTP_CLIENT_CURL:
+                $contents = $this->httpClientCurl($postBody, true);
+                break;
+            case null:
+                // cascade
+                $contents = $this->httpClientFileGetContents($postBody, false);
+                if (is_null($contents)) {
+                  // last HTTP client was not available
+                  $contents = $this->httpClientCurl($postBody, false);
+                }
+
+                if (is_null($contents)) {
+                  // we tried all HTTP clients
+                  throw new Minify_JS_ClosureCompiler_Exception(
+                     'Could not make HTTP request: allow_url_open is false and cURL not available'
+                  );
+                }
+                break;
         }
 
         if (false === $contents) {

@@ -120,6 +120,113 @@ function test_Minify_JS_ClosureCompiler()
     $passed = assertTrue(
         $minOutput === $minExpected
         , 'Minify_JS_ClosureCompiler : Language option should make it compile');
+
+
+    // Test setting an unsupported HTTP client
+    $exc = null;
+    $httpClient = 'unknownHttpClient';
+    try {
+        $minOutput = Minify_JS_ClosureCompiler::minify('', array(
+          Minify_JS_ClosureCompiler::OPTION_HTTP_CLIENT => $httpClient
+        ));
+    } catch (Exception $e) {
+        $exc = $e;
+    }
+    $passed = assertTrue(
+        $exc instanceof Minify_JS_ClosureCompiler_Exception
+        , 'Minify_JS_ClosureCompiler : Throws Minify_JS_ClosureCompiler_Exception');
+    assertTrue(
+        $exc->getMessage() === 'HTTP Client "' . $httpClient . '" is not supported'
+        , 'Minify_JS_ClosureCompiler : Message must tell that the given HTTP client is unsupported');
+
+    $input = "(function() { var x = 'x'; })();";
+    $minExpected = '(function(){})();';
+
+    // Test fallback HTTP clients
+
+    class NonAny_Minify_JS_ClosureCompiler extends Minify_JS_ClosureCompiler {
+        protected function allowFileGetContents()
+        {
+            return false;
+        }
+
+        protected function allowCurl()
+        {
+            return false;
+        }
+    }
+
+    $nonAnyClosureCompiler = new NonAny_Minify_JS_ClosureCompiler();
+    $exc = null;
+    try {
+        $minOutput = $nonAnyClosureCompiler->min($input);
+    } catch (Exception $e) {
+        $exc = $e;
+    }
+    $passed = assertTrue(
+        $exc instanceof Minify_JS_ClosureCompiler_Exception
+        , 'Minify_JS_ClosureCompiler : Throws Minify_JS_ClosureCompiler_Exception');
+    assertTrue(
+        $exc->getMessage() === 'Could not make HTTP request: allow_url_open is false and cURL not available'
+        , 'Minify_JS_ClosureCompiler : Message must tell why it did not work');
+    if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
+        echo "\n---Message: " . var_export($exc->getMessage(), 1) . "\n\n\n";
+    }
+
+    // Test specifying the HTTP client: file_get_contents
+
+    class NonFopen_Minify_JS_ClosureCompiler extends Minify_JS_ClosureCompiler {
+        protected function allowFileGetContents()
+        {
+            return false;
+        }
+    }
+
+    $exc = null;
+    try {
+        $nonFopenClosureCompiler = new NonFopen_Minify_JS_ClosureCompiler(array(
+          Minify_JS_ClosureCompiler::OPTION_HTTP_CLIENT => Minify_JS_ClosureCompiler::HTTP_CLIENT_FOPEN
+        ));
+        $minOutput = $nonFopenClosureCompiler->min($input);
+    } catch (Exception $e) {
+        $exc = $e;
+    }
+    $passed = assertTrue(
+        $exc instanceof Minify_JS_ClosureCompiler_Exception
+        , 'Minify_JS_ClosureCompiler : Throws Minify_JS_ClosureCompiler_Exception');
+    assertTrue(
+        $exc->getMessage() === 'Could not make HTTP request: allow_url_fopen is disabled'
+        , 'Minify_JS_ClosureCompiler : Message must tell why it did not work');
+    if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
+        echo "\n---Message: " . var_export($exc->getMessage(), 1) . "\n\n\n";
+    }
+
+
+    class NonCurl_Minify_JS_ClosureCompiler extends Minify_JS_ClosureCompiler {
+        protected function allowCurl()
+        {
+            return false;
+        }
+    }
+
+    $exc = null;
+    try {
+        $nonCurlClosureCompiler = new NonCurl_Minify_JS_ClosureCompiler(array(
+          Minify_JS_ClosureCompiler::OPTION_HTTP_CLIENT => Minify_JS_ClosureCompiler::HTTP_CLIENT_CURL
+        ));
+        $minOutput = $nonCurlClosureCompiler->min($input);
+    } catch (Exception $e) {
+        $exc = $e;
+    }
+    $passed = assertTrue(
+        $exc instanceof Minify_JS_ClosureCompiler_Exception
+        , 'Minify_JS_ClosureCompiler : Throws Minify_JS_ClosureCompiler_Exception');
+    assertTrue(
+        $exc->getMessage() === 'Could not make HTTP request: cURL is not available'
+        , 'Minify_JS_ClosureCompiler : Message must tell why it did not work');
+    if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
+        echo "\n---Message: " . var_export($exc->getMessage(), 1) . "\n\n\n";
+    }
 }
 
 test_Minify_JS_ClosureCompiler();
