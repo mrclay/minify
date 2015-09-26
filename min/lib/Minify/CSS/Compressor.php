@@ -148,6 +148,41 @@ class Minify_CSS_Compressor {
         
         // prevent triggering IE6 bug: http://www.crankygeek.com/ie6pebug/
         $css = preg_replace('/:first-l(etter|ine)\\{/', ':first-l$1 {', $css);
+        
+                 // handle @ rules
+        $at_rules = '';
+        
+        // @charset rules are only valid as the first line in a css file
+        if( preg_match_all('/@charset[^;]*;/i', $css, $charsets) ) {
+        	$charsets = $charsets[0];
+        	$charsets = array_unique($charsets);
+        	$charset = $charsets[0];
+        	if( count($charsets) > 1 ) {
+        		// use most common @charset rule
+				$charsets = array_count_values($charsets); 
+				$charset = array_search(max($charsets), $charsets);
+        	}
+        	$at_rules .= "$charset\n";
+        	$css = preg_replace('/@charset[^;]*;/i', '', $css);
+        }
+        
+        // @namespace are only valid before all other rules except @charset
+        if( preg_match_all('/(@namespace[^;]*;)/i', $css, $namespaces) ) {
+        	$namespaces = $namespaces[0];
+        	$namespaces = array_unique($namespaces);
+        	$at_rules .= implode("\n", $namespaces);
+        	$css = preg_replace('/(@namespace[^;]*;)/i', '', $css);
+        }
+        
+        /*
+         * TODO: Actually include css url's content referenced and remove the @import rules.
+         * They are only valid before all block rules and context needs to be maintained.
+         */
+        // remove all @import rules
+        $css = preg_replace('/@import[^;]*;/i', '', $css);
+        
+        // prepend at rules to css
+        $css = $at_rules . $css;
             
         return trim($css);
     }
