@@ -38,15 +38,16 @@ Out-of-the-box, Minify gets confused when `min` is placed in a subdirectory of t
 ## Aliases / Symlinks / Virtual Directories
 
 Whether you use [aliases](http://httpd.apache.org/docs/2.2/mod/mod_alias.html), [symlinks](http://en.wikipedia.org/wiki/Symbolic_link), or [virtual directories](http://msdn.microsoft.com/en-us/library/zwk103ab.aspx), if you make content outside of the DOC\_ROOT available at public URLs, Minify may need manual configuration of the `$min_symlinks` option to rewrite some URIs correctly. Consider this scenario, where `http://example.org/static/style.css` will serve `/etc/static_content/style.css`:
-| document root | `/var/www` |
-|:--------------|:-----------|
-| Apache mod\_alias | `Alias /static /etc/static_content` |
-| ...or symlink | `ln -s /etc/static_content /var/www/static` |
+
+| document root     | `/var/www`                                  |
+|:------------------|:--------------------------------------------|
+| Apache mod\_alias | `Alias /static /etc/static_content`         |
+| ...or symlink     | `ln -s /etc/static_content /var/www/static` |
 
 In `/min/config.php` you'll need the following:
 ```
+// map URL path to file path
 $min_symlinks = array(
-//  URL path   => file path
     '//static' => '/etc/static_content'
 );
 ```
