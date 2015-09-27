@@ -61,6 +61,10 @@ $min_serveOptions['minApp']['allowDirs'] = array(
 ); 
 ```
 
+### What's my document root?
+
+You can enable the script `min/server-info.php` and open http://example.org/min/server-info.php to find useful `$_SERVER` values. People in the [Google Group](https://groups.google.com/forum/#!forum/minify) might need these to help you.
+
 ## It's still not working
 
   1. Make sure you have the [latest version](http://code.google.com/p/minify/downloads/list).
