@@ -16,7 +16,6 @@
  **/
 class Minify_Cache_WinCache implements Minify_CacheInterface
 {
-
     /**
      * Create a Minify_Cache_Wincache object, to be passed to
      * Minify::setCache().
