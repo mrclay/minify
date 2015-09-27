@@ -25,14 +25,8 @@
 		"php": ">=5.2.1",
 		"tubalmartin/cssmin": "~2.4.8"
 	},
-	"require-dev": {
-		"firephp/firephp-core": "~0.4.0",
-		"leafo/lessphp": "~0.4.0",
-		"meenie/javascript-packer": "~1.1",
-		"tubalmartin/cssmin": "~2.4.8"
-	},
 	"suggest": {
-		"leafo/lessphp": "LESS support",
-		"meenie/javascript-packer": "Keep track of the Packer PHP port using Composer"
+		"leafo/lessphp": "~0.4.0",
+		"meenie/javascript-packer": "~1.1"
 	}
 }
