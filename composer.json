@@ -2,7 +2,7 @@
 	"name": "mrclay/minify",
 	"type": "library",
 	"description": "Minify is a PHP5 app that helps you follow several rules for client-side performance. It combines multiple CSS or Javascript files, removes unnecessary whitespace and comments, and serves them with gzip encoding and optimal client-side cache headers",
-	"homepage": "http://code.google.com/p/minify/",
+	"homepage": "https://github.com/mrclay/minify",
 	"license": "BSD-3-Clause",
 	"authors": [
 		{
@@ -13,8 +13,8 @@
 	],
 	"support": {
 		"email": "minify@googlegroups.com",
-		"issues": "http://code.google.com/p/minify/issues/list",
-		"wiki": "http://code.google.com/p/minify/w/list"
+		"issues": "https://github.com/mrclay/minify/issues",
+		"wiki": "https://github.com/mrclay/minify/blob/master/docs"
 	},
 	"autoload": {
 		"classmap": ["min/lib/"]
@@ -23,7 +23,8 @@
 		"ext-pcre": "*",
 		"firephp/firephp-core": "~0.4.0",
 		"php": ">=5.2.1",
-		"tubalmartin/cssmin": "~2.4.8"
+		"tubalmartin/cssmin": "~2.4.8",
+		"mrclay/jsmin-php": "~2"
 	},
 	"suggest": {
 		"leafo/lessphp": "~0.4.0",
