@@ -30,7 +30,7 @@ class Minify {
     // there is some debate over the ideal JS Content-Type, but this is the
     // Apache default and what Yahoo! uses..
     const TYPE_JS = 'application/x-javascript';
-    const URL_DEBUG = 'http://code.google.com/p/minify/wiki/Debugging';
+    const URL_DEBUG = 'https://github.com/mrclay/minify/blob/master/docs/Debugging.wiki.md';
 
     /**
      * Any Minify_Cache_* object or null (i.e. no server cache is used)
@@ -113,7 +113,7 @@ class Minify {
              * appear too late in the combined stylesheet. If found, serve() will prepend
              * the output with this warning.
              */
-            'importWarning' => "/* See http://code.google.com/p/minify/wiki/CommonProblems#@imports_can_appear_in_invalid_locations_in_combined_CSS_files */\n"
+            'importWarning' => "/* See https://github.com/mrclay/minify/blob/master/docs/CommonProblems.wiki.md#imports-can-appear-in-invalid-locations-in-combined-css-files */\n"
         );
     }
     

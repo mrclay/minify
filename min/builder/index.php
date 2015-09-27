@@ -27,7 +27,7 @@ require dirname(__FILE__) . '/../config.php';
 
 if (! $min_enableBuilder) {
     header('Content-Type: text/plain');
-    die('This application is not enabled. See http://code.google.com/p/minify/wiki/BuilderApp');
+    die('This application is not enabled. See https://github.com/mrclay/minify/blob/master/docs/BuilderApp.wiki.md');
 }
 
 if (isset($min_builderPassword)
@@ -78,7 +78,7 @@ b {color:#c00}
 
 <p class=topWarning id=jsDidntLoad><strong>Uh Oh.</strong> Minify was unable to
     serve Javascript for this app. To troubleshoot this,
-    <a href="http://code.google.com/p/minify/wiki/Debugging">enable FirePHP debugging</a>
+    <a href="https://github.com/mrclay/minify/blob/master/docs/Debugging.wiki.md">enable FirePHP debugging</a>
     and request the <a id=builderScriptSrc href=#>Minify URL</a> directly. Hopefully the
     FirePHP console will report the cause of the error.
 </p>

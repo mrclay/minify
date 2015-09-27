@@ -8,7 +8,7 @@
  * You may wish to use the Minify URI Builder app to suggest
  * changes. http://yourdomain/min/builder/
  *
- * See http://code.google.com/p/minify/wiki/CustomSource for other ideas
+ * See https://github.com/mrclay/minify/blob/master/docs/CustomServer.wiki.md for other ideas
  **/
 
 return array(
