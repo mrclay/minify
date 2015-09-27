@@ -96,6 +96,7 @@ class Minify {
             'bubbleCssImports' => false,
             'quiet' => false, // serve() will send headers and output
             'debug' => false,
+            'concatOnly' => false,
 
             // if you override these, the response codes MUST be directly after
             // the first space.
@@ -155,6 +156,9 @@ class Minify {
      * 'debug' : set to true to minify all sources with the 'Lines' controller, which
      * eases the debugging of combined files. This also prevents 304 responses.
      * @see Minify_Lines::minify()
+     *
+     * 'concatOnly' : set to true to disable minification and simply concatenate the files.
+     * For JS, no minifier will be used. For CSS, only URI rewriting is still performed.
      * 
      * 'minifiers' : to override Minify's default choice of minifier function for 
      * a particular content-type, specify your callback under the key of the 
@@ -281,6 +285,20 @@ class Minify {
         
         if ($this->options['contentType'] === self::TYPE_CSS && $this->options['rewriteCssUris']) {
             $this->setupUriRewrites();
+        }
+
+        if ($this->options['concatOnly']) {
+            $this->options['minifiers'][self::TYPE_JS] = false;
+            foreach ($this->sources as $key => $source) {
+                if ($this->options['contentType'] === self::TYPE_JS) {
+                    $source->setMinifier("");
+                } elseif ($this->options['contentType'] === self::TYPE_CSS) {
+                    $source->setMinifier(array('Minify_CSS', 'minify'));
+                    $sourceOpts = $source->getMinifierOptions();
+                    $sourceOpts['compress'] = false;
+                    $source->setMinifierOptions($sourceOpts);
+                }
+            }
         }
         
         // check server cache
@@ -503,7 +521,6 @@ class Minify {
             $source = null;
             if ($i < $l) {
                 $source = $this->sources[$i];
-                /* @var Minify_Source $source */
                 $sourceContent = $source->getContent();
 
                 // allow the source to override our minifier and options

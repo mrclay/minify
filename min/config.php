@@ -12,6 +12,13 @@
  */
 $min_enableBuilder = false;
 
+
+/**
+ * Concatenate but do not minify the files. This can be used for testing.
+ */
+$min_concatOnly = false;
+
+
 /**
  * If non-empty, the Builder will be protected with HTTP Digest auth.
  * The username is "admin".

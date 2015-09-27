@@ -64,6 +64,10 @@ if ($min_allowDebugFlag) {
     $min_serveOptions['debug'] = Minify_DebugDetector::shouldDebugRequest($env);
 }
 
+if (!empty($min_concatOnly)) {
+    $min_serveOptions['concatOnly'] = true;
+}
+
 if ($min_errorLogger) {
     if (true === $min_errorLogger) {
         $min_errorLogger = FirePHP::getInstance(true);
@@ -86,7 +90,6 @@ if (null !== $env->get('g')) {
 if ($env->get('f') || null !== $env->get('g')) {
     // serving!
     if (! isset($min_serveController)) {
-
         $sourceFactoryOptions = array();
 
         // translate legacy setting to option for source factory
