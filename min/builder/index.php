@@ -1,9 +1,5 @@
 <?php 
 
-if (phpversion() < 5) {
-    exit('Minify requires PHP5 or greater.');
-}
-
 // check for auto-encoding
 $encodeOutput = (function_exists('gzdeflate')
                  && !ini_get('zlib.output_compression'));
@@ -22,8 +18,8 @@ if (0 === strpos($_SERVER["SERVER_SOFTWARE"], 'Apache/')
     }
 }
 
-require dirname(__FILE__) . '/../../vendor/bootstrap.php';
-require dirname(__FILE__) . '/../config.php';
+require __DIR__ . '/../../bootstrap.php';
+require __DIR__ . '/../config.php';
 
 if (! $min_enableBuilder) {
     header('Content-Type: text/plain');

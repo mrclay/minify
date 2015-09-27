@@ -10,7 +10,7 @@
  * @package Minify
  */
 
-require dirname(__FILE__) . '/../vendor/bootstrap.php';
+require __DIR__ . '/../bootstrap.php';
 
 /*
  * Get an HTML-escaped Minify URI for a group or set of files. By default, URIs

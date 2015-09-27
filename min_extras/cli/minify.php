@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-require dirname(dirname(__DIR__)) . '/vendor/bootstrap.php';
+require __DIR__ . '/../../bootstrap.php';
 
 $cli = new MrClay\Cli;
 

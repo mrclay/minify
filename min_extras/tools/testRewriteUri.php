@@ -1,6 +1,6 @@
 <?php
 
-require dirname(__FILE__) . '/../../vendor/bootstrap.php';
+require __DIR__ . '/../../bootstrap.php';
 
 header('Content-Type: text/html;charset=utf-8');
 

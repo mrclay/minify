@@ -3,7 +3,7 @@
  * Fetch and minify a URL (auto-detect HTML/JS/CSS)
  */
 
-require dirname(__FILE__) . '/../../vendor/bootstrap.php';
+require __DIR__ . '/../../bootstrap.php';
 
 function getPost($key) {
     if (! isset($_POST[$key])) {

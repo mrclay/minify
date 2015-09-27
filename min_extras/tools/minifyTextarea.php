@@ -1,6 +1,6 @@
 <?php
 
-require dirname(__FILE__) . '/../../vendor/bootstrap.php';
+require __DIR__ . '/../../bootstrap.php';
 
 function getPost($key) {
     return get_magic_quotes_gpc()

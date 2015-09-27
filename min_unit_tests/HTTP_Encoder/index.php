@@ -1,7 +1,7 @@
 <?php
 ini_set('display_errors', 'on');
 
-require dirname(__FILE__) . '/../../vendor/bootstrap.php';
+require __DIR__ . '/../../bootstrap.php';
 
 if (!isset($_GET['test'])) {
     $type = 'text/html';

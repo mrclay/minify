@@ -7,7 +7,7 @@
  * @package Minify
  */
 
-require dirname(__FILE__). '/../vendor/bootstrap.php';
+require __DIR__ . '/../bootstrap.php';
 
 define('MINIFY_MIN_DIR', dirname(__FILE__));
 

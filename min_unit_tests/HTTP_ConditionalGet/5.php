@@ -1,6 +1,6 @@
 <?php
 
-require dirname(__FILE__) . '/../../vendor/bootstrap.php';
+require __DIR__ . '/../../bootstrap.php';
 
 // far expires
 $cg = new HTTP_ConditionalGet(array(

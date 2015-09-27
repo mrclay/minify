@@ -3,4 +3,3 @@
 /.idea/
 .DS_Store
 /vendor/
-!/vendor/bootstrap.php
