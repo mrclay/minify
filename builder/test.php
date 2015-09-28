@@ -6,7 +6,7 @@ exit;
 $_oc = ini_get('zlib.output_compression');
 
 // allow access only if builder is enabled
-require dirname(__FILE__) . '/../config.php';
+require __DIR__ . '/../config.php';
 if (! $min_enableBuilder) {
     exit;
 }

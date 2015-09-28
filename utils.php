@@ -4,13 +4,13 @@
  *
  * @warning These functions execute min/groupsConfig.php, sometimes multiple times.
  * You must make sure that functions are not redefined, and if your use custom sources,
- * you must require_once dirname(__FILE__) . '/lib/Minify/Source.php' so that
+ * you must require_once __DIR__ . '/lib/Minify/Source.php' so that
  * class is available.
  *
  * @package Minify
  */
 
-require __DIR__ . '/../bootstrap.php';
+require __DIR__ . '/bootstrap.php';
 
 /*
  * Get an HTML-escaped Minify URI for a group or set of files. By default, URIs
@@ -56,7 +56,7 @@ function Minify_mtime($keysAndFiles, $groupsConfigFile = null)
 {
     $gc = null;
     if (! $groupsConfigFile) {
-        $groupsConfigFile = dirname(__FILE__) . '/groupsConfig.php';
+        $groupsConfigFile = __DIR__ . '/groupsConfig.php';
     }
     $sources = array();
     foreach ($keysAndFiles as $keyOrFile) {

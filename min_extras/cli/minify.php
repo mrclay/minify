@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+die('Must be rewritten for new API');
+
 require __DIR__ . '/../../bootstrap.php';
 
 $cli = new MrClay\Cli;

@@ -96,7 +96,7 @@ if (isset($_POST['url'])) {
     
     if ($type['minify'] === 'text/html') {
         if (isset($_POST['minJs'])) {
-            $sourceSpec['minifyOptions']['jsMinifier'] = array('JSMin', 'minify');
+            $sourceSpec['minifyOptions']['jsMinifier'] = array('JSMin\\JSMin', 'minify');
         }
         if (isset($_POST['minCss'])) {
             $sourceSpec['minifyOptions']['cssMinifier'] = array('Minify_CSS', 'minify');

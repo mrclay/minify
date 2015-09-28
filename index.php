@@ -7,15 +7,13 @@
  * @package Minify
  */
 
-require __DIR__ . '/../bootstrap.php';
-
-define('MINIFY_MIN_DIR', dirname(__FILE__));
+require __DIR__ . '/bootstrap.php';
 
 // set config path defaults
 $min_configPaths = array(
-    'base'   => MINIFY_MIN_DIR . '/config.php',
-    'test'   => MINIFY_MIN_DIR . '/config-test.php',
-    'groups' => MINIFY_MIN_DIR . '/groupsConfig.php',
+    'base'   => __DIR__ . '/config.php',
+    'test'   => __DIR__ . '/config-test.php',
+    'groups' => __DIR__ . '/groupsConfig.php',
 );
 
 // check for custom config paths

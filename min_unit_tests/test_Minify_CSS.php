@@ -5,7 +5,7 @@ function test_CSS()
 {
     global $thisDir;
     
-    $cssPath = dirname(__FILE__) . '/_test_files/css';
+    $cssPath = __DIR__ . '/_test_files/css';
     
     // build test file list
     $d = dir($cssPath);

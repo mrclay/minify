@@ -31,7 +31,7 @@ if (isset($_POST['method']) && $_POST['method'] === 'Minify and serve') {
     $sourceSpec['content'] = $textIn;
     $sourceSpec['id'] = 'foo';
     if (isset($_POST['minJs'])) {
-        $sourceSpec['minifyOptions']['jsMinifier'] = array('JSMin', 'minify');
+        $sourceSpec['minifyOptions']['jsMinifier'] = array('JSMin\\JSMin', 'minify');
     }
     if (isset($_POST['minCss'])) {
         $sourceSpec['minifyOptions']['cssMinifier'] = array('Minify_CSS', 'minify');
@@ -50,7 +50,7 @@ if (isset($_POST['method']) && $_POST['method'] === 'Minify and serve') {
 }
 
 $tpl = array();
-$tpl['classes'] = array('Minify_HTML', 'JSMin', 'Minify_CSS', 'Minify_CSSmin', 'JSMinPlus');
+$tpl['classes'] = array('Minify_HTML', 'JSMin\\JSMin', 'Minify_CSS', 'Minify_CSSmin', 'JSMinPlus');
 
 if (isset($_POST['method']) && in_array($_POST['method'], $tpl['classes'])) {
 
@@ -58,7 +58,7 @@ if (isset($_POST['method']) && in_array($_POST['method'], $tpl['classes'])) {
     if ($_POST['method'] === 'Minify_HTML') {
         $args[] = array(
             'cssMinifier' => array('Minify_CSS', 'minify')
-            ,'jsMinifier' => array('JSMin', 'minify')
+            ,'jsMinifier' => array('JSMin\\JSMin', 'minify')
         );
     }
     $func = array($_POST['method'], 'minify');

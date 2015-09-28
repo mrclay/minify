@@ -17,7 +17,7 @@
 		"wiki": "https://github.com/mrclay/minify/blob/master/docs"
 	},
 	"autoload": {
-		"classmap": ["min/lib/"]
+		"classmap": ["lib/"]
 	},
 	"require": {
 		"ext-pcre": "*",

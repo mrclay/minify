@@ -1,7 +1,9 @@
 <?php
+// comment this out to run tests
+die('This script is disabled.');
 
 require __DIR__ . '/../bootstrap.php';
-require __DIR__ . '/../min/config.php';
+require __DIR__ . '/../config.php';
 
 // set cache path and doc root if configured
 $minifyCachePath = isset($min_cachePath) 
@@ -23,7 +25,7 @@ ini_set('display_errors', 1);
 
 header('Content-Type: text/plain;charset=utf-8');
 
-$thisDir = dirname(__FILE__);
+$thisDir = __DIR__;
 
 /**
  * pTest - PHP Unit Tester

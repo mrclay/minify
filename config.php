@@ -10,7 +10,7 @@
 /**
  * Allow use of the Minify URI Builder app. Only set this to true while you need it.
  */
-$min_enableBuilder = false;
+$min_enableBuilder = true;
 
 
 /**
@@ -78,7 +78,7 @@ $min_allowDebugFlag = false;
  * second line. The third line might work on some Apache servers.
  */
 $min_documentRoot = '';
-//$min_documentRoot = dirname(dirname(dirname(__FILE__)));
+//$min_documentRoot = dirname(dirname(__DIR__));
 //$min_documentRoot = substr(__FILE__, 0, -15);
 //$min_documentRoot = $_SERVER['SUBDOMAIN_DOCUMENT_ROOT'];
 

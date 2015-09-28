@@ -33,7 +33,7 @@ p span {padding:0 .5em;}
     ob_end_clean();
 
 } elseif ($_GET['test'] == '1') {
-    $content = file_get_contents(dirname(__FILE__) . '/green.png');
+    $content = file_get_contents(__DIR__ . '/green.png');
     $type = 'image/png';
 
 } elseif ($_GET['test'] == '2') {
