@@ -1,4 +1,5 @@
 <?php
+die('Must be rewritten for new API');
 
 require __DIR__ . '/../../bootstrap.php';
 

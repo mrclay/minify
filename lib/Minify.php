@@ -20,11 +20,11 @@
  * @author Stephen Clay <steve@mrclay.org>
  * @copyright 2008 Ryan Grove, Stephen Clay. All rights reserved.
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
- * @link http://code.google.com/p/minify/
+ * @link https://github.com/mrclay/minify
  */
 class Minify {
     
-    const VERSION = '2.2.0';
+    const VERSION = '3.0.0';
     const TYPE_CSS = 'text/css';
     const TYPE_HTML = 'text/html';
     // there is some debate over the ideal JS Content-Type, but this is the

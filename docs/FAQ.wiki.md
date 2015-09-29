@@ -1,39 +1,22 @@
-## Minify doesn't compress as much as product XYZ. Why not?
+## Minify (JSMin) doesn't compress as much as product XYZ. Why not?
 
-Out of the box, Minify uses algorithms available in PHP, which frankly aren't as solid as competing products, but I consider them _good enough_. At this point I don't have time to work on further tweaking, so if you must have _perfect_ minification you can explore the CookBook to plug in other minifiers. If you'd like to propose specific tweaks in the algorithm (and don't have a patch), please propose these in the Google Group, not the issue tracker.
+The simple JSMin algorithm is the most reliable in PHP, but check the [CookBook](CookBook.wiki.md) to plug in other minifiers.
 
 ## How fast is it?
 
-With Minify you will ideally serve _fewer_ requests, but Minify can be slower than your HTTPd serving flat files. If you have a high-traffic site with hundreds of simultaneous requests from new users, you should probably:
+Certainly not as fast as an HTTPd serving flat files. On a high-traffic site:
 
-  * Use the [APC/Memcache adapters](CookBook.md).
-  * Revision your Minify URIs (so far-off Expires headers will be sent). One way to do this is using [predefined groups](http://code.google.com/p/minify/source/browse/tags/release_2.1.3/min/README.txt#69) and the [Minify\_groupUri()](http://code.google.com/p/minify/source/browse/tags/release_2.1.3/min/utils.php#13) utility function.
-  * Place your HTTPd behind a [reverse proxy](http://www.squid-cache.org/Intro/why.dyn) to cache the Minify URLs.
-  * Benchmark Minify on your development server before rolling out to production.
-
-### Will it get faster?
-
-Ideally, but a couple [other goals](ProjectGoals.md) come first. For Apache users we're designing a feature to enable [minified and pre-encoded files to be served directly from the HTTPd](http://mrclay.org/index.php/2008/05/25/apache-http-encoding-negotiation-notes/). Requests will not execute PHP at all and be blazingly fast (for varying definitions of "blazingly").
-
-## How does it compare with other services?
-
-Yahoo's [Combo Handler](http://yuiblog.com/blog/2008/07/16/combohandler/) and Google's [AJAX Libraries API](http://code.google.com/apis/ajaxlibs/) both serve content from their heavy-duty [CDN](http://en.wikipedia.org/wiki/Content_Delivery_Network)s and _potentially_ increase the chance that your visitor will already have a file in her browser cache. Neither service serves custom content that you provide. You may wish to use these services to serve popular libraries and Minify to serve your code.
-
-## Is this where I get support for...
-
-If you get a link to this page in response to a request for help, please make sure that you're using the software downloaded from [this project](http://code.google.com/p/minify/) (or [on github](https://github.com/mrclay/minify)), and have followed the [directions](UserGuide.md).
-
-There are many projects with "minify" in the title/description but don't have anything to do with this project, or which many only use a few [components](ComponentClasses.md) from this project.
-
-Although you may be able to get support for usage of the components, the [Google Group](http://groups.google.com/group/minify) members/project owners may not be able to offer any helpful advice with unrelated projects.
-
+  * **Use a reverse proxy** to cache the Minify URLs. This is by far the most important tip.
+  * Revision your Minify URIs (so far-off Expires headers will be sent). One way to do this is using [groups](UserGuide.wiki.md#using-groups-for-nicer-urls) and the [Minify_groupUri()](UserGuide.wiki.md#far-future-expires-headers) utility function. Without this, clients will re-request Minify URLs every 30 minutes to check for updates.
+  * Use the [APC/Memcache adapters](CookBook.wiki.md).
+  
 ## Does it support gzip compression?
 
-Yes. Based on the browser's Accept-Encoding header, Minify will serve content encoded with deflate or gzip.
+Yes. Based on the browser's Accept-Encoding header.
 
-## Does it work with PHP opcode caches like APC and eAccelerator?
+## Does it work with PHP opcode caches?
 
-Of course, and you can also use [APC for content caching](CookBook.wiki.md).
+Yes, and you can also use [APC for content caching](CookBook.wiki.md).
 
 ## Can it minify remote files/the output of dynamic scripts?
 
@@ -41,25 +24,23 @@ Of course, and you can also use [APC for content caching](CookBook.wiki.md).
 
 ## Is there a minifier for HTML?
 
-Yes, the class `Minify_HTML` does this. It also can accept callbacks to minify embedded STYLE and SCRIPT elements.
-
-Since Minify_HTML is not fast, there's no _easy way_ to integrate it into dynamic pages, and you'll have to search the archives for ideas of how to use it. One opportunity would be when storing HTML (assuming writes are infrequent); e.g., in a DB keep one copy for editing and one minified for serving.
-
-Minify is not suited for _serving_ HTML pages on a site, though it can be done for small numbers of static pages. Look at `Minify_Controller_Page`.
+The class `Minify_HTML` can do this (and minify embedded STYLE and SCRIPT elements), but it's too slow to use directly. You'd want to integrate it into a system that caches the output. E.g., in a CMS, keep one copy for editing and one minified for serving.
 
 ## How does it ensure that the client can't request files it shouldn't have access to?
 
-In 2.1, by default, Minify allows files to be specified using the URI, or using pre-configured sets of files. With URI-specified files, Minify is [very careful](Security.wiki.md) to serve only JS/CSS files that are already public on your server, but if you hide public directories--with .htaccess, e.g.--Minify can't know that. Obvious Tip: don't put sensitive info in JS/CSS files inside DOC\_ROOT :)
+Minify allows files to be specified using the URI, or using pre-configured sets of files. With URI-specified files, Minify is very careful to serve only JS/CSS files that are already public on your server, but if you hide public directories--with .htaccess, e.g.--Minify can't know that. Obvious Tip: don't put sensitive info in JS/CSS files inside DOC_ROOT :)
 
 An included option can disable URI-specified files so Minify will serve only the pre-configured file sets.
 
 ## Is it used in production by any large-scale websites?
 
-I'd love to know. 2.1.1 had 54K downloads and I know the library is powering several [plugins](http://mrclay.org/index.php/2009/01/10/minify-getting-out-there/) these days, at least 3 for WordPress.
+The libraries are used in many CMS's and frameworks, but the use of `index.php` to serve URLs like http://example.com/min/f=hello.js probably is rare. Minify is made to drop in place to boost small to medium sites not already built for performance. 
+
+Version 2.1.1 had 54K downloads.
 
 ## Can I use it with my commercial website or product?
 
-Yes. Minify is distributed under the [New BSD License](http://www.opensource.org/licenses/bsd-license.php), which means that you're free to use, modify, and redistribute Minify or derivative works thereof, even for commercial purposes, as long as you comply with a few simple requirements. See the [LICENSE.txt](https://github.com/mrclay/minify/blob/master/LICENSE.txt) file for details.
+Yes. Minify is distributed under the [New BSD License](http://www.opensource.org/licenses/bsd-license.php).
 
 ## How can I tell if my server cache is working?
 

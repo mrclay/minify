@@ -9,6 +9,7 @@
  *
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
+ * @deprecated Use Composer (/vendor/autoload.php)
  */
 class Minify_Loader {
     public function loadClass($class)

@@ -69,5 +69,5 @@ You can enable the script `min/server-info.php` and open http://example.org/min/
 
   1. Make sure you have the latest version.
   1. Enable [debug mode](Debugging.wiki.md), which will show you the URI transformation process.
-  1. Check that `$_SERVER['DOCUMENT_ROOT']` is a real directory path. If not, URI rewriting will fail. If you cannot fix this in httpd.conf, etc., use the [configuration option](http://code.google.com/p/minify/source/browse/min/config.php?r=292#47).
+  1. Check that `$_SERVER['DOCUMENT_ROOT']` is the correct directory path. If not, URI rewriting will fail. If you cannot fix this in httpd.conf, etc., set `$min_documentRoot` in config.php.
   1. Paste your [debug mode](Debugging.wiki.md) comment block into a new post on the [minify mailing list](http://groups.google.com/group/minify).

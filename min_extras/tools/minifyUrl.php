@@ -1,4 +1,5 @@
 <?php
+die('Must be rewritten for new API');
 /**
  * Fetch and minify a URL (auto-detect HTML/JS/CSS)
  */
