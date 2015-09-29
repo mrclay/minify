@@ -8,6 +8,10 @@ See [UriRewriting](UriRewriting.wiki.md).
 
 This is usually due to an unusual server setup. You can see the cause of 400 responses using FirePHP (See [Debugging](Debugging.wiki.md)).
 
+## Long URL parameters are ignored
+
+Some server setups will refuse to populate very long `$_GET` params. Use groups to shorten the URLs.
+
 ## PHP/Apache crashes
 
 [PCRE (which provides regular expressions) commonly crashes PHP](https://www.google.com/search?q=pcre+php+crash) and this is nearly impossible to solve in PHP code. Things to try:
