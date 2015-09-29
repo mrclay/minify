@@ -51,7 +51,7 @@ If your server supports mod_rewrite, this URL should also work:
 Configuration & Usage
 ---------------------
 
-See the MIN.txt file and the [user guide](https://github.com/mrclay/minify/blob/master/docs/UserGuide.wiki.md)
+See the [user guide](https://github.com/mrclay/minify/blob/master/docs/UserGuide.wiki.md)!
 
 Minify also comes with a [URI Builder application](https://github.com/mrclay/minify/blob/master/docs/BuilderApp.wiki.md) that can help you write URLs
 for use with Minify or configure groups of files.
