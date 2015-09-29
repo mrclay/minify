@@ -398,30 +398,30 @@ class Minify {
      * 
      * @param array $sources array of filepaths and/or Minify_Source objects
      * 
-     * @param array $options (optional) array of options for serve. By default
-     * these are already set: quiet = true, encodeMethod = '', lastModifiedTime = 0.
+     * @param array $options (optional) array of options for serve.
      * 
      * @return string
      */
     public function combine($sources, $options = array())
     {
-        throw new BadMethodCallException(__METHOD__ . ' needs to be rewritten/replaced');
-
-        $cache = $this->cache;
+        $tmpCache = $this->cache;
         $this->cache = new Minify_Cache_Null();
 
-        $options = array_merge(array(
+        $env = new Minify_Env();
+        $sourceFactory = new Minify_Source_Factory($env, [
+            'checkAllowDirs' => false,
+        ], $this->cache);
+        $controller = new Minify_Controller_Files($env, $sourceFactory);
+
+        $options = array_merge($options, array(
             'files' => (array)$sources,
             'quiet' => true,
             'encodeMethod' => '',
             'lastModifiedTime' => 0,
-        ), $options);
-
-        $sourceFactory = new Minify_Source_Factory($this->env);
-        $controller = new Minify_Controller_Files($this->env, $sourceFactory);
+        ));
         $out = $this->serve($controller, $options);
 
-        $this->cache = $cache;
+        $this->cache = $tmpCache;
         return $out['content'];
     }
 
