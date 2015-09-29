@@ -187,5 +187,15 @@ $min_symlinks = array();
 $min_uploaderHoursBehind = 0;
 
 
+/**
+ * Advanced: you can replace some of the PHP classes Minify uses to serve requests.
+ * To do this, assign a callable to one of the elements of the $min_factories array.
+ *
+ * You can see the default implementations (and what gets passed in) in index.php.
+ */
+//$min_factories['minify'] = ... a callable
+//$min_factories['controller'] = ... a callable
+
+
 // try to disable output_compression (may not have an effect)
 ini_set('zlib.output_compression', '0');
