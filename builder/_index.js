@@ -25,7 +25,7 @@ var MUB = {
      * Get markup for new source LI element
      */
     newLi : function () {
-        return '<li id="li' + MUB._uid + '">http://' + location.host + '/<input type=text size=20>' +
+        return '<li id="li' + MUB._uid + '">' + location.protocol + '//' + location.host + '/<input type=text size=20>' +
         ' <button class="btn btn-danger btn-sm" title="Remove">x</button> <button class="btn btn-default btn-sm" title="Include Earlier">&uarr;</button>' +
         ' <button class="btn btn-default btn-sm" title="Include Later">&darr;</button> <span></span></li>';
     },
