@@ -35,14 +35,14 @@ To change minifier, set `minifier` to a [callback](http://php.net/manual/en/lang
 ```php
 $src1 = new Minify_Source(array(
     'filepath' => '//js/file1.js',
-    'minifier' => ['JSMinPlus', 'minify'],
+    'minifier' => 'myJsMinifier',
 ));
 $src2 = new Minify_Source(array(
     'filepath' => '//js/file2.js',
     'minifier' => '', // don't compress
 ));
 ```
-In the above, `JSMinPlus.php` is only loaded when the contents of `$src1` is needed.
+In the above, `JmyJsMinifier()` is only called when the contents of `$src1` is needed.
 
 **`*`Do _not_ use `create_function()` or anonymous functions for the minifier.** The internal names of these function tend to vary, causing endless cache misses, killing performance and filling cache storage up.
 

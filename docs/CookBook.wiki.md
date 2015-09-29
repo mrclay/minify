@@ -75,16 +75,6 @@ function yuiCss($css, $options) {
 $min_serveOptions['minifiers'][Minify::TYPE_CSS] = 'yuiCss';
 ```
 
-## JSMin+
-
-Minify 2.1.3 comes with Tino Zijdel's [JSMin+](http://crisp.tweakblogs.net/blog/1665/a-new-javascript-minifier-jsmin+.html) 1.1. This is a full parser based on a port of [Narcissus](http://en.wikipedia.org/wiki/Narcissus_(JavaScript_engine)). To try it out:
-```php
-$min_serveOptions['minifiers'][Minify::TYPE_JS] = array('JSMinPlus', 'minify');
-```
-This should yield smaller javascript files, but I've tested this only briefly. For production you may want to get the [latest version](http://crisp.tweakblogs.net/blog/cat/716) (you must rename it: `min/lib/JSMinPlus.php`).
-
-Note: JSMin+ is memory intensive, so be prepared to up your memory limit. Also it does not preserve comments that begin with `/*!` like JSMin does.
-
 ## Legacy CSS compressor
 
 In 3.x, Minify uses [CSSmin](https://github.com/tubalmartin/YUI-CSS-compressor-PHP-port), a PHP port of the YUI CSS compressor. To use the compressor that came with Minify 2.x (not recommended), uncomment this line in your `config.php` file:

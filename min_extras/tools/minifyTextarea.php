@@ -51,7 +51,7 @@ if (isset($_POST['method']) && $_POST['method'] === 'Minify and serve') {
 }
 
 $tpl = array();
-$tpl['classes'] = array('Minify_HTML', 'JSMin\\JSMin', 'Minify_CSS', 'Minify_CSS', 'JSMinPlus');
+$tpl['classes'] = array('Minify_HTML', 'JSMin\\JSMin', 'Minify_CSS', 'Minify_CSS');
 
 if (isset($_POST['method']) && in_array($_POST['method'], $tpl['classes'])) {
 

@@ -4,6 +4,7 @@
 * New API incompatible with the 2.x versions
 * Installation requires use of Composer to install dependencies
 * Add config option for simply concatenating files
+* Removed JSMin+ (unmaintained, high memory usage)
 
 ## Version 2.2.1 (2014-10-30)
 * Builder styled with Bootstrap (thanks to help from acidvertigo)
