@@ -107,9 +107,10 @@ $minify = call_user_func($min_factories['minify'], $cache);
 
 if (!$env->get('f') && $env->get('g') === null) {
     // no spec given
+    $msg = '<p>No "f" or "g" parameters were detected.</p>';
+    $url = 'https://github.com/mrclay/minify/blob/master/docs/CommonProblems.wiki.md#long-url-parameters-are-ignored';
     $defaults = $minify->getDefaultOptions();
-    $url = 'https://github.com/mrclay/minify/blob/master/docs/UserGuide.wiki.md#creating-minify-urls';
-    $minify->errorExit($defaults['badRequestHeader'], $url);
+    $minify->errorExit($defaults['badRequestHeader'], $url, $msg);
 }
 
 $sourceFactoryOptions = array();

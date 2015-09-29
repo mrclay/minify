@@ -428,14 +428,15 @@ class Minify {
     /**
      * Show an error page
      *
-     * @param string $header E.g. 'HTTP/1.0 500 Internal Server Error'
-     * @param string $url    URL to direct the user to
+     * @param string $header  Full header. E.g. 'HTTP/1.0 500 Internal Server Error'
+     * @param string $url     URL to direct the user to
+     * @param string $msgHtml HTML message for the client
      *
      * @return void
      * @internal This is not part of the public API and is subject to change
      * @access private
      */
-    public function errorExit($header, $url)
+    public function errorExit($header, $url = '', $msgHtml = '')
     {
         $url = htmlspecialchars($url, ENT_QUOTES);
         list(,$h1) = explode(' ', $header, 2);
@@ -445,7 +446,12 @@ class Minify {
         header($header, true, $code);
         header('Content-Type: text/html; charset=utf-8');
         echo "<h1>$h1</h1>";
-        echo "<p>Please see <a href='$url'>$url</a>.</p>";
+        if ($msgHtml) {
+            echo $msgHtml;
+        }
+        if ($url) {
+            echo "<p>Please see <a href='$url'>$url</a>.</p>";
+        }
         exit;
     }
 
