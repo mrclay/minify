@@ -84,7 +84,7 @@ class Minify {
             'encodeLevel' => 9,
 
             'minifiers' => array(
-                Minify::TYPE_JS => array('JSMin', 'minify'),
+                Minify::TYPE_JS => array('JSMin\\JSMin', 'minify'),
                 Minify::TYPE_CSS => array('Minify_CSS', 'minify'),
                 Minify::TYPE_HTML => array('Minify_HTML', 'minify'),
             ),

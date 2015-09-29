@@ -13,7 +13,7 @@
 class Minify_Loader {
     public function loadClass($class)
     {
-        $file = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR;
+        $file = dirname(__DIR__) . DIRECTORY_SEPARATOR;
         $file .= strtr($class, "\\_", DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR) . '.php';
         if (is_readable($file)) {
             require $file;

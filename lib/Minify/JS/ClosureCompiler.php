@@ -68,7 +68,7 @@ class Minify_JS_ClosureCompiler {
     /**
      * @var callable Function to minify JS if service fails. Default is JSMin
      */
-    protected $fallbackMinifier = array('JSMin', 'minify');
+    protected $fallbackMinifier = array('JSMin\\JSMin', 'minify');
 
     /**
      * Minify JavaScript code via HTTP request to a Closure Compiler API

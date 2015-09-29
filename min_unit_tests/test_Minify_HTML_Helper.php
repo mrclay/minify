@@ -35,7 +35,7 @@ function test_Minify_HTML_Helper()
     ));
     $passed = assertTrue($actual === $expected, 'Minify_HTML_Helper : existing group');
 
-    $utilsFile = dirname(dirname(__FILE__)) . '/min/utils.php';
+    $utilsFile = dirname(__DIR__) . '/min/utils.php';
     if (is_file($utilsFile)) {
         require_once $utilsFile;
 

@@ -145,7 +145,7 @@ Then create a new file, for example "min.php" in your site root. The contents of
 this file could look like this:
 
 <?php
-$customConfigDirectory = dirname(__FILE__) . '/min-configs';
+$customConfigDirectory = __DIR__ . '/min-configs';
 $min_customConfigPaths = array(
     'base'   => $customConfigDirectory . '/config.php',
     'test'   => $customConfigDirectory . '/config-test.php',

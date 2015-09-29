@@ -26,7 +26,7 @@ if (! empty($_POST)) {
     }
 }
 
-$defaultCurrentDir = dirname(__FILE__);
+$defaultCurrentDir = __DIR__;
 $defaultDocRoot = realpath($_SERVER['DOCUMENT_ROOT']);
 $defaultSymLink = '//symlinkPath';
 $defaultSymTarget = ($defaultCurrentDir[0] === '/') ? '/tmp' : 'C:\\WINDOWS\\Temp';

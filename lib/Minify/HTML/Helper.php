@@ -115,7 +115,7 @@ class Minify_HTML_Helper {
         $this->_groupKey = $key;
         if ($checkLastModified) {
             if (! $this->groupsConfigFile) {
-                $this->groupsConfigFile = dirname(dirname(dirname(dirname(__FILE__)))) . '/groupsConfig.php';
+                $this->groupsConfigFile = dirname(dirname(dirname(__DIR__))) . '/groupsConfig.php';
             }
             if (is_file($this->groupsConfigFile)) {
                 $gc = (require $this->groupsConfigFile);

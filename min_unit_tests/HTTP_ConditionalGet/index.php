@@ -28,7 +28,7 @@ property is false, you echo the content.</p>
 
 require '_include.php';
 
-echo send_slowly(get_content(array(
+send_slowly(get_content(array(
     'title' => $title
     ,'explain' => $explain
 )));
