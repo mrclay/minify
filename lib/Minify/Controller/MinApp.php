@@ -33,10 +33,21 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             array(
                 'groupsOnly' => false,
                 'groups' => array(),
+                'symlinks' => array(),
             )
             ,(isset($options['minApp']) ? $options['minApp'] : array())
         );
         unset($options['minApp']);
+
+        // normalize $symlinks in order to map to target
+        $symlinks = array();
+        foreach ($localOptions['symlinks'] as $link => $target) {
+            if (0 === strpos($link, '//')) {
+                $link = rtrim(substr($link, 1), '/') . '/';
+                $target = rtrim($target, '/\\');
+                $symlinks[$link] = $target;
+            }
+        }
 
         $sources = array();
         $selectionId = '';
@@ -126,6 +137,14 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             foreach ($files as $file) {
                 $uri = $base . $file;
                 $path = $this->env->getDocRoot() . $uri;
+
+                // try to rewrite path
+                foreach ($symlinks as $link => $target) {
+                    if (0 === strpos($uri, $link)) {
+                        $path = $target . DIRECTORY_SEPARATOR . substr($uri, strlen($link));
+                        break;
+                    }
+                }
 
                 try {
                     $source = $this->sourceFactory->makeSource(array(
