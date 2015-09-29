@@ -56,7 +56,7 @@ function test_Minify()
     }
 
     assertTrue(
-        ! class_exists('Minify_CSS', false)
+        ! class_exists('Minify_CSSmin', false)
         ,'Minify : minifier classes aren\'t loaded for 304s'
     );
 

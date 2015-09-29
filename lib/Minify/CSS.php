@@ -13,6 +13,8 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  * @author http://code.google.com/u/1stvamp/ (Issue 64 patch)
+ *
+ * @deprecated Use Minify_CSSmin
  */
 class Minify_CSS {
     

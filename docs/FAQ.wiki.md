@@ -1,13 +1,3 @@
-## Why do the CSS & HTML minifiers add so many line breaks?
-
-TL;DR: Ignore them. They don't add to the output size and if you absolutely want all content on one line you will have to use another tool.
-
-It's [rumored](https://github.com/yui/yuicompressor/blob/master/doc/README#L43) that some source control tools and old browsers don't like very long lines. Compressed files with shorter lines are also easier to diff.
-
-Since both Minify classes are regex-based, it would be very difficult/error-prone to count characters then try to re-establish context to add line breaks. Instead, both classes trade 1 space for 1 line break (`\n`) wherever possible, adding breaks but without adding bytes.
-
-If you can think of another safe & efficient way to limit lines in these two tools without adding bytes, please  submit a patch, but this is not something anyone should be worrying about.
-
 ## Minify doesn't compress as much as product XYZ. Why not?
 
 Out of the box, Minify uses algorithms available in PHP, which frankly aren't as solid as competing products, but I consider them _good enough_. At this point I don't have time to work on further tweaking, so if you must have _perfect_ minification you can explore the CookBook to plug in other minifiers. If you'd like to propose specific tweaks in the algorithm (and don't have a patch), please propose these in the Google Group, not the issue tracker.

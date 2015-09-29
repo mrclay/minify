@@ -99,7 +99,7 @@ if (isset($_POST['url'])) {
             $sourceSpec['minifyOptions']['jsMinifier'] = array('JSMin\\JSMin', 'minify');
         }
         if (isset($_POST['minCss'])) {
-            $sourceSpec['minifyOptions']['cssMinifier'] = array('Minify_CSS', 'minify');
+            $sourceSpec['minifyOptions']['cssMinifier'] = array('Minify_CSSmin', 'minify');
         }
     }
        
