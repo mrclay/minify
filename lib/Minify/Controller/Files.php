@@ -9,20 +9,35 @@
  * 
  * E.g. the following would serve the minified Javascript for a site
  * <code>
- * Minify::serve('Files', array(
- *     'files' => array(
- *         '//js/jquery.js'
- *         ,'//js/plugins.js'
- *         ,'/home/username/file.js'
- *     )
- * ));
+ * $options = [
+ *     'checkAllowDirs' => false, // allow files to be anywhere
+ * ];
+ * $sourceFactory = new Minify_Source_Factory($env, $options, $cache);
+ * $controller = new Minify_Controller_Files($env, $sourceFactory);
+ * $minify->serve($controller, [
+ *     'files' => [
+ *         '//js/jquery.js',
+ *         '//js/plugins.js',
+ *         '/home/username/file.js',
+ *     ],
+ * ]);
  * </code>
  *
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_Controller_Files extends Minify_Controller_Base {
-    
+
+    /**
+     * @param Minify_Env            $env           Environment
+     * @param Minify_Source_Factory $sourceFactory Source factory. If you need to serve files from any path, this
+     *                                             component must have its "checkAllowDirs" option set to false.
+     */
+    public function __construct(Minify_Env $env, Minify_Source_Factory $sourceFactory)
+    {
+        parent::__construct($env, $sourceFactory);
+    }
+
     /**
      * Set up file sources
      * 
