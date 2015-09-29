@@ -4,6 +4,8 @@
 * New API incompatible with the 2.x versions
 * Installation requires use of Composer to install dependencies
 * Add config option for simply concatenating files
+* Add config option for altering creation of Minify/MinApp objects
+* Missing spec no longer redirects, instead links to docs
 * Removed JSMin+ (unmaintained, high memory usage)
 
 ## Version 2.2.1 (2014-10-30)
