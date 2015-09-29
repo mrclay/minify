@@ -4,6 +4,6 @@ It also does some run-time checks of your PHP and Minify configuration to look f
 
 After installation, this is found at **`http://example.com/min/builder/`**
 
-You must enable it by editing `min/config.php` and setting `$min_enableBuilder = true;`
+You must enable it by editing `config.php` and setting `$min_enableBuilder = true;`
 
 After use, you should disable it by resetting `$min_enableBuilder = false;`
