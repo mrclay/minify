@@ -1,13 +1,3 @@
-## Why do the CSS & HTML minifiers add so many line breaks?
-
-TL;DR: Ignore them. They don't add to the output size and if you absolutely want all content on one line you will have to use another tool.
-
-It's [rumored](https://github.com/yui/yuicompressor/blob/master/doc/README#L43) that some source control tools and old browsers don't like very long lines. Compressed files with shorter lines are also easier to diff.
-
-Since both Minify classes are regex-based, it would be very difficult/error-prone to count characters then try to re-establish context to add line breaks. Instead, both classes trade 1 space for 1 line break (`\n`) wherever possible, adding breaks but without adding bytes.
-
-If you can think of another safe & efficient way to limit lines in these two tools without adding bytes, please  submit a patch, but this is not something anyone should be worrying about.
-
 ## Minify doesn't compress as much as product XYZ. Why not?
 
 Out of the box, Minify uses algorithms available in PHP, which frankly aren't as solid as competing products, but I consider them _good enough_. At this point I don't have time to work on further tweaking, so if you must have _perfect_ minification you can explore the CookBook to plug in other minifiers. If you'd like to propose specific tweaks in the algorithm (and don't have a patch), please propose these in the Google Group, not the issue tracker.
@@ -43,24 +33,23 @@ Yes. Based on the browser's Accept-Encoding header, Minify will serve content en
 
 ## Does it work with PHP opcode caches like APC and eAccelerator?
 
-Of course, and you can also use [APC for content caching](CookBook.md).
+Of course, and you can also use [APC for content caching](CookBook.wiki.md).
 
 ## Can it minify remote files/the output of dynamic scripts?
 
-[Yes](http://code.google.com/p/minify/wiki/CustomSource#Non-File_Sources), but it's not a straightforward setup, and probably best avoided.
+[Yes](CustomSource.wiki.md#non-file-sources), but it's not a straightforward setup, and probably best avoided.
 
 ## Is there a minifier for HTML?
 
-Yes, but only in the form of a PHP class: [Minify\_HTML](http://code.google.com/p/minify/source/browse/min/lib/Minify/HTML.php).
-It also can accept callbacks to minify embedded STYLE and SCRIPT elements.
+Yes, the class `Minify_HTML` does this. It also can accept callbacks to minify embedded STYLE and SCRIPT elements.
 
-Since Minify\_HTML is not fast, there's no _easy way_ to integrate it into dynamic pages, and you'll have to search the archives for ideas of how to use it. One opportunity would be when storing HTML (assuming writes are infrequent); e.g., in a DB keep one copy for editing and one minified for serving.
+Since Minify_HTML is not fast, there's no _easy way_ to integrate it into dynamic pages, and you'll have to search the archives for ideas of how to use it. One opportunity would be when storing HTML (assuming writes are infrequent); e.g., in a DB keep one copy for editing and one minified for serving.
 
-Minify is not suited for _serving_ HTML pages on a site, though it can be done for small numbers of static pages. Look the the [Page controller](http://code.google.com/p/minify/source/browse/min/lib/Minify/Controller/Page.php).
+Minify is not suited for _serving_ HTML pages on a site, though it can be done for small numbers of static pages. Look at `Minify_Controller_Page`.
 
 ## How does it ensure that the client can't request files it shouldn't have access to?
 
-In 2.1, by default, Minify allows files to be specified using the URI, or using pre-configured sets of files. With URI-specified files, Minify is [very careful](Security.md) to serve only JS/CSS files that are already public on your server, but if you hide public directories--with .htaccess, e.g.--Minify can't know that. Obvious Tip: don't put sensitive info in JS/CSS files inside DOC\_ROOT :)
+In 2.1, by default, Minify allows files to be specified using the URI, or using pre-configured sets of files. With URI-specified files, Minify is [very careful](Security.wiki.md) to serve only JS/CSS files that are already public on your server, but if you hide public directories--with .htaccess, e.g.--Minify can't know that. Obvious Tip: don't put sensitive info in JS/CSS files inside DOC\_ROOT :)
 
 An included option can disable URI-specified files so Minify will serve only the pre-configured file sets.
 
@@ -70,10 +59,10 @@ I'd love to know. 2.1.1 had 54K downloads and I know the library is powering sev
 
 ## Can I use it with my commercial website or product?
 
-Yes. Minify is distributed under the [New BSD License](http://www.opensource.org/licenses/bsd-license.php), which means that you're free to use, modify, and redistribute Minify or derivative works thereof, even for commercial purposes, as long as you comply with a few simple requirements. See the [LICENSE.txt](http://code.google.com/p/minify/source/browse/LICENSE.txt) file for details.
+Yes. Minify is distributed under the [New BSD License](http://www.opensource.org/licenses/bsd-license.php), which means that you're free to use, modify, and redistribute Minify or derivative works thereof, even for commercial purposes, as long as you comply with a few simple requirements. See the [LICENSE.txt](https://github.com/mrclay/minify/blob/master/LICENSE.txt) file for details.
 
 ## How can I tell if my server cache is working?
 
-The easiest way is to place a Minify URL directly in your browser's address bar and refresh (F5), which should override the client-side caching that Minify specifies and force Minify to send you a complete response. With cache working, this response should take 100ms or so. Without cache, multiple seconds. (You can get accurate response times using an HTTP inspector like Firebug.)
+The easiest way is to place a Minify URL directly in your browser's address bar and refresh (F5), which should override the client-side caching that Minify specifies and force Minify to send you a complete response. With cache working, this response should take 100ms or so. Without cache, it could be multiple seconds.
 
-If you have file access to the server you can check your cache path directly for filenames beginning with "minify
+If you have file access to the server you can check your cache path directly for filenames beginning with `minify_`.

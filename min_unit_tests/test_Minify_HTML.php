@@ -10,7 +10,7 @@ function test_HTML()
     
     $time = microtime(true);
     $minOutput = Minify_HTML::minify($src, array(
-        'cssMinifier' => array('Minify_CSS', 'minify')
+        'cssMinifier' => array('Minify_CSSmin', 'minify')
         ,'jsMinifier' => array('JSMin\\JSMin', 'minify')
     ));
     $time = microtime(true) - $time;
@@ -33,7 +33,7 @@ function test_HTML()
     
     $time = microtime(true);
     $minOutput = Minify_HTML::minify($src, array(
-        'cssMinifier' => array('Minify_CSS', 'minify')
+        'cssMinifier' => array('Minify_CSSmin', 'minify')
         ,'jsMinifier' => array('JSMin\\JSMin', 'minify')
     ));
     $time = microtime(true) - $time;

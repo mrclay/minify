@@ -85,7 +85,7 @@ class Minify {
 
             'minifiers' => array(
                 Minify::TYPE_JS => array('JSMin\\JSMin', 'minify'),
-                Minify::TYPE_CSS => array('Minify_CSS', 'minify'),
+                Minify::TYPE_CSS => array('Minify_CSSmin', 'minify'),
                 Minify::TYPE_HTML => array('Minify_HTML', 'minify'),
             ),
             'minifierOptions' => array(), // no minifier options
@@ -293,7 +293,7 @@ class Minify {
                 if ($this->options['contentType'] === self::TYPE_JS) {
                     $source->setMinifier("");
                 } elseif ($this->options['contentType'] === self::TYPE_CSS) {
-                    $source->setMinifier(array('Minify_CSS', 'minify'));
+                    $source->setMinifier(array('Minify_CSSmin', 'minify'));
                     $sourceOpts = $source->getMinifierOptions();
                     $sourceOpts['compress'] = false;
                     $source->setMinifierOptions($sourceOpts);

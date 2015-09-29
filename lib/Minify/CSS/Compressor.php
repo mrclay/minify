@@ -13,10 +13,18 @@
  * including the ie5/mac filter (and its inversion), but expect tricky
  * hacks involving comment tokens in 'content' value strings to break
  * minimization badly. A test suite is available.
- * 
+ *
+ * Note: This replaces a lot of spaces with line breaks. It's rumored
+ * (https://github.com/yui/yuicompressor/blob/master/README.md#global-options)
+ * that some source control tools and old browsers don't like very long lines.
+ * Compressed files with shorter lines are also easier to diff. If this is
+ * unacceptable please use CSSmin instead.
+ *
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  * @author http://code.google.com/u/1stvamp/ (Issue 64 patch)
+ *
+ * @deprecated Use CSSmin (tubalmartin/cssmin)
  */
 class Minify_CSS_Compressor {
 

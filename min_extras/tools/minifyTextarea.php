@@ -34,7 +34,7 @@ if (isset($_POST['method']) && $_POST['method'] === 'Minify and serve') {
         $sourceSpec['minifyOptions']['jsMinifier'] = array('JSMin\\JSMin', 'minify');
     }
     if (isset($_POST['minCss'])) {
-        $sourceSpec['minifyOptions']['cssMinifier'] = array('Minify_CSS', 'minify');
+        $sourceSpec['minifyOptions']['cssMinifier'] = array('Minify_CSSmin', 'minify');
     }
     $source = new Minify_Source($sourceSpec);
     Minify_Logger::setLogger(FirePHP::getInstance(true));
@@ -50,14 +50,14 @@ if (isset($_POST['method']) && $_POST['method'] === 'Minify and serve') {
 }
 
 $tpl = array();
-$tpl['classes'] = array('Minify_HTML', 'JSMin\\JSMin', 'Minify_CSS', 'Minify_CSSmin', 'JSMinPlus');
+$tpl['classes'] = array('Minify_HTML', 'JSMin\\JSMin', 'Minify_CSS', 'Minify_CSS', 'JSMinPlus');
 
 if (isset($_POST['method']) && in_array($_POST['method'], $tpl['classes'])) {
 
     $args = array($textIn);
     if ($_POST['method'] === 'Minify_HTML') {
         $args[] = array(
-            'cssMinifier' => array('Minify_CSS', 'minify')
+            'cssMinifier' => array('Minify_CSSmin', 'minify')
             ,'jsMinifier' => array('JSMin\\JSMin', 'minify')
         );
     }

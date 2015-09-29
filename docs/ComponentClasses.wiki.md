@@ -1,5 +1,7 @@
 # PHP5 Component Classes
 
+(This information is not updated for version 3)
+
 | **Class** | **Functionality** |
 |:----------|:------------------|
 | [Minify](http://code.google.com/p/minify/source/browse/min/lib/Minify.php) | Combine, process, and serve pieces of content (usually CSS/JS files). Almost all behavior is configurable including request handling (via [controllers](http://code.google.com/p/minify/source/browse/min/lib/Minify/Controller/)), HTTP headers & encoding, caching ([file/APC/memcached](http://code.google.com/p/minify/source/browse/min/lib/Minify/Cache/)), and compression functions (by default, the classes below) |

@@ -1,6 +1,9 @@
 Minify Release History
 
-(master)
+Version 3.0.0
+    * Better CSS minification via Túbal Martín's CSSMin
+    * New API incompatible with the 2.x versions
+    * Installation requires use of Composer to install dependencies
     * Builder styled with Bootstrap (thanks to help from acidvertigo)
     * Add config option for simply concatenating files
 
