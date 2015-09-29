@@ -5,9 +5,11 @@ javascript:(function() {
        ,o
        ,home = (location + '').split('/').splice(0, 3).join('/') + '/';
     function add(uri) {
-        return (0 === uri.indexOf(home))
-            && (!/[\?&]/.test(uri))
-            && uris.push(escape(uri.substr(home.length)));
+        if (0 !== uri.indexOf(home)) {
+            return;
+        }
+        uri = uri.replace(/\?.*/, '');
+        uris.push(escape(uri.substr(home.length)));
     };
     function sheet(ss) {
         // we must check the domain with add() before accessing ss.cssRules
