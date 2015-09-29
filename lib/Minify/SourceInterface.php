@@ -47,7 +47,7 @@ interface Minify_SourceInterface {
     /**
      * Get the content type
      *
-     * @return string
+     * @return string|null
      */
     public function getContentType();
 

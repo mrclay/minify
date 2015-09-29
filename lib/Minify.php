@@ -652,9 +652,24 @@ class Minify {
 
         $type = null;
         foreach ($this->sources as $source) {
+            $sourceType = $source->getContentType();
+
+            if (!empty($options['contentType'])) {
+                // just verify sources have null content type or match the options
+                if ($sourceType !== null && $sourceType !== $options['contentType']) {
+                    // TODO better logging
+                    Minify_Logger::log('ContentType mismatch');
+
+                    $this->sources = array();
+                    return $options;
+                }
+
+                continue;
+            }
+
             if ($type === null) {
-                $type = $source->getContentType();
-            } elseif ($source->getContentType() !== $type) {
+                $type = $sourceType;
+            } elseif ($sourceType !== $type) {
 
                 // TODO better logging
                 Minify_Logger::log('ContentType mismatch');
@@ -663,10 +678,13 @@ class Minify {
                 return $options;
             }
         }
-        if (null === $type) {
-            $type = 'text/plain';
+
+        if (empty($options['contentType'])) {
+            if (null === $type) {
+                $type = 'text/plain';
+            }
+            $options['contentType'] = $type;
         }
-        $options['contentType'] = $type;
 
         // last modified is needed for caching, even if setExpires is set
         if (!isset($options['lastModifiedTime'])) {
