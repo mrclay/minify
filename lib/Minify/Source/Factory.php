@@ -56,7 +56,9 @@ class Minify_Source_Factory {
         // resolve // in allowDirs
         $docRoot = $env->getDocRoot();
         foreach ($this->options['allowDirs'] as $i => $dir) {
-            $this->options['allowDirs'][$i] = $docRoot . substr($dir, 1);
+            if (0 === strpos($dir, '//')) {
+                $this->options['allowDirs'][$i] = $docRoot . substr($dir, 1);
+            }
         }
 
         if ($this->options['fileChecker'] && !is_callable($this->options['fileChecker'])) {
