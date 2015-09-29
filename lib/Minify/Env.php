@@ -3,7 +3,7 @@
 class Minify_Env {
 
     /**
-     * @return null
+     * @return string
      */
     public function getDocRoot()
     {
@@ -11,7 +11,7 @@ class Minify_Env {
     }
 
     /**
-     * @return null
+     * @return string
      */
     public function getRequestUri()
     {
@@ -29,6 +29,8 @@ class Minify_Env {
         $this->server = $options['server'];
         if (empty($this->server['DOCUMENT_ROOT'])) {
             $this->server['DOCUMENT_ROOT'] = $this->computeDocRoot($options['server']);
+        } else {
+            $this->server['DOCUMENT_ROOT'] = rtrim($this->server['DOCUMENT_ROOT'], '/\\');
         }
         $this->get = $options['get'];
         $this->cookie = $options['cookie'];
