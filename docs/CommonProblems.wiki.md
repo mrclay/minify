@@ -10,7 +10,7 @@ This is usually due to an unusual server setup. You can see the cause of 400 res
 
 ## Long URL parameters are ignored
 
-Some server setups will refuse to populate very long `$_GET` params. Use groups to shorten the URLs.
+Some server setups will refuse to populate very long `$_GET` params. Use [groups](UserGuide.wiki.md#using-groups-for-nicer-urls) to shorten the URLs.
 
 ## PHP/Apache crashes
 
