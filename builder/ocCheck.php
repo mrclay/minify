@@ -24,8 +24,8 @@ if (isset($_GET['hello'])) {
     
     HTTP_Encoder::$encodeToIe6  = true; // just in case
     $he = new HTTP_Encoder(array(
-        'content' => 'World!'
-        ,'method' => 'deflate'
+        'content' => str_repeat('0123456789', 500),
+        'method' => 'deflate',
     ));
     $he->encode();
     $he->sendAll();

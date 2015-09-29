@@ -187,7 +187,11 @@ by Minify. E.g. <code>@import "<span class=minRoot>/min/?</span>g=css2";</code><
         var url = 'ocCheck.php?' + (new Date()).getTime();
         $.get(url, function (ocStatus) {
             $.get(url + '&hello=1', function (ocHello) {
-                if (ocHello != 'World!') {
+                var expected = [];
+                for (var i = 0; i < 500; i++) {
+                    expected.push('0123456789');
+                }
+                if (ocHello != expected.join('')) {
                     msg += 'It appears output is being automatically compressed, interfering '
                          + ' with Minify\'s own compression. ';
                     if (ocStatus == '1')
