@@ -26,7 +26,7 @@ $min_serveOptions['rewriteCssUris'] = false;
 You can manually rewrite relative URIs in CSS in a couple ways. The simplest is to prepend a string to each relative URI:
 ```php
 $min_serveOptions['rewriteCssUris'] = false;
-$min_serveOptions['minifierOptions'][MINIFY::TYPE_CSS]['prependRelativePath'] = '/css/';
+$min_serveOptions['minifierOptions'][Minify::TYPE_CSS]['prependRelativePath'] = '/css/';
 ```
 
 Or you can run the minified output through a custom [post-processor](CookBook.wiki.md#Processing_Output_After_Minification.md) function.
