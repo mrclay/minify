@@ -22,7 +22,7 @@ Minify: Something bad happened!
 
 When Javascript errors occur, or URIs in CSS files are incorrectly rewritten, enable "debug mode" to ease debugging combined files:
 
-  1. Set `$min_allowDebugFlag = 'true'` in config.php
+  1. Set `$min_allowDebugFlag = true;` in config.php
   1. Append `&debug` to the Minify URI. E.g. `/min/?f=script1.js,script2.js&debug` (or use the bookmarklet provided by /min/builder/)
 
 In "debug mode":
