@@ -408,9 +408,9 @@ class Minify {
         $this->cache = new Minify_Cache_Null();
 
         $env = new Minify_Env();
-        $sourceFactory = new Minify_Source_Factory($env, [
+        $sourceFactory = new Minify_Source_Factory($env, array(
             'checkAllowDirs' => false,
-        ], $this->cache);
+        ), $this->cache);
         $controller = new Minify_Controller_Files($env, $sourceFactory);
 
         $options = array_merge($options, array(
