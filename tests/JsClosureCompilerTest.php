@@ -15,7 +15,7 @@ class JsClosureCompilerTest extends PHPUnit_Framework_TestCase {
 		$minOutput = Minify_JS_ClosureCompiler::minify($src);
 
 		// Too many recent calls to Closure Compiler API to test.\n";
-		$this->assertNotContains($minOutput, 'Error(22): Too many compiles');
+		$this->assertNotContains('Error(22): Too many compiles', $minOutput);
 
 		$this->assertSame($minExpected, $minOutput, 'Minify_JS_ClosureCompiler : Overall');
 	}
