@@ -16,7 +16,8 @@ class TestCase extends PHPUnit_Framework_TestCase
      *
      * @link http://stackoverflow.com/q/2736343/2314626
      */
-    public function test_does_nothing() {
+    public function test_does_nothing()
+    {
 
     }
 }
