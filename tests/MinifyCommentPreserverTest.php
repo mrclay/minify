@@ -1,6 +1,6 @@
 <?php
 
-class MinifyBuildTest extends TestCase
+class MinifyCommentPreserverTest extends TestCase
 {
     public function test()
     {
