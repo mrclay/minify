@@ -11,7 +11,6 @@ require 'test_Minify_CSS.php';
 require 'test_Minify_CSS_UriRewriter.php';
 require 'test_Minify_ClosureCompiler.php';
 require 'test_Minify_YuiCSS.php';
-require 'test_Minify_CommentPreserver.php';
 require 'test_Minify_HTML.php';
 require 'test_Minify_ImportProcessor.php';
 require 'test_Minify_Lines.php';
