@@ -11,7 +11,6 @@ require 'test_Minify_Cache_ZendPlatform.php';
 require 'test_Minify_CSS.php';
 require 'test_Minify_CSS_UriRewriter.php';
 require 'test_Minify_ClosureCompiler.php';
-require 'test_Minify_JS_ClosureCompiler.php';
 require 'test_Minify_YuiCSS.php';
 require 'test_Minify_CommentPreserver.php';
 require 'test_Minify_HTML.php';
