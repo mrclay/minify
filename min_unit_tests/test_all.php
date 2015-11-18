@@ -1,7 +1,6 @@
 <?php
 
 require 'test_Minify.php';
-require 'test_Minify_Build.php';
 require 'test_Minify_HTML_Helper.php';
 require 'test_Minify_Cache_APC.php';
 require 'test_Minify_Cache_File.php';
@@ -18,5 +17,4 @@ require 'test_Minify_ImportProcessor.php';
 require 'test_Minify_Lines.php';
 require 'test_HTTP_Encoder.php';
 require 'test_HTTP_ConditionalGet.php';
-require 'test_JSMin.php';
 require 'test_environment.php';
