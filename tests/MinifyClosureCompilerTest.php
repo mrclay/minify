@@ -17,10 +17,11 @@ class MinifyClosureCompilerTest extends TestCase
     }
 
     /*
-     * Test minification w/o setting the necessary settings
+     * Test minimisation w/o setting the necessary settings
      */
     public function test1()
     {
+        // clear params
         Minify_ClosureCompiler::$jarFile = null;
         Minify_ClosureCompiler::$tempDir = null;
         try {
@@ -29,10 +30,12 @@ class MinifyClosureCompilerTest extends TestCase
         } catch (Exception $e) {
             $this->assertInstanceOf('Minify_ClosureCompiler_Exception', $e);
         }
+        // redo init to make other tests pass
+        self::setupBeforeClass();
     }
 
     /**
-     * Test minification with the minimum necessary settings
+     * Test minimisation with the minimum necessary settings
      */
     public function test2()
     {
@@ -52,7 +55,7 @@ class MinifyClosureCompilerTest extends TestCase
     }
 
     /**
-     * Test minification with advanced compilation level
+     * Test minimisation with advanced compilation level
      */
     public function test3()
     {
@@ -67,6 +70,7 @@ class MinifyClosureCompilerTest extends TestCase
 
     protected function assertHasCompilerJar()
     {
+        $this->assertNotEmpty(Minify_ClosureCompiler::$jarFile);
         $this->assertFileExists(Minify_ClosureCompiler::$jarFile, "Have closure compiler compiler.jar");
     }
 }
