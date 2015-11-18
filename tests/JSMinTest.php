@@ -2,16 +2,8 @@
 
 use JSMin\JSMin;
 
-class JsMinTest extends PHPUnit_Framework_TestCase
+class JsMinTest extends TestCase
 {
-    /** @var string */
-    static $test_files;
-
-    public static function setupBeforeClass()
-    {
-        self::$test_files = __DIR__ . '/../min_unit_tests/_test_files';
-    }
-
     public function test1()
     {
         $src = file_get_contents(self::$test_files . '/js/before.js');
