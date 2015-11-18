@@ -8,7 +8,7 @@ class MinifyClosureCompilerTest extends TestCase
         Minify_ClosureCompiler::$isDebug = true;
 
         // To test more functionality, download a compiler.jar from
-        // https://code.google.com/p/closure-compiler/wiki/BinaryDownloads,
+        // https://github.com/google/closure-compiler#getting-started,
         // put it under tests dir as 'compiler.jar'
 
         // set minimum necessary settings
