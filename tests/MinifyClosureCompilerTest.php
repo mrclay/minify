@@ -39,7 +39,7 @@ class MinifyClosureCompilerTest extends TestCase
      */
     public function test2()
     {
-        $this->assertHasCompilerJar();
+        $this->assertHasJar();
         $src = "
     (function (window, undefined){
         function addOne(input) {
@@ -59,7 +59,7 @@ class MinifyClosureCompilerTest extends TestCase
      */
     public function test3()
     {
-        $this->assertHasCompilerJar();
+        $this->assertHasJar();
         $src = "function unused() {};";
         $minExpected = '';
         $minOutput = Minify_ClosureCompiler::minify($src, array(
@@ -68,7 +68,7 @@ class MinifyClosureCompilerTest extends TestCase
         $this->assertSame($minExpected, $minOutput, 'advanced optimizations');
     }
 
-    protected function assertHasCompilerJar()
+    protected function assertHasJar()
     {
         $this->assertNotEmpty(Minify_ClosureCompiler::$jarFile);
         $this->assertFileExists(Minify_ClosureCompiler::$jarFile, "Have closure compiler compiler.jar");
