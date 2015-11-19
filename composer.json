@@ -22,12 +22,16 @@
 	"require": {
 		"ext-pcre": "*",
 		"firephp/firephp-core": "~0.4.0",
+		"mrclay/jsmin-php": "~2",
 		"php": ">=5.3.0",
-		"tubalmartin/cssmin": "~2.4.8",
-		"mrclay/jsmin-php": "~2"
+		"tubalmartin/cssmin": "~2.4.8"
 	},
-	"suggest": {
+	"require-dev": {
 		"leafo/lessphp": "~0.4.0",
 		"meenie/javascript-packer": "~1.1"
+	}
+	"suggest": {
+		"leafo/lessphp": "LESS support",
+		"meenie/javascript-packer": "Keep track of the Packer PHP port using Composer"
 	}
 }
