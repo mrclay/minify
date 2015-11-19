@@ -1,148 +1,146 @@
 <?php
-require_once '_inc.php';
 
-function test_HTTP_Encoder()
+class HTTPEncoderTest extends TestCase
 {
-    global $thisDir;
-    
-    HTTP_Encoder::$encodeToIe6 = true;
-    $methodTests = array(
-        array(
-            'ua' => 'Any browser'
-            ,'ae' => 'compress, x-gzip'
-            ,'exp' => array('gzip', 'x-gzip')
-            ,'desc' => 'recognize "x-gzip" as gzip'
-        )
-        ,array(
-            'ua' => 'Any browser'
-            ,'ae' => 'compress, x-gzip;q=0.5'
-            ,'exp' => array('gzip', 'x-gzip')
-            ,'desc' => 'gzip w/ non-zero q'
-        )
-        ,array(
-            'ua' => 'Any browser'
-            ,'ae' => 'compress, x-gzip;q=0'
-            ,'exp' => array('compress', 'compress')
-            ,'desc' => 'gzip w/ zero q'
-        )
-        ,array(
-            'ua' => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)'
-            ,'ae' => 'gzip, deflate'
-            ,'exp' => array('', '')
-            ,'desc' => 'IE6 w/o "enhanced security"'
-        )
-        ,array(
-            'ua' => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)'
-            ,'ae' => 'gzip, deflate'
-            ,'exp' => array('gzip', 'gzip')
-            ,'desc' => 'IE6 w/ "enhanced security"'
-        )
-        ,array(
-            'ua' => 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.01)'
-            ,'ae' => 'gzip, deflate'
-            ,'exp' => array('', '')
-            ,'desc' => 'IE5.5'
-        )
-        ,array(
-            'ua' => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; en) Opera 9.25'
-            ,'ae' => 'gzip,deflate'
-            ,'exp' => array('gzip', 'gzip')
-            ,'desc' => 'Opera identifying as IE6'
-        )
-    );
-    foreach ($methodTests as $test) {
-        $_SERVER['HTTP_USER_AGENT'] = $test['ua'];
-        $_SERVER['HTTP_ACCEPT_ENCODING'] = $test['ae'];
-        $exp = $test['exp'];
+    /**
+     * @dataProvider testToIe6Data
+     * @preserveGlobals
+     */
+    public function testToIe6($ua, $ae, $exp, $desc)
+    {
+        HTTP_Encoder::$encodeToIe6 = true;
+
+        $_SERVER['HTTP_USER_AGENT'] = $ua;
+        $_SERVER['HTTP_ACCEPT_ENCODING'] = $ae;
         $ret = HTTP_Encoder::getAcceptedEncoding();
-        $passed = assertTrue($exp == $ret, 'HTTP_Encoder : ' . $test['desc']);
-        
-        if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
-            echo "\n--- AE | UA = {$test['ae']} | {$test['ua']}\n";
-            echo "Expected = " . preg_replace('/\\s+/', ' ', var_export($exp, 1)) . "\n";
-            echo "Returned = " . preg_replace('/\\s+/', ' ', var_export($ret, 1)) . "\n\n";
-        }
+        $this->assertSame($exp, $ret, $desc);
     }
-    HTTP_Encoder::$encodeToIe6 = false;
-    $methodTests = array(
-        array(
-            'ua' => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)'
-            ,'ae' => 'gzip, deflate'
-            ,'exp' => array('', '')
-            ,'desc' => 'IE6 w/ "enhanced security"'
-        )
-    );
-    foreach ($methodTests as $test) {
-        $_SERVER['HTTP_USER_AGENT'] = $test['ua'];
-        $_SERVER['HTTP_ACCEPT_ENCODING'] = $test['ae'];
-        $exp = $test['exp'];
+
+    public function testToIe6Data()
+    {
+        return array(
+            array(
+                'ua' => 'Any browser',
+                'ae' => 'compress, x-gzip',
+                'exp' => array('gzip', 'x-gzip'),
+                'desc' => 'recognize "x-gzip" as gzip',
+            ),
+            array(
+                'ua' => 'Any browser',
+                'ae' => 'compress, x-gzip;q=0.5',
+                'exp' => array('gzip', 'x-gzip'),
+                'desc' => 'gzip w/ non-zero q',
+            ),
+            array(
+                'ua' => 'Any browser',
+                'ae' => 'compress, x-gzip;q=0',
+                'exp' => array('compress', 'compress'),
+                'desc' => 'gzip w/ zero q',
+            ),
+            array(
+                'ua' => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)',
+                'ae' => 'gzip, deflate',
+                'exp' => array('', ''),
+                'desc' => 'IE6 w/o "enhanced security"',
+            ),
+            array(
+                'ua' => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)',
+                'ae' => 'gzip, deflate',
+                'exp' => array('gzip', 'gzip'),
+                'desc' => 'IE6 w/ "enhanced security"',
+            ),
+            array(
+                'ua' => 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.01)',
+                'ae' => 'gzip, deflate',
+                'exp' => array('', ''),
+                'desc' => 'IE5.5',
+            ),
+            array(
+                'ua' => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; en) Opera 9.25',
+                'ae' => 'gzip,deflate',
+                'exp' => array('gzip', 'gzip'),
+                'desc' => 'Opera identifying as IE6',
+            ),
+        );
+    }
+
+    /**
+     * @dataProvider testEncodeNonIeData
+     */
+    public function testEncodeNonIe($ua, $ae, $exp, $desc)
+    {
+        HTTP_Encoder::$encodeToIe6 = false;
+
+        $_SERVER['HTTP_USER_AGENT'] = $ua;
+        $_SERVER['HTTP_ACCEPT_ENCODING'] = $ae;
         $ret = HTTP_Encoder::getAcceptedEncoding();
-        $passed = assertTrue($exp == $ret, 'HTTP_Encoder : ' . $test['desc']);
-        
-        if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
-            echo "\n--- AE | UA = {$test['ae']} | {$test['ua']}\n";
-            echo "Expected = " . preg_replace('/\\s+/', ' ', var_export($exp, 1)) . "\n";
-            echo "Returned = " . preg_replace('/\\s+/', ' ', var_export($ret, 1)) . "\n\n";
+        $this->assertSame($exp, $ret, $desc);
+    }
+
+    public function testEncodeNonIeData()
+    {
+        return array(
+            array(
+                'ua' => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)',
+                'ae' => 'gzip, deflate',
+                'exp' => array('', ''),
+                'desc' => 'IE6 w/ "enhanced security"',
+            )
+        );
+    }
+
+    public function testZlibEncode()
+    {
+        $have_zlib = function_exists('gzdeflate');
+        if (!$have_zlib) {
+            $this->markTestSkipped('Zlib support is not present in PHP. Encoding cannot be performed/tested.');
         }
-    }
-    
-    if (! function_exists('gzdeflate')) {
-        echo "!WARN: HTTP_Encoder : Zlib support is not present in PHP. Encoding cannot be performed/tested.\n";
-        return;
-    }
-    
-    // test compression of varied content (HTML,JS, & CSS)
 
-    $variedContent = file_get_contents($thisDir . '/_test_files/html/before.html')
-        . file_get_contents($thisDir . '/_test_files/css/subsilver.css')
-        . file_get_contents($thisDir . '/_test_files/js/jquery-1.2.3.js');
-    $variedLength = countBytes($variedContent);
-    
-    $encodingTests = array(
-        array('method' => 'deflate', 'inv' => 'gzinflate', 'exp' => 32268)
-        ,array('method' => 'gzip', 'inv' => '_gzdecode', 'exp' => 32286)
-        ,array('method' => 'compress', 'inv' => 'gzuncompress', 'exp' => 32325)
-    );
-    
-    foreach ($encodingTests as $test) {
-        $e = new HTTP_Encoder(array(
-            'content' => $variedContent
-            ,'method' => $test['method']
-        ));
-        $e->encode(9);
-        $ret = countBytes($e->getContent());
-        
-        // test uncompression
-        $roundTrip = @call_user_func($test['inv'], $e->getContent());
-        $desc = "HTTP_Encoder : {$test['method']} : uncompress possible";
-        $passed = assertTrue($variedContent == $roundTrip, $desc);
-        
-        // test expected compressed size
-        $desc = "HTTP_Encoder : {$test['method']} : compressed to "
-            . sprintf('%4.2f%% of original', $ret/$variedLength*100);
-        $passed = assertTrue(abs($ret - $test['exp']) < 100, $desc);
-        if (__FILE__ === realpath($_SERVER['SCRIPT_FILENAME'])) {
-            echo "\n--- {$test['method']}: expected bytes: "
-                , "{$test['exp']}. Returned: {$ret} "
-                , "(off by ". abs($ret - $test['exp']) . " bytes)\n\n";
+        // test compression of varied content (HTML,JS, & CSS)
+        $variedContent = file_get_contents(self::$test_files . '/html/before.html')
+            . file_get_contents(self::$test_files . '/css/subsilver.css')
+            . file_get_contents(self::$test_files . '/js/jquery-1.2.3.js');
+        $variedLength = $this->countBytes($variedContent);
+
+        $encodingTests = array(
+            array('method' => 'deflate', 'inv' => 'gzinflate', 'exp' => 32268),
+            array('method' => 'gzip', 'inv' => '_gzdecode', 'exp' => 32286),
+            array('method' => 'compress', 'inv' => 'gzuncompress', 'exp' => 32325),
+        );
+
+        foreach ($encodingTests as $test) {
+            $e = new HTTP_Encoder(array(
+                'content' => $variedContent,
+                'method' => $test['method'],
+            ));
+            $e->encode(9);
+            $ret = $this->countBytes($e->getContent());
+
+            // test uncompression
+            $roundTrip = @call_user_func($test['inv'], $e->getContent());
+            $desc = "{$test['method']} : uncompress possible";
+            $this->assertSame($variedContent, $roundTrip, $desc);
+
+            // test expected compressed size
+            $desc = "{$test['method']} : compressed to "
+                . sprintf('%4.2f%% of original', $ret / $variedLength * 100);
+            $this->assertLessThan(100, abs($ret - $test['exp']), $desc);
         }
+
+        HTTP_Encoder::$encodeToIe6 = true;
+        $_SERVER['HTTP_ACCEPT_ENCODING'] = 'identity';
+        $he = new HTTP_Encoder(array('content' => 'Hello'));
+        $he->encode();
+        $headers = $he->getHeaders();
+        $this->assertTrue(isset($headers['Vary']), 'Vary always sent to good browsers');
+
+        $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)';
+        $he = new HTTP_Encoder(array('content' => 'Hello'));
+        $he->encode();
+        $headers = $he->getHeaders();
+        $this->assertTrue(!isset($headers['Vary']), 'Vary not sent to bad IE (Issue 126)');
     }
-
-    HTTP_Encoder::$encodeToIe6 = true;
-    $_SERVER['HTTP_ACCEPT_ENCODING'] = 'identity';
-    $he = new HTTP_Encoder(array('content' => 'Hello'));
-    $he->encode();
-    $headers = $he->getHeaders();
-    assertTrue(isset($headers['Vary']), 'HTTP_Encoder : Vary always sent to good browsers');
-
-    $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)';
-    $he = new HTTP_Encoder(array('content' => 'Hello'));
-    $he->encode();
-    $headers = $he->getHeaders();
-    assertTrue(! isset($headers['Vary']), 'HTTP_Encoder : Vary not sent to bad IE (Issue 126)');
 }
-
-test_HTTP_Encoder();
 
 function _gzdecode($data)
 {
