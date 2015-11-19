@@ -14,103 +14,103 @@ class HTTPConditionalGetTest extends TestCase
         $lmTime = time() - 900;
         $gmtTime = gmdate('D, d M Y H:i:s \G\M\T', $lmTime);
 
-    $tests = array(
-        array(
-            'lm' => $lmTime,
-            'desc' => 'client has valid If-Modified-Since'
-            ,'inm' => null
-            ,'ims' => $gmtTime
-            ,'exp' => array(
-                'Vary' => 'Accept-Encoding'
-            	,'Last-Modified' => $gmtTime
-                ,'ETag' => "\"pri{$lmTime}\""
-                ,'Cache-Control' => 'max-age=0, private'
-                ,'_responseCode' => 'HTTP/1.0 304 Not Modified'
-                ,'isValid' => true
-            )
-        )
-        ,array(
-            'lm' => $lmTime,
-            'desc' => 'client has valid If-Modified-Since with trailing semicolon'
-            ,'inm' => null
-            ,'ims' => $gmtTime . ';'
-            ,'exp' => array(
-            	'Vary' => 'Accept-Encoding'
-            	,'Last-Modified' => $gmtTime
-                ,'ETag' => "\"pri{$lmTime}\""
-                ,'Cache-Control' => 'max-age=0, private'
-                ,'_responseCode' => 'HTTP/1.0 304 Not Modified'
-                ,'isValid' => true
-            )
-        )
-        ,array(
-            'lm' => $lmTime,
-            'desc' => 'client has valid ETag (non-encoded version)'
-            ,'inm' => "\"badEtagFoo\", \"pri{$lmTime}\""
-            ,'ims' => null
-            ,'exp' => array(
-                'Vary' => 'Accept-Encoding'
-            	,'Last-Modified' => $gmtTime
-                ,'ETag' => "\"pri{$lmTime}\""
-                ,'Cache-Control' => 'max-age=0, private'
-                ,'_responseCode' => 'HTTP/1.0 304 Not Modified'
-                ,'isValid' => true
-            )
-        )
-        ,array(
-            'lm' => $lmTime,
-            'desc' => 'client has valid ETag (gzip version)'
-            ,'inm' => "\"badEtagFoo\", \"pri{$lmTime};gz\""
-            ,'ims' => null
-            ,'exp' => array(
-                'Vary' => 'Accept-Encoding'
-            	,'Last-Modified' => $gmtTime
-                ,'ETag' => "\"pri{$lmTime};gz\""
-                ,'Cache-Control' => 'max-age=0, private'
-                ,'_responseCode' => 'HTTP/1.0 304 Not Modified'
-                ,'isValid' => true
-            )
-        )
-        ,array(
-            'lm' => $lmTime,
-            'desc' => 'no conditional get'
-            ,'inm' => null
-            ,'ims' => null
-            ,'exp' => array(
-                'Vary' => 'Accept-Encoding'
-            	,'Last-Modified' => $gmtTime
-                ,'ETag' => "\"pri{$lmTime};gz\""
-                ,'Cache-Control' => 'max-age=0, private'
-                ,'isValid' => false
-            )
-        )
-        ,array(
-            'lm' => $lmTime,
-            'desc' => 'client has invalid ETag'
-            ,'inm' => '"pri' . ($lmTime - 300) . '"'
-            ,'ims' => null
-            ,'exp' => array(
-                'Vary' => 'Accept-Encoding'
-            	,'Last-Modified' => $gmtTime
-                ,'ETag' => "\"pri{$lmTime};gz\""
-                ,'Cache-Control' => 'max-age=0, private'
-                ,'isValid' => false
-            )
-        )
-        ,array(
-            'lm' => $lmTime,
-            'desc' => 'client has invalid If-Modified-Since'
-            ,'inm' => null
-            ,'ims' => gmdate('D, d M Y H:i:s \G\M\T', $lmTime - 300)
-            ,'exp' => array(
-                'Vary' => 'Accept-Encoding'
-            	,'Last-Modified' => $gmtTime
-                ,'ETag' => "\"pri{$lmTime};gz\""
-                ,'Cache-Control' => 'max-age=0, private'
-                ,'isValid' => false
-            )
-        )
-    );
+        $tests = array(
+            array(
+                'lm' => $lmTime,
+                'desc' => 'client has valid If-Modified-Since',
+                'inm' => null,
+                'ims' => $gmtTime,
+                'exp' => array(
+                    'Vary' => 'Accept-Encoding',
+                    'Last-Modified' => $gmtTime,
+                    'ETag' => "\"pri{$lmTime}\"",
+                    'Cache-Control' => 'max-age=0, private',
+                    '_responseCode' => 'HTTP/1.0 304 Not Modified',
+                    'isValid' => true,
+                )
+            ),
+            array(
+                'lm' => $lmTime,
+                'desc' => 'client has valid If-Modified-Since with trailing semicolon',
+                'inm' => null,
+                'ims' => $gmtTime . ';',
+                'exp' => array(
+                    'Vary' => 'Accept-Encoding',
+                    'Last-Modified' => $gmtTime,
+                    'ETag' => "\"pri{$lmTime}\"",
+                    'Cache-Control' => 'max-age=0, private',
+                    '_responseCode' => 'HTTP/1.0 304 Not Modified',
+                    'isValid' => true,
+                ),
+            ),
+            array(
+                'lm' => $lmTime,
+                'desc' => 'client has valid ETag (non-encoded version)',
+                'inm' => "\"badEtagFoo\", \"pri{$lmTime}\"",
+                'ims' => null,
+                'exp' => array(
+                    'Vary' => 'Accept-Encoding',
+                    'Last-Modified' => $gmtTime,
+                    'ETag' => "\"pri{$lmTime}\"",
+                    'Cache-Control' => 'max-age=0, private',
+                    '_responseCode' => 'HTTP/1.0 304 Not Modified',
+                    'isValid' => true,
+                ),
+            ),
+            array(
+                'lm' => $lmTime,
+                'desc' => 'client has valid ETag (gzip version)',
+                'inm' => "\"badEtagFoo\", \"pri{$lmTime};gz\"",
+                'ims' => null,
+                'exp' => array(
+                    'Vary' => 'Accept-Encoding',
+                    'Last-Modified' => $gmtTime,
+                    'ETag' => "\"pri{$lmTime};gz\"",
+                    'Cache-Control' => 'max-age=0, private',
+                    '_responseCode' => 'HTTP/1.0 304 Not Modified',
+                    'isValid' => true,
+                ),
+            ),
+            array(
+                'lm' => $lmTime,
+                'desc' => 'no conditional get',
+                'inm' => null,
+                'ims' => null,
+                'exp' => array(
+                    'Vary' => 'Accept-Encoding',
+                    'Last-Modified' => $gmtTime,
+                    'ETag' => "\"pri{$lmTime};gz\"",
+                    'Cache-Control' => 'max-age=0, private',
+                    'isValid' => false,
+                ),
+            ),
+            array(
+                'lm' => $lmTime,
+                'desc' => 'client has invalid ETag',
+                'inm' => '"pri' . ($lmTime - 300) . '"',
+                'ims' => null,
+                'exp' => array(
+                    'Vary' => 'Accept-Encoding',
+                    'Last-Modified' => $gmtTime,
+                    'ETag' => "\"pri{$lmTime};gz\"",
+                    'Cache-Control' => 'max-age=0, private',
+                    'isValid' => false,
+                ),
+            ),
+            array(
+                'lm' => $lmTime,
+                'desc' => 'client has invalid If-Modified-Since',
+                'inm' => null,
+                'ims' => gmdate('D, d M Y H:i:s \G\M\T', $lmTime - 300),
+                'exp' => array(
+                    'Vary' => 'Accept-Encoding',
+                    'Last-Modified' => $gmtTime,
+                    'ETag' => "\"pri{$lmTime};gz\"",
+                    'Cache-Control' => 'max-age=0, private',
+                    'isValid' => false,
+                ),
+            ),
+        );
         return $tests;
     }
 
@@ -119,7 +119,6 @@ class HTTPConditionalGetTest extends TestCase
      */
     public function test_HTTP_ConditionalGet($lmTime, $desc, $inm, $ims, $exp)
     {
-
         // setup env
         if (null === $inm) {
             unset($_SERVER['HTTP_IF_NONE_MATCH']);
