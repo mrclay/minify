@@ -71,6 +71,10 @@ class MinifyClosureCompilerTest extends TestCase
     protected function assertHasJar()
     {
         $this->assertNotEmpty(Minify_ClosureCompiler::$jarFile);
-        $this->assertFileExists(Minify_ClosureCompiler::$jarFile, "Have closure compiler compiler.jar");
+        try {
+            $this->assertFileExists(Minify_ClosureCompiler::$jarFile, "Have closure compiler compiler.jar");
+        } catch (Exception $e) {
+            $this->markTestSkipped($e->getMessage());
+        }
     }
 }
