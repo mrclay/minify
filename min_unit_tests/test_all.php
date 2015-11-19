@@ -1,7 +1,6 @@
 <?php
 
 require 'test_Minify.php';
-require 'test_Minify_HTML_Helper.php';
 require 'test_Minify_CSS.php';
 require 'test_Minify_CSS_UriRewriter.php';
 require 'test_Minify_HTML.php';
