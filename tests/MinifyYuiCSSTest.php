@@ -6,12 +6,16 @@ class MinifyYuiCSSTest extends TestCase
     {
         parent::setupBeforeClass();
 
-        // To test this, install the .jar file and customize the constant in:
-
-        Minify_YUICompressor::$jarFile = '/usr/share/java/yuicompressor.jar';
+        // To test more functionality, download a yuicompressor.jar from
+        // https://github.com/yui/yuicompressor/releases
+        // put it under tests dir as 'yuicompressor.jar'
+        Minify_YUICompressor::$jarFile = __DIR__ . DIRECTORY_SEPARATOR . 'yuicompressor.jar';
         Minify_YUICompressor::$tempDir = sys_get_temp_dir();
     }
 
+    public function setUp() {
+        $this->assertHasJar();
+    }
 
     public function test1()
     {
@@ -39,5 +43,11 @@ class MinifyYuiCSSTest extends TestCase
         );
         $minOutput = Minify_YUICompressor::minifyCss($src, $options);
         $this->assertEquals($minExpected, $minOutput);
+    }
+
+    protected function assertHasJar()
+    {
+        $this->assertNotEmpty(Minify_YUICompressor::$jarFile );
+        $this->assertFileExists(Minify_YUICompressor::$jarFile , "Have YUI yuicompressor.jar");
     }
 }
