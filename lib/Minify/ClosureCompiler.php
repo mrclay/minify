@@ -131,7 +131,7 @@ class Minify_ClosureCompiler
      */
     protected function getCompilerCommandLine()
     {
-        self::checkJar(self::$jarFile);
+        $this->checkJar(self::$jarFile);
         $server = array(
             self::$javaExecutable,
             '-jar', escapeshellarg(self::$jarFile)
@@ -206,7 +206,7 @@ class Minify_ClosureCompiler
      */
     protected function dumpFile($dir, $content)
     {
-        self::checkTempdir($dir);
+        $this->checkTempdir($dir);
         $tmpFile = tempnam($dir, 'cc_');
         if (!$tmpFile) {
             throw new Minify_ClosureCompiler_Exception('Could not create temp file in "' . $dir . '".');
