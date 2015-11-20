@@ -17,9 +17,18 @@ class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler
     const NG_SERVER = 'com.martiansoftware.nailgun.NGServer';
     const CC_MAIN = 'com.google.javascript.jscomp.CommandLineRunner';
 
-    // exit code that ng gives
-    // FIXME: figure out the meaning of the value
-    const NG_EXIT_CODE = 227;
+    /**
+     * For some reasons Nailgun thinks that it's server
+     * broke the connection and returns 227 instead of 0
+     * We'll just handle this here instead of fixing
+     * the nailgun client itself.
+     *
+     * It also sometimes breaks on 229 on the devbox.
+     * To complete this whole madness and made future
+     * 'fixes' easier I added this nice little array...
+     * @var array
+     */
+    private static $NG_EXIT_CODES = array(0, 227, 229);
 
     /**
      * Filepath of "ng" executable (from Nailgun package)
@@ -87,7 +96,7 @@ class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler
 
         $command = $this->getCommand($options, $tmpFile);
 
-        return implode("\n", $this->shell($command, array(self::NG_EXIT_CODE)));
+        return implode("\n", $this->shell($command, self::$NG_EXIT_CODES));
     }
 
     private function startServer()
