@@ -1,0 +1,27 @@
+language: php
+
+php:
+  - 7.0
+  - 5.6
+  - 5.5
+  - 5.4
+  - 5.3
+  - hhvm
+
+matrix:
+  allow_failures:
+    - php: hhvm
+    - php: 7.0
+
+cache:
+  apt: true
+  directories:
+    - $HOME/.composer/cache
+
+install:
+  - composer install --no-interaction --prefer-source
+
+script:
+  - composer validate
+
+# vim:ts=2:sw=2:et
