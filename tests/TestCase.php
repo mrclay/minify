@@ -27,17 +27,6 @@ class TestCase extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Excluding from phpunit.xml does not work, even using dir,
-     * hence this dummy test.
-     *
-     * @link http://stackoverflow.com/q/2736343/2314626
-     */
-    public function test_does_nothing()
-    {
-
-    }
-
-    /**
      * Common assertion for cache tests.
      *
      * @param Minify_CacheInterface $cache
