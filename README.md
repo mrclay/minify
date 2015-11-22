@@ -30,7 +30,7 @@ Installation requires PHP 5.3+, SSH access, and access to tools like `git` and `
 cd /path/to/public_html
 git clone https://github.com/mrclay/minify.git min
 cd min
-composer install
+composer install --no-dev
 ```
 
 What this does:
@@ -68,8 +68,8 @@ Support
 Unit Testing
 ------------
 
-1. Install via Composer
-1. `composer run test`
+1. Install dev deps via Composer: `composer install`
+1. `composer test` or `phpunit`
 
 Warnings
 --------
