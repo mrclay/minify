@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3b310424d11e1cc08033569e5e1feffe",
-    "content-hash": "6291ede697cbc5ca3d88eff288bf4c1d",
+    "hash": "8fff39e05e32db6c5db728621920d5a8",
+    "content-hash": "a5445ad8eb86c3d5972bf73486dde168",
     "packages": [
         {
             "name": "firephp/firephp-core",
