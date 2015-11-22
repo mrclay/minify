@@ -19,6 +19,9 @@
 	"autoload": {
 		"classmap": ["lib/"]
 	},
+	"autoload-dev": {
+		"classmap": ["tests/TestCase.php"]
+	},
 	"require": {
 		"ext-pcre": "*",
 		"firephp/firephp-core": "~0.4.0",
@@ -28,10 +31,14 @@
 	},
 	"require-dev": {
 		"leafo/lessphp": "~0.4.0",
-		"meenie/javascript-packer": "~1.1"
+		"meenie/javascript-packer": "~1.1",
+		"phpunit/phpunit": "5.0.*"
 	},
 	"suggest": {
 		"leafo/lessphp": "LESS support",
 		"meenie/javascript-packer": "Keep track of the Packer PHP port using Composer"
+	},
+	"scripts": {
+		"test": "phpunit"
 	}
 }

@@ -21,8 +21,8 @@ if (! $cli->validate()) {
     if ($cli->isHelpRequest) {
         echo $cli->getArgumentsListing();
     }
-    echo "EXAMPLE: ./minify.php ../../min_unit_tests/_test_files/js/*.js\n";
-    echo "EXAMPLE: ./minify.php -d../.. ../../min_unit_tests/_test_files/css/*.css\n";
+    echo "EXAMPLE: ./minify.php ../../tests/_test_files/js/*.js\n";
+    echo "EXAMPLE: ./minify.php -d../.. ../../tests/_test_files/css/*.css\n";
     echo "EXAMPLE: echo \"var js = 'Awesome' && /cool/;\" | ./minify.php -t js\n";
     echo "EXAMPLE: echo \"sel > ector { prop: 'value  '; }\" | ./minify.php -t css\n";
     echo "\n";

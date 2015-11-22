@@ -18,7 +18,7 @@ if (! $cli->validate()) {
     if ($cli->isHelpRequest) {
         echo $cli->getArgumentsListing();
     }
-    echo "EXAMPLE: ./rewrite-uris.php -v -d../.. ../../min_unit_tests/_test_files/css/paths_rewrite.css ../../min_unit_tests/_test_files/css/comments.css
+    echo "EXAMPLE: ./rewrite-uris.php -v -d../.. ../../tests/_test_files/css/paths_rewrite.css ../../tests/_test_files/css/comments.css
     \n";
     exit(0);
 }

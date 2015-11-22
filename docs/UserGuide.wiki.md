@@ -128,4 +128,4 @@ url.rewrite-once = ( "^/min/([a-z]=.*)" => "/min/index.php?$1" )
 
 # Problems?
 
-See [CommonProblems](CommonProblems.wiki.md) and [Debugging](Debugging.wiki.md). You might also try [TestingMinify](TestingMinify.wiki.md) (running `test_environment.php` in particular).
+See [CommonProblems](CommonProblems.wiki.md) and [Debugging](Debugging.wiki.md). You might also try running `server-info.php` in particular.

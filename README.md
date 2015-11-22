@@ -68,10 +68,8 @@ Support
 Unit Testing
 ------------
 
-1. Open the file `min_unit_tests/_inc.php`.
-1. Enable the file by commenting out the `die()` statement. 
-1. Access: http://example.org/min/min_unit_tests/test_all.php (If you wish, the other test_*.php files can be run to test individual components with more verbose output.)
-1. Re-disable the `_inc.php` file when you are done.
+1. Install via Composer
+1. `composer run test`
 
 Warnings
 --------
