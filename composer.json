@@ -30,11 +30,13 @@
 		"tubalmartin/cssmin": "~2.4.8"
 	},
 	"require-dev": {
+		"leafo/lessphp": "~0.4.0",
+		"meenie/javascript-packer": "~1.1",
 		"phpunit/phpunit": "5.0.*"
 	},
 	"suggest": {
-		"leafo/lessphp": "~0.4.0",
-		"meenie/javascript-packer": "~1.1"
+		"leafo/lessphp": "LESS support",
+		"meenie/javascript-packer": "Keep track of the Packer PHP port using Composer"
 	},
 	"scripts": {
 		"test": "phpunit"
