@@ -19,9 +19,10 @@ cache:
     - $HOME/.composer/cache
 
 install:
-  - composer install --no-interaction --prefer-source
+  - composer update --no-interaction --prefer-source
 
 script:
   - composer validate
+  - phpunit
 
 # vim:ts=2:sw=2:et
