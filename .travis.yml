@@ -15,9 +15,9 @@ matrix:
     - php: 7.0
 
 cache:
-  apt: true
   directories:
     - $HOME/.composer/cache
+    - vendor
 
 install:
   - composer update --no-interaction --prefer-source
