@@ -19,6 +19,9 @@
 	"autoload": {
 		"classmap": ["lib/"]
 	},
+	"autoload-dev": {
+		"classmap": ["tests/TestCase.php"]
+	},
 	"require": {
 		"ext-pcre": "*",
 		"firephp/firephp-core": "~0.4.0",
