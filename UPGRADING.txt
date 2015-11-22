@@ -7,7 +7,7 @@ UPGRADING FROM 2.1.*
     /min/config.php       --> /min/old_config.php
     /min/groupsConfig.php --> /min/old_groupsConfig.php
 
-2. Overwrite all files in /min (and /min_unit_tests) with those from this zip.
+2. Overwrite all files in /min with those from this zip.
 
 3. Delete /min/groupsConfig.php
 

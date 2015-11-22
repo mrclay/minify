@@ -35,5 +35,8 @@
 	"suggest": {
 		"leafo/lessphp": "~0.4.0",
 		"meenie/javascript-packer": "~1.1"
+	},
+	"scripts": {
+		"test": "phpunit"
 	}
 }

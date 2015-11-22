@@ -9,8 +9,8 @@ class TestCase extends PHPUnit_Framework_TestCase
 
     public static function setupBeforeClass()
     {
-        self::$document_root = __DIR__ . '/../min_unit_tests';
-        self::$test_files = self::$document_root . '/_test_files';
+        self::$document_root = __DIR__;
+        self::$test_files = __DIR__ . '/_test_files';
     }
 
     /**
