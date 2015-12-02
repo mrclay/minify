@@ -54,6 +54,7 @@ $env = new Minify_Env(array(
 // TODO probably should do this elsewhere...
 $min_serveOptions['minifierOptions']['text/css']['docRoot'] = $env->getDocRoot();
 $min_serveOptions['minifierOptions']['text/css']['symlinks'] = $min_symlinks;
+$min_serveOptions['minApp']['symlinks'] = $min_symlinks;
 // auto-add targets to allowDirs
 foreach ($min_symlinks as $uri => $target) {
     $min_serveOptions['minApp']['allowDirs'][] = $target;
