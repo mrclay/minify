@@ -110,6 +110,25 @@ class Minify_Source_Factory {
         return $realpath;
     }
 
+
+    /**
+     * @param string  $path
+     * @return string
+     */
+    public function getNormalizedPath($path)
+    {
+        // turn windows-style slashes into unix-style
+        $norm = str_replace("\\", "/", $path);
+
+        // lowercase drive letter
+        if (preg_match('/^\w:/', $norm)) {
+            $norm = lcfirst($norm);
+        }
+
+        return $norm;
+    }
+
+
     /**
      * @param mixed $spec
      *
@@ -140,7 +159,7 @@ class Minify_Source_Factory {
 
         if ($this->options['checkAllowDirs']) {
             foreach ((array)$this->options['allowDirs'] as $allowDir) {
-                if (strpos($spec['filepath'], $allowDir) !== 0) {
+                if (strpos($this->getNormalizedPath($spec['filepath']), $this->getNormalizedPath($allowDir)) !== 0) {
                     throw new Minify_Source_FactoryException("File '{$spec['filepath']}' is outside \$allowDirs."
                         . " If the path is resolved via an alias/symlink, look into the \$min_symlinks option.");
                 }
