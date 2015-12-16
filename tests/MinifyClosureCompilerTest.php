@@ -62,9 +62,27 @@ class MinifyClosureCompilerTest extends TestCase
         $this->assertHasJar();
         $src = "function unused() {};";
         $minExpected = '';
-        $minOutput = Minify_ClosureCompiler::minify($src, array(
+        $options = array(
             Minify_ClosureCompiler::OPTION_COMPILATION_LEVEL => 'ADVANCED_OPTIMIZATIONS'
-        ));
+        );
+        $minOutput = Minify_ClosureCompiler::minify($src, $options);
+        $this->assertSame($minExpected, $minOutput, 'advanced optimizations');
+    }
+
+    /**
+     * Test that closure compiler does not produce unneeded noise
+     *
+     * @see https://code.google.com/p/closure-compiler/issues/detail?id=513
+     *
+     * NOTE: this test does not actually cover it, result is manually verified.
+     */
+    public function test4()
+    {
+        $this->assertHasJar();
+
+        $src = file_get_contents(self::$test_files . '/bug-513.js');
+        $minExpected = 'var a=4;';
+        $minOutput = Minify_ClosureCompiler::minify($src);
         $this->assertSame($minExpected, $minOutput, 'advanced optimizations');
     }
 
