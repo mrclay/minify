@@ -35,6 +35,7 @@ class Minify_ClosureCompiler
 {
     const OPTION_CHARSET = 'charset';
     const OPTION_COMPILATION_LEVEL = 'compilation_level';
+    const OPTION_WARNING_LEVEL = 'warning_level';
 
     public static $isDebug = false;
 
@@ -151,15 +152,17 @@ class Minify_ClosureCompiler
             array(
                 self::OPTION_CHARSET => 'utf-8',
                 self::OPTION_COMPILATION_LEVEL => 'SIMPLE_OPTIMIZATIONS',
+                self::OPTION_WARNING_LEVEL => 'QUIET',
             ),
             $userOptions
         );
+
         $charsetOption = $o[self::OPTION_CHARSET];
         if (preg_match('/^[\\da-zA-Z0-9\\-]+$/', $charsetOption)) {
             $args[] = "--charset {$charsetOption}";
         }
 
-        foreach (array(self::OPTION_COMPILATION_LEVEL) as $opt) {
+        foreach (array(self::OPTION_COMPILATION_LEVEL, self::OPTION_WARNING_LEVEL) as $opt) {
             if ($o[$opt]) {
                 $args[] = "--{$opt} " . escapeshellarg($o[$opt]);
             }
