@@ -121,9 +121,13 @@ class Minify_HTML_Helper {
                 $gc = (require $this->groupsConfigFile);
                 $keys = explode(',', $key);
                 foreach ($keys as $key) {
-                    if (isset($gc[$key])) {
-                        $this->_lastModified = self::getLastModified($gc[$key], $this->_lastModified);
+                    if (!isset($gc[$key])) {
+                        // this can happen if value is null
+                        // which could be solved with array_filter
+                        continue;
                     }
+
+                    $this->_lastModified = self::getLastModified($gc[$key], $this->_lastModified);
                 }
             }
         }
