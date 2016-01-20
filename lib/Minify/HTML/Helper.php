@@ -5,7 +5,7 @@
  */
 
 /**
- * Helpers for writing Minfy URIs into HTML
+ * Helpers for writing Minify URIs into HTML
  *
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
