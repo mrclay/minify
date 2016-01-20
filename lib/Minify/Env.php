@@ -78,8 +78,7 @@ class Minify_Env {
      */
     protected function computeDocRoot(array $server)
     {
-        if (empty($server['SERVER_SOFTWARE'])
-                || 0 !== strpos($server['SERVER_SOFTWARE'], 'Microsoft-IIS/')) {
+        if (isset($server['SERVER_SOFTWARE']) && 0 !== strpos($server['SERVER_SOFTWARE'], 'Microsoft-IIS/')) {
             throw new InvalidArgumentException('DOCUMENT_ROOT is not provided and could not be computed');
         }
         $docRoot = substr(
