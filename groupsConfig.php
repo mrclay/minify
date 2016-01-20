@@ -4,7 +4,7 @@
  * @package Minify
  */
 
-/** 
+/**
  * You may wish to use the Minify URI Builder app to suggest
  * changes. http://yourdomain/min/builder/
  *
