@@ -22,6 +22,7 @@ class Minify_DebugDetector {
                 }
             }
         }
+
         return false;
     }
 }

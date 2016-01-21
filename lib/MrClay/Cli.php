@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace MrClay;
 
@@ -19,15 +19,15 @@ use InvalidArgumentException;
  * @license http://www.opensource.org/licenses/mit-license.php  MIT License
  */
 class Cli {
-    
+
     /**
      * @var array validation errors
      */
     public $errors = array();
-    
+
     /**
      * @var array option values available after validation.
-     * 
+     *
      * E.g. array(
      *      'a' => false              // option was missing
      *     ,'b' => true               // option was present
@@ -67,7 +67,7 @@ class Cli {
      * @var resource
      */
     protected $_stdout = null;
-    
+
     /**
      * @param bool $exitIfNoStdin (default true) Exit() if STDIN is not defined
      */
@@ -116,6 +116,7 @@ class Cli {
             $arg = new Arg($required);
         }
         $this->_args[$letter] = $arg;
+
         return $arg;
     }
 
@@ -130,7 +131,7 @@ class Cli {
 
     /*
      * Read and validate options
-     * 
+     *
      * @return bool true if all options are valid
      */
     public function validate()
@@ -139,17 +140,17 @@ class Cli {
         $this->errors = array();
         $this->values = array();
         $this->_stdin = null;
-        
+
         if ($this->isHelpRequest) {
             return false;
         }
-        
+
         $lettersUsed = '';
         foreach ($this->_args as $letter => $arg) {
             /* @var Arg $arg  */
             $options .= $letter;
             $lettersUsed .= $letter;
-            
+
             if ($arg->mayHaveValue || $arg->mustHaveValue) {
                 $options .= ($arg->mustHaveValue ? ':' : '::');
             }
@@ -201,14 +202,15 @@ class Cli {
                             array_splice($argvCopy, $k, 2);
                         }
                     }
-                    
+
                     // check that value isn't really another option
                     if (strlen($lettersUsed) > 1) {
                         $pattern = "/^-[" . str_replace($letter, '', $lettersUsed) . "]/i";
                         if (preg_match($pattern, $v)) {
                             $this->addError($letter, "Value was read as another option: %s", $v);
+
                             return false;
-                        }    
+                        }
                     }
                     if ($arg->assertFile || $arg->assertDir) {
                         if ($v[0] !== '/' && $v[0] !== '~') {
@@ -249,6 +251,7 @@ class Cli {
         }
         $this->moreArgs = $argvCopy;
         reset($this->moreArgs);
+
         return empty($this->errors);
     }
 
@@ -270,12 +273,13 @@ class Cli {
                 $r[$k] = $v;
             }
         }
+
         return $r;
     }
-    
+
     /**
      * Get a short list of errors with options
-     * 
+     *
      * @return string
      */
     public function getErrorReport()
@@ -288,6 +292,7 @@ class Cli {
             $r .= "  $letter : " . implode(', ', $arr) . "\n";
         }
         $r .= "\n";
+
         return $r;
     }
 
@@ -318,9 +323,10 @@ class Cli {
             $desc = wordwrap($desc, 70);
             $r .= $flag . str_replace("\n", "\n            ", $desc) . "\n\n";
         }
+
         return $r;
     }
-    
+
     /**
      * Get resource of open input stream. May be STDIN or a file pointer
      * to the file specified by an option with 'STDIN'.
@@ -333,17 +339,18 @@ class Cli {
             return STDIN;
         } else {
             $this->_stdin = fopen($this->_stdin, 'rb');
+
             return $this->_stdin;
         }
     }
-    
+
     public function closeInput()
     {
         if (null !== $this->_stdin) {
             fclose($this->_stdin);
         }
     }
-    
+
     /**
      * Get resource of open output stream. May be STDOUT or a file pointer
      * to the file specified by an option with 'STDOUT'. The file will be
@@ -357,10 +364,11 @@ class Cli {
             return STDOUT;
         } else {
             $this->_stdout = fopen($this->_stdout, 'wb');
+
             return $this->_stdout;
         }
     }
-    
+
     public function closeOutput()
     {
         if (null !== $this->_stdout) {

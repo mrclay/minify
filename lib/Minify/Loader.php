@@ -18,6 +18,7 @@ class Minify_Loader {
         $file .= strtr($class, "\\_", DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR) . '.php';
         if (is_readable($file)) {
             require $file;
+
             return;
         }
 
@@ -36,6 +37,7 @@ class Minify_Loader {
     {
         $inst = new self();
         spl_autoload_register(array($inst, 'loadClass'));
+
         return $inst;
     }
 }

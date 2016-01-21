@@ -31,7 +31,7 @@ class Minify_ServeConfiguration {
      * @param Minify_SourceInterface[] $sources
      * @param string                   $selectionId
      */
-    function __construct(array $options, array $sources = array(), $selectionId = '')
+    public function __construct(array $options, array $sources = array(), $selectionId = '')
     {
         $this->options = $options;
         $this->sources = $sources;

@@ -81,6 +81,7 @@ class Minify_JS_ClosureCompiler {
     public static function minify($js, array $options = array())
     {
         $obj = new self($options);
+
         return $obj->min($js);
     }
 

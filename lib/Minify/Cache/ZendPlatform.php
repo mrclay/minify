@@ -4,12 +4,11 @@
  * @package Minify
  */
 
-
 /**
  * ZendPlatform-based cache class for Minify
  *
  * Based on Minify_Cache_APC, uses output_cache_get/put (currently deprecated)
- * 
+ *
  * <code>
  * Minify::setCache(new Minify_Cache_ZendPlatform());
  * </code>
@@ -18,7 +17,6 @@
  * @author Patrick van Dissel
  */
 class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
-
 
     /**
      * Create a Minify_Cache_ZendPlatform object, to be passed to
@@ -33,7 +31,6 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
         $this->_exp = $expire;
     }
 
-
     /**
      * Write data to cache.
      *
@@ -47,7 +44,6 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
     {
         return output_cache_put($id, "{$_SERVER['REQUEST_TIME']}|{$data}");
     }
-
 
     /**
      * Get the size of a cache entry
@@ -75,6 +71,7 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
     public function isValid($id, $srcMtime)
     {
         $ret = ($this->_fetch($id) && ($this->_lm >= $srcMtime));
+
         return $ret;
     }
 
@@ -89,7 +86,6 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
             ? $this->_data
             : '';
     }
-
 
     /**
      * Fetch the cached content
@@ -127,10 +123,12 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
         $ret = output_cache_get($id, $this->_exp);
         if (false === $ret) {
             $this->_id = null;
+
             return false;
         }
         list($this->_lm, $this->_data) = explode('|', $ret, 2);
         $this->_id = $id;
+
         return true;
     }
 }

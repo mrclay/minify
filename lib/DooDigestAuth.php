@@ -38,7 +38,7 @@ class DooDigestAuth{
      * @param string $fail_url URL to be redirect if the User cancel the login
      * @return string The username if login success.
      */
-    public static function http_auth($realm, $users, $fail_msg=NULL, $fail_url=NULL){
+    public static function http_auth($realm, $users, $fail_msg=NULL, $fail_url=NULL) {
         $realm = "Restricted area - $realm";
 
         //user => password
@@ -114,8 +114,8 @@ class DooDigestAuth{
         $data['uri'] = $match[1];
         $res = preg_match('/response=\"([^\"]+)\"/i', $txt, $match);
         $data['response'] = $match[1];
+
         return $data;
     }
-
 
 }
