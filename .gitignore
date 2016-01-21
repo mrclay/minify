@@ -2,3 +2,4 @@
 .DS_Store
 /composer.lock
 /vendor/
+/.php_cs.cache
