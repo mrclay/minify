@@ -9,7 +9,7 @@
 class Minify_DebugDetector {
     public static function shouldDebugRequest(Minify_Env $env)
     {
-        if ($env->get('debug')) {
+        if ($env->get('debug') !== null) {
             return true;
         }
         $cookieValue = $env->cookie('minifyDebug');
