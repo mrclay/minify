@@ -111,6 +111,20 @@ class Minify_Source_Factory {
     }
 
     /**
+     * turn windows-style slashes into unix-style,
+     * remove trailing slash
+     * and lowercase drive letter
+     *
+     * @param string $path absolute path
+     *
+     * @return string
+     */
+    public function getNormalizedPath($path)
+    {
+        return lcfirst(rtrim(str_replace('\\', '/', $path), '/'));
+    }
+
+    /**
      * @param mixed $spec
      *
      * @return Minify_SourceInterface
@@ -139,11 +153,16 @@ class Minify_Source_Factory {
         }
 
         if ($this->options['checkAllowDirs']) {
+            $inAllowedDir = false;
             foreach ((array)$this->options['allowDirs'] as $allowDir) {
-                if (strpos($spec['filepath'], $allowDir) !== 0) {
-                    throw new Minify_Source_FactoryException("File '{$spec['filepath']}' is outside \$allowDirs."
-                        . " If the path is resolved via an alias/symlink, look into the \$min_symlinks option.");
+                if (strpos($this->getNormalizedPath($spec['filepath']), $this->getNormalizedPath($allowDir)) === 0) {
+                    $inAllowedDir = true;
                 }
+            }
+
+            if (!$inAllowedDir) {
+                throw new Minify_Source_FactoryException("File '{$spec['filepath']}' is outside \$allowDirs."
+                    . " If the path is resolved via an alias/symlink, look into the \$min_symlinks option.");
             }
         }
 

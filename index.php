@@ -120,6 +120,11 @@ $sourceFactoryOptions = array();
 if (isset($min_serveOptions['minApp']['noMinPattern'])) {
     $sourceFactoryOptions['noMinPattern'] = $min_serveOptions['minApp']['noMinPattern'];
 }
+
+if (isset($min_serveOptions['minApp']['allowDirs'])) {
+   $sourceFactoryOptions['allowDirs'] = $min_serveOptions['minApp']['allowDirs'];
+}
+
 $sourceFactory = new Minify_Source_Factory($env, $sourceFactoryOptions, $cache);
 
 $controller = call_user_func($min_factories['controller'], $env, $sourceFactory);
