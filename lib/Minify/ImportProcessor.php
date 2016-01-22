@@ -188,7 +188,7 @@ class Minify_ImportProcessor {
      * @return string The resolved path, it might not exist.
      * @see http://stackoverflow.com/questions/4049856/replace-phps-realpath
      */
-    public function truepath($path)
+    private function truepath($path)
     {
         // whether $path is unix or not
         $unipath = strlen($path) == 0 || $path{0} != '/';
