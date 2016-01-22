@@ -27,6 +27,7 @@ class Minify_ImportProcessor {
         self::$filesIncluded = array();
         self::$_isCss = (strtolower(substr($file, -4)) === '.css');
         $obj = new Minify_ImportProcessor(dirname($file));
+
         return $obj->_getContent($file);
     }
 
@@ -129,6 +130,7 @@ class Minify_ImportProcessor {
                 ? $m[0]
                 : "/* Minify_ImportProcessor could not fetch '{$file}' */";
         }
+
         return (!self::$_isCss || preg_match('@(?:^$|\\ball\\b)@', $mediaList))
             ? $content
             : "@media {$mediaList} {\n{$content}\n}\n";
@@ -154,6 +156,7 @@ class Minify_ImportProcessor {
                 $url = self::getPathDiff(realpath($this->_previewsDir), $path);
             }
         }
+
         return "url({$quote}{$url}{$quote})";
     }
 
@@ -175,6 +178,7 @@ class Minify_ImportProcessor {
             array_shift($arFrom);
             array_shift($arTo);
         }
+
         return str_pad("", count($arFrom) * 3, '..' . $ps) . implode($ps, $arTo);
     }
 
@@ -184,7 +188,7 @@ class Minify_ImportProcessor {
      * @return string The resolved path, it might not exist.
      * @see http://stackoverflow.com/questions/4049856/replace-phps-realpath
      */
-    function truepath($path)
+    public function truepath($path)
     {
         // whether $path is unix or not
         $unipath = strlen($path) == 0 || $path{0} != '/';
@@ -211,6 +215,7 @@ class Minify_ImportProcessor {
             $path = readlink($path);
         // put initial separator that could have been lost
         $path = !$unipath ? '/' . $path : $path;
+
         return $path;
     }
 }

@@ -35,6 +35,7 @@ class Minify_LessCssSource extends Minify_Source {
             $lastModified = max($lastModified, $mtime);
 
         }
+
         return $lastModified;
     }
 
@@ -90,6 +91,7 @@ class Minify_LessCssSource extends Minify_Source {
      */
     private function getCacheId($prefix = 'minify') {
         $md5 = md5($this->filepath);
+
         return "{$prefix}_less_{$md5}";
     }
 
@@ -102,6 +104,7 @@ class Minify_LessCssSource extends Minify_Source {
         $less = new lessc();
         // do not spend CPU time letting less doing minify
         $less->setPreserveComments(true);
+
         return $less;
     }
 }

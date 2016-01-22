@@ -54,6 +54,7 @@ class Minify_Cache_XCache implements Minify_CacheInterface {
         if (! $this->_fetch($id)) {
             return false;
         }
+
         return (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2))
             ? mb_strlen($this->_data, '8bit')
             : strlen($this->_data);
@@ -117,10 +118,12 @@ class Minify_Cache_XCache implements Minify_CacheInterface {
         $ret = xcache_get($id);
         if (false === $ret) {
             $this->_id = null;
+
             return false;
         }
         list($this->_lm, $this->_data) = explode('|', $ret, 2);
         $this->_id = $id;
+
         return true;
     }
 }

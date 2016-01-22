@@ -41,6 +41,7 @@ class Minify_Env {
         if (null === $key) {
             return $this->server;
         }
+
         return isset($this->server[$key])
             ? $this->server[$key]
             : null;
@@ -51,6 +52,7 @@ class Minify_Env {
         if (null === $key) {
             return $this->cookie;
         }
+
         return isset($this->cookie[$key])
             ? $this->cookie[$key]
             : null;
@@ -61,6 +63,7 @@ class Minify_Env {
         if (null === $key) {
             return $this->get;
         }
+
         return isset($this->get[$key])
             ? $this->get[$key]
             : null;
@@ -87,6 +90,7 @@ class Minify_Env {
             ,0
             ,strlen($server['SCRIPT_FILENAME']) - strlen($server['SCRIPT_NAME'])
         );
+
         return rtrim($docRoot, '\\');
     }
 }

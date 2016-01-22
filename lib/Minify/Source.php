@@ -1,15 +1,15 @@
 <?php
 /**
- * Class Minify_Source  
+ * Class Minify_Source
  * @package Minify
  */
 
-/** 
- * A content source to be minified by Minify. 
- * 
+/**
+ * A content source to be minified by Minify.
+ *
  * This allows per-source minification options and the mixing of files with
  * content from other sources.
- * 
+ *
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */

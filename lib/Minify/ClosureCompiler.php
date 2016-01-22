@@ -73,6 +73,7 @@ class Minify_ClosureCompiler
     public static function minify($js, $options = array())
     {
         $min = new static();
+
         return $min->process($js, $options);
     }
 
@@ -123,6 +124,7 @@ class Minify_ClosureCompiler
             $this->getCompilerCommandLine(),
             $this->getOptionsCommandLine($userOptions)
         );
+
         return join(' ', $args) . ' ' . escapeshellarg($tmpFile);
     }
 
@@ -137,6 +139,7 @@ class Minify_ClosureCompiler
             self::$javaExecutable,
             '-jar', escapeshellarg(self::$jarFile)
         );
+
         return $server;
     }
 
@@ -215,6 +218,7 @@ class Minify_ClosureCompiler
             throw new Minify_ClosureCompiler_Exception('Could not create temp file in "' . $dir . '".');
         }
         file_put_contents($tmpFile, $content);
+
         return $tmpFile;
     }
 
@@ -232,6 +236,7 @@ class Minify_ClosureCompiler
         if (!in_array($result_code, $expectedCodes)) {
             throw new Minify_ClosureCompiler_Exception("Unpexpected return code: $result_code");
         }
+
         return $output;
     }
 }

@@ -24,6 +24,7 @@ class Minify_SourceSet {
                 $source->getId(), $source->getMinifier(), $source->getMinifierOptions()
             );
         }
+
         return md5(serialize($info));
     }
 }

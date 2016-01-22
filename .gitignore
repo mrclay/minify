@@ -1,4 +1,10 @@
-/.idea/
+# ignore IDE/hidden/OS cache files
+*~
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
 .DS_Store
+
+/.idea/
 /composer.lock
 /vendor/
+/.php_cs.cache

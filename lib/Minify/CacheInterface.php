@@ -4,7 +4,6 @@
  * @package Minify
  */
 
-
 /**
  * Interface for Minify cache adapters
  *

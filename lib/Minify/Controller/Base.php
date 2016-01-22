@@ -1,14 +1,14 @@
 <?php
 /**
- * Class Minify_Controller_Base  
+ * Class Minify_Controller_Base
  * @package Minify
  */
 
 /**
  * Base class for Minify controller
- * 
+ *
  * The controller class validates a request and uses it to create a configuration for Minify::serve().
- * 
+ *
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
@@ -36,13 +36,13 @@ abstract class Minify_Controller_Base implements Minify_ControllerInterface {
 
     /**
      * Create controller sources and options for Minify::serve()
-     * 
+     *
      * @param array $options controller and Minify options
-     * 
+     *
      * @return Minify_ServeConfiguration
      */
     abstract public function createConfiguration(array $options);
-    
+
     /**
      * Send message to the Minify logger
      *

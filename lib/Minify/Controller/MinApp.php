@@ -6,7 +6,7 @@
 
 /**
  * Controller class for requests to /min/index.php
- * 
+ *
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
@@ -14,7 +14,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
 
     /**
      * Set up groups of files as sources
-     * 
+     *
      * @param array $options controller and Minify options
      *
      * @return array Minify options
@@ -59,11 +59,13 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             $keys = explode(',', $get['g']);
             if ($keys != array_unique($keys)) {
                 $this->log("Duplicate group key found.");
+
                 return new Minify_ServeConfiguration($options);
             }
             foreach ($keys as $key) {
                 if (! isset($localOptions['groups'][$key])) {
                     $this->log("A group configuration for \"{$key}\" was not found");
+
                     return new Minify_ServeConfiguration($options);
                 }
                 $files = $localOptions['groups'][$key];
@@ -91,6 +93,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                         } else {
                             $secondMissingResource = basename($file);
                             $this->log("More than one file was missing: '$firstMissingResource', '$secondMissingResource'");
+
                             return new Minify_ServeConfiguration($options);
                         }
                     }
@@ -101,7 +104,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             // try user files
             // The following restrictions are to limit the URLs that minify will
             // respond to.
-            if (// verify at least one file, files are single comma separated, 
+            if (// verify at least one file, files are single comma separated,
                 // and are all same extension
                 ! preg_match('/^[^,]+\\.(css|less|js)(?:,[^,]+\\.\\1)*$/', $get['f'], $m)
                 // no "//"
@@ -110,12 +113,14 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 || strpos($get['f'], '\\') !== false
             ) {
                 $this->log("GET param 'f' was invalid");
+
                 return new Minify_ServeConfiguration($options);
             }
             $ext = ".{$m[1]}";
             $files = explode(',', $get['f']);
             if ($files != array_unique($files)) {
                 $this->log("Duplicate files were specified");
+
                 return new Minify_ServeConfiguration($options);
             }
             if (isset($get['b'])) {
@@ -127,6 +132,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                     $base = "/{$get['b']}/";
                 } else {
                     $this->log("GET param 'b' was invalid");
+
                     return new Minify_ServeConfiguration($options);
                 }
             } else {
@@ -160,6 +166,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                     } else {
                         $secondMissingResource = $uri;
                         $this->log("More than one file was missing: '$firstMissingResource', '$secondMissingResource`'");
+
                         return new Minify_ServeConfiguration($options);
                     }
                 }
@@ -172,6 +179,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
 
         if (!$sources) {
             $this->log("No sources to serve");
+
             return new Minify_ServeConfiguration($options);
         }
 

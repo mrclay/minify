@@ -48,6 +48,7 @@ class Minify_HTML_Helper {
             $h->setGroup($keyOrFiles, $opts['farExpires']);
         }
         $uri = $h->getRawUri($opts['farExpires'], $opts['debug']);
+
         return htmlspecialchars($uri, ENT_QUOTES, $opts['charset']);
     }
 
@@ -75,6 +76,7 @@ class Minify_HTML_Helper {
         } elseif ($farExpires && $this->_lastModified) {
             $path .= "&" . $this->_lastModified;
         }
+
         return $path;
     }
 
@@ -156,13 +158,13 @@ class Minify_HTML_Helper {
                 }
             }
         }
+
         return $max;
     }
 
     protected $_groupKey = null; // if present, URI will be like g=...
     protected $_filePaths = array();
     protected $_lastModified = null;
-
 
     /**
      * In a given array of strings, find the character they all have at
@@ -186,6 +188,7 @@ class Minify_HTML_Helper {
                 return '';
             }
         }
+
         return $c;
     }
 
@@ -225,6 +228,7 @@ class Minify_HTML_Helper {
                 ? $uri
                 : $bUri;
         }
+
         return $uri;
     }
 }
