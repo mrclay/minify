@@ -110,19 +110,19 @@ class Minify_Source_Factory {
         return $realpath;
     }
 
-
     /**
-     * @param string $path
+     * turn windows-style slashes into unix-style,
+     * remove trailing slash
+     * and lowercase drive letter
+     *
+     * @param string $path absolute path
+     *
      * @return string
      */
     public function getNormalizedPath($path)
     {
-        // turn windows-style slashes into unix-style,
-        // remove trailing slash
-        // and lowercase drive letter
         return lcfirst(rtrim(str_replace('\\', '/', $path), '/'));
     }
-
 
     /**
      * @param mixed $spec
