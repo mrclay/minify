@@ -190,7 +190,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 ,'lastModified' => 0
                 // due to caching, filename is unreliable.
                 ,'content' => "/* Minify: at least one missing file. See " . Minify::URL_DEBUG . " */\n"
-                ,'minifier' => ''
+                ,'minifier' => 'Minify::nullMinifier'
             )));
         }
 

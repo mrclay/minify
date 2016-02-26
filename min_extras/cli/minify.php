@@ -55,7 +55,7 @@ if ($paths) {
             $sources[] = new Minify_Source(array(
                 'id' => $path,
                 'content' => "/*** $path not found ***/\n",
-                'minifier' => '',
+                'minifier' => 'Minify::nullMinifier',
             ));
         }
     }

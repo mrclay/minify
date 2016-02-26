@@ -39,7 +39,7 @@ $src1 = new Minify_Source(array(
 ));
 $src2 = new Minify_Source(array(
     'filepath' => '//js/file2.js',
-    'minifier' => '', // don't compress
+    'minifier' => 'Minify::nullMinifier', // don't compress
 ));
 ```
 In the above, `JmyJsMinifier()` is only called when the contents of `$src1` is needed.
