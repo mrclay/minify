@@ -4,6 +4,9 @@
  * @package Minify
  */
 
+use Psr\Log\LoggerInterface;
+use Monolog\Logger;
+
 /**
  * Base class for Minify controller
  *
@@ -25,13 +28,23 @@ abstract class Minify_Controller_Base implements Minify_ControllerInterface {
     protected $sourceFactory;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * @param Minify_Env            $env
      * @param Minify_Source_Factory $sourceFactory
+     * @param LoggerInterface       $logger
      */
-    public function __construct(Minify_Env $env, Minify_Source_Factory $sourceFactory)
+    public function __construct(Minify_Env $env, Minify_Source_Factory $sourceFactory, LoggerInterface $logger = null)
     {
         $this->env = $env;
         $this->sourceFactory = $sourceFactory;
+        if (!$logger) {
+            $logger = new Logger('minify');
+        }
+        $this->logger = $logger;
     }
 
     /**
@@ -49,9 +62,11 @@ abstract class Minify_Controller_Base implements Minify_ControllerInterface {
      * @param string $msg
      *
      * @return null
+     * @deprecated use $this->logger
      */
     public function log($msg)
     {
-        Minify_Logger::log($msg);
+        trigger_error(__METHOD__ . ' is deprecated in Minify 3.0.', E_USER_DEPRECATED);
+        $this->logger->info($msg);
     }
 }

@@ -23,6 +23,7 @@ class Minify_Env {
         $options = array_merge(array(
             'server' => $_SERVER,
             'get' => $_GET,
+            'post' => $_POST,
             'cookie' => $_COOKIE,
         ), $options);
 
@@ -33,6 +34,7 @@ class Minify_Env {
             $this->server['DOCUMENT_ROOT'] = rtrim($this->server['DOCUMENT_ROOT'], '/\\');
         }
         $this->get = $options['get'];
+        $this->post = $options['post'];
         $this->cookie = $options['cookie'];
     }
 
@@ -47,30 +49,36 @@ class Minify_Env {
             : null;
     }
 
-    public function cookie($key = null)
+    public function cookie($key = null, $default = null)
     {
         if (null === $key) {
             return $this->cookie;
         }
 
-        return isset($this->cookie[$key])
-            ? $this->cookie[$key]
-            : null;
+        return isset($this->cookie[$key]) ? $this->cookie[$key] : $default;
     }
 
-    public function get($key = null)
+    public function get($key = null, $default = null)
     {
         if (null === $key) {
             return $this->get;
         }
 
-        return isset($this->get[$key])
-            ? $this->get[$key]
-            : null;
+        return isset($this->get[$key]) ? $this->get[$key] : $default;
+    }
+
+    public function post($key = null, $default = null)
+    {
+        if (null === $key) {
+            return $this->post;
+        }
+
+        return isset($this->post[$key]) ? $this->post[$key] : $default;
     }
 
     protected $server = null;
     protected $get = null;
+    protected $post = null;
     protected $cookie = null;
 
     /**

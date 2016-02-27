@@ -12,8 +12,8 @@
  **/
 
 return array(
-//    'testJs' => array('//minify/min/quick-test.js'),
-//    'testCss' => array('//minify/min/quick-test.css'),
+//    'testJs' => array('//minify/quick-test.js'),
+//    'testCss' => array('//minify/quick-test.css'),
 //    'js' => array('//js/file1.js', '//js/file2.js'),
 //    'css' => array('//css/file1.css', '//css/file2.css'),
 );

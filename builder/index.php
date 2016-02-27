@@ -1,13 +1,14 @@
 <?php 
 
-// check for auto-encoding
-$encodeOutput = (function_exists('gzdeflate')
-                 && !ini_get('zlib.output_compression'));
+$app = (require __DIR__ . '/../bootstrap.php');
+/* @var \Minify\App $app */
+
+$config = $app->config;
 
 // recommend $min_symlinks setting for Apache UserDir
 $symlinkOption = '';
-if (0 === strpos($_SERVER["SERVER_SOFTWARE"], 'Apache/')
-    && preg_match('@^/\\~(\\w+)/@', $_SERVER['REQUEST_URI'], $m)
+if (0 === strpos($app->env->server("SERVER_SOFTWARE"), 'Apache/')
+    && preg_match('@^/\\~(\\w+)/@', $app->env->server('REQUEST_URI'), $m)
 ) {
     $userDir = DIRECTORY_SEPARATOR . $m[1] . DIRECTORY_SEPARATOR;
     if (false !== strpos(__FILE__, $userDir)) {
@@ -18,24 +19,19 @@ if (0 === strpos($_SERVER["SERVER_SOFTWARE"], 'Apache/')
     }
 }
 
-require __DIR__ . '/../bootstrap.php';
-require __DIR__ . '/../config.php';
-
-if (! $min_enableBuilder) {
+if (!$config->enableBuilder) {
     header('Content-Type: text/plain');
     die('This application is not enabled. See https://github.com/mrclay/minify/blob/master/docs/BuilderApp.wiki.md');
 }
 
-if (isset($min_builderPassword)
-        && is_string($min_builderPassword)
-        && $min_builderPassword !== '') {
-    DooDigestAuth::http_auth('Minify Builder', array('admin' => $min_builderPassword));
-}
-
-$cachePathCode = '';
-if (! isset($min_cachePath) && ! function_exists('sys_get_temp_dir')) {
-    $detectedTmp = Minify_Cache_File::tmp();
-    $cachePathCode = "\$min_cachePath = " . var_export($detectedTmp, 1) . ';';
+if ($config->builderPassword && $config->builderPassword !== '') {
+    $auth = new Intervention\Httpauth\Httpauth(array(
+        'username' => 'admin',
+        'password' => $config->builderPassword,
+        'type' => 'digest',
+        'realm' => 'Minify Builder',
+    ));
+    $auth->secure();
 }
 
 ob_start();
@@ -79,13 +75,6 @@ b {color:#c00}
     FirePHP console will report the cause of the error.
 </p>
 
-<?php if ($cachePathCode): ?>
-<p class=topNote><strong>Note:</strong> <code><?php echo
-    htmlspecialchars($detectedTmp); ?></code> was discovered as a usable temp directory.<br>To
-    slightly improve performance you can hardcode this in /min/config.php:
-    <code><?php echo htmlspecialchars($cachePathCode); ?></code></p>
-<?php endIf; ?>
-
 <p id=minRewriteFailed class="hide"><strong>Note:</strong> Your webserver does not seem to
  support mod_rewrite (used in /min/.htaccess). Your Minify URIs will contain "?", which 
 <a href="http://www.stevesouders.com/blog/2008/08/23/revving-filenames-dont-use-querystring/"
@@ -106,7 +95,7 @@ and click [Update].</p>
 
 <div id=bmUris></div>
 
-<p><button class="btn btn-primary" id=update class=hide>Update</button></p>
+<p><button class="btn btn-primary hide" id=update>Update</button></p>
 
 <div id=results class=hide>
 
@@ -218,26 +207,8 @@ by Minify. E.g. <code>@import "<span class=minRoot>/min/?</span>g=css2";</code><
 <?php
 $content = ob_get_clean();
 
-if (!isset($min_cachePath)) {
-    $min_cachePath = '';
-}
-if (is_string($min_cachePath)) {
-    $cache = new Minify_Cache_File($min_cachePath, $min_cacheFileLocking);
-} else {
-    $cache = $min_cachePath;
-}
-
-$env = new Minify_Env();
-
-$sourceFactory = new Minify_Source_Factory($env, array(
-    'uploaderHoursBehind' => $min_uploaderHoursBehind,
-));
-
-$controller = new Minify_Controller_Page($env, $sourceFactory);
-
-$server = new Minify($cache);
-
-$server->serve($controller, array(
+$controller = new Minify_Controller_Page($app->env, $app->sourceFactory);
+$minify = $app->minify->serve($controller, array(
     'content' => $content,
     'id' => __FILE__,
     'lastModifiedTime' => max(
@@ -247,5 +218,4 @@ $server->serve($controller, array(
         filemtime(__DIR__ . '/../lib/Minify.php')
     ),
     'minifyAll' => true,
-    'encodeOutput' => $encodeOutput,
 ));

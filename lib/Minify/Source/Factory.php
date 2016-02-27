@@ -133,11 +133,15 @@ class Minify_Source_Factory {
      */
     public function makeSource($spec)
     {
-        $source = null;
-
-        if ($spec instanceof Minify_SourceInterface) {
-            $source = $spec;
+        if (is_string($spec)) {
+            $spec = array(
+                'filepath' => $spec,
+            );
+        } elseif ($spec instanceof Minify_SourceInterface) {
+            return $spec;
         }
+
+        $source = null;
 
         if (empty($spec['filepath'])) {
             // not much we can check

@@ -1,26 +1,29 @@
 <?php
 die('Disabled: use this only for testing');
 
-require __DIR__ . '/../../bootstrap.php';
+$app = (require __DIR__ . '/../../bootstrap.php');
+/* @var \Minify\App $app */
 
-function getPost($key) {
-    return get_magic_quotes_gpc()
-        ? stripslashes($_POST[$key])
-        : $_POST[$key];
+// use FirePHP if not already setup
+if (!$app->config->errorLogger) {
+    $app->config->errorLogger = true;
 }
+
+$app->cache = new Minify_Cache_Null();
+
+$env = $app->env;
 
 function h($txt) {
     return htmlspecialchars($txt, ENT_QUOTES, 'UTF-8');
 }
 
-if (isset($_POST['textIn'])) {
-    require '../config.php';
-    $textIn = str_replace("\r\n", "\n", getPost('textIn'));
+if ($env->post('textIn')) {
+    $textIn = str_replace("\r\n", "\n", $env->post('textIn'));
 }
 
-if (isset($_POST['method']) && $_POST['method'] === 'Minify and serve') {
+if ($env->post('method') === 'Minify and serve') {
     
-    $base = trim(getPost('base'));
+    $base = trim($env->post('base'));
     if ($base) {
         $textIn = preg_replace(
             '@(<head\\b[^>]*>)@i'
@@ -38,16 +41,12 @@ if (isset($_POST['method']) && $_POST['method'] === 'Minify and serve') {
         $sourceSpec['minifyOptions']['cssMinifier'] = array('Minify_CSSmin', 'minify');
     }
     $source = new Minify_Source($sourceSpec);
-    Minify_Logger::setLogger(FirePHP::getInstance(true));
 
-    $env = new Minify_Env();
-    $controller = new Minify_Controller_Files($env, new Minify_Source_Factory($env));
-    $minify = new Minify(new Minify_Cache_Null());
-
+    $controller = new Minify_Controller_Files($env, $app->sourceFactory, $app->logger);
     try {
-        $minify->serve($controller, array(
-            'files' => $source
-            ,'contentType' => Minify::TYPE_HTML
+        $app->minify->serve($controller, array(
+            'files' => $source,
+            'contentType' => Minify::TYPE_HTML,
         ));
     } catch (Exception $e) {
         echo h($e->getMessage());
@@ -58,16 +57,16 @@ if (isset($_POST['method']) && $_POST['method'] === 'Minify and serve') {
 $tpl = array();
 $tpl['classes'] = array('Minify_HTML', 'JSMin\\JSMin', 'Minify_CSS');
 
-if (isset($_POST['method']) && in_array($_POST['method'], $tpl['classes'])) {
+if (in_array($env->post('method'), $tpl['classes'])) {
 
     $args = array($textIn);
-    if ($_POST['method'] === 'Minify_HTML') {
+    if ($env->post('method') === 'Minify_HTML') {
         $args[] = array(
             'cssMinifier' => array('Minify_CSSmin', 'minify')
             ,'jsMinifier' => array('JSMin\\JSMin', 'minify')
         );
     }
-    $func = array($_POST['method'], 'minify');
+    $func = array($env->post('method'), 'minify');
     $tpl['inBytes'] = strlen($textIn);
     $startTime = microtime(true);
     try {

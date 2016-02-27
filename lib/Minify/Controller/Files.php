@@ -4,6 +4,9 @@
  * @package Minify
  */
 
+use Psr\Log\LoggerInterface;
+use Monolog\Logger;
+
 /**
  * Controller class for minifying a set of files
  *
@@ -29,16 +32,6 @@
 class Minify_Controller_Files extends Minify_Controller_Base {
 
     /**
-     * @param Minify_Env            $env           Environment
-     * @param Minify_Source_Factory $sourceFactory Source factory. If you need to serve files from any path, this
-     *                                             component must have its "checkAllowDirs" option set to false.
-     */
-    public function __construct(Minify_Env $env, Minify_Source_Factory $sourceFactory)
-    {
-        parent::__construct($env, $sourceFactory);
-    }
-
-    /**
      * Set up file sources
      *
      * @param array $options controller and Minify options
@@ -62,16 +55,10 @@ class Minify_Controller_Files extends Minify_Controller_Base {
 
         $sources = array();
         foreach ($files as $file) {
-            if ($file instanceof Minify_SourceInterface) {
-                $sources[] = $file;
-                continue;
-            }
             try {
-                $sources[] = $this->sourceFactory->makeSource(array(
-                    'filepath' => $file,
-                ));
+                $sources[] = $this->sourceFactory->makeSource($file);
             } catch (Minify_Source_FactoryException $e) {
-                $this->log($e->getMessage());
+                $this->logger->error($e->getMessage());
 
                 return new Minify_ServeConfiguration($options);
             }

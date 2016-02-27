@@ -23,10 +23,13 @@
 		"classmap": ["tests/TestCase.php"]
 	},
 	"require": {
+		"php": ">=5.3.0",
 		"ext-pcre": "*",
 		"firephp/firephp-core": "~0.4.0",
+		"intervention/httpauth": "~2.0",
+		"monolog/monolog": "~1.1",
 		"mrclay/jsmin-php": "~2",
-		"php": ">=5.3.0",
+		"mrclay/props-dic": "^2.2",
 		"tubalmartin/cssmin": "~2.4.8"
 	},
 	"require-dev": {
