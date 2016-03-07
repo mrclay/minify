@@ -64,6 +64,8 @@ if (!defined('E_USER_DEPRECATED')) {
  * @author          Christoph Dorn <christoph@christophdorn.com>
  * @license         [MIT License](http://www.opensource.org/licenses/mit-license.php)
  * @package         FirePHPCore
+ *
+ * @deprecated 2.3 This will be removed in Minify 3.0
  */
 class FirePHP {
 
