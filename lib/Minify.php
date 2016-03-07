@@ -168,7 +168,7 @@ class Minify {
      * $options['minifiers'][Minify::TYPE_CSS] = 'customCssMinifier';
      *
      * // don't minify Javascript at all
-     * $options['minifiers'][Minify::TYPE_JS] = '';
+     * $options['minifiers'][Minify::TYPE_JS] = 'Minify::nullMinifier';
      * </code>
      *
      * 'minifierOptions' : to send options to the minifier function, specify your options
@@ -293,7 +293,7 @@ class Minify {
             $this->options['minifiers'][self::TYPE_JS] = false;
             foreach ($this->sources as $key => $source) {
                 if ($this->options['contentType'] === self::TYPE_JS) {
-                    $source->setMinifier("");
+                    $source->setMinifier('Minify::nullMinifier');
                 } elseif ($this->options['contentType'] === self::TYPE_CSS) {
                     $source->setMinifier(array('Minify_CSSmin', 'minify'));
                     $sourceOpts = $source->getMinifierOptions();
@@ -456,6 +456,20 @@ class Minify {
             echo "<p>Please see <a href='$url'>$url</a>.</p>";
         }
         exit;
+    }
+
+    /**
+     * Default minifier for .min or -min JS files.
+     *
+     * @param string $content
+     * @return string
+     */
+    public static function nullMinifier($content) {
+        if (isset($content[0]) && $content[0] === "\xef") {
+            $content = substr($content, 3);
+        }
+        $content = str_replace("\r\n", "\n", $content);
+        return trim($content);
     }
 
     /**

@@ -173,7 +173,7 @@ class Minify_Source_Factory {
                 $spec['minifyOptions']['compress'] = false;
                 // we still want URI rewriting to work for CSS
             } else {
-                $spec['minifier'] = '';
+                $spec['minifier'] = 'Minify::nullMinifier';
             }
         }
 

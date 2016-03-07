@@ -104,7 +104,7 @@ class Minify_Source implements Minify_SourceInterface {
             $this->contentType = $spec['contentType'];
         }
         if (isset($spec['minifier'])) {
-            $this->minifier = $spec['minifier'];
+            $this->setMinifier($spec['minifier']);
         }
         if (isset($spec['minifyOptions'])) {
             $this->minifyOptions = $spec['minifyOptions'];
@@ -130,8 +130,15 @@ class Minify_Source implements Minify_SourceInterface {
     /**
      * {@inheritdoc}
      */
-    public function setMinifier($minifier)
+    public function setMinifier($minifier = null)
     {
+        if ($minifier === '') {
+            error_log(__METHOD__ . " cannot accept empty string. Use 'Minify::nullMinifier' or 'trim'.");
+            $minifier = 'Minify::nullMinifier';
+        }
+        if ($minifier !== null && !is_callable($minifier, true)) {
+            throw new \InvalidArgumentException('minifier must be null or a valid callable');
+        }
         $this->minifier = $minifier;
     }
 
