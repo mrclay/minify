@@ -119,7 +119,7 @@ Use Minify 2.1.4+. Before there was a setting to adjust the maximum allowed.
 
 This may also appear as "Virtual Directory does not allow contents to be listed". Minify requires that the URI `/min/` (a request for a directory listing) result in the execution of `/min/index.php`. On Apache, you would make sure `index.php` is listed in the [DirectoryIndex directive](http://httpd.apache.org/docs/2.0/mod/mod_dir.html#directoryindex). IIS calls this the [Default Document](http://www.iis.net/ConfigReference/system.webServer/defaultDocument).
 
-## "!WARN: environment : Local HTTP request failed. Testing cannot continue."
+## "WARN: environment : Local HTTP request failed. Testing cannot continue."
 
 The `test_environment.php` unit test makes a few local HTTP requests to sniff for `zlib.output_compression` and other auto-encoding behavior, which may break Minify's output. This warning will appear if `allow_url_fopen` is disabled in php.ini, but **does not** necessarily mean there is a problem.
 
