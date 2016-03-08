@@ -91,13 +91,12 @@ $min_serveOptions['minifiers']['text/css'] = array('Minify_CSSmin', 'minify');
 
 ## JSMin+
 
-Minify 2.1.3 comes with Tino Zijdel's [JSMin+](http://crisp.tweakblogs.net/blog/1665/a-new-javascript-minifier-jsmin+.html) 1.1. This is a full parser based on a port of [Narcissus](http://en.wikipedia.org/wiki/Narcissus_(JavaScript_engine)). To try it out:
+Tino Zijdel's [JSMin+](http://crisp.tweakblogs.net/blog/6861/jsmin%2B-version-14.html) has resulted in memory usage problems for many users and will be removed from the Minify codebase in 3.0. If you wish to use it, you should download it outside the Minify directory and link to it:
+
 ```
+require '/path/to/jsminplus.php';
 $min_serveOptions['minifiers']['application/x-javascript'] = array('JSMinPlus', 'minify');
 ```
-This should yield smaller javascript files, but I've tested this only briefly. For production you may want to get the [latest version](http://crisp.tweakblogs.net/blog/cat/716) (you must rename it: `min/lib/JSMinPlus.php`).
-
-Note: JSMin+ is memory intensive, so be prepared to up your memory limit. Also it has no [comment preservation](http://code.google.com/p/minify/source/browse/tags/release_2.1.3/min/lib/JSMin.php#10) as of 1.3, in case you rely on this.
 
 ## Server-specific Options
 

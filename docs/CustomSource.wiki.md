@@ -33,7 +33,7 @@ To change minifier, set `minifier` to a [callback](http://php.net/manual/en/lang
 ```
 if (! function_exists('myMin')) {
     function myMin($js) {
-        require_once 'JSMinPlus.php';
+        require_once '/path/to/jsminplus.php';
         return JSMinPlus::minify($js);
     }
 }

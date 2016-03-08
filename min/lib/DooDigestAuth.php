@@ -23,6 +23,8 @@
  * @version $Id: DooDigestAuth.php 1000 2009-07-7 18:27:22
  * @package doo.auth
  * @since 1.0
+ *
+ * @deprecated 2.3 This will be removed in Minify 3.0
  */
 class DooDigestAuth{
 
