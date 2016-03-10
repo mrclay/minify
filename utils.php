@@ -56,7 +56,7 @@ function Minify_mtime($keysAndFiles, $groupsConfigFile = null)
 {
     $gc = null;
     if (! $groupsConfigFile) {
-        $groupsConfigFile = __DIR__ . '/groupsConfig.php';
+        $groupsConfigFile = Minify_HTML_Helper::app()->groupsConfigPath;
     }
     $sources = array();
     foreach ($keysAndFiles as $keyOrFile) {

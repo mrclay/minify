@@ -1,5 +1,7 @@
 <?php
 
+use Psr\Log\LoggerInterface;
+
 interface Minify_ControllerInterface {
 
     /**

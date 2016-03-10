@@ -5,7 +5,12 @@ die('Disabled: use this only for testing');
  * Fetch and minify a URL (auto-detect HTML/JS/CSS)
  */
 
-require __DIR__ . '/../../bootstrap.php';
+$app = (require __DIR__ . '/../../bootstrap.php');
+/* @var \Minify\App $app */
+
+$app->cache = new Minify_Cache_Null();
+
+$env = $app->env;
 
 function getPost($key) {
     if (! isset($_POST[$key])) {
@@ -47,9 +52,9 @@ if (isset($_POST['url'])) {
     
     require '../config.php';
     
-    $url = trim(getPost('url'));
-    $ua = trim(getPost('ua'));
-    $cook = trim(getPost('cook'));
+    $url = trim($env->post('url'));
+    $ua = trim($env->post('ua'));
+    $cook = trim($env->post('cook'));
     
     if (! preg_match('@^https?://@', $url)) {
         die('HTTP(s) only.');
@@ -98,10 +103,10 @@ if (isset($_POST['url'])) {
     $sourceSpec['contentType'] = $type['minify'];
     
     if ($type['minify'] === 'text/html') {
-        if (isset($_POST['minJs'])) {
+        if ($env->post('minJs')) {
             $sourceSpec['minifyOptions']['jsMinifier'] = array('JSMin\\JSMin', 'minify');
         }
-        if (isset($_POST['minCss'])) {
+        if ($env->post('minCss')) {
             $sourceSpec['minifyOptions']['cssMinifier'] = array('Minify_CSSmin', 'minify');
         }
     }
@@ -109,7 +114,7 @@ if (isset($_POST['url'])) {
     $source = new Minify_Source($sourceSpec);
     
     $sendType = 'text/plain';
-    if ($type['minify'] === 'text/html' && ! isset($_POST['asText'])) {
+    if ($type['minify'] === 'text/html' && $env->post('asText') === null) {
         $sendType = $type['sent'];
     }
     if ($type['charset']) {
@@ -119,10 +124,8 @@ if (isset($_POST['url'])) {
     // using combine instead of serve because it allows us to specify a
     // Content-Type like application/xhtml+xml IF we need to
 
-    $minify = new Minify(new Minify_Cache_Null());
-
     try {
-        echo $minify->combine(array($source));
+        echo $app->minify->combine(array($source));
     } catch (Exception $e) {
         header('Content-Type: text/html;charset=utf-8');
         echo htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
@@ -132,9 +135,7 @@ if (isset($_POST['url'])) {
 
 header('Content-Type: text/html; charset=utf-8');
 
-$ua = get_magic_quotes_gpc()
-    ? stripslashes($_SERVER['HTTP_USER_AGENT']) 
-    : $_SERVER['HTTP_USER_AGENT'];
+$ua = $env->server('HTTP_USER_AGENT');
 
 ?>
 <!DOCTYPE html><head><title>Minify URL</title></head>
@@ -146,7 +147,7 @@ $ua = get_magic_quotes_gpc()
 The fetched resource Content-Type will determine the minifier used.</p>
 
 <form action="?2" method="post">
-<p><label>URL: <input type="text" name="url" size="60"></label></p>
+<p><label>URL: <input type="text" name="url" value="https://code.jquery.com/jquery-2.2.1.js" size="60"></label></p>
 <p><input type="submit" value="Fetch and minify"></p>
 
 <fieldset><legend>HTML options</legend>

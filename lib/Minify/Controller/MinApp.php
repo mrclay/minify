@@ -58,13 +58,13 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             $selectionId .= 'g=' . $get['g'];
             $keys = explode(',', $get['g']);
             if ($keys != array_unique($keys)) {
-                $this->log("Duplicate group key found.");
+                $this->logger->info("Duplicate group key found.");
 
                 return new Minify_ServeConfiguration($options);
             }
             foreach ($keys as $key) {
                 if (! isset($localOptions['groups'][$key])) {
-                    $this->log("A group configuration for \"{$key}\" was not found");
+                    $this->logger->info("A group configuration for \"{$key}\" was not found");
 
                     return new Minify_ServeConfiguration($options);
                 }
@@ -76,23 +76,17 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                     $files = (array)$files;
                 }
                 foreach ($files as $file) {
-                    if ($file instanceof Minify_SourceInterface) {
-                        $sources[] = $file;
-                        continue;
-                    }
                     try {
-                        $source = $this->sourceFactory->makeSource(array(
-                            'filepath' => $file,
-                        ));
+                        $source = $this->sourceFactory->makeSource($file);
                         $sources[] = $source;
                     } catch (Minify_Source_FactoryException $e) {
-                        $this->log($e->getMessage());
+                        $this->logger->error($e->getMessage());
                         if (null === $firstMissingResource) {
                             $firstMissingResource = basename($file);
                             continue;
                         } else {
                             $secondMissingResource = basename($file);
-                            $this->log("More than one file was missing: '$firstMissingResource', '$secondMissingResource'");
+                            $this->logger->info("More than one file was missing: '$firstMissingResource', '$secondMissingResource'");
 
                             return new Minify_ServeConfiguration($options);
                         }
@@ -112,14 +106,14 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 // no "\"
                 || strpos($get['f'], '\\') !== false
             ) {
-                $this->log("GET param 'f' was invalid");
+                $this->logger->info("GET param 'f' was invalid");
 
                 return new Minify_ServeConfiguration($options);
             }
             $ext = ".{$m[1]}";
             $files = explode(',', $get['f']);
             if ($files != array_unique($files)) {
-                $this->log("Duplicate files were specified");
+                $this->logger->info("Duplicate files were specified");
 
                 return new Minify_ServeConfiguration($options);
             }
@@ -131,7 +125,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                     // valid base
                     $base = "/{$get['b']}/";
                 } else {
-                    $this->log("GET param 'b' was invalid");
+                    $this->logger->info("GET param 'b' was invalid");
 
                     return new Minify_ServeConfiguration($options);
                 }
@@ -153,19 +147,17 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 }
 
                 try {
-                    $source = $this->sourceFactory->makeSource(array(
-                        'filepath' => $path,
-                    ));
+                    $source = $this->sourceFactory->makeSource($path);
                     $sources[] = $source;
                     $basenames[] = basename($path, $ext);
                 } catch (Minify_Source_FactoryException $e) {
-                    $this->log($e->getMessage());
+                    $this->logger->error($e->getMessage());
                     if (null === $firstMissingResource) {
                         $firstMissingResource = $uri;
                         continue;
                     } else {
                         $secondMissingResource = $uri;
-                        $this->log("More than one file was missing: '$firstMissingResource', '$secondMissingResource`'");
+                        $this->logger->info("More than one file was missing: '$firstMissingResource', '$secondMissingResource`'");
 
                         return new Minify_ServeConfiguration($options);
                     }
@@ -178,7 +170,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
         }
 
         if (!$sources) {
-            $this->log("No sources to serve");
+            $this->logger->info("No sources to serve");
 
             return new Minify_ServeConfiguration($options);
         }

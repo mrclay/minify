@@ -51,7 +51,7 @@ class Minify_Controller_Groups extends Minify_Controller_Files {
             );
         if (false === $pathInfo || ! isset($groups[$pathInfo])) {
             // no PATH_INFO or not a valid group
-            $this->log("Missing PATH_INFO or no group set for \"$pathInfo\"");
+            $this->logger->info("Missing PATH_INFO or no group set for \"$pathInfo\"");
 
             return new Minify_ServeConfiguration($options);
         }

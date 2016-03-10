@@ -1,12 +1,15 @@
-## 3.0 progress
-* Better CSS minification via Túbal Martín's CSSMin
-* Docs overhaul
-* New API incompatible with the 2.x versions
+## Version 3.0.0 (unreleased)
+* The project root is now what is deployed as `min`
 * Installation requires use of Composer to install dependencies
+* Removes JSMin+ (unmaintained, high memory usage)
+* Removes DooDigestAuth
+* Removes Minify_Loader (uses Composer)
+* Removes Minify_Logger (uses Monolog)
+* The Minify, source, and controller components have changed APIs
+* Better CSS minification via Túbal Martín's CSSMin
 * Add config option for simply concatenating files
 * Add config option for altering creation of Minify/MinApp objects
 * Missing spec no longer redirects, instead links to docs
-* Removed JSMin+ (unmaintained, high memory usage)
 
 ## Version 2.2.1 (2014-10-30)
 * Builder styled with Bootstrap (thanks to help from acidvertigo)

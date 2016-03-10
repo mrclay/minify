@@ -51,7 +51,7 @@ class JsClosureCompilerTest extends PHPUnit_Framework_TestCase
     {
         $src = "(function(){})();";
         $minOutput = $this->compile($src, array(
-            Minify_JS_ClosureCompiler::OPTION_MAX_BYTES => 0
+            Minify_JS_ClosureCompiler::OPTION_MAX_BYTES => 0,
         ));
 
         $this->assertSame($src, $minOutput, 'With no limit set,  it should compile properly');
@@ -65,7 +65,7 @@ class JsClosureCompilerTest extends PHPUnit_Framework_TestCase
         $e = null;
         try {
             $this->compile($src, array(
-                Minify_JS_ClosureCompiler::OPTION_MAX_BYTES => $allowedBytes
+                Minify_JS_ClosureCompiler::OPTION_MAX_BYTES => $allowedBytes,
             ));
         } catch (Minify_JS_ClosureCompiler_Exception $e) {
         }
@@ -78,10 +78,14 @@ class JsClosureCompilerTest extends PHPUnit_Framework_TestCase
     // Test additional options passed to HTTP request
     public function test6()
     {
-        $ecmascript5 = "[1,].length;";
+        $ecmascript3 = "[1,].length;";
         $e = null;
         try {
-            $this->compile($ecmascript5);
+            $this->compile($ecmascript3, array(
+                Minify_JS_ClosureCompiler::OPTION_ADDITIONAL_OPTIONS => array(
+                    'language' => 'ECMASCRIPT3',
+                ),
+            ));
         } catch (Minify_JS_ClosureCompiler_Exception $e) {
         }
         $this->assertInstanceOf('Minify_JS_ClosureCompiler_Exception', $e, 'Throws Minify_JS_ClosureCompiler_Exception');
@@ -94,8 +98,8 @@ class JsClosureCompilerTest extends PHPUnit_Framework_TestCase
         $minExpected = '1;';
         $minOutput = $this->compile($ecmascript5, array(
             Minify_JS_ClosureCompiler::OPTION_ADDITIONAL_OPTIONS => array(
-                'language' => 'ECMASCRIPT5'
-            )
+                'language' => 'ECMASCRIPT5',
+            ),
         ));
         $this->assertSame($minExpected, $minOutput, 'Language option should make it compile');
     }

@@ -16,6 +16,7 @@
 	<testsuites>
 		<testsuite name="Project Test Suite">
 			<directory>tests</directory>
+			<exclude>tests/JsClosureCompilerTest.php</exclude>
 		</testsuite>
 	</testsuites>
 

@@ -5,18 +5,18 @@
  * @package Minify
  */
 
-require __DIR__ . '/../bootstrap.php';
+$app = (require __DIR__ . '/../bootstrap.php');
+/* @var \Minify\App $app */
 
 $_oc = ini_get('zlib.output_compression');
  
 // allow access only if builder is enabled
-require __DIR__ . '/../config.php';
-if (! $min_enableBuilder) {
+if (!$app->config->enableBuilder) {
     header('Location: /');
     exit;
 }
 
-if (isset($_GET['hello'])) {
+if ($app->env->get('hello')) {
     // echo 'World!'
     
     // try to prevent double encoding (may not have an effect)

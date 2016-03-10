@@ -4,6 +4,8 @@
  * @package Minify
  */
 
+use Psr\Log\LoggerInterface;
+
 /**
  * Minify - Combines, minifies, and caches JavaScript and CSS files on demand.
  *
@@ -64,10 +66,17 @@ class Minify {
     protected $options = null;
 
     /**
-     * @param Minify_CacheInterface $cache
+     * @var LoggerInterface|null
      */
-    public function __construct(Minify_CacheInterface $cache) {
+    protected $logger = null;
+
+    /**
+     * @param Minify_CacheInterface $cache
+     * @param LoggerInterface       $logger
+     */
+    public function __construct(Minify_CacheInterface $cache, LoggerInterface $logger = null) {
         $this->cache = $cache;
+        $this->logger = $logger;
     }
 
     /**
@@ -209,6 +218,10 @@ class Minify {
         $this->selectionId = $config->getSelectionId();
         $this->options = $this->analyzeSources($config->getOptions());
 
+        if (!$this->options['quiet'] && !headers_sent()) {
+            ini_set('zlib.output_compression', '0');
+        }
+
         // check request validity
         if (!$this->sources) {
             // invalid request!
@@ -321,7 +334,7 @@ class Minify {
                 try {
                     $content = $this->combineMinify();
                 } catch (Exception $e) {
-                    $this->controller->log($e->getMessage());
+                    $this->logger && $this->logger->critical($e->getMessage());
                     if (! $this->options['quiet']) {
                         $this->errorExit($this->options['errorHeader'], self::URL_DEBUG);
                     }
@@ -338,7 +351,7 @@ class Minify {
             try {
                 $content = $this->combineMinify();
             } catch (Exception $e) {
-                $this->controller->log($e->getMessage());
+                $this->logger && $this->logger->critical($e->getMessage());
                 if (! $this->options['quiet']) {
                     $this->errorExit($this->options['errorHeader'], self::URL_DEBUG);
                 }
@@ -413,7 +426,7 @@ class Minify {
         $sourceFactory = new Minify_Source_Factory($env, array(
             'checkAllowDirs' => false,
         ), $this->cache);
-        $controller = new Minify_Controller_Files($env, $sourceFactory);
+        $controller = new Minify_Controller_Files($env, $sourceFactory, $this->logger);
 
         $options = array_merge($options, array(
             'files' => (array)$sources,
@@ -689,11 +702,10 @@ class Minify {
             if (!empty($options['contentType'])) {
                 // just verify sources have null content type or match the options
                 if ($sourceType !== null && $sourceType !== $options['contentType']) {
-                    // TODO better logging
-                    Minify_Logger::log('ContentType mismatch');
+
+                    $this->logger && $this->logger->warning('ContentType mismatch');
 
                     $this->sources = array();
-
                     return $options;
                 }
 
@@ -704,11 +716,9 @@ class Minify {
                 $type = $sourceType;
             } elseif ($sourceType !== $type) {
 
-                // TODO better logging
-                Minify_Logger::log('ContentType mismatch');
+                $this->logger && $this->logger->warning('ContentType mismatch');
 
                 $this->sources = array();
-
                 return $options;
             }
         }

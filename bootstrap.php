@@ -1,8 +1,6 @@
 <?php
 /**
- * Sets up autoloader for Minify
- *
- * @package Minify
+ * Sets up autoloading and returns the Minify\App
  */
 
 call_user_func(function () {
@@ -15,3 +13,5 @@ call_user_func(function () {
     }
     require $file;
 });
+
+return new \Minify\App(__DIR__);
