@@ -12,6 +12,11 @@ The stats above are from a [brief walkthrough](http://mrclay.org/index.php/2008/
 
 Relative URLs in CSS files are rewritten to compensate for being served from a different directory.
 
+News
+----
+
+Version [2.3.0](https://github.com/mrclay/minify/releases/tag/2.3.0) was released, mainly to deprecate some classes that will be removed in 3.0.
+
 Wordpress User?
 ---------------
 
