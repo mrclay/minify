@@ -43,5 +43,10 @@
 	},
 	"scripts": {
 		"test": "phpunit"
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-trunk": "3.0.x-dev"
+		}
 	}
 }
