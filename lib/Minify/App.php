@@ -24,6 +24,11 @@ use Psr\Log\LoggerInterface;
  */
 class App extends Container {
 
+    /**
+     * Constructor
+     *
+     * @param string $dir Directory containing config files
+     */
     public function __construct($dir)
     {
         $that = $this;

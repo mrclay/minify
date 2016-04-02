@@ -1,4 +1,4 @@
-/*! This file exists only for testing a Minify installation. It's content is not used.
+/*! This file exists only for testing a Minify installation. Its content is not used.
  *
  * http://example.org/min/f=min/quick-test.js
  */
