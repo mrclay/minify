@@ -136,13 +136,14 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                 $base = '/';
             }
             $allowDirs = array();
+            $document_root = realpath($_SERVER['DOCUMENT_ROOT']);
             foreach ((array)$cOptions['allowDirs'] as $allowDir) {
-                $allowDirs[] = realpath(str_replace('//', $_SERVER['DOCUMENT_ROOT'] . '/', $allowDir));
+                $allowDirs[] = realpath(str_replace('//', $document_root . '/', $allowDir));
             }
             $basenames = array(); // just for cache id
             foreach ($files as $file) {
                 $uri = $base . $file;
-                $path = $_SERVER['DOCUMENT_ROOT'] . $uri;
+                $path = $document_root . $uri;
                 $realpath = realpath($path);
                 if (false === $realpath || ! is_file($realpath)) {
                     $this->log("The path \"{$path}\" (realpath \"{$realpath}\") could not be found (or was not a file)");
