@@ -126,7 +126,9 @@ abstract class Minify_Controller_Base {
                 return true;
             }
         }
-        throw new Exception("File '$file' is outside \$allowDirs. If the path is"
+        
+        $allowDirs = implode(';', array_values($allowDirs));
+        throw new Exception("File '$file' is outside \$allowDirs ($allowDirs). If the path is"
             . " resolved via an alias/symlink, look into the \$min_symlinks option."
             . " E.g. \$min_symlinks['/" . dirname($uri) . "'] = '" . dirname($file) . "';");
     }
