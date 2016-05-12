@@ -10,6 +10,7 @@
 * Add config option for simply concatenating files
 * Add config option for altering creation of Minify/MinApp objects
 * Missing spec no longer redirects, instead links to docs
+* Minify::VERSION is an int that tracks the major version number
 
 ## Version 2.2.1 (2014-10-30)
 * Builder styled with Bootstrap (thanks to help from acidvertigo)

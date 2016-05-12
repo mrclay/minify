@@ -26,7 +26,15 @@ use Psr\Log\LoggerInterface;
  */
 class Minify {
 
-    const VERSION = '3.0.0';
+    /**
+     * API version
+     *
+     * This is only bumped when API breaks are done and should follow the major version of the library
+     *
+     * @var int
+     */
+    const VERSION = 3;
+
     const TYPE_CSS = 'text/css';
     const TYPE_HTML = 'text/html';
     // there is some debate over the ideal JS Content-Type, but this is the
