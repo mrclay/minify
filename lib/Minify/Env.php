@@ -33,6 +33,7 @@ class Minify_Env {
         } else {
             $this->server['DOCUMENT_ROOT'] = rtrim($this->server['DOCUMENT_ROOT'], '/\\');
         }
+        $this->server['DOCUMENT_ROOT'] = $this->normalizePath($this->server['DOCUMENT_ROOT']);
         $this->get = $options['get'];
         $this->post = $options['post'];
         $this->cookie = $options['cookie'];
@@ -74,6 +75,29 @@ class Minify_Env {
         }
 
         return isset($this->post[$key]) ? $this->post[$key] : $default;
+    }
+
+    /**
+     * turn windows-style slashes into unix-style,
+     * remove trailing slash
+     * and lowercase drive letter
+     *
+     * @param string $path absolute path
+     *
+     * @return string
+     */
+    public function normalizePath($path)
+    {
+        $realpath = realpath($path);
+        if ($realpath) {
+            $path = $realpath;
+        }
+        $path = str_replace('\\', '/', $path);
+        $path = rtrim($path, '/');
+        if (substr($path, 1, 1) === ':') {
+            $path = lcfirst($path);
+        }
+        return $path;
     }
 
     protected $server = null;

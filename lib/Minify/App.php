@@ -104,7 +104,7 @@ class App extends Container {
             if (empty($config->documentRoot)) {
                 return $app->env->getDocRoot();
             }
-            return rtrim($config->documentRoot, '/\\');
+            return $app->env->normalizePath($config->documentRoot);
         };
 
         $this->env = function (App $app) {

@@ -111,20 +111,6 @@ class Minify_Source_Factory {
     }
 
     /**
-     * turn windows-style slashes into unix-style,
-     * remove trailing slash
-     * and lowercase drive letter
-     *
-     * @param string $path absolute path
-     *
-     * @return string
-     */
-    public function getNormalizedPath($path)
-    {
-        return lcfirst(rtrim(str_replace('\\', '/', $path), '/'));
-    }
-
-    /**
      * @param mixed $spec
      *
      * @return Minify_SourceInterface
@@ -159,8 +145,9 @@ class Minify_Source_Factory {
         if ($this->options['checkAllowDirs']) {
             $allowDirs = (array)$this->options['allowDirs'];
             $inAllowedDir = false;
+            $filePath = $this->env->normalizePath($spec['filepath']);
             foreach ($allowDirs as $allowDir) {
-                if (strpos($this->getNormalizedPath($spec['filepath']), $this->getNormalizedPath($allowDir)) === 0) {
+                if (strpos($filePath, $this->env->normalizePath($allowDir)) === 0) {
                     $inAllowedDir = true;
                 }
             }

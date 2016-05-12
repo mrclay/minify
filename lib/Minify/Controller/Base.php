@@ -69,4 +69,12 @@ abstract class Minify_Controller_Base implements Minify_ControllerInterface {
         trigger_error(__METHOD__ . ' is deprecated in Minify 3.0.', E_USER_DEPRECATED);
         $this->logger->info($msg);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEnv()
+    {
+        return $this->env;
+    }
 }

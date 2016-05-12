@@ -57,6 +57,11 @@ class Minify {
     protected $controller = null;
 
     /**
+     * @var Minify_Env
+     */
+    protected $env;
+
+    /**
      * @var Minify_SourceInterface[]
      */
     protected $sources;
@@ -218,6 +223,8 @@ class Minify {
      */
     public function serve(Minify_ControllerInterface $controller, $options = array())
     {
+        $this->env = $controller->getEnv();
+
         $options = array_merge($this->getDefaultOptions(), $options);
 
         $config = $controller->createConfiguration($options);
@@ -499,7 +506,7 @@ class Minify {
     protected function setupUriRewrites()
     {
         foreach($this->sources as $key => $source) {
-            $file = $source->getFilePath();
+            $file = $this->env->normalizePath($source->getFilePath());
             $minifyOptions = $source->getMinifierOptions();
 
             if ($file
