@@ -7,7 +7,7 @@ By default, Minify uses [Minify\_Cache\_File](http://code.google.com/p/minify/so
 ### APC
 
 ```
-require 'lib/Minify/Cache/APC.php';
+require "$min_libPath/Minify/Cache/APC.php";
 $min_cachePath = new Minify_Cache_APC();
 ```
 
@@ -15,7 +15,7 @@ $min_cachePath = new Minify_Cache_APC();
 
 You must create and connect your Memcache object then pass it to `Minify_Cache_Memcache`'s constructor.
 ```
-require 'lib/Minify/Cache/Memcache.php';
+require "$min_libPath/Minify/Cache/Memcache.php";
 $memcache = new Memcache;
 $memcache->connect('localhost', 11211);
 $min_cachePath = new Minify_Cache_Memcache($memcache);
