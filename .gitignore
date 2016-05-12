@@ -6,5 +6,5 @@
 
 /.idea/
 /composer.lock
-/vendor/
+/vendor
 /.php_cs.cache

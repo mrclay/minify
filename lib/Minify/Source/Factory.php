@@ -157,16 +157,19 @@ class Minify_Source_Factory {
         }
 
         if ($this->options['checkAllowDirs']) {
+            $allowDirs = (array)$this->options['allowDirs'];
             $inAllowedDir = false;
-            foreach ((array)$this->options['allowDirs'] as $allowDir) {
+            foreach ($allowDirs as $allowDir) {
                 if (strpos($this->getNormalizedPath($spec['filepath']), $this->getNormalizedPath($allowDir)) === 0) {
                     $inAllowedDir = true;
                 }
             }
 
             if (!$inAllowedDir) {
-                throw new Minify_Source_FactoryException("File '{$spec['filepath']}' is outside \$allowDirs."
-                    . " If the path is resolved via an alias/symlink, look into the \$min_symlinks option.");
+                $allowDirsStr = implode(';', $allowDirs);
+                throw new Minify_Source_FactoryException("File '{$spec['filepath']}' is outside \$allowDirs "
+                    . "($allowDirsStr). If the path is resolved via an alias/symlink, look into the "
+                    . "\$min_symlinks option.");
             }
         }
 
