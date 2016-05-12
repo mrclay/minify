@@ -12,6 +12,14 @@
 * Missing spec no longer redirects, instead links to docs
 * Minify::VERSION is an int that tracks the major version number
 
+## Version 2.3.0 (2016-03-11)
+* Adds `$min_concatOnly` option to just concatenate files
+* Deprecates use of Minify_Loader
+* Deprecates use of Minify_Logger
+* Deprecates use of JSMinPlus
+* Deprecates use of FirePHP
+* Deprecates use of DooDigestAuth
+
 ## Version 2.2.1 (2014-10-30)
 * Builder styled with Bootstrap (thanks to help from acidvertigo)
 * Update CSSmin to v.2.4.8

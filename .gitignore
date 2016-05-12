@@ -4,7 +4,8 @@
 [._]s[a-w][a-z]
 .DS_Store
 
+/test
 /.idea/
 /composer.lock
-/vendor/
+/vendor
 /.php_cs.cache

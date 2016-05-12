@@ -67,11 +67,15 @@ class Minify_CSS_UriRewriter {
 
         $css = self::_trimUrls($css);
 
+        $css = self::_owlifySvgPaths($css);
+
         // rewrite
         $css = preg_replace_callback('/@import\\s+([\'"])(.*?)[\'"]/'
             ,array(self::$className, '_processUriCB'), $css);
         $css = preg_replace_callback('/url\\(\\s*([\'"](.*?)[\'"]|[^\\)\\s]+)\\s*\\)/'
             ,array(self::$className, '_processUriCB'), $css);
+
+        $css = self::_unOwlify($css);
 
         return $css;
     }
@@ -91,11 +95,15 @@ class Minify_CSS_UriRewriter {
 
         $css = self::_trimUrls($css);
 
+        $css = self::_owlifySvgPaths($css);
+        
         // append
         $css = preg_replace_callback('/@import\\s+([\'"])(.*?)[\'"]/'
             ,array(self::$className, '_processUriCB'), $css);
         $css = preg_replace_callback('/url\\(\\s*([\'"](.*?)[\'"]|[^\\)\\s]+)\\s*\\)/'
             ,array(self::$className, '_processUriCB'), $css);
+
+        $css = self::_unOwlify($css);
 
         self::$_prependPath = null;
 
@@ -307,5 +315,30 @@ class Minify_CSS_UriRewriter {
         return $isImport
             ? "@import {$quoteChar}{$uri}{$quoteChar}"
             : "url({$quoteChar}{$uri}{$quoteChar})";
+    }
+
+    /**
+     * Mungs some inline SVG URL declarations so they won't be touched
+     *
+     * @link https://github.com/mrclay/minify/issues/517
+     * @see _unOwlify
+     *
+     * @param string $css
+     * @return string
+     */
+    private static function _owlifySvgPaths($css) {
+        return preg_replace('~\b((?:clip-path|mask|-webkit-mask)\s*\:\s*)url(\(\s*#\w+\s*\))~', '$1owl$2', $css);
+    }
+
+    /**
+     * Undo work of _owlify
+     *
+     * @see _owlifySvgPaths
+     *
+     * @param string $css
+     * @return string
+     */
+    private static function _unOwlify($css) {
+        return preg_replace('~\b((?:clip-path|mask|-webkit-mask)\s*\:\s*)owl~', '$1url', $css);
     }
 }
