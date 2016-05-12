@@ -2,7 +2,7 @@
 	"name": "mrclay/minify",
 	"type": "library",
 	"description": "Minify is a PHP5 app that helps you follow several rules for client-side performance. It combines multiple CSS or Javascript files, removes unnecessary whitespace and comments, and serves them with gzip encoding and optimal client-side cache headers",
-	"homepage": "http://code.google.com/p/minify/",
+	"homepage": "https://github.com/mrclay/minify",
 	"license": "BSD-3-Clause",
 	"authors": [
 		{
@@ -13,20 +13,40 @@
 	],
 	"support": {
 		"email": "minify@googlegroups.com",
-		"issues": "http://code.google.com/p/minify/issues/list",
-		"wiki": "http://code.google.com/p/minify/w/list"
+		"issues": "https://github.com/mrclay/minify/issues",
+		"wiki": "https://github.com/mrclay/minify/blob/master/docs"
 	},
 	"autoload": {
-		"classmap": ["min/lib/"]
+		"classmap": ["lib/"]
+	},
+	"autoload-dev": {
+		"classmap": ["tests/TestCase.php"]
 	},
 	"require": {
-		"php": ">=5.2.1",
-		"ext-pcre": "*"
-	},
-	"require-dev": {
+		"php": ">=5.3.0",
+		"ext-pcre": "*",
+		"firephp/firephp-core": "~0.4.0",
+		"intervention/httpauth": "~2.0",
+		"monolog/monolog": "~1.1",
+		"mrclay/jsmin-php": "~2",
+		"mrclay/props-dic": "^2.2",
 		"tubalmartin/cssmin": "~2.4.8"
 	},
+	"require-dev": {
+		"leafo/lessphp": "~0.4.0",
+		"meenie/javascript-packer": "~1.1",
+		"phpunit/phpunit": "4.8.*"
+	},
 	"suggest": {
-		"tubalmartin/cssmin": "Support minify with CSSMin (YUI PHP port)"
+		"leafo/lessphp": "LESS support",
+		"meenie/javascript-packer": "Keep track of the Packer PHP port using Composer"
+	},
+	"scripts": {
+		"test": "phpunit"
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "3.0.x-dev"
+		}
 	}
 }

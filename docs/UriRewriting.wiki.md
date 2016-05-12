@@ -12,24 +12,24 @@ When Minify serves this content (from `http://example.org/min/f=theme/fashion/st
 body{background:url(/theme/fashion/bg.jpg)}
 ```
 
-You can see the steps used to rewrite your URIs by enabling [debug mode](Debugging.md).
+You can see the steps used to rewrite your URIs by enabling [debug mode](Debugging.wiki.md).
 
 ## Disable Rewriting
 
-You can disable the automatic rewriting by setting this in min/config.php:
-```
+You can disable the automatic rewriting by setting this in config.php:
+```php
 $min_serveOptions['rewriteCssUris'] = false;
 ```
 
 ## Manual Rewriting
 
 You can manually rewrite relative URIs in CSS in a couple ways. The simplest is to prepend a string to each relative URI:
-```
+```php
 $min_serveOptions['rewriteCssUris'] = false;
-$min_serveOptions['minifierOptions']['text/css']['prependRelativePath'] = '/css/';
+$min_serveOptions['minifierOptions'][Minify::TYPE_CSS]['prependRelativePath'] = '/css/';
 ```
 
-Or you can run the minified output through a custom [post-processor](CookBook#Processing_Output_After_Minification.md) function.
+Or you can run the minified output through a custom [post-processor](CookBook.wiki.md#Processing_Output_After_Minification.md) function.
 
 ## Document Root Confusion
 
@@ -44,8 +44,8 @@ Whether you use [aliases](http://httpd.apache.org/docs/2.2/mod/mod_alias.html), 
 | Apache mod\_alias | `Alias /static /etc/static_content`         |
 | ...or symlink     | `ln -s /etc/static_content /var/www/static` |
 
-In `/min/config.php` you'll need the following:
-```
+In `/config.php` you'll need the following:
+```php
 // map URL path to file path
 $min_symlinks = array(
     '//static' => '/etc/static_content'
@@ -54,7 +54,7 @@ $min_symlinks = array(
 This lets Minify know during the rewriting process that an internal file path starting with `/etc/static_content` should be rewritten as a public URI beginning with `/static`.
 
 If your alias target directory is outside of DOC\_ROOT, you'll also need to explicitly allow Minify to serve files from it:
-```
+```php
 $min_serveOptions['minApp']['allowDirs'] = array(
     '//',                 // allow from the normal DOC_ROOT
     '/etc/static_content' // allow from our alias target
@@ -67,7 +67,7 @@ You can enable the script `min/server-info.php` and open http://example.org/min/
 
 ## It's still not working
 
-  1. Make sure you have the [latest version](http://code.google.com/p/minify/downloads/list).
-  1. Enable [debug mode](Debugging.md), which will show you the URI transformation process.
-  1. Check that `$_SERVER['DOCUMENT_ROOT']` is a real directory path. If not, URI rewriting will fail. If you cannot fix this in httpd.conf, etc., use the [configuration option](http://code.google.com/p/minify/source/browse/min/config.php?r=292#47).
-  1. Paste your [debug mode](Debugging.md) comment block into a new post on the [minify mailing list](http://groups.google.com/group/minify).
+  1. Make sure you have the latest version.
+  1. Enable [debug mode](Debugging.wiki.md), which will show you the URI transformation process.
+  1. Check that `$_SERVER['DOCUMENT_ROOT']` is the correct directory path. If not, URI rewriting will fail. If you cannot fix this in httpd.conf, etc., set `$min_documentRoot` in config.php.
+  1. Paste your [debug mode](Debugging.wiki.md) comment block into a new post on the [minify mailing list](http://groups.google.com/group/minify).

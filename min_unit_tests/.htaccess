@@ -1,4 +1,0 @@
-<IfModule mod_env.c>
-# In case AddOutputFilterByType has been added
-SetEnv no-gzip
-</IfModule>

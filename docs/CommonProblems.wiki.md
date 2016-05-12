@@ -2,20 +2,15 @@ If this page doesn't help, please post a question on our [Google group](http://g
 
 ## URIs are re-written incorrectly in CSS output
 
-See UriRewriting.
-
-## Files aren't cached in IE6
-
-**Use Minify 2.1.4+**.
-
-For Minify 2.1.3 and below:
-
-  1. Open `/min/lib/HTTP/Encoder.php`
-  1. On line [62](http://code.google.com/p/minify/source/browse/tags/release_2.1.3/min/lib/HTTP/Encoder.php#62), change `false` to `true`.
+See [UriRewriting](UriRewriting.wiki.md).
 
 ## Builder Fails / 400 Errors
 
-**Use Minify 2.1.4+**, and you can see the cause of 400 responses using FirePHP (See [Debugging](Debugging.md)).
+This is usually due to an unusual server setup. You can see the cause of 400 responses using FirePHP (See [Debugging](Debugging.wiki.md)).
+
+## Long URL parameters are ignored
+
+Some server setups will refuse to populate very long `$_GET` params. Use [groups](UserGuide.wiki.md#using-groups-for-nicer-urls) to shorten the URLs.
 
 ## PHP/Apache crashes
 
@@ -23,15 +18,15 @@ For Minify 2.1.3 and below:
 
   * Raise Apache's [ThreadStackSize](http://stackoverflow.com/a/7597506/3779)
   * In [php.ini](http://php.net/manual/en/pcre.configuration.php) raise `pcre.backtrack_limit` and `pcre.recursion_limit` to 1000000. These will allow processing longer strings, but also require a larger stack size.
-  * Try [this CSSmin configuration](http://code.google.com/p/minify/wiki/CookBook#CSSmin_PHP_port)
+  * Use YUICompressor instead of PHP-based CSS compressors
 
 ## Dealing with Javascript errors
 
 Short answer: **use Minify 2.1.4+, use a pre-compressed version of your file, and rename it `*.min.js` or `*-min.js`**. By default Minify won't try to minify these files (but will still gzip them). The [Compressor Rater](http://compressorrater.thruhere.net/) is handy for compressing files individually.
 
-If the error is in your code, enable [debug mode](Debugging.md) while debugging your code in Firebug or your favorite browser's Javascript debugger. This will insert comments to allow you to keep track of the individual source locations in the combined file.
+If the error is in your code, enable [debug mode](Debugging.wiki.md) while debugging your code in Firebug or your favorite browser's Javascript debugger. This will insert comments to allow you to keep track of the individual source locations in the combined file.
 
-If you have Java on your web host, you can use the [wrapper for YUI Compressor](http://code.google.com/p/minify/source/browse/min/lib/Minify/YUICompressor.php) instead of JSMin. [This thread](http://groups.google.com/group/minify/browse_thread/thread/f12f25f27e1256fe) shows how a user has done this.
+If you have Java on your web host, you can use the [wrapper for YUI Compressor](https://github.com/mrclay/minify/blob/master/lib/Minify/YUICompressor.php) instead of JSMin. [This thread](http://groups.google.com/group/minify/browse_thread/thread/f12f25f27e1256fe) shows how a user has done this.
 
 ## Javascript isn't being minified
 
@@ -53,7 +48,7 @@ Scriptaculous 1.8.2 (and probably all 1.x) has an [autoloader script](http://git
 
 If you upload files using [Coda or Transmit](http://groups.google.com/group/coda-users/browse_thread/thread/572d2dc315ec02e7/) or from a Windows PC to a non-Windows server, your new files may end up with the wrong `mtime` (timestamp) on the server, confusing the cache system.
 
-Setting the [$min\_uploaderHoursBehind option](https://github.com/mrclay/minify/blob/master/min/config.php#L171) in `config.php` can compensate for this.
+Setting the [$min\_uploaderHoursBehind option](https://github.com/mrclay/minify/blob/master/config.php#L171) in `config.php` can compensate for this.
 
 WinSCP has a [Daylight Saving Time option](http://winscp.net/eng/docs/ui_login_environment#daylight_saving_time) that can prevent this issue.
 
@@ -69,8 +64,8 @@ If a change is not seen, verify that the server cache file is being updated.
 
 ## Disable Caching
 
-If you'd like to temporarily disable the cache without using [debug mode](Debugging.md), place these settings at the end of `config.php`:
-```
+If you'd like to temporarily disable the cache without using [debug mode](Debugging.wiki.md), place these settings at the end of `config.php`:
+```php
 // disable server caching
 $min_cachePath = null;
 // prevent client caching
@@ -103,8 +98,8 @@ Debug mode adds line numbers in comments. Unfortunately, in versions <= 2.1.1, i
 
 This issue was resolved in version 2.1.2.
 
-In rare instances the [JSMin](http://code.google.com/p/minify/source/browse/tags/release_2.1.1/min/lib/JSMin.php#14) algorithm in versions <= 2.1.1 could be confused by regexes in certain contexts and throw an exception. The workaround was to simply wrap the expression in parenthesis. E.g.
-```
+In rare instances the [JSMin](https://github.com/mrclay/jsmin-php/blob/master/src/JSMin/JSMin.php) algorithm in versions <= 2.1.1 could be confused by regexes in certain contexts and throw an exception. The workaround was to simply wrap the expression in parenthesis. E.g.
+```js
 // in 2.1.1 and previous
 return /'/;   // JSMin throws error
 return (/'/); // no error
@@ -124,6 +119,14 @@ Use Minify 2.1.4+. Before there was a setting to adjust the maximum allowed.
 
 This may also appear as "Virtual Directory does not allow contents to be listed". Minify requires that the URI `/min/` (a request for a directory listing) result in the execution of `/min/index.php`. On Apache, you would make sure `index.php` is listed in the [DirectoryIndex directive](http://httpd.apache.org/docs/2.0/mod/mod_dir.html#directoryindex). IIS calls this the [Default Document](http://www.iis.net/ConfigReference/system.webServer/defaultDocument).
 
+## "WARN: environment : Local HTTP request failed. Testing cannot continue."
+
+The `test_environment.php` unit test makes a few local HTTP requests to sniff for `zlib.output_compression` and other auto-encoding behavior, which may break Minify's output. This warning will appear if `allow_url_fopen` is disabled in php.ini, but **does not** necessarily mean there is a problem.
+
+If Minify seems to work fine, ignore the warning. If Minify produces garbled output, enable `allow_url_fopen` in php.ini and re-run the tests. The tests may be able to tell you if PHP or your server is automatically encoding output.
+
+Unless you need it in other scripts, disable `allow_url_fopen` once the issue is resolved. Minify does not need it.
+
 ## See Also
 
-  * [Debugging](Debugging.md)
+  * [Debugging](Debugging.wiki.md)

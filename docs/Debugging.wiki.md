@@ -7,9 +7,9 @@
 
 You can find details by enabling FirePHP logging:
 
-  1. Install/enable [FirePHP](https://addons.mozilla.org/en-US/firefox/addon/6149).
-  1. Open Firebug's console
-  1. Set `$min_errorLogger = true;` in min/config.php
+  1. Install/enable FirePHP for [Firefox](https://addons.mozilla.org/en-US/firefox/addon/6149) or [Chrome](https://chrome.google.com/webstore/detail/firephp4chrome/gpgbmonepdpnacijbbdijfbecmgoojma?hl=en-US).
+  1. Open the Chrome DevTools/Firebug console
+  1. Set `$min_errorLogger = true;` in config.php
   1. Reload the Minify URL
 
 Hopefully you'll see the error appear:
@@ -22,7 +22,7 @@ Minify: Something bad happened!
 
 When Javascript errors occur, or URIs in CSS files are incorrectly rewritten, enable "debug mode" to ease debugging combined files:
 
-  1. Set `$min_allowDebugFlag = 'true'` in min/config.php
+  1. Set `$min_allowDebugFlag = true;` in config.php
   1. Append `&debug` to the Minify URI. E.g. `/min/?f=script1.js,script2.js&debug` (or use the bookmarklet provided by /min/builder/)
 
 In "debug mode":
@@ -34,7 +34,7 @@ In "debug mode":
 
 Example: a combination of two Javascript files in debug mode
 
-```
+```js
 /* firstFile.js */
 
 /* 1  */ (function () {
@@ -70,11 +70,11 @@ traversals removed : /images/bg.jpg
 ### Tips for handling Javascript errors
 
   * Use the latest version (2.1.4 beta as of Dec 2010)
-  * Try [debug mode](#Javascript/CSS_Problems.md) to make the combined file more readable (and error locations findable)
+  * Try [debug mode](#javascriptcss-problems) to make the combined file more readable (and error locations findable)
   * Find out if other browsers have the same error
   * For pre-minified files, make the filenames end in `.min.js` or `-min.js`, which will prevent Minify from altering them
   * Test your scripts in [JSLint](http://www.jslint.com/).
 
 ## See Also
 
-  * CommonProblems
+  * [CommonProblems](CommonProblems.wiki.md)

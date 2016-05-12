@@ -1,10 +1,9 @@
 #!/usr/bin/php
 <?php
 
-$pathToLib = dirname(dirname(__DIR__)) . '/min/lib';
+die('Must be rewritten for new API');
 
-require "$min_libPath/Minify/Loader.php";
-Minify_Loader::register();
+require __DIR__ . '/../../bootstrap.php';
 
 $cli = new MrClay\Cli;
 
@@ -19,7 +18,7 @@ if (! $cli->validate()) {
     if ($cli->isHelpRequest) {
         echo $cli->getArgumentsListing();
     }
-    echo "EXAMPLE: ./rewrite-uris.php -v -d../.. ../../min_unit_tests/_test_files/css/paths_rewrite.css ../../min_unit_tests/_test_files/css/comments.css
+    echo "EXAMPLE: ./rewrite-uris.php -v -d../.. ../../tests/_test_files/css/paths_rewrite.css ../../tests/_test_files/css/comments.css
     \n";
     exit(0);
 }
@@ -46,7 +45,7 @@ foreach ($paths as $path) {
         $sources[] = new Minify_Source(array(
             'id' => $path,
             'content' => "/*** $path not found ***/\n",
-            'minifier' => '',
+            'minifier' => 'Minify::nullMinifier',
         ));
     }
 }

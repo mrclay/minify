@@ -1,10 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-$pathToLib = dirname(dirname(__DIR__)) . '/min/lib';
+die('Must be rewritten for new API');
 
-require "$pathToLib/Minify/Loader.php";
-Minify_Loader::register();
+require __DIR__ . '/../../bootstrap.php';
 
 $cli = new MrClay\Cli;
 
@@ -22,8 +21,8 @@ if (! $cli->validate()) {
     if ($cli->isHelpRequest) {
         echo $cli->getArgumentsListing();
     }
-    echo "EXAMPLE: ./minify.php ../../min_unit_tests/_test_files/js/*.js\n";
-    echo "EXAMPLE: ./minify.php -d../.. ../../min_unit_tests/_test_files/css/*.css\n";
+    echo "EXAMPLE: ./minify.php ../../tests/_test_files/js/*.js\n";
+    echo "EXAMPLE: ./minify.php -d../.. ../../tests/_test_files/css/*.css\n";
     echo "EXAMPLE: echo \"var js = 'Awesome' && /cool/;\" | ./minify.php -t js\n";
     echo "EXAMPLE: echo \"sel > ector { prop: 'value  '; }\" | ./minify.php -t css\n";
     echo "\n";
@@ -56,7 +55,7 @@ if ($paths) {
             $sources[] = new Minify_Source(array(
                 'id' => $path,
                 'content' => "/*** $path not found ***/\n",
-                'minifier' => '',
+                'minifier' => 'Minify::nullMinifier',
             ));
         }
     }

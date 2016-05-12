@@ -1,0 +1,30 @@
+/*! This file exists only for testing a Minify installation. Its content is not used.
+ *
+ * http://example.org/min/f=min/quick-test.css
+ */
+
+@import     url( more.css );
+
+    body, td, th {
+        font-family: Verdana , "Bitstream Vera Sans" , Arial Narrow, sans-serif ;
+
+	font-size  : 12px;
+}
+
+.nav {
+    margin-left: 20%;
+}
+#main-nav {
+    background-color: red;
+    border: 1px solid #00ff77;
+}
+
+div#content
+h1 + p {
+    padding-top: 0;
+    margin-top: 0;
+}
+
+@media all and (min-width: 640px) {
+	#media-queries-1 { background-color: #0f0; }
+}
