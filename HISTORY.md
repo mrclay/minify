@@ -5,6 +5,7 @@
 * Removes DooDigestAuth
 * Removes Minify_Loader (uses Composer)
 * Removes Minify_Logger (uses Monolog)
+* Removes `$min_libPath` option
 * The Minify, source, and controller components have changed APIs
 * Better CSS minification via Túbal Martín's CSSMin
 * Add config option for simply concatenating files

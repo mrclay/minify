@@ -58,13 +58,6 @@ $min_allowDebugFlag = false;
 
 
 /**
- * Path to Minify's lib folder. If you happen to move it, change 
- * this accordingly.
- */
-$min_libPath = dirname(__FILE__) . '/lib';
-
-
-/**
  * To use APC/Memcache/ZendPlatform for cache storage, require the class and
  * set $min_cachePath to an instance. Example below:
  */
@@ -199,3 +192,4 @@ $min_uploaderHoursBehind = 0;
  */
 //$min_factories['minify'] = ... a callable accepting a Minify\App object
 //$min_factories['controller'] = ... a callable accepting a Minify\App object
+
