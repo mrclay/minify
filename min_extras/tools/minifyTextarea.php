@@ -55,7 +55,7 @@ if ($env->post('method') === 'Minify and serve') {
 }
 
 $tpl = array();
-$tpl['classes'] = array('Minify_HTML', 'JSMin\\JSMin', 'Minify_CSS');
+$tpl['classes'] = array('Minify_HTML', 'JSMin\\JSMin', 'Minify_CSS', 'Minify_Lines');
 
 if (in_array($env->post('method'), $tpl['classes'])) {
 
