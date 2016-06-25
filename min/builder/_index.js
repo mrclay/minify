@@ -12,7 +12,7 @@ var MUB = {
         $.ajax({
             url : '../f=' + testUri + '&' + (new Date()).getTime(),
             success : function (data) {
-                if (data === '1') {
+                if (data === '1' || data === '1;') {
                     MUB._minRoot = '/min/';
                     $('span.minRoot').html('/min/');
                 } else
