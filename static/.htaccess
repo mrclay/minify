@@ -1,0 +1,40 @@
+<IfModule mod_expires.c>
+	ExpiresActive On
+	ExpiresDefault "access plus 1 year"
+</IfModule>
+
+<FilesMatch "\.(js|css|less)$">
+	FileETag MTime Size
+</FilesMatch>
+
+<IfModule mod_gzip.c>
+	mod_gzip_on yes
+	mod_gzip_dechunk yes
+	mod_gzip_keep_workfiles No
+	mod_gzip_minimum_file_size 1000
+	mod_gzip_maximum_file_size 1000000
+	mod_gzip_maximum_inmem_size 1000000
+	mod_gzip_item_include mime ^text/.*
+	mod_gzip_item_include mime ^application/javascript$
+	mod_gzip_item_include mime ^application/x-javascript$
+	# Exclude old browsers and images since IE has trouble with this
+	mod_gzip_item_exclude reqheader "User-Agent: .*Mozilla/4\..*\["
+	mod_gzip_item_exclude mime ^image/.*
+</IfModule>
+
+<IfModule mod_deflate.c>
+	AddOutputFilterByType DEFLATE text/css text/javascript application/javascript application/x-javascript
+	BrowserMatch ^Mozilla/4 gzip-only-text/html
+	BrowserMatch ^Mozilla/4\.[0678] no-gzip
+	BrowserMatch \bMSIE !no-gzip
+</IfModule>
+
+<IfModule mod_rewrite.c>
+RewriteEngine on
+
+# You may need RewriteBase on some servers
+#RewriteBase /min/static
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ gen.php [QSA,L]
+</IfModule>

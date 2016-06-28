@@ -4,7 +4,9 @@ The simple JSMin algorithm is the most reliable in PHP, but check the [CookBook]
 
 ## How fast is it?
 
-Certainly not as fast as an HTTPd serving flat files. On a high-traffic site:
+If you [serve static files](https://github.com/mrclay/minify/blob/master/static/README.md), it's as fast as your web server, and you should do this for high-traffic sites.
+
+The PHP-based server is not as fast, but still performs well thanks to an internal cache. Tips:
 
   * **Use a reverse proxy** to cache the Minify URLs. This is by far the most important tip.
   * Revision your Minify URIs (so far-off Expires headers will be sent). One way to do this is using [groups](UserGuide.wiki.md#using-groups-for-nicer-urls) and the [Minify_groupUri()](UserGuide.wiki.md#far-future-expires-headers) utility function. Without this, clients will re-request Minify URLs every 30 minutes to check for updates.
