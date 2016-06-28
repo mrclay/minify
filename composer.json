@@ -35,7 +35,8 @@
 	"require-dev": {
 		"leafo/lessphp": "~0.4.0",
 		"meenie/javascript-packer": "~1.1",
-		"phpunit/phpunit": "4.8.*"
+		"phpunit/phpunit": "4.8.*",
+		"tedivm/jshrink": "~1.1.0"
 	},
 	"suggest": {
 		"leafo/lessphp": "LESS support",
