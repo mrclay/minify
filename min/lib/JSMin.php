@@ -108,6 +108,11 @@ class JSMin {
             $mbIntEnc = mb_internal_encoding();
             mb_internal_encoding('8bit');
         }
+
+        if (isset($this->input[0]) && $this->input[0] === "\xef") {
+            $this->input = substr($this->input, 3);
+        }
+
         $this->input = str_replace("\r\n", "\n", $this->input);
         $this->inputLength = strlen($this->input);
 
@@ -271,37 +276,39 @@ class JSMin {
     protected function isRegexpLiteral()
     {
         if (false !== strpos("(,=:[!&|?+-~*{;", $this->a)) {
-            // we obviously aren't dividing
+            // we can't divide after these tokens
             return true;
         }
 
-		// we have to check for a preceding keyword, and we don't need to pattern
-		// match over the whole output.
-		$recentOutput = substr($this->output, -10);
-
-		// check if return/typeof directly precede a pattern without a space
-		foreach (array('return', 'typeof') as $keyword) {
-            if ($this->a !== substr($keyword, -1)) {
-                // certainly wasn't keyword
-                continue;
-            }
-            if (preg_match("~(^|[\\s\\S])" . substr($keyword, 0, -1) . "$~", $recentOutput, $m)) {
-                if ($m[1] === '' || !$this->isAlphaNum($m[1])) {
-                    return true;
-                }
+        // check if first non-ws token is "/" (see starts-regex.js)
+        $length = strlen($this->output);
+        if ($this->a === ' ' || $this->a === "\n") {
+            if ($length < 2) { // weird edge case
+                return true;
             }
         }
 
-		// check all keywords
-		if ($this->a === ' ' || $this->a === "\n") {
-			if (preg_match('~(^|[\\s\\S])(?:case|else|in|return|typeof)$~', $recentOutput, $m)) {
-				if ($m[1] === '' || !$this->isAlphaNum($m[1])) {
-					return true;
-				}
-			}
+        // if the "/" follows a keyword, it must be a regexp, otherwise it's best to assume division
+
+        $subject = $this->output . trim($this->a);
+        if (!preg_match('/(?:case|else|in|return|typeof)$/', $subject, $m)) {
+            // not a keyword
+            return false;
         }
 
-        return false;
+        // can't be sure it's a keyword yet (see not-regexp.js)
+        $charBeforeKeyword = substr($subject, 0 - strlen($m[0]) - 1, 1);
+        if ($this->isAlphaNum($charBeforeKeyword)) {
+            // this is really an identifier ending in a keyword, e.g. "xreturn"
+            return false;
+        }
+
+        // it's a regexp. Remove unneeded whitespace after keyword
+        if ($this->a === ' ' || $this->a === "\n") {
+            $this->a = '';
+        }
+
+        return true;
     }
 
     /**
