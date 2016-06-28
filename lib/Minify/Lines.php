@@ -41,11 +41,6 @@ class Minify_Lines {
             : '';
         $content = str_replace("\r\n", "\n", $content);
 
-        // Hackily rewrite strings with XPath expressions that are
-        // likely to throw off our dumb parser (for Prototype 1.6.1).
-        $content = str_replace('"/*"', '"/"+"*"', $content);
-        $content = preg_replace('@([\'"])(\\.?//?)\\*@', '$1$2$1+$1*', $content);
-
         $lines = explode("\n", $content);
         $numLines = count($lines);
         // determine left padding
@@ -89,33 +84,43 @@ class Minify_Lines {
      *
      * @param string $line current line of code
      *
-     * @param bool $inComment was the parser in a comment at the
-     * beginning of the line?
+     * @param bool $inComment was the parser in a C-style comment at the
+     * beginning of the previous line?
      *
      * @return bool
      */
     private static function _eolInComment($line, $inComment)
     {
-        // crude way to avoid things like // */
-        $line = preg_replace('~//.*?(\\*/|/\\*).*~', '', $line);
-
         while (strlen($line)) {
-            $search = $inComment
-                ? '*/'
-                : '/*';
-            $pos = strpos($line, $search);
-            if (false === $pos) {
-                return $inComment;
-            } else {
-                if ($pos == 0
-                    || ($inComment
-                        ? substr($line, $pos, 3)
-                        : substr($line, $pos-1, 3)) != '*/*')
-                {
-                        $inComment = ! $inComment;
+            if ($inComment) {
+                // only "*/" can end the comment
+                $index = self::_find($line, '*/');
+                if ($index === false) {
+                    return true;
                 }
-                $line = substr($line, $pos + 2);
+
+                // stop comment and keep walking line
+                $inComment = false;
+                @$line = (string)substr($line, $index + 2);
+                continue;
             }
+
+            // look for "//" and "/*"
+            $single = self::_find($line, '//');
+            $multi = self::_find($line, '/*');
+            if ($multi === false) {
+                return false;
+            }
+
+            if ($single === false || $multi < $single) {
+                // start comment and keep walking line
+                $inComment = true;
+                @$line = (string)substr($line, $multi + 2);
+                continue;
+            }
+
+            // a single-line comment preceeded it
+            return false;
         }
 
         return $inComment;
@@ -137,8 +142,63 @@ class Minify_Lines {
      */
     private static function _addNote($line, $note, $inComment, $padTo)
     {
-        return $inComment
+        $line = $inComment
             ? '/* ' . str_pad($note, $padTo, ' ', STR_PAD_RIGHT) . ' *| ' . $line
             : '/* ' . str_pad($note, $padTo, ' ', STR_PAD_RIGHT) . ' */ ' . $line;
+        return rtrim($line);
+    }
+
+    /**
+     * Find a token trying to avoid false positives
+     *
+     * @param string $str   String containing the token
+     * @param string $token Token being checked
+     * @return bool
+     */
+    private static function _find($str, $token) {
+        switch ($token) {
+            case '//':
+                $fakes = array(
+                    '://' => 1,
+                    '"//' => 1,
+                    '\'//' => 1,
+                    '".//' => 2,
+                    '\'.//' => 2,
+                );
+                break;
+            case '/*':
+                $fakes = array(
+                    '"/*' => 1,
+                    '\'/*' => 1,
+                    '"//*' => 2,
+                    '\'//*' => 2,
+                    '".//*' => 3,
+                    '\'.//*' => 3,
+                    '*/*' => 1,
+                    '\\/*' => 1,
+                );
+                break;
+            default:
+                $fakes = array();
+        }
+
+        $index = strpos($str, $token);
+        $offset = 0;
+
+        while ($index !== false) {
+            foreach ($fakes as $fake => $skip) {
+                $check = substr($str, $index - $skip, strlen($fake));
+                if ($check === $fake) {
+                    // move offset and scan again
+                    $offset += $index + strlen($token);
+                    $index = strpos($str, $token, $offset);
+                    break;
+                }
+            }
+            // legitimate find
+            return $index;
+        }
+
+        return $index;
     }
 }
