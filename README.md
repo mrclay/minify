@@ -17,15 +17,6 @@ News
 
 Version [2.3.0](https://github.com/mrclay/minify/releases/tag/2.3.0) was released, mainly to deprecate some classes that will be removed in 3.0.
 
-Wordpress User?
----------------
-
-Consider instead using a dedicated WordPress plugin for more deep integration and simpler installation. E.g.:
-- [BWP Minify](http://wordpress.org/extend/plugins/bwp-minify/)
-- [W3 Total Cache](http://wordpress.org/extend/plugins/w3-total-cache/)
-
-Unfortunately we can't support the WordPress plugins here.
-
 Installation
 ------------
 
