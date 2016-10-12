@@ -23,6 +23,8 @@ cache:
     - vendor
 
 install:
+  # set low version, so deps can be installed on 5.3
+  - composer config platform.php 5.4
   - composer update --no-interaction --prefer-source
 
 script:
