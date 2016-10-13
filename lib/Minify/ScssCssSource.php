@@ -115,7 +115,7 @@ class Minify_ScssCssSource extends Minify_Source {
      *
      * @return boolean True if compile required.
      */
-    public function cacheIsStale($cache)
+    private function cacheIsStale($cache)
     {
         if (!$cache) {
             return true;
