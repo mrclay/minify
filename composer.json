@@ -34,7 +34,7 @@
 	},
 	"require-dev": {
 		"leafo/lessphp": "~0.4.0",
-		"leafo/scssphp": "^0.6.6",
+		"leafo/scssphp": "^0.3.0",
 		"meenie/javascript-packer": "~1.1",
 		"phpunit/phpunit": "4.8.*",
 		"tedivm/jshrink": "~1.1.0"
