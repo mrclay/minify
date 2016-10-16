@@ -34,7 +34,8 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_Build {
+class Minify_Build
+{
 
     /**
      * Last modification time of all files in the build
@@ -67,7 +68,8 @@ class Minify_Build {
      * append the timestamp to the URI.
      * @return string
      */
-    public function uri($uri, $forceAmpersand = false) {
+    public function uri($uri, $forceAmpersand = false)
+    {
         $sep = ($forceAmpersand || strpos($uri, '?') !== false)
             ? self::$ampersand
             : '?';
@@ -75,7 +77,7 @@ class Minify_Build {
         return "{$uri}{$sep}{$this->lastModified}";
     }
 
-	/**
+    /**
      * Create a build object
      *
      * @param array $sources array of Minify_Source objects and/or file paths

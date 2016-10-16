@@ -10,7 +10,8 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_CommentPreserver {
+class Minify_CommentPreserver
+{
 
     /**
      * String to be prepended to each preserved comment

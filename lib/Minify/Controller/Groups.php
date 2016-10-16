@@ -23,7 +23,8 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_Controller_Groups extends Minify_Controller_Files {
+class Minify_Controller_Groups extends Minify_Controller_Files
+{
 
     /**
      * Set up groups of files as sources
@@ -35,7 +36,8 @@ class Minify_Controller_Groups extends Minify_Controller_Files {
      *
      * @return array Minify options
      */
-    public function createConfiguration(array $options) {
+    public function createConfiguration(array $options)
+    {
         // strip controller options
         $groups = $options['groups'];
         unset($options['groups']);

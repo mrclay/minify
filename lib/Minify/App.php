@@ -21,7 +21,8 @@ use Props\Container;
  * @property \Minify_Source_Factory           $sourceFactory
  * @property array                            $sourceFactoryOptions
  */
-class App extends Container {
+class App extends Container
+{
 
     /**
      * Constructor
@@ -249,7 +250,8 @@ class App extends Container {
         };
     }
 
-    public function runServer() {
+    public function runServer()
+    {
         if (!$this->env->get('f') && $this->env->get('g') === null) {
             // no spec given
             $msg = '<p>No "f" or "g" parameters were detected.</p>';
@@ -265,7 +267,8 @@ class App extends Container {
      * @param mixed $var
      * @return string
      */
-    private function typeOf($var) {
+    private function typeOf($var)
+    {
         $type = gettype($var);
 
         return $type === 'object' ? get_class($var) : $type;

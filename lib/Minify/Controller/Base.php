@@ -15,7 +15,8 @@ use Monolog\Logger;
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-abstract class Minify_Controller_Base implements Minify_ControllerInterface {
+abstract class Minify_Controller_Base implements Minify_ControllerInterface
+{
 
     /**
      * @var Minify_Env

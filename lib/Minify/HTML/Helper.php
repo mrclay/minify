@@ -10,7 +10,8 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_HTML_Helper {
+class Minify_HTML_Helper
+{
     public $rewriteWorks = true;
     public $minAppUri = '/min';
     public $groupsConfigFile = '';
@@ -190,7 +191,8 @@ class Minify_HTML_Helper {
      * @param int $pos index to check
      * @return mixed a common char or '' if any do not match
      */
-    protected static function _getCommonCharAtPos($arr, $pos) {
+    protected static function _getCommonCharAtPos($arr, $pos)
+    {
         if (!isset($arr[0][$pos])) {
             return '';
         }
@@ -215,7 +217,8 @@ class Minify_HTML_Helper {
      * @param string $minRoot root-relative URI of the "min" application
      * @return string
      */
-    protected static function _getShortestUri($paths, $minRoot = '/min/') {
+    protected static function _getShortestUri($paths, $minRoot = '/min/')
+    {
         $pos = 0;
         $base = '';
         while (true) {

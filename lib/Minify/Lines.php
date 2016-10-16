@@ -11,7 +11,8 @@
  * @author Stephen Clay <steve@mrclay.org>
  * @author Adam Pedersen (Issue 55 fix)
  */
-class Minify_Lines {
+class Minify_Lines
+{
 
     /**
      * Add line numbers in C-style comments
@@ -156,7 +157,8 @@ class Minify_Lines {
      * @param string $token Token being checked
      * @return bool
      */
-    private static function _find($str, $token) {
+    private static function _find($str, $token)
+    {
         switch ($token) {
             case '//':
                 $fakes = array(

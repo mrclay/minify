@@ -24,7 +24,8 @@ use Psr\Log\LoggerInterface;
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
  * @link https://github.com/mrclay/minify
  */
-class Minify {
+class Minify
+{
 
     /**
      * API version
@@ -87,7 +88,8 @@ class Minify {
      * @param Minify_CacheInterface $cache
      * @param LoggerInterface       $logger
      */
-    public function __construct(Minify_CacheInterface $cache, LoggerInterface $logger = null) {
+    public function __construct(Minify_CacheInterface $cache, LoggerInterface $logger = null)
+    {
         $this->cache = $cache;
         $this->logger = $logger;
     }
@@ -492,7 +494,8 @@ class Minify {
      * @param string $content
      * @return string
      */
-    public static function nullMinifier($content) {
+    public static function nullMinifier($content)
+    {
         if (isset($content[0]) && $content[0] === "\xef") {
             $content = substr($content, 3);
         }
@@ -506,7 +509,7 @@ class Minify {
      */
     protected function setupUriRewrites()
     {
-        foreach($this->sources as $key => $source) {
+        foreach ($this->sources as $key => $source) {
             $file = $this->env->normalizePath($source->getFilePath());
             $minifyOptions = $source->getMinifierOptions();
 
@@ -594,8 +597,7 @@ class Minify {
                     || $type === self::TYPE_CSS      // yes, to process CSS individually (avoiding PCRE bugs/limits)
                     || $minifier !== $lastMinifier   // yes, minifier changed
                     || $options !== $lastOptions)    // yes, options changed
-                )
-            {
+                ) {
                 // minify previous sources with last settings
                 $imploded = implode($implodeSeparator, $groupToProcessTogether);
                 $groupToProcessTogether = array();
@@ -718,7 +720,6 @@ class Minify {
             if (!empty($options['contentType'])) {
                 // just verify sources have null content type or match the options
                 if ($sourceType !== null && $sourceType !== $options['contentType']) {
-
                     $this->logger && $this->logger->warning('ContentType mismatch');
 
                     $this->sources = array();
@@ -732,7 +733,6 @@ class Minify {
             if ($type === null) {
                 $type = $sourceType;
             } elseif ($sourceType !== $type) {
-
                 $this->logger && $this->logger->warning('ContentType mismatch');
 
                 $this->sources = array();

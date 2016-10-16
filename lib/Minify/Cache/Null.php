@@ -8,7 +8,8 @@
  *
  * @package Minify
  */
-class Minify_Cache_Null implements Minify_CacheInterface {
+class Minify_Cache_Null implements Minify_CacheInterface
+{
     /**
      * Write data to cache.
      *

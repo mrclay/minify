@@ -6,7 +6,8 @@
 
 use Psr\Log\LoggerInterface;
 
-class Minify_Cache_File implements Minify_CacheInterface {
+class Minify_Cache_File implements Minify_CacheInterface
+{
 
     /**
      * @var string
@@ -117,7 +118,7 @@ class Minify_Cache_File implements Minify_CacheInterface {
         }
     }
 
-	/**
+    /**
      * Fetch the cached content
      *
      * @param string $id cache id (e.g. a filename)

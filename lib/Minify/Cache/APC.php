@@ -14,7 +14,8 @@
  * @package Minify
  * @author Chris Edwards
  **/
-class Minify_Cache_APC implements Minify_CacheInterface {
+class Minify_Cache_APC implements Minify_CacheInterface
+{
 
     /**
      * Create a Minify_Cache_APC object, to be passed to
