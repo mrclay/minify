@@ -9,4 +9,8 @@ return array(
     'less' => array(
         '//_test_files/main.less',
     ),
+
+    'scss' => array(
+        '//_test_files/main.scss',
+    ),
 );
