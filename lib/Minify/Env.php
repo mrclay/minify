@@ -1,6 +1,7 @@
 <?php
 
-class Minify_Env {
+class Minify_Env
+{
 
     /**
      * @return string

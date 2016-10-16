@@ -11,7 +11,8 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_Controller_Page extends Minify_Controller_Base {
+class Minify_Controller_Page extends Minify_Controller_Base
+{
 
     /**
      * Set up source of HTML content
@@ -31,7 +32,8 @@ class Minify_Controller_Page extends Minify_Controller_Base {
      * 'minifyAll': should all CSS and Javascript blocks be individually
      * minified? (default false)
      */
-    public function createConfiguration(array $options) {
+    public function createConfiguration(array $options)
+    {
         if (isset($options['file'])) {
             $sourceSpec = array(
                 'filepath' => $options['file']

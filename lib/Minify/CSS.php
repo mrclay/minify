@@ -16,7 +16,8 @@
  *
  * @deprecated Use Minify_CSSmin
  */
-class Minify_CSS {
+class Minify_CSS
+{
 
     /**
      * Minify a CSS string

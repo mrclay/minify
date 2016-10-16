@@ -13,7 +13,8 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_Source implements Minify_SourceInterface {
+class Minify_Source implements Minify_SourceInterface
+{
 
     /**
      * @var int time of last modification
@@ -70,13 +71,13 @@ class Minify_Source implements Minify_SourceInterface {
         if (isset($spec['filepath'])) {
             $ext = pathinfo($spec['filepath'], PATHINFO_EXTENSION);
             switch ($ext) {
-                case 'js'   : $this->contentType = Minify::TYPE_JS;
+                case 'js': $this->contentType = Minify::TYPE_JS;
                               break;
-                case 'less' : // fallthrough
-                case 'css'  : $this->contentType = Minify::TYPE_CSS;
+                case 'less': // fallthrough
+                case 'css': $this->contentType = Minify::TYPE_CSS;
                               break;
-                case 'htm'  : // fallthrough
-                case 'html' : $this->contentType = Minify::TYPE_HTML;
+                case 'htm': // fallthrough
+                case 'html': $this->contentType = Minify::TYPE_HTML;
                               break;
             }
             $this->filepath = $spec['filepath'];
@@ -203,7 +204,8 @@ class Minify_Source implements Minify_SourceInterface {
     /**
      * {@inheritdoc}
      */
-    public function setupUriRewrites() {
+    public function setupUriRewrites()
+    {
         if ($this->filepath
             && !isset($this->minifyOptions['currentDir'])
             && !isset($this->minifyOptions['prependRelativePath'])

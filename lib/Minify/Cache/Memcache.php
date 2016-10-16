@@ -17,7 +17,8 @@
  * }
  * </code>
  **/
-class Minify_Cache_Memcache implements Minify_CacheInterface {
+class Minify_Cache_Memcache implements Minify_CacheInterface
+{
 
     /**
      * Create a Minify_Cache_Memcache object, to be passed to
@@ -92,7 +93,7 @@ class Minify_Cache_Memcache implements Minify_CacheInterface {
             : '';
     }
 
-	/**
+    /**
      * Fetch the cached content
      *
      * @param string $id cache id
@@ -114,7 +115,7 @@ class Minify_Cache_Memcache implements Minify_CacheInterface {
     private $_data = null;
     private $_id = null;
 
-	/**
+    /**
      * Fetch data and timestamp from memcache, store in instance
      *
      * @param string $id

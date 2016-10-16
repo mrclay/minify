@@ -10,7 +10,8 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_CSS_UriRewriter {
+class Minify_CSS_UriRewriter
+{
 
     /**
      * rewrite() and rewriteRelative() append debugging information here
@@ -326,7 +327,8 @@ class Minify_CSS_UriRewriter {
      * @param string $css
      * @return string
      */
-    private static function _owlifySvgPaths($css) {
+    private static function _owlifySvgPaths($css)
+    {
         return preg_replace('~\b((?:clip-path|mask|-webkit-mask)\s*\:\s*)url(\(\s*#\w+\s*\))~', '$1owl$2', $css);
     }
 
@@ -338,7 +340,8 @@ class Minify_CSS_UriRewriter {
      * @param string $css
      * @return string
      */
-    private static function _unOwlify($css) {
+    private static function _unOwlify($css)
+    {
         return preg_replace('~\b((?:clip-path|mask|-webkit-mask)\s*\:\s*)owl~', '$1url', $css);
     }
 }

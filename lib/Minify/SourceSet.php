@@ -7,7 +7,8 @@
 /**
  * @package Minify
  */
-class Minify_SourceSet {
+class Minify_SourceSet
+{
 
     /**
      * Get unique string for a set of sources

@@ -26,7 +26,8 @@
  *
  * @deprecated Use CSSmin (tubalmartin/cssmin)
  */
-class Minify_CSS_Compressor {
+class Minify_CSS_Compressor
+{
 
     /**
      * Minify a CSS string
@@ -61,7 +62,8 @@ class Minify_CSS_Compressor {
      *
      * @param array $options (currently ignored)
      */
-    private function __construct($options) {
+    private function __construct($options)
+    {
         $this->_options = $options;
     }
 

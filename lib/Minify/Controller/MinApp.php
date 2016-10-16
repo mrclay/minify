@@ -10,7 +10,8 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_Controller_MinApp extends Minify_Controller_Base {
+class Minify_Controller_MinApp extends Minify_Controller_Base
+{
 
     /**
      * Set up groups of files as sources
@@ -19,7 +20,8 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
      *
      * @return array Minify options
      */
-    public function createConfiguration(array $options) {
+    public function createConfiguration(array $options)
+    {
         // PHP insecure by default: realpath() and other FS functions can't handle null bytes.
         $get = $this->env->get();
         foreach (array('g', 'b', 'f') as $key) {

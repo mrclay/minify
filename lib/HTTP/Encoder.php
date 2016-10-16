@@ -43,7 +43,8 @@
  * @subpackage HTTP
  * @author Stephen Clay <steve@mrclay.org>
  */
-class HTTP_Encoder {
+class HTTP_Encoder
+{
 
     /**
      * Should the encoder allow HTTP encoding to IE6?
@@ -97,8 +98,7 @@ class HTTP_Encoder {
             $this->_headers['Content-Type'] = $spec['type'];
         }
         if (isset($spec['method'])
-            && in_array($spec['method'], array('gzip', 'deflate', 'compress', '')))
-        {
+            && in_array($spec['method'], array('gzip', 'deflate', 'compress', ''))) {
             $this->_encodeMethod = array($spec['method'], $spec['method']);
         } else {
             $this->_encodeMethod = self::getAcceptedEncoding();
@@ -192,8 +192,7 @@ class HTTP_Encoder {
         // @link http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
 
         if (! isset($_SERVER['HTTP_ACCEPT_ENCODING'])
-            || self::isBuggyIe())
-        {
+            || self::isBuggyIe()) {
             return array('', '');
         }
         $ae = $_SERVER['HTTP_ACCEPT_ENCODING'];
@@ -259,8 +258,7 @@ class HTTP_Encoder {
         }
         if ('' === $this->_encodeMethod[0]
             || ($compressionLevel == 0)
-            || !extension_loaded('zlib'))
-        {
+            || !extension_loaded('zlib')) {
             return false;
         }
         if ($this->_encodeMethod[0] === 'deflate') {

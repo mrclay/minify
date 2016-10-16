@@ -29,7 +29,8 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_YUICompressor {
+class Minify_YUICompressor
+{
 
     /**
      * Filepath of the YUI Compressor jar file. This must be set before
@@ -112,15 +113,15 @@ class Minify_YUICompressor {
                 ,'nomunge' => false
                 ,'preserve-semi' => false
                 ,'disable-optimizations' => false
-	            ,'stack-size' => ''
+                ,'stack-size' => ''
             )
             ,$userOptions
         );
         $cmd = self::$javaExecutable
-	         . (!empty($o['stack-size'])
-	            ? ' -Xss' . $o['stack-size']
-	            : '')
-	         . ' -jar ' . escapeshellarg(self::$jarFile)
+             . (!empty($o['stack-size'])
+                ? ' -Xss' . $o['stack-size']
+                : '')
+             . ' -jar ' . escapeshellarg(self::$jarFile)
              . " --type {$type}"
              . (preg_match('/^[\\da-zA-Z0-9\\-]+$/', $o['charset'])
                 ? " --charset {$o['charset']}"

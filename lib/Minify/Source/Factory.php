@@ -1,6 +1,7 @@
 <?php
 
-class Minify_Source_Factory {
+class Minify_Source_Factory
+{
 
     /**
      * @var array
