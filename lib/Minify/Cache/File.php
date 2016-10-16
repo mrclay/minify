@@ -64,6 +64,7 @@ class Minify_Cache_File implements Minify_CacheInterface {
         if ($data !== $this->fetch($id)) {
             @unlink($file);
             $this->logger->warning("Minify_Cache_File: Post-write read failed for '$file'");
+
             return false;
         }
 
@@ -160,6 +161,7 @@ class Minify_Cache_File implements Minify_CacheInterface {
     public static function tmp()
     {
         trigger_error(__METHOD__ . ' is deprecated in Minfy 3.0', E_USER_DEPRECATED);
+
         return sys_get_temp_dir();
     }
 

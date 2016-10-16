@@ -4,7 +4,6 @@
  * @package Minify
  */
 
-use Psr\Log\LoggerInterface;
 use Monolog\Logger;
 
 /**

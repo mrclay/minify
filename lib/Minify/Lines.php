@@ -145,6 +145,7 @@ class Minify_Lines {
         $line = $inComment
             ? '/* ' . str_pad($note, $padTo, ' ', STR_PAD_RIGHT) . ' *| ' . $line
             : '/* ' . str_pad($note, $padTo, ' ', STR_PAD_RIGHT) . ' */ ' . $line;
+
         return rtrim($line);
     }
 

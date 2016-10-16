@@ -168,11 +168,13 @@ class Minify_HTML_Helper {
         static $cached;
         if ($app) {
             $cached = $app;
+
             return $app;
         }
         if ($cached === null) {
             $cached = (require __DIR__ . '/../../../bootstrap.php');
         }
+
         return $cached;
     }
 

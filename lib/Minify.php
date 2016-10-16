@@ -497,6 +497,7 @@ class Minify {
             $content = substr($content, 3);
         }
         $content = str_replace("\r\n", "\n", $content);
+
         return trim($content);
     }
 
@@ -721,6 +722,7 @@ class Minify {
                     $this->logger && $this->logger->warning('ContentType mismatch');
 
                     $this->sources = array();
+
                     return $options;
                 }
 
@@ -734,6 +736,7 @@ class Minify {
                 $this->logger && $this->logger->warning('ContentType mismatch');
 
                 $this->sources = array();
+
                 return $options;
             }
         }

@@ -42,6 +42,7 @@ class JShrink
             self::$defaultOptions,
             $options
         );
+
         return \JShrink\Minifier::minify($js, $options);
     }
 }

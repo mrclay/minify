@@ -97,6 +97,7 @@ class Minify_Env {
         if (substr($path, 1, 1) === ':') {
             $path = lcfirst($path);
         }
+
         return $path;
     }
 
