@@ -34,6 +34,7 @@ class Minify_Env
         } else {
             $this->server['DOCUMENT_ROOT'] = rtrim($this->server['DOCUMENT_ROOT'], '/\\');
         }
+
         $this->server['DOCUMENT_ROOT'] = $this->normalizePath($this->server['DOCUMENT_ROOT']);
         $this->get = $options['get'];
         $this->post = $options['post'];
@@ -46,9 +47,7 @@ class Minify_Env
             return $this->server;
         }
 
-        return isset($this->server[$key])
-            ? $this->server[$key]
-            : null;
+        return isset($this->server[$key]) ? $this->server[$key] : null;
     }
 
     public function cookie($key = null, $default = null)
@@ -93,6 +92,7 @@ class Minify_Env
         if ($realpath) {
             $path = $realpath;
         }
+
         $path = str_replace('\\', '/', $path);
         $path = rtrim($path, '/');
         if (substr($path, 1, 1) === ':') {
@@ -118,11 +118,9 @@ class Minify_Env
         if (isset($server['SERVER_SOFTWARE']) && 0 !== strpos($server['SERVER_SOFTWARE'], 'Microsoft-IIS/')) {
             throw new InvalidArgumentException('DOCUMENT_ROOT is not provided and could not be computed');
         }
-        $docRoot = substr(
-            $server['SCRIPT_FILENAME']
-            ,0
-            ,strlen($server['SCRIPT_FILENAME']) - strlen($server['SCRIPT_NAME'])
-        );
+
+        $substrLength = strlen($server['SCRIPT_FILENAME']) - strlen($server['SCRIPT_NAME']);
+        $docRoot = substr($server['SCRIPT_FILENAME'], 0, $substrLength);
 
         return rtrim($docRoot, '\\');
     }

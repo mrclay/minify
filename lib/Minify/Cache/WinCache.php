@@ -60,7 +60,11 @@ class Minify_Cache_WinCache implements Minify_CacheInterface
             return false;
         }
 
-        return (function_exists('mb_strlen') && ((int) ini_get('mbstring.func_overload') & 2)) ? mb_strlen($this->_data, '8bit') : strlen($this->_data);
+        if (function_exists('mb_strlen') && ((int) ini_get('mbstring.func_overload') & 2)) {
+            return mb_strlen($this->_data, '8bit');
+        } else {
+            return strlen($this->_data);
+        }
     }
 
     /**
@@ -118,6 +122,7 @@ class Minify_Cache_WinCache implements Minify_CacheInterface
         if ($this->_id === $id) {
             return true;
         }
+
         $suc = false;
         $ret = wincache_ucache_get($id, $suc);
         if (!$suc) {
@@ -125,6 +130,7 @@ class Minify_Cache_WinCache implements Minify_CacheInterface
 
             return false;
         }
+
         list($this->_lm, $this->_data) = explode('|', $ret, 2);
         $this->_id = $id;
 

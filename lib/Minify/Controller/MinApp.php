@@ -31,14 +31,14 @@ class Minify_Controller_MinApp extends Minify_Controller_Base
         }
 
         // filter controller options
-        $localOptions = array_merge(
-            array(
-                'groupsOnly' => false,
-                'groups' => array(),
-                'symlinks' => array(),
-            )
-            ,(isset($options['minApp']) ? $options['minApp'] : array())
+        $defaults = array(
+            'groupsOnly' => false,
+            'groups' => array(),
+            'symlinks' => array(),
         );
+        $minApp = isset($options['minApp']) ? $options['minApp'] : array();
+        $localOptions = array_merge($defaults, $minApp);
+
         unset($options['minApp']);
 
         // normalize $symlinks in order to map to target
@@ -53,7 +53,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base
 
         $sources = array();
         $selectionId = '';
-        $firstMissingResource = null;
+        $firstMissing = null;
 
         if (isset($get['g'])) {
             // add group(s)
@@ -83,12 +83,12 @@ class Minify_Controller_MinApp extends Minify_Controller_Base
                         $sources[] = $source;
                     } catch (Minify_Source_FactoryException $e) {
                         $this->logger->error($e->getMessage());
-                        if (null === $firstMissingResource) {
-                            $firstMissingResource = basename($file);
+                        if (null === $firstMissing) {
+                            $firstMissing = basename($file);
                             continue;
                         } else {
-                            $secondMissingResource = basename($file);
-                            $this->logger->info("More than one file was missing: '$firstMissingResource', '$secondMissingResource'");
+                            $secondMissing = basename($file);
+                            $this->logger->info("More than one file was missing: '$firstMissing', '$secondMissing'");
 
                             return new Minify_ServeConfiguration($options);
                         }
@@ -100,18 +100,18 @@ class Minify_Controller_MinApp extends Minify_Controller_Base
             // try user files
             // The following restrictions are to limit the URLs that minify will
             // respond to.
-            if (// verify at least one file, files are single comma separated,
-                // and are all same extension
-                ! preg_match('/^[^,]+\\.(css|less|js)(?:,[^,]+\\.\\1)*$/', $get['f'], $m)
-                // no "//"
-                || strpos($get['f'], '//') !== false
-                // no "\"
-                || strpos($get['f'], '\\') !== false
-            ) {
+
+            // verify at least one file, files are single comma separated, and are all same extension
+            $validPattern = preg_match('/^[^,]+\\.(css|less|js)(?:,[^,]+\\.\\1)*$/', $get['f'], $m);
+            $hasComment = strpos($get['f'], '//') !== false;
+            $hasEscape = strpos($get['f'], '\\') !== false;
+
+            if (!$validPattern || $hasComment || $hasEscape) {
                 $this->logger->info("GET param 'f' was invalid");
 
                 return new Minify_ServeConfiguration($options);
             }
+
             $ext = ".{$m[1]}";
             $files = explode(',', $get['f']);
             if ($files != array_unique($files)) {
@@ -119,11 +119,14 @@ class Minify_Controller_MinApp extends Minify_Controller_Base
 
                 return new Minify_ServeConfiguration($options);
             }
+
             if (isset($get['b'])) {
                 // check for validity
-                if (preg_match('@^[^/]+(?:/[^/]+)*$@', $get['b'])
-                        && false === strpos($get['b'], '..')
-                        && $get['b'] !== '.') {
+                $isValidBase = preg_match('@^[^/]+(?:/[^/]+)*$@', $get['b']);
+                $hasDots = false !== strpos($get['b'], '..');
+                $isDot = $get['b'] === '.';
+
+                if ($isValidBase && !$hasDots && !$isDot) {
                     // valid base
                     $base = "/{$get['b']}/";
                 } else {
@@ -154,12 +157,12 @@ class Minify_Controller_MinApp extends Minify_Controller_Base
                     $basenames[] = basename($path, $ext);
                 } catch (Minify_Source_FactoryException $e) {
                     $this->logger->error($e->getMessage());
-                    if (null === $firstMissingResource) {
-                        $firstMissingResource = $uri;
+                    if (null === $firstMissing) {
+                        $firstMissing = $uri;
                         continue;
                     } else {
-                        $secondMissingResource = $uri;
-                        $this->logger->info("More than one file was missing: '$firstMissingResource', '$secondMissingResource`'");
+                        $secondMissing = $uri;
+                        $this->logger->info("More than one file was missing: '$firstMissing', '$secondMissing`'");
 
                         return new Minify_ServeConfiguration($options);
                     }
@@ -177,14 +180,14 @@ class Minify_Controller_MinApp extends Minify_Controller_Base
             return new Minify_ServeConfiguration($options);
         }
 
-        if (null !== $firstMissingResource) {
+        if (null !== $firstMissing) {
             array_unshift($sources, new Minify_Source(array(
-                'id' => 'missingFile'
+                'id' => 'missingFile',
                 // should not cause cache invalidation
-                ,'lastModified' => 0
+                'lastModified' => 0,
                 // due to caching, filename is unreliable.
-                ,'content' => "/* Minify: at least one missing file. See " . Minify::URL_DEBUG . " */\n"
-                ,'minifier' => 'Minify::nullMinifier'
+                'content' => "/* Minify: at least one missing file. See " . Minify::URL_DEBUG . " */\n",
+                'minifier' => 'Minify::nullMinifier',
             )));
         }
 

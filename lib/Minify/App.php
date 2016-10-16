@@ -64,9 +64,10 @@ class App extends Container
 
             $propNames = array_keys(get_object_vars($config));
 
-            $varNames = array_map(function ($name) {
+            $prefixer = function ($name) {
                 return "min_$name";
-            }, $propNames);
+            };
+            $varNames = array_map($prefixer, $propNames);
 
             $vars = compact($varNames);
 

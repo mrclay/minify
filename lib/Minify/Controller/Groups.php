@@ -45,12 +45,14 @@ class Minify_Controller_Groups extends Minify_Controller_Files
         $server = $this->env->server();
 
         // mod_fcgid places PATH_INFO in ORIG_PATH_INFO
-        $pathInfo = isset($server['ORIG_PATH_INFO'])
-            ? substr($server['ORIG_PATH_INFO'], 1)
-            : (isset($server['PATH_INFO'])
-                ? substr($server['PATH_INFO'], 1)
-                : false
-            );
+        if (isset($server['ORIG_PATH_INFO'])) {
+            $pathInfo = substr($server['ORIG_PATH_INFO'], 1);
+        } elseif (isset($server['PATH_INFO'])) {
+            $pathInfo = substr($server['PATH_INFO'], 1)
+        } else {
+            $pathInfo = false;
+        }
+
         if (false === $pathInfo || ! isset($groups[$pathInfo])) {
             // no PATH_INFO or not a valid group
             $this->logger->info("Missing PATH_INFO or no group set for \"$pathInfo\"");

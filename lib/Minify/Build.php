@@ -70,9 +70,7 @@ class Minify_Build
      */
     public function uri($uri, $forceAmpersand = false)
     {
-        $sep = ($forceAmpersand || strpos($uri, '?') !== false)
-            ? self::$ampersand
-            : '?';
+        $sep = ($forceAmpersand || strpos($uri, '?') !== false) ? self::$ampersand : '?';
 
         return "{$uri}{$sep}{$this->lastModified}";
     }

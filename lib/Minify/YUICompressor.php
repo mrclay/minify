@@ -93,6 +93,7 @@ class Minify_YUICompressor
         if (! ($tmpFile = tempnam(self::$tempDir, 'yuic_'))) {
             throw new Exception('Minify_YUICompressor : could not create temp file in "'.self::$tempDir.'".');
         }
+
         file_put_contents($tmpFile, $content);
         exec(self::_getCmd($options, $type, $tmpFile), $output, $result_code);
         unlink($tmpFile);
@@ -105,22 +106,19 @@ class Minify_YUICompressor
 
     private static function _getCmd($userOptions, $type, $tmpFile)
     {
-        $o = array_merge(
-            array(
-                'charset' => ''
-                ,'line-break' => 5000
-                ,'type' => $type
-                ,'nomunge' => false
-                ,'preserve-semi' => false
-                ,'disable-optimizations' => false
-                ,'stack-size' => ''
-            )
-            ,$userOptions
+        $defaults = array(
+            'charset' => '',
+            'line-break' => 5000,
+            'type' => $type,
+            'nomunge' => false,
+            'preserve-semi' => false,
+            'disable-optimizations' => false,
+            'stack-size' => '',
         );
+        $o = array_merge($defaults, $userOptions);
+
         $cmd = self::$javaExecutable
-             . (!empty($o['stack-size'])
-                ? ' -Xss' . $o['stack-size']
-                : '')
+             . (!empty($o['stack-size']) ? ' -Xss' . $o['stack-size'] : '')
              . ' -jar ' . escapeshellarg(self::$jarFile)
              . " --type {$type}"
              . (preg_match('/^[\\da-zA-Z0-9\\-]+$/', $o['charset'])

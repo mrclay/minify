@@ -42,8 +42,8 @@ class Minify_Controller_Page extends Minify_Controller_Base
         } else {
             // strip controller options
             $sourceSpec = array(
-                'content' => $options['content']
-                ,'id' => $options['id']
+                'content' => $options['content'],
+                'id' => $options['id'],
             );
             $f = $options['id'];
             unset($options['content'], $options['id']);
@@ -54,8 +54,8 @@ class Minify_Controller_Page extends Minify_Controller_Base
         if (isset($options['minifyAll'])) {
             // this will be the 2nd argument passed to Minify_HTML::minify()
             $sourceSpec['minifyOptions'] = array(
-                'cssMinifier' => array('Minify_CSSmin', 'minify')
-                ,'jsMinifier' => array('JSMin\\JSMin', 'minify')
+                'cssMinifier' => array('Minify_CSSmin', 'minify'),
+                'jsMinifier' => array('JSMin\\JSMin', 'minify'),
             );
             unset($options['minifyAll']);
         }

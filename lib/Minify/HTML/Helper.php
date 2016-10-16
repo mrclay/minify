@@ -99,8 +99,7 @@ class Minify_HTML_Helper
         foreach ($files as $k => $file) {
             if (0 === strpos($file, '//')) {
                 $file = substr($file, 2);
-            } elseif (0 === strpos($file, '/')
-                      || 1 === strpos($file, ':\\')) {
+            } elseif (0 === strpos($file, '/') || 1 === strpos($file, ':\\')) {
                 $file = substr($file, strlen(self::app()->env->getDocRoot()) + 1);
             }
             $file = strtr($file, '\\', '/');
@@ -243,9 +242,7 @@ class Minify_HTML_Helper
             $base = substr($base, 0, strlen($base) - 1);
             $bUri = $minRoot . 'b=' . $base . '&f=' . implode(',', $basedPaths);
 
-            $uri = strlen($uri) < strlen($bUri)
-                ? $uri
-                : $bUri;
+            $uri = strlen($uri) < strlen($bUri) ? $uri : $bUri;
         }
 
         return $uri;

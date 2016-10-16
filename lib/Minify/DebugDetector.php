@@ -13,6 +13,7 @@ class Minify_DebugDetector
         if ($env->get('debug') !== null) {
             return true;
         }
+
         $cookieValue = $env->cookie('minifyDebug');
         if ($cookieValue) {
             foreach (preg_split('/\\s+/', $cookieValue) as $debugUri) {

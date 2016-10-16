@@ -274,7 +274,8 @@ class Minify
                 // depending on what the client accepts, $contentEncoding may be
                 // 'x-gzip' while our internal encodeMethod is 'gzip'. Calling
                 // getAcceptedEncoding(false, false) leaves out compress and deflate as options.
-                list($this->options['encodeMethod'], $contentEncoding) = HTTP_Encoder::getAcceptedEncoding(false, false);
+                $list = HTTP_Encoder::getAcceptedEncoding(false, false);
+                list($this->options['encodeMethod'], $contentEncoding) = $list;
                 $sendVary = ! HTTP_Encoder::isBuggyIe();
             }
         } else {
@@ -515,8 +516,8 @@ class Minify
 
             if ($file
                 && !isset($minifyOptions['currentDir'])
-                && !isset($minifyOptions['prependRelativePath'])
-            ) {
+                && !isset($minifyOptions['prependRelativePath'])) {
+
                 $minifyOptions['currentDir'] = dirname($file);
                 $source->setMinifierOptions($minifyOptions);
             }
@@ -596,8 +597,7 @@ class Minify
                     ! $source                        // yes, we ran out of sources
                     || $type === self::TYPE_CSS      // yes, to process CSS individually (avoiding PCRE bugs/limits)
                     || $minifier !== $lastMinifier   // yes, minifier changed
-                    || $options !== $lastOptions)    // yes, options changed
-                ) {
+                    || $options !== $lastOptions)) { // yes, options changed
                 // minify previous sources with last settings
                 $imploded = implode($implodeSeparator, $groupToProcessTogether);
                 $groupToProcessTogether = array();

@@ -37,9 +37,7 @@ class Minify_Lines
      */
     public static function minify($content, $options = array())
     {
-        $id = (isset($options['id']) && $options['id'])
-            ? $options['id']
-            : '';
+        $id = (isset($options['id']) && $options['id']) ? $options['id'] : '';
         $content = str_replace("\r\n", "\n", $content);
 
         $lines = explode("\n", $content);
@@ -49,6 +47,7 @@ class Minify_Lines
         $inComment = false;
         $i = 0;
         $newLines = array();
+
         while (null !== ($line = array_shift($lines))) {
             if (('' !== $id) && (0 == $i % 50)) {
                 if ($inComment) {
@@ -57,24 +56,25 @@ class Minify_Lines
                     array_push($newLines, '', "/* {$id} */", '');
                 }
             }
+
             ++$i;
             $newLines[] = self::_addNote($line, $i, $inComment, $padTo);
             $inComment = self::_eolInComment($line, $inComment);
         }
+
         $content = implode("\n", $newLines) . "\n";
 
         // check for desired URI rewriting
         if (isset($options['currentDir'])) {
             Minify_CSS_UriRewriter::$debugText = '';
-            $content = Minify_CSS_UriRewriter::rewrite(
-                 $content
-                ,$options['currentDir']
-                ,isset($options['docRoot']) ? $options['docRoot'] : $_SERVER['DOCUMENT_ROOT']
-                ,isset($options['symlinks']) ? $options['symlinks'] : array()
-            );
+            $docRoot = isset($options['docRoot']) ? $options['docRoot'] : $_SERVER['DOCUMENT_ROOT'];
+            $symlinks = isset($options['symlinks']) ? $options['symlinks'] : array();
+
+            $content = Minify_CSS_UriRewriter::rewrite($content, $options['currentDir'], $docRoot, $symlinks);
+
             $content = "/* Minify_CSS_UriRewriter::\$debugText\n\n"
-                     . Minify_CSS_UriRewriter::$debugText . "*/\n"
-                     . $content;
+                 . Minify_CSS_UriRewriter::$debugText . "*/\n"
+                 . $content;
         }
 
         return $content;
@@ -143,9 +143,11 @@ class Minify_Lines
      */
     private static function _addNote($line, $note, $inComment, $padTo)
     {
-        $line = $inComment
-            ? '/* ' . str_pad($note, $padTo, ' ', STR_PAD_RIGHT) . ' *| ' . $line
-            : '/* ' . str_pad($note, $padTo, ' ', STR_PAD_RIGHT) . ' */ ' . $line;
+        if ($inComment) {
+            $line = '/* ' . str_pad($note, $padTo, ' ', STR_PAD_RIGHT) . ' *| ' . $line;
+        } else {
+            $line = '/* ' . str_pad($note, $padTo, ' ', STR_PAD_RIGHT) . ' */ ' . $line;
+        }
 
         return rtrim($line);
     }

@@ -54,13 +54,13 @@ class Minify_Cache_File implements Minify_CacheInterface
      */
     public function store($id, $data)
     {
-        $flag = $this->locking
-            ? LOCK_EX
-            : null;
+        $flag = $this->locking ? LOCK_EX : null;
         $file = $this->path . '/' . $id;
+
         if (! @file_put_contents($file, $data, $flag)) {
             $this->logger->warning("Minify_Cache_File: Write failed to '$file'");
         }
+
         // write control
         if ($data !== $this->fetch($id)) {
             @unlink($file);
@@ -107,15 +107,16 @@ class Minify_Cache_File implements Minify_CacheInterface
      */
     public function display($id)
     {
-        if ($this->locking) {
-            $fp = fopen($this->path . '/' . $id, 'rb');
-            flock($fp, LOCK_SH);
-            fpassthru($fp);
-            flock($fp, LOCK_UN);
-            fclose($fp);
-        } else {
+        if (!$this->locking) {
             readfile($this->path . '/' . $id);
+            return;
         }
+
+        $fp = fopen($this->path . '/' . $id, 'rb');
+        flock($fp, LOCK_SH);
+        fpassthru($fp);
+        flock($fp, LOCK_UN);
+        fclose($fp);
     }
 
     /**
@@ -127,20 +128,21 @@ class Minify_Cache_File implements Minify_CacheInterface
      */
     public function fetch($id)
     {
-        if ($this->locking) {
-            $fp = fopen($this->path . '/' . $id, 'rb');
-            if (!$fp) {
-                return false;
-            }
-            flock($fp, LOCK_SH);
-            $ret = stream_get_contents($fp);
-            flock($fp, LOCK_UN);
-            fclose($fp);
-
-            return $ret;
-        } else {
+        if (!$this->locking) {
             return file_get_contents($this->path . '/' . $id);
         }
+
+        $fp = fopen($this->path . '/' . $id, 'rb');
+        if (!$fp) {
+            return false;
+        }
+
+        flock($fp, LOCK_SH);
+        $ret = stream_get_contents($fp);
+        flock($fp, LOCK_UN);
+        fclose($fp);
+
+        return $ret;
     }
 
     /**

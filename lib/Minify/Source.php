@@ -72,13 +72,13 @@ class Minify_Source implements Minify_SourceInterface
             $ext = pathinfo($spec['filepath'], PATHINFO_EXTENSION);
             switch ($ext) {
                 case 'js': $this->contentType = Minify::TYPE_JS;
-                              break;
+                    break;
                 case 'less': // fallthrough
                 case 'css': $this->contentType = Minify::TYPE_CSS;
-                              break;
+                    break;
                 case 'htm': // fallthrough
                 case 'html': $this->contentType = Minify::TYPE_HTML;
-                              break;
+                    break;
             }
             $this->filepath = $spec['filepath'];
             $this->id = $spec['filepath'];
@@ -97,9 +97,7 @@ class Minify_Source implements Minify_SourceInterface
             } else {
                 $this->getContentFunc = $spec['getContentFunc'];
             }
-            $this->lastModified = isset($spec['lastModified'])
-                ? $spec['lastModified']
-                : time();
+            $this->lastModified = isset($spec['lastModified']) ? $spec['lastModified'] : time();
         }
         if (isset($spec['contentType'])) {
             $this->contentType = $spec['contentType'];
@@ -208,8 +206,8 @@ class Minify_Source implements Minify_SourceInterface
     {
         if ($this->filepath
             && !isset($this->minifyOptions['currentDir'])
-            && !isset($this->minifyOptions['prependRelativePath'])
-        ) {
+            && !isset($this->minifyOptions['prependRelativePath'])) {
+
             $this->minifyOptions['currentDir'] = dirname($this->filepath);
         }
     }
