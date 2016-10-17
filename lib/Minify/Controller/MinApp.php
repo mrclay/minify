@@ -102,7 +102,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base
             // respond to.
 
             // verify at least one file, files are single comma separated, and are all same extension
-            $validPattern = preg_match('/^[^,]+\\.(css|less|js)(?:,[^,]+\\.\\1)*$/', $get['f'], $m);
+            $validPattern = preg_match('/^[^,]+\\.(css|less|scss|js)(?:,[^,]+\\.\\1)*$/', $get['f'], $m);
             $hasComment = strpos($get['f'], '//') !== false;
             $hasEscape = strpos($get['f'], '\\') !== false;
 
