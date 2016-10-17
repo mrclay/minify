@@ -74,6 +74,7 @@ class Minify_Source implements Minify_SourceInterface
                 case 'js': $this->contentType = Minify::TYPE_JS;
                     break;
                 case 'less': // fallthrough
+                case 'scss': // fallthrough
                 case 'css': $this->contentType = Minify::TYPE_CSS;
                     break;
                 case 'htm': // fallthrough
