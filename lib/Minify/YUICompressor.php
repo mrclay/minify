@@ -29,7 +29,8 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_YUICompressor {
+class Minify_YUICompressor
+{
 
     /**
      * Filepath of the YUI Compressor jar file. This must be set before
@@ -92,6 +93,7 @@ class Minify_YUICompressor {
         if (! ($tmpFile = tempnam(self::$tempDir, 'yuic_'))) {
             throw new Exception('Minify_YUICompressor : could not create temp file in "'.self::$tempDir.'".');
         }
+
         file_put_contents($tmpFile, $content);
         exec(self::_getCmd($options, $type, $tmpFile), $output, $result_code);
         unlink($tmpFile);
@@ -104,23 +106,20 @@ class Minify_YUICompressor {
 
     private static function _getCmd($userOptions, $type, $tmpFile)
     {
-        $o = array_merge(
-            array(
-                'charset' => ''
-                ,'line-break' => 5000
-                ,'type' => $type
-                ,'nomunge' => false
-                ,'preserve-semi' => false
-                ,'disable-optimizations' => false
-	            ,'stack-size' => ''
-            )
-            ,$userOptions
+        $defaults = array(
+            'charset' => '',
+            'line-break' => 5000,
+            'type' => $type,
+            'nomunge' => false,
+            'preserve-semi' => false,
+            'disable-optimizations' => false,
+            'stack-size' => '',
         );
+        $o = array_merge($defaults, $userOptions);
+
         $cmd = self::$javaExecutable
-	         . (!empty($o['stack-size'])
-	            ? ' -Xss' . $o['stack-size']
-	            : '')
-	         . ' -jar ' . escapeshellarg(self::$jarFile)
+             . (!empty($o['stack-size']) ? ' -Xss' . $o['stack-size'] : '')
+             . ' -jar ' . escapeshellarg(self::$jarFile)
              . " --type {$type}"
              . (preg_match('/^[\\da-zA-Z0-9\\-]+$/', $o['charset'])
                 ? " --charset {$o['charset']}"

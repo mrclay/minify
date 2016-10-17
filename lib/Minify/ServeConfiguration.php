@@ -9,7 +9,8 @@
  *
  * @package Minify
  */
-class Minify_ServeConfiguration {
+class Minify_ServeConfiguration
+{
 
     /**
      * @var Minify_SourceInterface[]

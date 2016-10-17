@@ -60,7 +60,11 @@ class Minify_Cache_WinCache implements Minify_CacheInterface
             return false;
         }
 
-        return (function_exists('mb_strlen') && ((int) ini_get('mbstring.func_overload') & 2)) ? mb_strlen($this->_data, '8bit') : strlen($this->_data);
+        if (function_exists('mb_strlen') && ((int) ini_get('mbstring.func_overload') & 2)) {
+            return mb_strlen($this->_data, '8bit');
+        } else {
+            return strlen($this->_data);
+        }
     }
 
     /**
@@ -99,12 +103,12 @@ class Minify_Cache_WinCache implements Minify_CacheInterface
         return $this->_fetch($id) ? $this->_data : '';
     }
 
-    private $_exp = NULL;
+    private $_exp = null;
 
     // cache of most recently fetched id
-    private $_lm = NULL;
-    private $_data = NULL;
-    private $_id = NULL;
+    private $_lm = null;
+    private $_data = null;
+    private $_id = null;
 
     /**
      * Fetch data and timestamp from WinCache, store in instance
@@ -118,13 +122,15 @@ class Minify_Cache_WinCache implements Minify_CacheInterface
         if ($this->_id === $id) {
             return true;
         }
+
         $suc = false;
         $ret = wincache_ucache_get($id, $suc);
         if (!$suc) {
-            $this->_id = NULL;
+            $this->_id = null;
 
             return false;
         }
+
         list($this->_lm, $this->_data) = explode('|', $ret, 2);
         $this->_id = $id;
 

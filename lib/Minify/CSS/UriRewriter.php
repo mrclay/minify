@@ -10,7 +10,8 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_CSS_UriRewriter {
+class Minify_CSS_UriRewriter
+{
 
     /**
      * rewrite() and rewriteRelative() append debugging information here
@@ -51,10 +52,10 @@ class Minify_CSS_UriRewriter {
 
         // normalize symlinks in order to map to link
         foreach ($symlinks as $link => $target) {
-            $link = ($link === '//')
-                ? self::$_docRoot
-                : str_replace('//', self::$_docRoot . '/', $link);
+
+            $link = ($link === '//') ? self::$_docRoot : str_replace('//', self::$_docRoot . '/', $link);
             $link = strtr($link, '/', DIRECTORY_SEPARATOR);
+
             self::$_symlinks[$link] = self::_realpath($target);
         }
 
@@ -70,10 +71,11 @@ class Minify_CSS_UriRewriter {
         $css = self::_owlifySvgPaths($css);
 
         // rewrite
-        $css = preg_replace_callback('/@import\\s+([\'"])(.*?)[\'"]/'
-            ,array(self::$className, '_processUriCB'), $css);
-        $css = preg_replace_callback('/url\\(\\s*([\'"](.*?)[\'"]|[^\\)\\s]+)\\s*\\)/'
-            ,array(self::$className, '_processUriCB'), $css);
+        $pattern = '/@import\\s+([\'"])(.*?)[\'"]/';
+        $css = preg_replace_callback($pattern, array(self::$className, '_processUriCB'), $css);
+
+        $pattern = '/url\\(\\s*([\'"](.*?)[\'"]|[^\\)\\s]+)\\s*\\)/';
+        $css = preg_replace_callback($pattern, array(self::$className, '_processUriCB'), $css);
 
         $css = self::_unOwlify($css);
 
@@ -98,10 +100,11 @@ class Minify_CSS_UriRewriter {
         $css = self::_owlifySvgPaths($css);
         
         // append
-        $css = preg_replace_callback('/@import\\s+([\'"])(.*?)[\'"]/'
-            ,array(self::$className, '_processUriCB'), $css);
-        $css = preg_replace_callback('/url\\(\\s*([\'"](.*?)[\'"]|[^\\)\\s]+)\\s*\\)/'
-            ,array(self::$className, '_processUriCB'), $css);
+        $pattern = '/@import\\s+([\'"])(.*?)[\'"]/';
+        $css = preg_replace_callback($pattern, array(self::$className, '_processUriCB'), $css);
+
+        $pattern = '/url\\(\\s*([\'"](.*?)[\'"]|[^\\)\\s]+)\\s*\\)/';
+        $css = preg_replace_callback($pattern, array(self::$className, '_processUriCB'), $css);
 
         $css = self::_unOwlify($css);
 
@@ -151,8 +154,8 @@ class Minify_CSS_UriRewriter {
     public static function rewriteRelative($uri, $realCurrentDir, $realDocRoot, $symlinks = array())
     {
         // prepend path with current dir separator (OS-independent)
-        $path = strtr($realCurrentDir, '/', DIRECTORY_SEPARATOR)
-            . DIRECTORY_SEPARATOR . strtr($uri, '/', DIRECTORY_SEPARATOR);
+        $path = strtr($realCurrentDir, '/', DIRECTORY_SEPARATOR);
+        $path .= DIRECTORY_SEPARATOR . strtr($uri, '/', DIRECTORY_SEPARATOR);
 
         self::$debugText .= "file-relative URI  : {$uri}\n"
                           . "path prepended     : {$path}\n";
@@ -262,13 +265,14 @@ class Minify_CSS_UriRewriter {
      */
     private static function _trimUrls($css)
     {
-        return preg_replace('/
+        $pattern = '/
             url\\(      # url(
             \\s*
             ([^\\)]+?)  # 1 = URI (assuming does not contain ")")
             \\s*
             \\)         # )
-        /x', 'url($1)', $css);
+        /x';
+        return preg_replace($pattern, 'url($1)', $css);
     }
 
     /**
@@ -286,12 +290,9 @@ class Minify_CSS_UriRewriter {
             $uri = $m[2];
         } else {
             // $m[1] is either quoted or not
-            $quoteChar = ($m[1][0] === "'" || $m[1][0] === '"')
-                ? $m[1][0]
-                : '';
-            $uri = ($quoteChar === '')
-                ? $m[1]
-                : substr($m[1], 1, strlen($m[1]) - 2);
+            $quoteChar = ($m[1][0] === "'" || $m[1][0] === '"') ? $m[1][0] : '';
+
+            $uri = ($quoteChar === '') ? $m[1] : substr($m[1], 1, strlen($m[1]) - 2);
         }
         // if not root/scheme relative and not starts with scheme
         if (!preg_match('~^(/|[a-z]+\:)~', $uri)) {
@@ -312,9 +313,11 @@ class Minify_CSS_UriRewriter {
             }
         }
 
-        return $isImport
-            ? "@import {$quoteChar}{$uri}{$quoteChar}"
-            : "url({$quoteChar}{$uri}{$quoteChar})";
+        if ($isImport) {
+            return "@import {$quoteChar}{$uri}{$quoteChar}";
+        } else {
+            return "url({$quoteChar}{$uri}{$quoteChar})";
+        }
     }
 
     /**
@@ -326,8 +329,10 @@ class Minify_CSS_UriRewriter {
      * @param string $css
      * @return string
      */
-    private static function _owlifySvgPaths($css) {
-        return preg_replace('~\b((?:clip-path|mask|-webkit-mask)\s*\:\s*)url(\(\s*#\w+\s*\))~', '$1owl$2', $css);
+    private static function _owlifySvgPaths($css)
+    {
+        $pattern = '~\b((?:clip-path|mask|-webkit-mask)\s*\:\s*)url(\(\s*#\w+\s*\))~';
+        return preg_replace($pattern, '$1owl$2', $css);
     }
 
     /**
@@ -338,7 +343,9 @@ class Minify_CSS_UriRewriter {
      * @param string $css
      * @return string
      */
-    private static function _unOwlify($css) {
-        return preg_replace('~\b((?:clip-path|mask|-webkit-mask)\s*\:\s*)owl~', '$1url', $css);
+    private static function _unOwlify($css)
+    {
+        $pattern = '~\b((?:clip-path|mask|-webkit-mask)\s*\:\s*)owl~';
+        return preg_replace($pattern, '$1url', $css);
     }
 }

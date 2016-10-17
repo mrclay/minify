@@ -8,7 +8,8 @@ use Leafo\ScssPhp\Version;
  *
  * @link https://github.com/leafo/scssphp/
  */
-class Minify_ScssCssSource extends Minify_Source {
+class Minify_ScssCssSource extends Minify_Source
+{
     /**
      * @var Minify_CacheInterface
      */
@@ -146,12 +147,12 @@ class Minify_ScssCssSource extends Minify_Source {
         $start = microtime(true);
         $scss = new Compiler();
 
-	    // set import path directory the input filename resides
-	    // otherwise @import statements will not find the files
+        // set import path directory the input filename resides
+        // otherwise @import statements will not find the files
         // and will treat the @import line as css import
-	    $scss->setImportPaths(dirname($filename));
+        $scss->setImportPaths(dirname($filename));
 
-	    $css = $scss->compile(file_get_contents($filename), $filename);
+        $css = $scss->compile(file_get_contents($filename), $filename);
         $elapsed = round((microtime(true) - $start), 4);
 
         $v = Version::VERSION;

@@ -18,8 +18,8 @@
  * @author Stephen Clay <steve@mrclay.org>
  * @author Simon Schick <simonsimcity@gmail.com>
  */
-class Minify_ImportProcessor {
-
+class Minify_ImportProcessor
+{
     public static $filesIncluded = array();
 
     public static function process($file)
@@ -57,8 +57,7 @@ class Minify_ImportProcessor {
         $file = realpath($file);
         if (! $file
             || in_array($file, self::$filesIncluded)
-            || false === ($content = @file_get_contents($file))
-        ) {
+            || false === ($content = @file_get_contents($file))) {
             // file missing, already included, or failed read
             return '';
         }
@@ -73,8 +72,7 @@ class Minify_ImportProcessor {
         $content = str_replace("\r\n", "\n", $content);
 
         // process @imports
-        $content = preg_replace_callback(
-            '/
+        $pattern = '/
                 @import\\s+
                 (?:url\\(\\s*)?      # maybe url(
                 [\'"]?               # maybe quote
@@ -83,19 +81,14 @@ class Minify_ImportProcessor {
                 (?:\\s*\\))?         # maybe )
                 ([a-zA-Z,\\s]*)?     # 2 = media list
                 ;                    # end token
-            /x'
-            ,array($this, '_importCB')
-            ,$content
-        );
+            /x';
+        $content = preg_replace_callback($pattern, array($this, '_importCB'), $content);
 
         // You only need to rework the import-path if the script is imported
         if (self::$_isCss && $is_imported) {
             // rewrite remaining relative URIs
-            $content = preg_replace_callback(
-                '/url\\(\\s*([^\\)\\s]+)\\s*\\)/'
-                ,array($this, '_urlCB')
-                ,$content
-            );
+            $pattern = '/url\\(\\s*([^\\)\\s]+)\\s*\\)/';
+            $content = preg_replace_callback($pattern, array($this, '_urlCB'), $content);
         }
 
         return $this->_importedContent . $content;
@@ -139,12 +132,10 @@ class Minify_ImportProcessor {
     private function _urlCB($m)
     {
         // $m[1] is either quoted or not
-        $quote = ($m[1][0] === "'" || $m[1][0] === '"')
-            ? $m[1][0]
-            : '';
-        $url = ($quote === '')
-            ? $m[1]
-            : substr($m[1], 1, strlen($m[1]) - 2);
+        $quote = ($m[1][0] === "'" || $m[1][0] === '"') ? $m[1][0] : '';
+
+        $url = ($quote === '') ? $m[1] : substr($m[1], 1, strlen($m[1]) - 2);
+
         if ('/' !== $url[0]) {
             if (strpos($url, '//') > 0) {
                 // probably starts with protocol, do not alter
@@ -173,8 +164,7 @@ class Minify_ImportProcessor {
 
         $arFrom = explode($ps, rtrim($realFrom, $ps));
         $arTo = explode($ps, rtrim($realTo, $ps));
-        while (count($arFrom) && count($arTo) && ($arFrom[0] == $arTo[0]))
-        {
+        while (count($arFrom) && count($arTo) && ($arFrom[0] == $arTo[0])) {
             array_shift($arFrom);
             array_shift($arTo);
         }
@@ -191,28 +181,33 @@ class Minify_ImportProcessor {
     private function truepath($path)
     {
         // whether $path is unix or not
-        $unipath = strlen($path) == 0 || $path{0} != '/';
+        $unipath = (strlen($path) == 0) || ($path{0} != '/');
+
         // attempts to detect if path is relative in which case, add cwd
-        if (strpos($path, ':') === false && $unipath)
+        if (strpos($path, ':') === false && $unipath) {
             $path = $this->_currentDir . DIRECTORY_SEPARATOR . $path;
+        }
 
         // resolve path parts (single dot, double dot and double delimiters)
         $path = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
         $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
         $absolutes = array();
         foreach ($parts as $part) {
-            if ('.' == $part)
+            if ('.' == $part) {
                 continue;
+            }
             if ('..' == $part) {
                 array_pop($absolutes);
             } else {
                 $absolutes[] = $part;
             }
         }
+
         $path = implode(DIRECTORY_SEPARATOR, $absolutes);
         // resolve any symlinks
-        if (file_exists($path) && linkinfo($path) > 0)
+        if (file_exists($path) && linkinfo($path) > 0) {
             $path = readlink($path);
+        }
         // put initial separator that could have been lost
         $path = !$unipath ? '/' . $path : $path;
 
