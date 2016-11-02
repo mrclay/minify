@@ -720,7 +720,7 @@ class Minify
             if (!empty($options['contentType'])) {
                 // just verify sources have null content type or match the options
                 if ($sourceType !== null && $sourceType !== $options['contentType']) {
-                    $this->logger && $this->logger->warning('ContentType mismatch');
+                    $this->logger && $this->logger->warning("ContentType mismatch: '{$sourceType}' != '{$options['contentType']}'");
 
                     $this->sources = array();
 
@@ -733,7 +733,7 @@ class Minify
             if ($type === null) {
                 $type = $sourceType;
             } elseif ($sourceType !== $type) {
-                $this->logger && $this->logger->warning('ContentType mismatch');
+                $this->logger && $this->logger->warning("ContentType mismatch: '{$sourceType}' != '{$type}'");
 
                 $this->sources = array();
 
