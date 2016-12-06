@@ -86,13 +86,27 @@ class MinifyClosureCompilerTest extends TestCase
         $this->assertSame($minExpected, $minOutput, 'advanced optimizations');
     }
 
-    public function testOptions()
+    /**
+     * Test that language_in parameter has effect.
+     */
+    public function testLanguageOptions()
     {
         $this->assertHasJar();
 
         $src = $this->getDataFile('js/jscomp.polyfill.js');
         $exp = $this->getDataFile('js/jscomp.polyfill.min.js');
-        $res = Minify_ClosureCompiler::minify($src);
+        $options = array(
+            'language_in' => 'ECMASCRIPT3',
+        );
+
+        $res = Minify_ClosureCompiler::minify($src, $options);
+        $this->assertSame($exp, $res);
+
+        $options = array(
+            'language_in' => 'ECMASCRIPT6',
+        );
+        $exp = $this->getDataFile('js/jscomp.polyfilled.min.js');
+        $res = Minify_ClosureCompiler::minify($src, $options);
         $this->assertSame($exp, $res);
     }
 
