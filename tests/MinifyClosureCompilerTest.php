@@ -80,10 +80,20 @@ class MinifyClosureCompilerTest extends TestCase
     {
         $this->assertHasJar();
 
-        $src = file_get_contents(self::$test_files . '/bug-513.js');
+        $src = $this->getDataFile('bug-513.js');
         $minExpected = 'var a=4;';
         $minOutput = Minify_ClosureCompiler::minify($src);
         $this->assertSame($minExpected, $minOutput, 'advanced optimizations');
+    }
+
+    public function testOptions()
+    {
+        $this->assertHasJar();
+
+        $src = $this->getDataFile('js/jscomp.polyfill.js');
+        $exp = $this->getDataFile('js/jscomp.polyfill.min.js');
+        $res = Minify_ClosureCompiler::minify($src);
+        $this->assertSame($exp, $res);
     }
 
     protected function assertHasJar()
