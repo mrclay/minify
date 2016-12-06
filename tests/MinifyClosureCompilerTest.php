@@ -63,7 +63,7 @@ class MinifyClosureCompilerTest extends TestCase
         $src = "function unused() {};";
         $minExpected = '';
         $options = array(
-            Minify_ClosureCompiler::OPTION_COMPILATION_LEVEL => 'ADVANCED_OPTIMIZATIONS'
+            'compilation_level' => 'ADVANCED_OPTIMIZATIONS'
         );
         $minOutput = Minify_ClosureCompiler::minify($src, $options);
         $this->assertSame($minExpected, $minOutput, 'advanced optimizations');
