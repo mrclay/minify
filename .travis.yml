@@ -33,6 +33,6 @@ before_script:
 
 script:
   - composer validate
-  - phpunit
+  - phpunit --verbose
 
 # vim:ts=2:sw=2:et
