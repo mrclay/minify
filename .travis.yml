@@ -25,6 +25,12 @@ cache:
 install:
   - composer update --no-interaction --prefer-source
 
+before_script:
+  - wget -c https://dl.google.com/closure-compiler/compiler-latest.zip -O vendor/compiler-latest.zip
+  - unzip -fd vendor/closure-compiler vendor/compiler-latest.zip
+  - ln -sfn ../$(echo vendor/closure-compiler/closure-compiler-*.jar) tests/compiler.jar
+  - java -jar tests/compiler.jar --version
+
 script:
   - composer validate
   - phpunit
