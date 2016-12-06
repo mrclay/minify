@@ -24,9 +24,7 @@ class ScssSourceTest extends TestCase
         touch($includedLess);
 
         $mtime1 = filemtime($mainLess);
-        var_dump($mtime1);
         $mtime2 = filemtime($includedLess);
-        var_dump($mtime2);
 
         $max = max($mtime1, $mtime2);
 

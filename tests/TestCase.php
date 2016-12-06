@@ -47,4 +47,23 @@ class TestCase extends PHPUnit_Framework_TestCase
         $this->assertSame($data, $displayed, "$id display");
         $this->assertEquals($data, $cache->fetch($id), "$id fetch");
     }
+
+    /**
+     * Read data file, assert that it exists and is not empty.
+     * As a side effect calls trim() to fight against different Editors that insert or strip final newline.
+     *
+     * @param string $filename
+     * @return string
+     */
+    protected function getDataFile($filename)
+    {
+        $path = self::$test_files . '/' . $filename;
+        $this->assertFileExists($path);
+        $contents = file_get_contents($path);
+        $this->assertNotEmpty($contents);
+        $contents = trim($contents);
+        $this->assertNotEmpty($contents);
+
+        return $contents;
+    }
 }
