@@ -23,16 +23,16 @@
 		"classmap": ["tests/TestCase.php"]
 	},
 	"require": {
-		"php": ">=5.3.0",
 		"ext-pcre": "*",
-		"firephp/firephp-core": "~0.4.0",
 		"intervention/httpauth": "~2.0",
 		"monolog/monolog": "~1.1",
 		"mrclay/jsmin-php": "~2",
 		"mrclay/props-dic": "^2.2",
+		"php": "^5.3.0 || ^7.0",
 		"tubalmartin/cssmin": "~2.4.8"
 	},
 	"require-dev": {
+		"firephp/firephp-core": "~0.4.0",
 		"leafo/lessphp": "~0.4.0",
 		"leafo/scssphp": "^0.3.0",
 		"meenie/javascript-packer": "~1.1",
@@ -40,6 +40,7 @@
 		"tedivm/jshrink": "~1.1.0"
 	},
 	"suggest": {
+		"firephp/firephp-core": "Use FirePHP for Log messages",
 		"leafo/lessphp": "LESS support",
 		"meenie/javascript-packer": "Keep track of the Packer PHP port using Composer"
 	},
