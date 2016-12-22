@@ -10,7 +10,7 @@ In other words, the "f" argument is set to the file path from root without the i
 
 To combine multiple files, separate the paths given to "f" with commas.
 
-Let's say you have CSS files at these URLs:
+Let's say you have JS files at these URLs:
 
 * http://example.com/scripts/library-1.5.js
 * http://example.com/scripts/site.js
