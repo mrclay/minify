@@ -8,6 +8,7 @@
 @import url("/css/foo.css"); /* abs, should not alter */
 @import url(/css2/foo.css); /* abs, should not alter */
 @import url(foo:bar); /* scheme, should not alter */
+@import url(); /* empty, should not alter */
 foo {clip-path:url(#c1)} /* inline clip path, should not alter */
 foo {clip-path:url(foo.svg#c1)}
 foo {mask: url( #c1 )} /* should not alter */
@@ -17,5 +18,6 @@ foo {background:url('http://foo.com/css/foo.css');} /* scheme, should not alter 
 foo {background:url("//foo.com/css/foo.css");} /* protocol relative, should not alter */
 foo {background:url(foo:bar);} /* scheme, should not alter */
 foo {background:url("foo bar.jpg");}
+foo {background:url("");} /* empty, should not alter */
 @import url('foo bar.css');
 @import "foo bar.css";
