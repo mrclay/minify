@@ -294,6 +294,11 @@ class Minify_CSS_UriRewriter
 
             $uri = ($quoteChar === '') ? $m[1] : substr($m[1], 1, strlen($m[1]) - 2);
         }
+
+        if ($uri === '') {
+            return $m[0];
+        }
+
         // if not root/scheme relative and not starts with scheme
         if (!preg_match('~^(/|[a-z]+\:)~', $uri)) {
             // URI is file-relative: rewrite depending on options
