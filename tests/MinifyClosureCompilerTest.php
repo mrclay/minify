@@ -63,7 +63,7 @@ class MinifyClosureCompilerTest extends TestCase
         $src = "function unused() {};";
         $minExpected = '';
         $options = array(
-            Minify_ClosureCompiler::OPTION_COMPILATION_LEVEL => 'ADVANCED_OPTIMIZATIONS'
+            'compilation_level' => 'ADVANCED_OPTIMIZATIONS'
         );
         $minOutput = Minify_ClosureCompiler::minify($src, $options);
         $this->assertSame($minExpected, $minOutput, 'advanced optimizations');
@@ -80,10 +80,34 @@ class MinifyClosureCompilerTest extends TestCase
     {
         $this->assertHasJar();
 
-        $src = file_get_contents(self::$test_files . '/bug-513.js');
+        $src = $this->getDataFile('bug-513.js');
         $minExpected = 'var a=4;';
         $minOutput = Minify_ClosureCompiler::minify($src);
         $this->assertSame($minExpected, $minOutput, 'advanced optimizations');
+    }
+
+    /**
+     * Test that language_in parameter has effect.
+     */
+    public function testLanguageOptions()
+    {
+        $this->assertHasJar();
+
+        $src = $this->getDataFile('js/jscomp.polyfill.js');
+        $exp = $this->getDataFile('js/jscomp.polyfill.min.js');
+        $options = array(
+            'language_in' => 'ECMASCRIPT3',
+        );
+
+        $res = Minify_ClosureCompiler::minify($src, $options);
+        $this->assertSame($exp, $res);
+
+        $options = array(
+            'language_in' => 'ECMASCRIPT6',
+        );
+        $exp = $this->getDataFile('js/jscomp.polyfilled.min.js');
+        $res = Minify_ClosureCompiler::minify($src, $options);
+        $this->assertSame($exp, $res);
     }
 
     protected function assertHasJar()

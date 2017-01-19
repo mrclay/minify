@@ -16,7 +16,8 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_HTML {
+class Minify_HTML
+{
     /**
      * @var boolean
      */
@@ -40,7 +41,8 @@ class Minify_HTML {
      *
      * @return string
      */
-    public static function minify($html, $options = array()) {
+    public static function minify($html, $options = array())
+    {
         $min = new self($html, $options);
 
         return $min->process();

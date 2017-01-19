@@ -6,7 +6,6 @@ php:
   - 5.6
   - 5.5
   - 5.4
-  - 5.3
   - hhvm
 
 matrix:
@@ -25,8 +24,14 @@ cache:
 install:
   - composer update --no-interaction --prefer-source
 
+before_script:
+  - wget -c https://dl.google.com/closure-compiler/compiler-latest.zip -O vendor/compiler-latest.zip
+  - unzip -od vendor/closure-compiler vendor/compiler-latest.zip
+  - ln -sfn ../$(echo vendor/closure-compiler/closure-compiler-*.jar) tests/compiler.jar
+  - java -jar tests/compiler.jar --version
+
 script:
   - composer validate
-  - phpunit
+  - phpunit --verbose
 
 # vim:ts=2:sw=2:et

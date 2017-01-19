@@ -20,7 +20,7 @@ class MinifyNailgunClosureCompilerTest extends TestCase
     /**
      * Test minimisation with the minimum necessary settings
      */
-    public function test2()
+    public function test1()
     {
         $this->assertHasJar();
         $src = "
@@ -40,8 +40,10 @@ class MinifyNailgunClosureCompilerTest extends TestCase
     protected function assertHasJar()
     {
         $this->assertNotEmpty(Minify_ClosureCompiler::$jarFile);
+        $this->assertNotEmpty(Minify_NailgunClosureCompiler::$ngJarFile);
         try {
             $this->assertFileExists(Minify_ClosureCompiler::$jarFile, "Have closure compiler compiler.jar");
+            $this->assertFileExists(Minify_NailgunClosureCompiler::$ngJarFile, "Have nailgun.jar");
         } catch (Exception $e) {
             $this->markTestSkipped($e->getMessage());
         }

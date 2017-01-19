@@ -1,6 +1,7 @@
 <?php
 
-class Minify_Source_Factory {
+class Minify_Source_Factory
+{
 
     /**
      * @var array
@@ -67,9 +68,13 @@ class Minify_Source_Factory {
             throw new InvalidArgumentException("fileChecker option is not callable");
         }
 
-	    $this->setHandler('~\.less$~i', function ($spec) use ($cache) {
-		    return new Minify_LessCssSource($spec, $cache);
-	    });
+        $this->setHandler('~\.less$~i', function ($spec) use ($cache) {
+            return new Minify_LessCssSource($spec, $cache);
+        });
+
+        $this->setHandler('~\.scss~i', function ($spec) use ($cache) {
+            return new Minify_ScssCssSource($spec, $cache);
+        });
 
         $this->setHandler('~\.(js|css)$~i', function ($spec) {
             return new Minify_Source($spec);

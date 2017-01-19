@@ -1,0 +1,29 @@
+/*! preserving comment */
+
+// Variable
+$primary-color: hotpink;
+
+// Mixin
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  border-radius: $radius;
+}
+
+.my-element {
+  color: $primary-color;
+  width: 100%;
+  overflow: hidden;
+}
+
+.my-other-element {
+  @include border-radius(6px);
+}
+
+/* import include -> */
+@import "_included";
+/* <- import included */
+
+/*
+ a normal comment.
+*/

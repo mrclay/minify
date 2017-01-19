@@ -12,7 +12,8 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_CSSmin {
+class Minify_CSSmin
+{
 
     /**
      * Minify a CSS string

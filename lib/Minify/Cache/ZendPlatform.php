@@ -16,7 +16,8 @@
  * @package Minify
  * @author Patrick van Dissel
  */
-class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
+class Minify_Cache_ZendPlatform implements Minify_CacheInterface
+{
 
     /**
      * Create a Minify_Cache_ZendPlatform object, to be passed to
@@ -54,9 +55,7 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
      */
     public function getSize($id)
     {
-        return $this->_fetch($id)
-            ? strlen($this->_data)
-            : false;
+        return $this->_fetch($id) ? strlen($this->_data) : false;
     }
 
     /**
@@ -70,9 +69,7 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
      */
     public function isValid($id, $srcMtime)
     {
-        $ret = ($this->_fetch($id) && ($this->_lm >= $srcMtime));
-
-        return $ret;
+        return ($this->_fetch($id) && ($this->_lm >= $srcMtime));
     }
 
     /**
@@ -82,9 +79,7 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
      */
     public function display($id)
     {
-        echo $this->_fetch($id)
-            ? $this->_data
-            : '';
+        echo $this->_fetch($id) ? $this->_data : '';
     }
 
     /**
@@ -96,9 +91,7 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
      */
     public function fetch($id)
     {
-        return $this->_fetch($id)
-            ? $this->_data
-            : '';
+        return $this->_fetch($id) ? $this->_data : '';
     }
 
     private $_exp = null;
@@ -120,12 +113,14 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
         if ($this->_id === $id) {
             return true;
         }
+
         $ret = output_cache_get($id, $this->_exp);
         if (false === $ret) {
             $this->_id = null;
 
             return false;
         }
+
         list($this->_lm, $this->_data) = explode('|', $ret, 2);
         $this->_id = $id;
 

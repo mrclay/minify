@@ -5,7 +5,7 @@
  *
  * Change to true to expose this info.
  */
-$enabled = true;
+$enabled = false;
 
 ///////////////////////
 

@@ -17,7 +17,8 @@
  * }
  * </code>
  **/
-class Minify_Cache_Memcache implements Minify_CacheInterface {
+class Minify_Cache_Memcache implements Minify_CacheInterface
+{
 
     /**
      * Create a Minify_Cache_Memcache object, to be passed to
@@ -61,9 +62,11 @@ class Minify_Cache_Memcache implements Minify_CacheInterface {
             return false;
         }
 
-        return (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2))
-            ? mb_strlen($this->_data, '8bit')
-            : strlen($this->_data);
+        if (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2)) {
+            return mb_strlen($this->_data, '8bit');
+        } else {
+            return strlen($this->_data);
+        }
     }
 
     /**
@@ -87,12 +90,10 @@ class Minify_Cache_Memcache implements Minify_CacheInterface {
      */
     public function display($id)
     {
-        echo $this->_fetch($id)
-            ? $this->_data
-            : '';
+        echo $this->_fetch($id) ? $this->_data : '';
     }
 
-	/**
+    /**
      * Fetch the cached content
      *
      * @param string $id cache id
@@ -101,9 +102,7 @@ class Minify_Cache_Memcache implements Minify_CacheInterface {
      */
     public function fetch($id)
     {
-        return $this->_fetch($id)
-            ? $this->_data
-            : '';
+        return $this->_fetch($id) ? $this->_data : '';
     }
 
     private $_mc = null;
@@ -114,7 +113,7 @@ class Minify_Cache_Memcache implements Minify_CacheInterface {
     private $_data = null;
     private $_id = null;
 
-	/**
+    /**
      * Fetch data and timestamp from memcache, store in instance
      *
      * @param string $id
@@ -126,12 +125,14 @@ class Minify_Cache_Memcache implements Minify_CacheInterface {
         if ($this->_id === $id) {
             return true;
         }
+
         $ret = $this->_mc->get($id);
         if (false === $ret) {
             $this->_id = null;
 
             return false;
         }
+
         list($this->_lm, $this->_data) = explode('|', $ret, 2);
         $this->_id = $id;
 

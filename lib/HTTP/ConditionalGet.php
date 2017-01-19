@@ -60,7 +60,8 @@
  * @subpackage HTTP
  * @author Stephen Clay <steve@mrclay.org>
  */
-class HTTP_ConditionalGet {
+class HTTP_ConditionalGet
+{
 
     /**
      * Does the client have a valid copy of the requested resource?
@@ -340,7 +341,8 @@ class HTTP_ConditionalGet {
      *
      * @return string
      */
-    protected function normalizeEtag($etag) {
+    protected function normalizeEtag($etag)
+    {
         $etag = trim($etag);
 
         return $this->_stripEtag

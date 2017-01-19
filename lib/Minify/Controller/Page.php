@@ -11,7 +11,8 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_Controller_Page extends Minify_Controller_Base {
+class Minify_Controller_Page extends Minify_Controller_Base
+{
 
     /**
      * Set up source of HTML content
@@ -31,7 +32,8 @@ class Minify_Controller_Page extends Minify_Controller_Base {
      * 'minifyAll': should all CSS and Javascript blocks be individually
      * minified? (default false)
      */
-    public function createConfiguration(array $options) {
+    public function createConfiguration(array $options)
+    {
         if (isset($options['file'])) {
             $sourceSpec = array(
                 'filepath' => $options['file']
@@ -40,8 +42,8 @@ class Minify_Controller_Page extends Minify_Controller_Base {
         } else {
             // strip controller options
             $sourceSpec = array(
-                'content' => $options['content']
-                ,'id' => $options['id']
+                'content' => $options['content'],
+                'id' => $options['id'],
             );
             $f = $options['id'];
             unset($options['content'], $options['id']);
@@ -52,8 +54,8 @@ class Minify_Controller_Page extends Minify_Controller_Base {
         if (isset($options['minifyAll'])) {
             // this will be the 2nd argument passed to Minify_HTML::minify()
             $sourceSpec['minifyOptions'] = array(
-                'cssMinifier' => array('Minify_CSSmin', 'minify')
-                ,'jsMinifier' => array('JSMin\\JSMin', 'minify')
+                'cssMinifier' => array('Minify_CSSmin', 'minify'),
+                'jsMinifier' => array('JSMin\\JSMin', 'minify'),
             );
             unset($options['minifyAll']);
         }

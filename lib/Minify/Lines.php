@@ -11,7 +11,8 @@
  * @author Stephen Clay <steve@mrclay.org>
  * @author Adam Pedersen (Issue 55 fix)
  */
-class Minify_Lines {
+class Minify_Lines
+{
 
     /**
      * Add line numbers in C-style comments
@@ -36,15 +37,8 @@ class Minify_Lines {
      */
     public static function minify($content, $options = array())
     {
-        $id = (isset($options['id']) && $options['id'])
-            ? $options['id']
-            : '';
+        $id = (isset($options['id']) && $options['id']) ? $options['id'] : '';
         $content = str_replace("\r\n", "\n", $content);
-
-        // Hackily rewrite strings with XPath expressions that are
-        // likely to throw off our dumb parser (for Prototype 1.6.1).
-        $content = str_replace('"/*"', '"/"+"*"', $content);
-        $content = preg_replace('@([\'"])(\\.?//?)\\*@', '$1$2$1+$1*', $content);
 
         $lines = explode("\n", $content);
         $numLines = count($lines);
@@ -53,6 +47,7 @@ class Minify_Lines {
         $inComment = false;
         $i = 0;
         $newLines = array();
+
         while (null !== ($line = array_shift($lines))) {
             if (('' !== $id) && (0 == $i % 50)) {
                 if ($inComment) {
@@ -61,24 +56,25 @@ class Minify_Lines {
                     array_push($newLines, '', "/* {$id} */", '');
                 }
             }
+
             ++$i;
             $newLines[] = self::_addNote($line, $i, $inComment, $padTo);
             $inComment = self::_eolInComment($line, $inComment);
         }
+
         $content = implode("\n", $newLines) . "\n";
 
         // check for desired URI rewriting
         if (isset($options['currentDir'])) {
             Minify_CSS_UriRewriter::$debugText = '';
-            $content = Minify_CSS_UriRewriter::rewrite(
-                 $content
-                ,$options['currentDir']
-                ,isset($options['docRoot']) ? $options['docRoot'] : $_SERVER['DOCUMENT_ROOT']
-                ,isset($options['symlinks']) ? $options['symlinks'] : array()
-            );
+            $docRoot = isset($options['docRoot']) ? $options['docRoot'] : $_SERVER['DOCUMENT_ROOT'];
+            $symlinks = isset($options['symlinks']) ? $options['symlinks'] : array();
+
+            $content = Minify_CSS_UriRewriter::rewrite($content, $options['currentDir'], $docRoot, $symlinks);
+
             $content = "/* Minify_CSS_UriRewriter::\$debugText\n\n"
-                     . Minify_CSS_UriRewriter::$debugText . "*/\n"
-                     . $content;
+                 . Minify_CSS_UriRewriter::$debugText . "*/\n"
+                 . $content;
         }
 
         return $content;
@@ -89,33 +85,43 @@ class Minify_Lines {
      *
      * @param string $line current line of code
      *
-     * @param bool $inComment was the parser in a comment at the
-     * beginning of the line?
+     * @param bool $inComment was the parser in a C-style comment at the
+     * beginning of the previous line?
      *
      * @return bool
      */
     private static function _eolInComment($line, $inComment)
     {
-        // crude way to avoid things like // */
-        $line = preg_replace('~//.*?(\\*/|/\\*).*~', '', $line);
-
         while (strlen($line)) {
-            $search = $inComment
-                ? '*/'
-                : '/*';
-            $pos = strpos($line, $search);
-            if (false === $pos) {
-                return $inComment;
-            } else {
-                if ($pos == 0
-                    || ($inComment
-                        ? substr($line, $pos, 3)
-                        : substr($line, $pos-1, 3)) != '*/*')
-                {
-                        $inComment = ! $inComment;
+            if ($inComment) {
+                // only "*/" can end the comment
+                $index = self::_find($line, '*/');
+                if ($index === false) {
+                    return true;
                 }
-                $line = substr($line, $pos + 2);
+
+                // stop comment and keep walking line
+                $inComment = false;
+                @$line = (string)substr($line, $index + 2);
+                continue;
             }
+
+            // look for "//" and "/*"
+            $single = self::_find($line, '//');
+            $multi = self::_find($line, '/*');
+            if ($multi === false) {
+                return false;
+            }
+
+            if ($single === false || $multi < $single) {
+                // start comment and keep walking line
+                $inComment = true;
+                @$line = (string)substr($line, $multi + 2);
+                continue;
+            }
+
+            // a single-line comment preceeded it
+            return false;
         }
 
         return $inComment;
@@ -137,8 +143,67 @@ class Minify_Lines {
      */
     private static function _addNote($line, $note, $inComment, $padTo)
     {
-        return $inComment
-            ? '/* ' . str_pad($note, $padTo, ' ', STR_PAD_RIGHT) . ' *| ' . $line
-            : '/* ' . str_pad($note, $padTo, ' ', STR_PAD_RIGHT) . ' */ ' . $line;
+        if ($inComment) {
+            $line = '/* ' . str_pad($note, $padTo, ' ', STR_PAD_RIGHT) . ' *| ' . $line;
+        } else {
+            $line = '/* ' . str_pad($note, $padTo, ' ', STR_PAD_RIGHT) . ' */ ' . $line;
+        }
+
+        return rtrim($line);
+    }
+
+    /**
+     * Find a token trying to avoid false positives
+     *
+     * @param string $str   String containing the token
+     * @param string $token Token being checked
+     * @return bool
+     */
+    private static function _find($str, $token)
+    {
+        switch ($token) {
+            case '//':
+                $fakes = array(
+                    '://' => 1,
+                    '"//' => 1,
+                    '\'//' => 1,
+                    '".//' => 2,
+                    '\'.//' => 2,
+                );
+                break;
+            case '/*':
+                $fakes = array(
+                    '"/*' => 1,
+                    '\'/*' => 1,
+                    '"//*' => 2,
+                    '\'//*' => 2,
+                    '".//*' => 3,
+                    '\'.//*' => 3,
+                    '*/*' => 1,
+                    '\\/*' => 1,
+                );
+                break;
+            default:
+                $fakes = array();
+        }
+
+        $index = strpos($str, $token);
+        $offset = 0;
+
+        while ($index !== false) {
+            foreach ($fakes as $fake => $skip) {
+                $check = substr($str, $index - $skip, strlen($fake));
+                if ($check === $fake) {
+                    // move offset and scan again
+                    $offset += $index + strlen($token);
+                    $index = strpos($str, $token, $offset);
+                    break;
+                }
+            }
+            // legitimate find
+            return $index;
+        }
+
+        return $index;
     }
 }

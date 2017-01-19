@@ -1,9 +1,13 @@
 <?php
 
-class LessSourceTest extends TestCase
+class ScssSourceTest extends TestCase
 {
     public function setUp()
     {
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+            $this->markTestSkipped('scssphp is not compatible with this PHP version.');
+        }
+
         $this->realDocRoot = $_SERVER['DOCUMENT_ROOT'];
         $_SERVER['DOCUMENT_ROOT'] = self::$document_root;
     }
@@ -11,12 +15,12 @@ class LessSourceTest extends TestCase
     /**
      * @link https://github.com/mrclay/minify/issues/500
      */
-    public function testLessTimestamp()
+    public function testTimestamp()
     {
         $baseDir = self::$test_files;
 
-        $mainLess = "$baseDir/main.less";
-        $includedLess = "$baseDir/included.less";
+        $mainLess = "$baseDir/main.scss";
+        $includedLess = "$baseDir/_included.scss";
 
         // touch timestamp with 1s difference
         touch($mainLess);
@@ -31,8 +35,8 @@ class LessSourceTest extends TestCase
         $options = array(
             'groupsConfigFile' => "$baseDir/htmlHelper_groupsConfig.php",
         );
-        $res = Minify_HTML_Helper::getUri('less', $options);
+        $res = Minify_HTML_Helper::getUri('scss', $options);
 
-        $this->assertEquals("/min/g=less&amp;{$max}", $res);
+        $this->assertEquals("/min/g=scss&amp;{$max}", $res);
     }
 }

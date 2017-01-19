@@ -10,7 +10,8 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_HTML_Helper {
+class Minify_HTML_Helper
+{
     public $rewriteWorks = true;
     public $minAppUri = '/min';
     public $groupsConfigFile = '';
@@ -98,8 +99,7 @@ class Minify_HTML_Helper {
         foreach ($files as $k => $file) {
             if (0 === strpos($file, '//')) {
                 $file = substr($file, 2);
-            } elseif (0 === strpos($file, '/')
-                      || 1 === strpos($file, ':\\')) {
+            } elseif (0 === strpos($file, '/') || 1 === strpos($file, ':\\')) {
                 $file = substr($file, strlen(self::app()->env->getDocRoot()) + 1);
             }
             $file = strtr($file, '\\', '/');
@@ -168,11 +168,13 @@ class Minify_HTML_Helper {
         static $cached;
         if ($app) {
             $cached = $app;
+
             return $app;
         }
         if ($cached === null) {
             $cached = (require __DIR__ . '/../../../bootstrap.php');
         }
+
         return $cached;
     }
 
@@ -188,7 +190,8 @@ class Minify_HTML_Helper {
      * @param int $pos index to check
      * @return mixed a common char or '' if any do not match
      */
-    protected static function _getCommonCharAtPos($arr, $pos) {
+    protected static function _getCommonCharAtPos($arr, $pos)
+    {
         if (!isset($arr[0][$pos])) {
             return '';
         }
@@ -213,7 +216,8 @@ class Minify_HTML_Helper {
      * @param string $minRoot root-relative URI of the "min" application
      * @return string
      */
-    protected static function _getShortestUri($paths, $minRoot = '/min/') {
+    protected static function _getShortestUri($paths, $minRoot = '/min/')
+    {
         $pos = 0;
         $base = '';
         while (true) {
@@ -238,9 +242,7 @@ class Minify_HTML_Helper {
             $base = substr($base, 0, strlen($base) - 1);
             $bUri = $minRoot . 'b=' . $base . '&f=' . implode(',', $basedPaths);
 
-            $uri = strlen($uri) < strlen($bUri)
-                ? $uri
-                : $bUri;
+            $uri = strlen($uri) < strlen($bUri) ? $uri : $bUri;
         }
 
         return $uri;

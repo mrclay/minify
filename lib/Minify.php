@@ -24,7 +24,8 @@ use Psr\Log\LoggerInterface;
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
  * @link https://github.com/mrclay/minify
  */
-class Minify {
+class Minify
+{
 
     /**
      * API version
@@ -87,7 +88,8 @@ class Minify {
      * @param Minify_CacheInterface $cache
      * @param LoggerInterface       $logger
      */
-    public function __construct(Minify_CacheInterface $cache, LoggerInterface $logger = null) {
+    public function __construct(Minify_CacheInterface $cache, LoggerInterface $logger = null)
+    {
         $this->cache = $cache;
         $this->logger = $logger;
     }
@@ -272,7 +274,8 @@ class Minify {
                 // depending on what the client accepts, $contentEncoding may be
                 // 'x-gzip' while our internal encodeMethod is 'gzip'. Calling
                 // getAcceptedEncoding(false, false) leaves out compress and deflate as options.
-                list($this->options['encodeMethod'], $contentEncoding) = HTTP_Encoder::getAcceptedEncoding(false, false);
+                $list = HTTP_Encoder::getAcceptedEncoding(false, false);
+                list($this->options['encodeMethod'], $contentEncoding) = $list;
                 $sendVary = ! HTTP_Encoder::isBuggyIe();
             }
         } else {
@@ -492,11 +495,13 @@ class Minify {
      * @param string $content
      * @return string
      */
-    public static function nullMinifier($content) {
+    public static function nullMinifier($content)
+    {
         if (isset($content[0]) && $content[0] === "\xef") {
             $content = substr($content, 3);
         }
         $content = str_replace("\r\n", "\n", $content);
+
         return trim($content);
     }
 
@@ -505,14 +510,14 @@ class Minify {
      */
     protected function setupUriRewrites()
     {
-        foreach($this->sources as $key => $source) {
+        foreach ($this->sources as $key => $source) {
             $file = $this->env->normalizePath($source->getFilePath());
             $minifyOptions = $source->getMinifierOptions();
 
             if ($file
                 && !isset($minifyOptions['currentDir'])
-                && !isset($minifyOptions['prependRelativePath'])
-            ) {
+                && !isset($minifyOptions['prependRelativePath'])) {
+
                 $minifyOptions['currentDir'] = dirname($file);
                 $source->setMinifierOptions($minifyOptions);
             }
@@ -592,9 +597,7 @@ class Minify {
                     ! $source                        // yes, we ran out of sources
                     || $type === self::TYPE_CSS      // yes, to process CSS individually (avoiding PCRE bugs/limits)
                     || $minifier !== $lastMinifier   // yes, minifier changed
-                    || $options !== $lastOptions)    // yes, options changed
-                )
-            {
+                    || $options !== $lastOptions)) { // yes, options changed
                 // minify previous sources with last settings
                 $imploded = implode($implodeSeparator, $groupToProcessTogether);
                 $groupToProcessTogether = array();
@@ -717,10 +720,10 @@ class Minify {
             if (!empty($options['contentType'])) {
                 // just verify sources have null content type or match the options
                 if ($sourceType !== null && $sourceType !== $options['contentType']) {
-
-                    $this->logger && $this->logger->warning('ContentType mismatch');
+                    $this->logger && $this->logger->warning("ContentType mismatch: '{$sourceType}' != '{$options['contentType']}'");
 
                     $this->sources = array();
+
                     return $options;
                 }
 
@@ -730,10 +733,10 @@ class Minify {
             if ($type === null) {
                 $type = $sourceType;
             } elseif ($sourceType !== $type) {
-
-                $this->logger && $this->logger->warning('ContentType mismatch');
+                $this->logger && $this->logger->warning("ContentType mismatch: '{$sourceType}' != '{$type}'");
 
                 $this->sources = array();
+
                 return $options;
             }
         }

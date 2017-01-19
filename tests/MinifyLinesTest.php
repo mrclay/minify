@@ -4,8 +4,6 @@ class MinifyLinesTest extends TestCase
 {
     public function test_lines()
     {
-        $exp = file_get_contents(self::$test_files . "/minify/lines_output.js");
-
         $env = new Minify_Env(array(
             'server' => array(
                 'DOCUMENT_ROOT' => dirname(__DIR__),
@@ -15,15 +13,27 @@ class MinifyLinesTest extends TestCase
         $controller = new Minify_Controller_Files($env, $sourceFactory);
         $minify = new Minify(new Minify_Cache_Null());
 
-        $ret = $minify->serve($controller, array(
-            'debug' => true
-            ,'quiet' => true
-            ,'encodeOutput' => false
-            ,'files' => array(
-                self::$test_files . "/js/before.js"
-            )
-        ));
+        $files = glob(self::$test_files . "/lines/*.in.js");
 
-        $this->assertEquals($exp, $ret['content']);
+        // uncomment to debug one
+        //$files = array(self::$test_files . "/lines/basic.in.js");
+
+        foreach ($files as $file) {
+            $ret = $minify->serve($controller, array(
+                'debug' => true,
+                'quiet' => true,
+                'encodeOutput' => false,
+                'files' => array($file),
+            ));
+
+            $outFile = str_replace('.in.js', '.out.js', $file);
+
+            $exp = file_get_contents($outFile);
+
+            // uncomment to set up expected output
+            //file_put_contents($outFile, $ret['content']);
+
+            $this->assertEquals($exp, $ret['content'], "Did not match: " . basename($outFile));
+        }
     }
 }

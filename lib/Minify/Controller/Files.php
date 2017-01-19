@@ -4,7 +4,6 @@
  * @package Minify
  */
 
-use Psr\Log\LoggerInterface;
 use Monolog\Logger;
 
 /**
@@ -29,7 +28,8 @@ use Monolog\Logger;
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_Controller_Files extends Minify_Controller_Base {
+class Minify_Controller_Files extends Minify_Controller_Base
+{
 
     /**
      * Set up file sources
@@ -41,7 +41,8 @@ class Minify_Controller_Files extends Minify_Controller_Base {
      *
      * 'files': (required) array of complete file paths, or a single path
      */
-    public function createConfiguration(array $options) {
+    public function createConfiguration(array $options)
+    {
         // strip controller options
 
         $files = $options['files'];

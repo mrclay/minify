@@ -43,7 +43,8 @@ use BadMethodCallException;
  * @author Steve Clay <steve@mrclay.org>
  * @license http://www.opensource.org/licenses/mit-license.php  MIT License
  */
-class Arg {
+class Arg
+{
     /**
      * @return array
      */

@@ -6,12 +6,14 @@
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
-class Minify_DebugDetector {
+class Minify_DebugDetector
+{
     public static function shouldDebugRequest(Minify_Env $env)
     {
         if ($env->get('debug') !== null) {
             return true;
         }
+
         $cookieValue = $env->cookie('minifyDebug');
         if ($cookieValue) {
             foreach (preg_split('/\\s+/', $cookieValue) as $debugUri) {

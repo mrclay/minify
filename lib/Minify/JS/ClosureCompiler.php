@@ -13,7 +13,8 @@
  *
  * @todo can use a stream wrapper to unit test this?
  */
-class Minify_JS_ClosureCompiler {
+class Minify_JS_ClosureCompiler
+{
 
     /**
      * @var string The option key for the maximum POST byte size
@@ -228,4 +229,6 @@ class Minify_JS_ClosureCompiler {
     }
 }
 
-class Minify_JS_ClosureCompiler_Exception extends Exception {}
+class Minify_JS_ClosureCompiler_Exception extends Exception
+{
+}

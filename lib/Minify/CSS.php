@@ -16,7 +16,8 @@
  *
  * @deprecated Use Minify_CSSmin
  */
-class Minify_CSS {
+class Minify_CSS
+{
 
     /**
      * Minify a CSS string
@@ -70,32 +71,27 @@ class Minify_CSS {
         if ($options['removeCharsets']) {
             $css = preg_replace('/@charset[^;]+;\\s*/', '', $css);
         }
+
         if ($options['compress']) {
             if (! $options['preserveComments']) {
                 $css = Minify_CSS_Compressor::process($css, $options);
             } else {
-                $css = Minify_CommentPreserver::process(
-                    $css
-                    ,array('Minify_CSS_Compressor', 'process')
-                    ,array($options)
-                );
+                $processor = array('Minify_CSS_Compressor', 'process');
+                $css = Minify_CommentPreserver::process($css, $processor, array($options));
             }
         }
+
         if (! $options['currentDir'] && ! $options['prependRelativePath']) {
             return $css;
         }
+
         if ($options['currentDir']) {
-            return Minify_CSS_UriRewriter::rewrite(
-                $css
-                ,$options['currentDir']
-                ,$options['docRoot']
-                ,$options['symlinks']
-            );
+            $currentDir = $options['currentDir'];
+            $docRoot = $options['docRoot'];
+            $symlinks = $options['symlinks'];
+            return Minify_CSS_UriRewriter::rewrite($css, $currentDir, $docRoot, $symlinks);
         } else {
-            return Minify_CSS_UriRewriter::prepend(
-                $css
-                ,$options['prependRelativePath']
-            );
+            return Minify_CSS_UriRewriter::prepend($css, $options['prependRelativePath']);
         }
     }
 }

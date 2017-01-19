@@ -1,20 +1,20 @@
 
-/* before.js */
+/* basic.in.js */
 
 /* 1  */ /*! is.js
-/* 2  *| 
+/* 2  *|
 /* 3  *|  (c) 2001 Douglas Crockford
 /* 4  *|  2001 June 3
 /* 5  *| */
-/* 6  */ 
+/* 6  */
 /* 7  */ // is
-/* 8  */ 
+/* 8  */
 /* 9  */ // The -is- object is used to identify the browser.  Every browser edition
 /* 10 */ // identifies itself, but there is no standard way of doing it, and some of
 /* 11 */ // the identification is deceptive. This is because the authors of web
 /* 12 */ // browsers are liars. For example, Microsoft's IE browsers claim to be
 /* 13 */ // Mozilla 4. Netscape 6 claims to be version 5.
-/* 14 */ 
+/* 14 */
 /* 15 */ var is = {
 /* 16 */     ie:      navigator.appName == 'Microsoft Internet Explorer',
 /* 17 */     java:    navigator.javaEnabled(),
@@ -36,7 +36,7 @@
 /* 33 */     is.ie = is.ns = false;
 /* 34 */     is.gecko = true;
 /* 35 */ }
-/* 36 */ 
+/* 36 */
 /* 37 */ /*@cc_on
 /* 38 *|    /*@if (@_win32)
 /* 39 *|     if (is.ie && is.win)
@@ -44,24 +44,24 @@
 /* 41 *|    @else @*/
 /* 42 */     if (is.ie && is.win)
 /* 43 */         document.write("FAIL: IE/win did not honor multi-line conditional comment.<br>");
-/* 44 */     else 
+/* 44 */     else
 /* 45 */         document.write("PASS: Non-IE/win browser ignores multi-line conditional comment.<br>");
 /* 46 */    /*@end
 /* 47 *| @*/
-/* 48 */ 
+/* 48 */
 /* 49 */ var recognizesCondComm = true;
 /* 50 */ //@cc_on/*
 
-/* before.js */
+/* basic.in.js */
 
 /* 51 */ recognizesCondComm = false;
 /* 52 */ //@cc_on*/
-/* 53 */ 
+/* 53 */
 /* 54 */ if ((is.ie && is.win) == recognizesCondComm)
 /* 55 */     document.write("PASS: IE/win honored single-line conditional comment.<br>");
-/* 56 */ else 
+/* 56 */ else
 /* 57 */     document.write("FAIL: Non-IE/win browser did not ignore single-line conditional comment.<br>");
-/* 58 */ 
+/* 58 */
 /* 59 */ // hello
 /* 60 */ //@cc_on/*
 /* 61 */ // world

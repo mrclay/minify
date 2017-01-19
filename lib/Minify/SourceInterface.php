@@ -12,7 +12,8 @@
  *
  * @package Minify
  */
-interface Minify_SourceInterface {
+interface Minify_SourceInterface
+{
 
     /**
      * Get the minifier

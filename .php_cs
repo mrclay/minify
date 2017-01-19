@@ -5,7 +5,7 @@ $finder = Symfony\CS\Finder\DefaultFinder::create()
 ;
 
 return Symfony\CS\Config\Config::create()
-	->level(Symfony\CS\FixerInterface::NONE_LEVEL)
+	->level(Symfony\CS\FixerInterface::PSR2_LEVEL)
 	->setUsingCache(true)
 	->fixers(array(
 		'linefeed',
@@ -21,6 +21,7 @@ return Symfony\CS\Config\Config::create()
 		'controls_spaces',
 		'elseif',
 		'-eof_ending',
+		'-method_argument_space',
 	))
 	->finder($finder)
 ;

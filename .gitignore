@@ -9,3 +9,4 @@
 /vendor
 /.php_cs.cache
 /static/[0-9]*
+/tests/compiler.jar

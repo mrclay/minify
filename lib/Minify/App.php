@@ -3,7 +3,6 @@
 namespace Minify;
 
 use Props\Container;
-use Psr\Log\LoggerInterface;
 
 /**
  * @property \Minify_CacheInterface           $cache
@@ -22,7 +21,8 @@ use Psr\Log\LoggerInterface;
  * @property \Minify_Source_Factory           $sourceFactory
  * @property array                            $sourceFactoryOptions
  */
-class App extends Container {
+class App extends Container
+{
 
     /**
      * Constructor
@@ -64,9 +64,10 @@ class App extends Container {
 
             $propNames = array_keys(get_object_vars($config));
 
-            $varNames = array_map(function ($name) {
+            $prefixer = function ($name) {
                 return "min_$name";
-            }, $propNames);
+            };
+            $varNames = array_map($prefixer, $propNames);
 
             $vars = compact($varNames);
 
@@ -104,12 +105,14 @@ class App extends Container {
             if (empty($config->documentRoot)) {
                 return $app->env->getDocRoot();
             }
+
             return $app->env->normalizePath($config->documentRoot);
         };
 
         $this->env = function (App $app) {
             $config = $app->config;
             $envArgs = empty($config->envArgs) ? array() : $config->envArgs;
+
             return new \Minify_Env($envArgs);
         };
 
@@ -117,6 +120,7 @@ class App extends Container {
             $format = "%channel%.%level_name%: %message% %context% %extra%";
             $handler = new \Monolog\Handler\ErrorLogHandler();
             $handler->setFormatter(new \Monolog\Formatter\LineFormatter($format));
+
             return $handler;
         };
 
@@ -142,11 +146,13 @@ class App extends Container {
             if ($value === true || $value instanceof \FirePHP) {
                 $logger->pushHandler($app->errorLogHandler);
                 $logger->pushHandler(new \Monolog\Handler\FirePHPHandler());
+
                 return $logger;
             }
 
             if ($value instanceof \Monolog\Handler\HandlerInterface) {
                 $logger->pushHandler($value);
+
                 return $logger;
             }
 
@@ -154,6 +160,7 @@ class App extends Container {
             if (is_object($value) && is_callable(array($value, 'log'))) {
                 $handler = new \Minify\Logger\LegacyHandler($value);
                 $logger->pushHandler($handler);
+
                 return $logger;
             }
 
@@ -232,6 +239,10 @@ class App extends Container {
                 $ret['allowDirs'] = $serveOptions['minApp']['allowDirs'];
             }
 
+            if (isset($serveOptions['checkAllowDirs'])) {
+                $ret['checkAllowDirs'] = $serveOptions['checkAllowDirs'];
+            }
+
             if (is_numeric($app->config->uploaderHoursBehind)) {
                 $ret['uploaderHoursBehind'] = $app->config->uploaderHoursBehind;
             }
@@ -240,7 +251,8 @@ class App extends Container {
         };
     }
 
-    public function runServer() {
+    public function runServer()
+    {
         if (!$this->env->get('f') && $this->env->get('g') === null) {
             // no spec given
             $msg = '<p>No "f" or "g" parameters were detected.</p>';
@@ -256,8 +268,10 @@ class App extends Container {
      * @param mixed $var
      * @return string
      */
-    private function typeOf($var) {
+    private function typeOf($var)
+    {
         $type = gettype($var);
+
         return $type === 'object' ? get_class($var) : $type;
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Minify\Logger;
 
-use Monolog\Logger;
 use Monolog\Handler\AbstractProcessingHandler;
 
 class LegacyHandler extends AbstractProcessingHandler

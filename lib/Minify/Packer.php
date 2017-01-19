@@ -19,7 +19,8 @@
  *
  * @package Minify
  */
-class Minify_Packer {
+class Minify_Packer
+{
     public static function minify($code, $options = array())
     {
         // @todo: set encoding options based on $options :)
