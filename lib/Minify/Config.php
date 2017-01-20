@@ -14,6 +14,11 @@ class Config
     /**
      * @var bool
      */
+    public $enableStatic = false;
+
+    /**
+     * @var bool
+     */
     public $concatOnly = false;
 
     /**

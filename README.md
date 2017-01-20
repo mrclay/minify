@@ -11,6 +11,10 @@ The stats above are from a [brief walkthrough](http://mrclay.org/index.php/2008/
 
 Relative URLs in CSS files are rewritten to compensate for being served from a different directory.
 
+## Static file serving
+
+Version 3 allows [serving files directly from the filesystem](static/README.md) for much better performance. We encourage you to try this feature.
+
 ## Support
 
 Post to the [Google Group](http://groups.google.com/group/minify).

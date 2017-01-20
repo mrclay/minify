@@ -1,5 +1,6 @@
 ## Version 3.0.0 (unreleased)
 * The project root is now what is deployed as `min`
+* Adds feature to serve static files directly
 * Installation requires use of Composer to install dependencies
 * Removes JSMin+ (unmaintained, high memory usage)
 * Removes DooDigestAuth
