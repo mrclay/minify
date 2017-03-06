@@ -23,6 +23,11 @@ class Minify_HTML {
     protected $_jsCleanComments = true;
 
     /**
+     * @var boolean
+     */
+    protected $_htmlCleanComments = true;
+
+    /**
      * "Minify" an HTML page
      *
      * @param string $html
@@ -61,6 +66,8 @@ class Minify_HTML {
      *
      * 'jsCleanComments' : (optional) whether to remove HTML comments beginning and end of script block
      *
+     * 'htmlCleanComments' : (optional) whether to remove HTML comments
+     *
      * 'xhtml' : (optional boolean) should content be treated as XHTML1.0? If
      * unset, minify will sniff for an XHTML doctype.
      */
@@ -78,6 +85,9 @@ class Minify_HTML {
         }
         if (isset($options['jsCleanComments'])) {
             $this->_jsCleanComments = (bool)$options['jsCleanComments'];
+        }
+        if (isset($options['htmlCleanComments'])) {
+            $this->_htmlCleanComments = (bool)$options['htmlCleanComments'];
         }
     }
 
@@ -109,10 +119,12 @@ class Minify_HTML {
             ,$this->_html);
         
         // remove HTML comments (not containing IE conditional comments).
-        $this->_html = preg_replace_callback(
-            '/<!--([\\s\\S]*?)-->/'
-            ,array($this, '_commentCB')
-            ,$this->_html);
+        if ($this->_htmlCleanComments) {
+            $this->_html = preg_replace_callback(
+                '/<!--([\\s\\S]*?)-->/'
+                ,array($this, '_commentCB')
+                ,$this->_html);
+        }
         
         // replace PREs with placeholders
         $this->_html = preg_replace_callback('/\\s*<pre(\\b[^>]*?>[\\s\\S]*?<\\/pre>)\\s*/i'
