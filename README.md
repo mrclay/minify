@@ -19,19 +19,13 @@ Version 3 allows [serving files directly from the filesystem](static/README.md) 
 
 Post to the [Google Group](http://groups.google.com/group/minify).
 
-### Wordpress User?
-
-Consider instead using a dedicated WordPress plugin for more deep integration and simpler installation. E.g.:
-- [BWP Minify](http://wordpress.org/extend/plugins/bwp-minify/)
-- [W3 Total Cache](http://wordpress.org/extend/plugins/w3-total-cache/)
-
-Unfortunately we can't support the WordPress plugins here.
-
 ## Installation
 
 See the [install guide](https://github.com/mrclay/minify/blob/master/docs/Install.wiki.md).
 
 ## Configuration & Usage
+
+(Using 2.x? [Here are the 2.x docs](https://github.com/mrclay/minify/tree/2.x/docs).)
 
 See the [user guide](https://github.com/mrclay/minify/blob/master/docs/UserGuide.wiki.md).
 

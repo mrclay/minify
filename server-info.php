@@ -23,7 +23,10 @@ function assertTrue($test, $message) {
 header('Content-Type: text/plain');
 
 $file = __FILE__;
+$tmp = sys_get_temp_dir();
+
 echo <<<EOD
+Cache directory : $tmp
 __FILE__        : $file
 SCRIPT_FILENAME : {$_SERVER['SCRIPT_FILENAME']}
 DOCUMENT_ROOT   : {$_SERVER['DOCUMENT_ROOT']}
