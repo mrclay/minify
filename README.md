@@ -21,7 +21,7 @@ Post to the [Google Group](http://groups.google.com/group/minify).
 
 ## Installation
 
-See the [install guide](https://github.com/mrclay/minify/blob/master/docs/Install.wiki.md).
+See the [install guide](docs/Install.wiki.md).
 
 ## Configuration & Usage
 
