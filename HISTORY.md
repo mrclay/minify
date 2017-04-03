@@ -1,18 +1,20 @@
-## Version 3.0.0 (unreleased)
-* The project root is now what is deployed as `min`
+## Version 3.0.0 (2017-04-03)
+* Improved CSS minification via Túbal Martín's CSSMin
+* Easier error identification (just see error_log)
 * Adds feature to serve static files directly
-* Installation requires use of Composer to install dependencies
-* Removes JSMin+ (unmaintained, high memory usage)
-* Removes DooDigestAuth
-* Removes Minify_Loader (uses Composer)
-* Removes Minify_Logger (uses Monolog)
-* Removes `$min_libPath` option
-* The Minify, source, and controller components have changed APIs
-* Better CSS minification via Túbal Martín's CSSMin
-* Add config option for simply concatenating files
-* Add config option for altering creation of Minify/MinApp objects
+* Adds config option for simply concatenating files
+* Adds config option for altering creation of Minify/MinApp objects
 * Missing spec no longer redirects, instead links to docs
+* Installation requires use of Composer to install dependencies
 * Minify::VERSION is an int that tracks the major version number
+* BREAKING: The project root is now what gets deployed as `min`
+* BREAKING: Removes JSMin
+* BREAKING: Removes JSMin+ (unmaintained, high memory usage)
+* BREAKING: Removes DooDigestAuth
+* BREAKING: Removes Minify_Loader (uses Composer)
+* BREAKING: Removes Minify_Logger (uses Monolog)
+* BREAKING: Removes `$min_libPath` option
+* BREAKING: The Minify, source, and controller components have changed APIs
 
 ## Version 2.3.0 (2016-03-11)
 * Adds `$min_concatOnly` option to just concatenate files
