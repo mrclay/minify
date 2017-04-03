@@ -10,6 +10,7 @@ Clone the project into the `min/` directory inside your document root and instal
 cd /path/to/public_html
 git clone https://github.com/mrclay/minify.git min
 cd min
+git checkout 3.x
 composer install --no-dev
 ```
 
