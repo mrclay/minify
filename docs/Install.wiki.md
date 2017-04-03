@@ -37,7 +37,7 @@ cp ${MINIFY}quick-test.css ${MIN}
 
 Edit `min/index.php` to remove the ``die()`` statement and adjust the `vendor` path as needed.
 
-**Note:** This does not install the [URL builder](https://github.com/mrclay/minify/blob/master/docs/BuilderApp.wiki.md), but it's not necessary for operation.
+**Note:** This does not install the [URL builder](BuilderApp.wiki.md), but it's not necessary for operation.
 
 ## Verifing it works
 
@@ -57,6 +57,6 @@ Write the [Google Group](http://groups.google.com/group/minify) for help.
 
 ## More links
 
-* [Usage instructions](https://github.com/mrclay/minify/blob/master/docs/UserGuide.wiki.md)
-* [Cookbook](https://github.com/mrclay/minify/blob/master/docs/CookBook.wiki.md) for more advanced options
-* [All docs](https://github.com/mrclay/minify/tree/master/docs)
+* [Usage instructions](UserGuide.wiki.md)
+* [Cookbook](CookBook.wiki.md) for more advanced options
+* [All docs](docs)
