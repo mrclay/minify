@@ -39,7 +39,7 @@ $min_cachePath = new Minify_Cache_WinCache();
 
 ## Closure Compiler API Wrapper
 
-An [experimental wrapper for Google's closure compiler API](https://github.com/mrclay/minify/blob/master/min/lib/Minify/JS/ClosureCompiler.php) is available for compressing Javascript. If the API fails for any reason, JSMin is used as the default backup minifier.
+An [experimental wrapper for Google's closure compiler API](../lib/Minify/JS/ClosureCompiler.php) is available for compressing Javascript. If the API fails for any reason, JSMin is used as the default backup minifier.
 ```php
 $min_serveOptions['minifiers'][Minify::TYPE_JS] = array('Minify_JS_ClosureCompiler', 'minify');
 ```

@@ -4,7 +4,7 @@ The simple JSMin algorithm is the most reliable in PHP, but check the [CookBook]
 
 ## How fast is it?
 
-If you [serve static files](https://github.com/mrclay/minify/blob/master/static/README.md), it's as fast as your web server, and you should do this for high-traffic sites.
+If you [serve static files](../static/README.md), it's as fast as your web server, and you should do this for high-traffic sites.
 
 The PHP-based server is not as fast, but still performs well thanks to an internal cache. Tips:
 
