@@ -54,6 +54,7 @@ class Minify_ImportProcessor
 
     private function _getContent($file, $is_imported = false)
     {
+        $file = preg_replace('~\\?.*~', '', $file);
         $file = realpath($file);
         if (! $file
             || in_array($file, self::$filesIncluded)
