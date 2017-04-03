@@ -77,6 +77,14 @@ class App extends Container
                 }
             }
 
+            if ($config->documentRoot) {
+                // copy into env
+                if (empty($config->envArgs['server'])) {
+                    $config->envArgs['server'] = $_SERVER;
+                }
+                $config->envArgs['server']['DOCUMENT_ROOT'] = $config->documentRoot;
+            }
+
             return $config;
         };
 
@@ -110,10 +118,7 @@ class App extends Container
         };
 
         $this->env = function (App $app) {
-            $config = $app->config;
-            $envArgs = empty($config->envArgs) ? array() : $config->envArgs;
-
-            return new \Minify_Env($envArgs);
+            return new \Minify_Env($app->config->envArgs);
         };
 
         $this->errorLogHandler = function (App $app) {
