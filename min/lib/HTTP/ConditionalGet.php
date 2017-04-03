@@ -355,10 +355,7 @@ class HTTP_ConditionalGet {
         }
         // strip off IE's extra data (semicolon)
         list($ifModifiedSince) = explode(';', $_SERVER['HTTP_IF_MODIFIED_SINCE'], 2);
-
-        $date = new DateTime($ifModifiedSince, new DateTimeZone('UTC'));
-
-        if ($date->getTimestamp() >= $this->_lmTime) {
+        if (strtotime($ifModifiedSince) >= $this->_lmTime) {
             // Apache 2.2's behavior. If there was no ETag match, send the 
             // non-encoded version of the ETag value.
             $this->_headers['ETag'] = $this->normalizeEtag($this->_etag);
