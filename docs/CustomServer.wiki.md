@@ -47,7 +47,7 @@ $controller = new Minify_Controller_Files($env, $sourceFactory);
 
 ## Set up service and controller options
 
-A single array is used for configuring both the behavior of `Minify::serve` (see the [default options](https://github.com/mrclay/minify/blob/master/lib/Minify.php#L73)) and the controller, which has its own option keys.
+A single array is used for configuring both the behavior of `Minify::serve` (see the [default options](../lib/Minify.php#L73)) and the controller, which has its own option keys.
 
 The Files controller only needs one key: `files`: the array of sources to be combined and served.
 
