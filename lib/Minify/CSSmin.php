@@ -4,6 +4,8 @@
  * @package Minify
  */
 
+use tubalmartin\CssMin\Minifier as CSSmin;
+
 /**
  * Wrapper for CSSmin
  *
