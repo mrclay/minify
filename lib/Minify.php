@@ -517,7 +517,6 @@ class Minify
             if ($file
                 && !isset($minifyOptions['currentDir'])
                 && !isset($minifyOptions['prependRelativePath'])) {
-
                 $minifyOptions['currentDir'] = dirname($file);
                 $source->setMinifierOptions($minifyOptions);
             }

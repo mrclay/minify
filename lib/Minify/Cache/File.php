@@ -109,6 +109,7 @@ class Minify_Cache_File implements Minify_CacheInterface
     {
         if (!$this->locking) {
             readfile($this->path . '/' . $id);
+
             return;
         }
 

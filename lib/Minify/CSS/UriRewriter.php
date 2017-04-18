@@ -52,7 +52,6 @@ class Minify_CSS_UriRewriter
 
         // normalize symlinks in order to map to link
         foreach ($symlinks as $link => $target) {
-
             $link = ($link === '//') ? self::$_docRoot : str_replace('//', self::$_docRoot . '/', $link);
             $link = strtr($link, '/', DIRECTORY_SEPARATOR);
 
@@ -272,6 +271,7 @@ class Minify_CSS_UriRewriter
             \\s*
             \\)         # )
         /x';
+
         return preg_replace($pattern, 'url($1)', $css);
     }
 
@@ -337,6 +337,7 @@ class Minify_CSS_UriRewriter
     private static function _owlifySvgPaths($css)
     {
         $pattern = '~\b((?:clip-path|mask|-webkit-mask)\s*\:\s*)url(\(\s*#\w+\s*\))~';
+
         return preg_replace($pattern, '$1owl$2', $css);
     }
 
@@ -351,6 +352,7 @@ class Minify_CSS_UriRewriter
     private static function _unOwlify($css)
     {
         $pattern = '~\b((?:clip-path|mask|-webkit-mask)\s*\:\s*)owl~';
+
         return preg_replace($pattern, '$1url', $css);
     }
 }

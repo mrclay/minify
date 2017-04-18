@@ -208,7 +208,6 @@ class Minify_Source implements Minify_SourceInterface
         if ($this->filepath
             && !isset($this->minifyOptions['currentDir'])
             && !isset($this->minifyOptions['prependRelativePath'])) {
-
             $this->minifyOptions['currentDir'] = dirname($this->filepath);
         }
     }

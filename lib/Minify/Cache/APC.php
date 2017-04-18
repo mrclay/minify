@@ -62,7 +62,7 @@ class Minify_Cache_APC implements Minify_CacheInterface
         if (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2)) {
             return mb_strlen($this->_data, '8bit');
         } else {
-            return strlen($this->_data);;
+            return strlen($this->_data);
         }
     }
 
@@ -124,6 +124,7 @@ class Minify_Cache_APC implements Minify_CacheInterface
         $ret = apc_fetch($id);
         if (false === $ret) {
             $this->_id = null;
+
             return false;
         }
 

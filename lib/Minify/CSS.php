@@ -89,6 +89,7 @@ class Minify_CSS
             $currentDir = $options['currentDir'];
             $docRoot = $options['docRoot'];
             $symlinks = $options['symlinks'];
+
             return Minify_CSS_UriRewriter::rewrite($css, $currentDir, $docRoot, $symlinks);
         } else {
             return Minify_CSS_UriRewriter::prepend($css, $options['prependRelativePath']);
