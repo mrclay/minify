@@ -68,24 +68,6 @@ $min_serveOptions['minifiers']['text/css'] = 'yuiCss';
 Minify has added Túbal Martín's [PHP port](https://github.com/tubalmartin/YUI-CSS-compressor-PHP-port/blob/master/cssmin.php) of the YUI Compressor's CSSmin. While it is not completely integrated yet, you may try it out:
 
 ```
-function yuiCssPort($css, $options) {
-    $compressor = new CSSmin();
-    $css = $compressor->run($css, 9999999);
-    
-    $css = Minify_CSS_UriRewriter::rewrite(
-        $css,
-        $options['currentDir'],
-        isset($options['docRoot']) ? $options['docRoot'] : $_SERVER['DOCUMENT_ROOT'],
-        isset($options['symlinks']) ? $options['symlinks'] : array()
-    );
-    return $css;
-}
-$min_serveOptions['minifiers']['text/css'] = 'yuiCssPort';
-```
-
-As of commit [218f37](https://github.com/mrclay/minify/commit/218f37fb44f9be2ea138cf9efb8b7f6dc84bad7f), this is easier:
-
-```
 $min_serveOptions['minifiers']['text/css'] = array('Minify_CSSmin', 'minify');
 ```
 
