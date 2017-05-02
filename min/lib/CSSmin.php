@@ -765,10 +765,12 @@ class CSSmin
     private function normalize_int($size)
     {
         if (is_string($size)) {
+            $sizeInt = (int) substr($size, 0, -1);
+
             switch (substr($size, -1)) {
-                case 'M': case 'm': return $size * 1048576;
-                case 'K': case 'k': return $size * 1024;
-                case 'G': case 'g': return $size * 1073741824;
+                case 'M': case 'm': return $sizeInt * 1048576;
+                case 'K': case 'k': return $sizeInt * 1024;
+                case 'G': case 'g': return $sizeInt * 1073741824;
             }
         }
 
