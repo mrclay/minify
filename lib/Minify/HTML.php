@@ -224,21 +224,29 @@ class Minify_HTML
         $ws1 = ($m[1] === '') ? '' : ' ';
         $ws2 = ($m[4] === '') ? '' : ' ';
 
-        // remove HTML comments (and ending "//" if present)
-        if ($this->_jsCleanComments) {
-            $js = preg_replace('/(?:^\\s*<!--\\s*|\\s*(?:\\/\\/)?\\s*-->\\s*$)/', '', $js);
+        // check if the script has a type attribute, and check it
+        $typeJS = true; // no type means JS
+        if (preg_match('/type=(\'|")?([^ \'">]+)(\'|")?/i', $m[2], $matches)) {
+            $typeJS = in_array(strtolower($matches[2]), array( "text/javascript", "application/javascript"));
         }
 
-        // remove CDATA section markers
-        $js = $this->_removeCdata($js);
+        if ($typeJS) {
+            // remove HTML comments (and ending "//" if present)
+            if ($this->_jsCleanComments) {
+                $js = preg_replace('/(?:^\\s*<!--\\s*|\\s*(?:\\/\\/)?\\s*-->\\s*$)/', '',$js);
+            }
 
-        // minify
-        $minifier = $this->_jsMinifier
-            ? $this->_jsMinifier
-            : 'trim';
-        $js = call_user_func($minifier, $js);
+            // remove CDATA section markers
+            $js = $this->_removeCdata($js);
 
-        return $this->_reservePlace($this->_needsCdata($js)
+            // minify
+            $minifier = $this->_jsMinifier
+                ? $this->_jsMinifier
+                : 'trim';
+            $js = call_user_func($minifier, $js);
+        }
+
+        return $this->_reservePlace($typeJS && $this->_needsCdata($js)
             ? "{$ws1}{$openScript}/*<![CDATA[*/{$js}/*]]>*/</script>{$ws2}"
             : "{$ws1}{$openScript}{$js}</script>{$ws2}"
         );
