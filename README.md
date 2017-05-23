@@ -21,20 +21,20 @@ Post to the [Google Group](http://groups.google.com/group/minify).
 
 ## Installation
 
-See the [install guide](https://github.com/mrclay/minify/blob/master/docs/Install.wiki.md).
+See the [install guide](docs/Install.wiki.md).
 
 ## Configuration & Usage
 
 (Using 2.x? [Here are the 2.x docs](https://github.com/mrclay/minify/tree/2.x/docs).)
 
-See the [user guide](https://github.com/mrclay/minify/blob/master/docs/UserGuide.wiki.md).
+See the [user guide](docs/UserGuide.wiki.md).
 
-Minify also comes with a [URI Builder application](https://github.com/mrclay/minify/blob/master/docs/BuilderApp.wiki.md) that can help you write URLs
+Minify also comes with a [URI Builder application](docs/BuilderApp.wiki.md) that can help you write URLs
 for use with Minify or configure groups of files.
 
-See the [cookbook](https://github.com/mrclay/minify/blob/master/docs/CookBook.wiki.md) for more advanced options for minification.
+See the [cookbook](docs/CookBook.wiki.md) for more advanced options for minification.
 
-More [docs are available](https://github.com/mrclay/minify/tree/master/docs).
+More [docs are available](docs).
 
 ## Unit Testing
 
@@ -43,7 +43,7 @@ More [docs are available](https://github.com/mrclay/minify/tree/master/docs).
 
 ## Warnings
 
-* Minify is designed for efficiency, but, for very high traffic sites, it will probably serve files slower than your HTTPd due to the CGI overhead of PHP. See the [FAQ](https://github.com/mrclay/minify/blob/master/docs/FAQ.wiki.md#how-fast-is-it) and [CookBook](https://github.com/mrclay/minify/blob/master/docs/CookBook.wiki.md) for more info.
+* Minify is designed for efficiency, but, for very high traffic sites, it will probably serve files slower than your HTTPd due to the CGI overhead of PHP. See the [FAQ](docs/FAQ.wiki.md#how-fast-is-it) and [CookBook](docs/CookBook.wiki.md) for more info.
 * If you combine a lot of CSS, watch out for [IE's 4096 selectors-per-file limit](http://stackoverflow.com/a/9906889/3779), affects IE 6 through 9.
 * Minify *should* work fine with files encoded in UTF-8 or other 8-bit encodings like ISO 8859/Windows-1252. By default Minify appends ";charset=utf-8" to the Content-Type headers it sends.
 

@@ -79,8 +79,6 @@ Browse to http://example.com/min/builder/
 
 The Minify URI Builder will help you create URIs you can use to minify existing files on your site. You can see screenshots and get a feel for this process from this [walkthrough on mrclay.org](http://mrclay.org/index.php/2008/09/19/minify-21-on-mrclayorg/)
 
-More info here: https://github.com/mrclay/minify/blob/master/MIN.txt
-
 You may want to disable the [BuilderApp](BuilderApp.wiki.md) when not in use.
 
 # Far-future Expires headers
@@ -110,9 +108,9 @@ Known issue: files with comment-like strings/regexps can cause problems in this 
 
 # Configuration
 
-See [config.php](https://github.com/mrclay/minify/blob/master/config.php) for general config options.
+See [config.php](../config.php) for general config options.
 
-[groupsConfig.php](https://github.com/mrclay/minify/blob/master/groupsConfig.php) holds preset groups of files to minify. (The builder application can help with this).
+[groupsConfig.php](../groupsConfig.php) holds preset groups of files to minify. (The builder application can help with this).
 
 [CookBook](CookBook.wiki.md) shows how to customize settings between production/development environments, and between groups.
 

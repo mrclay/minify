@@ -26,7 +26,7 @@ Short answer: **use Minify 2.1.4+, use a pre-compressed version of your file, an
 
 If the error is in your code, enable [debug mode](Debugging.wiki.md) while debugging your code in Firebug or your favorite browser's Javascript debugger. This will insert comments to allow you to keep track of the individual source locations in the combined file.
 
-If you have Java on your web host, you can use the [wrapper for YUI Compressor](https://github.com/mrclay/minify/blob/master/lib/Minify/YUICompressor.php) instead of JSMin. [This thread](http://groups.google.com/group/minify/browse_thread/thread/f12f25f27e1256fe) shows how a user has done this.
+If you have Java on your web host, you can use the [wrapper for YUI Compressor](../lib/Minify/YUICompressor.php) instead of JSMin. [This thread](http://groups.google.com/group/minify/browse_thread/thread/f12f25f27e1256fe) shows how a user has done this.
 
 ## Javascript isn't being minified
 
@@ -48,7 +48,7 @@ Scriptaculous 1.8.2 (and probably all 1.x) has an [autoloader script](http://git
 
 If you upload files using [Coda or Transmit](http://groups.google.com/group/coda-users/browse_thread/thread/572d2dc315ec02e7/) or from a Windows PC to a non-Windows server, your new files may end up with the wrong `mtime` (timestamp) on the server, confusing the cache system.
 
-Setting the [$min\_uploaderHoursBehind option](https://github.com/mrclay/minify/blob/master/config.php#L171) in `config.php` can compensate for this.
+Setting the [$min\_uploaderHoursBehind option](../config.php#L171) in `config.php` can compensate for this.
 
 WinSCP has a [Daylight Saving Time option](http://winscp.net/eng/docs/ui_login_environment#daylight_saving_time) that can prevent this issue.
 
