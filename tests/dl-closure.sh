@@ -1,7 +1,7 @@
 #!/bin/sh
 set -xe
 
-: ${CLOSURE_VERSION:=20160822}
+: ${CLOSURE_VERSION:=20161024}
 
 wget -c https://dl.google.com/closure-compiler/compiler-$CLOSURE_VERSION.zip -O vendor/compiler-$CLOSURE_VERSION.zip
 unzip -od vendor/closure-compiler vendor/compiler-$CLOSURE_VERSION.zip

@@ -9,7 +9,7 @@ php:
   - hhvm
 
 env:
-  - CLOSURE_VERSION: 20160822
+  - CLOSURE_VERSION: 20161024
 
 matrix:
   allow_failures:
