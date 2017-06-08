@@ -1,6 +1,16 @@
 Minify Release History
 
-Version 2.3.0
+Version 2.3.2 (2017-06-09)
+    * PHP 7.1 compatibility fix. #600
+
+Version 2.3.1 (2017-04-03)
+    * No longer alters inline SVG id URLs. #517, #519
+    * Use $min_libPath in examples and move it within config.php. #522, #524
+    * Prevent false mod_rewrite error. #540
+    * Sync JSMin with mrclay/jsmin-php. #537
+    * URI rewriter passes through empty URLs. #561, #564
+
+Version 2.3.0 (2016-03-11)
     * Adds `$min_concatOnly` option to just concatenate files
     * Deprecates use of Minify_Loader
     * Deprecates use of Minify_Logger
@@ -116,7 +126,7 @@ Version 2.1.0 (2008-09-18)
     * Better IIS support
     * Improved minifier classes:
       * JS: preserves IE conditional comments
-      * CSS: smaller output, preserves more hacks and valid CSS syntax, 
+      * CSS: smaller output, preserves more hacks and valid CSS syntax,
              shorter line lengths, other bug fixes
       * HTML: smaller output, shorter line lengths, other bug fixes
     * Default Cache-Control: max-age of 30 minutes
@@ -133,15 +143,15 @@ Version 2.0.1 (2008-05-31)
     * E_STRICT compliance (Cache_Lite_File).
 
 Version 2.0.0 (2008-05-22)
-    * Complete code overhaul. Minify is now a PEAR-style class and toolkit 
+    * Complete code overhaul. Minify is now a PEAR-style class and toolkit
       for building customized minifying file servers.
     * Content-Encoding: deflate/gzip/compress, based on request headers
     * Expanded CSS and HTML minifiers with test cases
     * Easily plug-in 3rd-party minifiers (like Packer)
     * Plug-able front end controller allows changing the way files are chosen
-    * Compression & encoding modules lazy-loaded as needed (304 responses use 
+    * Compression & encoding modules lazy-loaded as needed (304 responses use
       use minimal code)
-    * Separate utility classes for HTTP encoding and cache control 
+    * Separate utility classes for HTTP encoding and cache control
 
 Version 1.0.1 (2007-05-05)
     * Fixed various problems resolving pathnames when hosted on an NFS mount.
