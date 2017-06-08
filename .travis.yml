@@ -8,6 +8,9 @@ php:
   - 5.4
   - hhvm
 
+env:
+  - CLOSURE_VERSION: 20161024
+
 matrix:
   allow_failures:
     - php: hhvm
@@ -25,10 +28,7 @@ install:
   - composer update --no-interaction --prefer-source
 
 before_script:
-  - wget -c https://dl.google.com/closure-compiler/compiler-latest.zip -O vendor/compiler-latest.zip
-  - unzip -od vendor/closure-compiler vendor/compiler-latest.zip
-  - ln -sfn ../$(echo vendor/closure-compiler/closure-compiler-*.jar) tests/compiler.jar
-  - java -jar tests/compiler.jar --version
+  - tests/dl-closure.sh
 
 script:
   - composer validate
