@@ -1,3 +1,7 @@
+## Version 3.0.1 (2017-06-09)
+
+* Update CSSmin to v4, #599, #590
+
 ## Version 3.0.0 (2017-04-03)
 * Improved CSS minification via Túbal Martín's CSSMin
 * Easier error identification (just see error_log)
