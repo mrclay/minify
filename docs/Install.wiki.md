@@ -10,7 +10,6 @@ Clone the project into the `min/` directory inside your document root and instal
 cd /path/to/public_html
 git clone https://github.com/mrclay/minify.git min
 cd min
-git checkout 3.x
 composer install --no-dev
 ```
 
@@ -42,7 +41,7 @@ Edit `min/index.php` to remove the ``die()`` statement and adjust the `vendor` p
 ## Verifing it works
 
 You can verify it works via these two URLs:
-    
+
 * http://example.org/min/?f=min/quick-test.js
 * http://example.org/min/?f=min/quick-test.css
 
