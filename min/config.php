@@ -12,6 +12,13 @@
  */
 $min_enableBuilder = false;
 
+
+/**
+ * Concatenate but do not minify the files. This can be used for testing.
+ */
+$min_concatOnly = false;
+
+
 /**
  * If non-empty, the Builder will be protected with HTTP Digest auth.
  * The username is "admin".
@@ -52,11 +59,20 @@ $min_allowDebugFlag = false;
 //$min_cachePath = 'c:\\WINDOWS\\Temp';
 //$min_cachePath = '/tmp';
 //$min_cachePath = preg_replace('/^\\d+;/', '', session_save_path());
+
+
+/**
+ * Path to Minify's lib folder. If you happen to move it, change 
+ * this accordingly.
+ */
+$min_libPath = dirname(__FILE__) . '/lib';
+
+
 /**
  * To use APC/Memcache/ZendPlatform for cache storage, require the class and
  * set $min_cachePath to an instance. Example below:
  */
-//require dirname(__FILE__) . '/lib/Minify/Cache/APC.php';
+//require "$min_libPath/Minify/Cache/APC.php";
 //$min_cachePath = new Minify_Cache_APC();
 
 
@@ -177,13 +193,6 @@ $min_symlinks = array();
  * @link http://winscp.net/eng/docs/ui_login_environment#daylight_saving_time
  */
 $min_uploaderHoursBehind = 0;
-
-
-/**
- * Path to Minify's lib folder. If you happen to move it, change 
- * this accordingly.
- */
-$min_libPath = dirname(__FILE__) . '/lib';
 
 
 // try to disable output_compression (may not have an effect)

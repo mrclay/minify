@@ -1,0 +1,5 @@
+/.editorconfig  export-ignore
+/.gitignore     export-ignore
+/.gitattributes export-ignore
+/min_extras     export-ignore
+/min_unit_tests export-ignore
