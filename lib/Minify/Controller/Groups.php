@@ -48,7 +48,7 @@ class Minify_Controller_Groups extends Minify_Controller_Files
         if (isset($server['ORIG_PATH_INFO'])) {
             $pathInfo = substr($server['ORIG_PATH_INFO'], 1);
         } elseif (isset($server['PATH_INFO'])) {
-            $pathInfo = substr($server['PATH_INFO'], 1)
+            $pathInfo = substr($server['PATH_INFO'], 1);
         } else {
             $pathInfo = false;
         }
