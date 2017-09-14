@@ -1,3 +1,9 @@
+## Version 3.0.2 (2017-09-14)
+
+* Fixes syntax error in Groups controller, #613
+* Better-maintained lessphp fork, #610
+* No longer corrupts some chars in some environments, #608
+
 ## Version 3.0.1 (2017-06-09)
 
 * Update CSSmin to v4, #599, #590
