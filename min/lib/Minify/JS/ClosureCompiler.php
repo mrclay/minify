@@ -53,7 +53,7 @@ class Minify_JS_ClosureCompiler {
     /**
      * @var string $url URL of compiler server. defaults to Google's
      */
-    protected $serviceUrl = 'http://closure-compiler.appspot.com/compile';
+    protected $serviceUrl = 'https://closure-compiler.appspot.com/compile';
 
     /**
      * @var int $maxBytes The maximum JS size that can be sent to the compiler server in bytes
@@ -172,6 +172,9 @@ class Minify_JS_ClosureCompiler {
             $contents = file_get_contents($this->serviceUrl, false, stream_context_create(array(
                 'http' => array(
                     'method' => 'POST',
+                    'compilation_level' => 'SIMPLE',
+                    'output_format' => 'text',
+                    'output_info' => 'compiled_code',
                     'header' => "Content-type: application/x-www-form-urlencoded\r\nConnection: close\r\n",
                     'content' => $postBody,
                     'max_redirects' => 0,
