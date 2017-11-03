@@ -1,3 +1,7 @@
+## Version 3.0.3 (2017-11-03)
+
+* Fix closure-compiler's error "redirection limit reached". #618, #619
+
 ## Version 3.0.2 (2017-09-14)
 
 * Fixes syntax error in Groups controller, #613
