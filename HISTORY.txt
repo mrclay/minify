@@ -1,5 +1,8 @@
 Minify Release History
 
+Version 2.3.3 (2017-11-03)
+    * Fix closure-compiler's error "redirection limit reached". #618, #619
+
 Version 2.3.2 (2017-06-09)
     * PHP 7.1 compatibility fix. #600
 
