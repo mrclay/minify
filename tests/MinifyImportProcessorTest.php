@@ -1,6 +1,8 @@
 <?php
 
-use Minify\Test\TestCase;
+namespace Minify\Test;
+
+use Minify_ImportProcessor;
 
 class MinifyImportProcessorTest extends TestCase
 {
@@ -21,6 +23,7 @@ class MinifyImportProcessorTest extends TestCase
             realpath($linDir . '/lib/css/example.css'),
         );
 
-        $this->assertEquals($expectedIncludes, Minify_ImportProcessor::$filesIncluded, 'included right files in right order');
+        $this->assertEquals($expectedIncludes, Minify_ImportProcessor::$filesIncluded,
+            'included right files in right order');
     }
 }

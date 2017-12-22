@@ -1,6 +1,8 @@
 <?php
 
-use Minify\Test\TestCase;
+namespace Minify\Test;
+
+use HTTP_ConditionalGet;
 
 class HTTPConditionalGetTest extends TestCase
 {

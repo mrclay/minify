@@ -1,6 +1,9 @@
 <?php
 
-use Minify\Test\TestCase;
+namespace Minify\Test;
+
+use Exception;
+use Minify_ClosureCompiler;
 
 class MinifyClosureCompilerTest extends TestCase
 {

@@ -1,6 +1,8 @@
 <?php
 
-use Minify\Test\TestCase;
+namespace Minify\Test;
+
+use Minify_HTML_Helper;
 
 class LessSourceTest extends TestCase
 {

@@ -1,6 +1,9 @@
 <?php
 
-use Minify\Test\TestCase;
+namespace Minify\Test;
+
+use Minify_Build;
+use Minify_Source;
 
 class MinifyBuildTest extends TestCase
 {

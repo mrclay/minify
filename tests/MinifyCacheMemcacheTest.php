@@ -1,6 +1,9 @@
 <?php
 
-use Minify\Test\TestCase;
+namespace Minify\Test;
+
+use Memcache;
+use Minify_Cache_Memcache;
 
 class MinifyCacheMemcacheTest extends TestCase
 {

@@ -1,6 +1,8 @@
 <?php
 
-use Minify\Test\TestCase;
+namespace Minify\Test;
+
+use HTTP_Encoder;
 
 class HTTPEncoderTest extends TestCase
 {

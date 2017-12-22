@@ -1,9 +1,11 @@
 <?php
 
-use JSMin\JSMin;
-use Minify\Test\TestCase;
+namespace Minify\Test;
 
-class JsMinTest extends TestCase
+use Exception;
+use JSMin\JSMin;
+
+class JSMinTest extends TestCase
 {
     public function test1()
     {
