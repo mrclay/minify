@@ -1,5 +1,7 @@
 <?php
 
+use Minify\Test\TestCase;
+
 class HTTPConditionalGetTest extends TestCase
 {
     public function TestData()

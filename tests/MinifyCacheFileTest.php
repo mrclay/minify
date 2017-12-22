@@ -1,5 +1,7 @@
 <?php
 
+use Minify\Test\TestCase;
+
 class MinifyCacheFileTest extends TestCase
 {
     public function test1()

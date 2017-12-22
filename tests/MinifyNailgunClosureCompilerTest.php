@@ -1,5 +1,7 @@
 <?php
 
+use Minify\Test\TestCase;
+
 class MinifyNailgunClosureCompilerTest extends TestCase
 {
     public static function setupBeforeClass()

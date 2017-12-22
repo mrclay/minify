@@ -1,6 +1,8 @@
 <?php
 
-class JsClosureCompilerTest extends PHPUnit_Framework_TestCase
+use Minify\Test\TestCase;
+
+class JsClosureCompilerTest extends TestCase
 {
     public function test1()
     {

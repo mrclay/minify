@@ -1,5 +1,7 @@
 <?php
 
+use Minify\Test\TestCase;
+
 class MinifyImportProcessorTest extends TestCase
 {
     public function test()

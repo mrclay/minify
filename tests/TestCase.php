@@ -1,5 +1,9 @@
 <?php
 
+namespace Minify\Test;
+
+use Minify_CacheInterface;
+
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     /** @var string */

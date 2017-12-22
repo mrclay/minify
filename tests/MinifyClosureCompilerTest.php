@@ -1,5 +1,7 @@
 <?php
 
+use Minify\Test\TestCase;
+
 class MinifyClosureCompilerTest extends TestCase
 {
     public static function setupBeforeClass()

@@ -1,6 +1,7 @@
 <?php
 
 use JSMin\JSMin;
+use Minify\Test\TestCase;
 
 class JsMinTest extends TestCase
 {

@@ -1,5 +1,7 @@
 <?php
 
+use Minify\Test\TestCase;
+
 class MinifyCacheMemcacheTest extends TestCase
 {
     /** @var Memcache */

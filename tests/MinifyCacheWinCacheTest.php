@@ -1,5 +1,7 @@
 <?php
 
+use Minify\Test\TestCase;
+
 class MinifyCacheWinCacheTest extends TestCase
 {
     public function setUp()

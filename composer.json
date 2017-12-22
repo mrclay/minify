@@ -20,7 +20,7 @@
 		"classmap": ["lib/"]
 	},
 	"autoload-dev": {
-		"classmap": ["tests/TestCase.php"]
+		"psr-4": {"Minify\\Test\\": "tests/"}
 	},
 	"require": {
 		"ext-pcre": "*",
