@@ -108,7 +108,7 @@ class HTTPEncoderTest extends TestCase
 
         $encodingTests = array(
             array('method' => 'deflate', 'inv' => 'gzinflate', 'exp' => 32268),
-            array('method' => 'gzip', 'inv' => '_gzdecode', 'exp' => 32286),
+            array('method' => 'gzip', 'inv' => __NAMESPACE__ . '\\_gzdecode', 'exp' => 32286),
             array('method' => 'compress', 'inv' => 'gzuncompress', 'exp' => 32325),
         );
 
@@ -121,7 +121,7 @@ class HTTPEncoderTest extends TestCase
             $ret = $this->countBytes($e->getContent());
 
             // test uncompression
-            $roundTrip = @call_user_func($test['inv'], $e->getContent());
+            $roundTrip = call_user_func($test['inv'], $e->getContent());
             $desc = "{$test['method']} : uncompress possible";
             $this->assertSame($variedContent, $roundTrip, $desc);
 
