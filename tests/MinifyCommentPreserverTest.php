@@ -1,5 +1,9 @@
 <?php
 
+namespace Minify\Test;
+
+use Minify_CommentPreserver;
+
 class MinifyCommentPreserverTest extends TestCase
 {
     public function test()

@@ -1,6 +1,10 @@
 <?php
 
-class TestCase extends PHPUnit_Framework_TestCase
+namespace Minify\Test;
+
+use Minify_CacheInterface;
+
+abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     /** @var string */
     protected static $document_root;

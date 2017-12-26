@@ -1,5 +1,9 @@
 <?php
 
+namespace Minify\Test;
+
+use Minify_HTML_Helper;
+
 class LessSourceTest extends TestCase
 {
     public function setUp()

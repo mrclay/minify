@@ -1,5 +1,10 @@
 <?php
 
+namespace Minify\Test;
+
+use Exception;
+use Minify_ClosureCompiler;
+
 class MinifyClosureCompilerTest extends TestCase
 {
     public static function setupBeforeClass()

@@ -1,5 +1,9 @@
 <?php
 
+namespace Minify\Test;
+
+use Minify_Cache_ZendPlatform;
+
 class MinifyCacheZendPlatformTest extends TestCase
 {
     public function setUp()

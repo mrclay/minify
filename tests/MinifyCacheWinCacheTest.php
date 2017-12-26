@@ -1,5 +1,9 @@
 <?php
 
+namespace Minify\Test;
+
+use Minify_Cache_WinCache;
+
 class MinifyCacheWinCacheTest extends TestCase
 {
     public function setUp()

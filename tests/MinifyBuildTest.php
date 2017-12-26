@@ -1,5 +1,10 @@
 <?php
 
+namespace Minify\Test;
+
+use Minify_Build;
+use Minify_Source;
+
 class MinifyBuildTest extends TestCase
 {
     public function test()

@@ -20,7 +20,7 @@
 		"classmap": ["lib/"]
 	},
 	"autoload-dev": {
-		"classmap": ["tests/TestCase.php"]
+		"psr-4": {"Minify\\Test\\": "tests/"}
 	},
 	"require": {
 		"ext-pcre": "*",
@@ -36,7 +36,7 @@
 		"leafo/scssphp": "~0.6.6",
 		"marcusschwarz/lesserphp": "~0.5.1",
 		"meenie/javascript-packer": "~1.1",
-		"phpunit/phpunit": "4.8.*",
+		"phpunit/phpunit": "^4.8.36",
 		"tedivm/jshrink": "~1.1.0"
 	},
 	"suggest": {

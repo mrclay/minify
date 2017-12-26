@@ -1,5 +1,10 @@
 <?php
 
+namespace Minify\Test;
+
+use Minify_HTML_Helper;
+use Minify_Source;
+
 class MinifyHTMLHelperTest extends TestCase
 {
     private $realDocRoot;
@@ -40,8 +45,10 @@ class MinifyHTMLHelperTest extends TestCase
         $expected = "/myApp/min/?g=css&amp;{$maxTime}";
         $actual = Minify_HTML_Helper::getUri('css', array(
             'rewriteWorks' => false
-        , 'minAppUri' => '/myApp/min/'
-        , 'groupsConfigFile' => self::$test_files . '/htmlHelper_groupsConfig.php'
+        ,
+            'minAppUri' => '/myApp/min/'
+        ,
+            'groupsConfigFile' => self::$test_files . '/htmlHelper_groupsConfig.php'
         ));
         $this->assertEquals($expected, $actual, 'existing group');
 
@@ -67,7 +74,8 @@ class MinifyHTMLHelperTest extends TestCase
             ));
             $output = Minify_mtime(array(
                 $obj
-            , 'css'
+            ,
+                'css'
             ), self::$test_files . '/htmlHelper_groupsConfig.php');
             $this->assertEquals($maxTime, $output, 'utils.php : Minify_mtime w/ obj & group');
         }

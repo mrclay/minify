@@ -1,5 +1,9 @@
 <?php
 
+namespace Minify\Test;
+
+use Minify_Cache_APC;
+
 class MinifyCacheAPCTest extends TestCase
 {
     public function setUp()

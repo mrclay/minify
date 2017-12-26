@@ -1,6 +1,11 @@
 <?php
 
-class JsClosureCompilerTest extends PHPUnit_Framework_TestCase
+namespace Minify\Test;
+
+use Minify_JS_ClosureCompiler;
+use Minify_JS_ClosureCompiler_Exception;
+
+class JsClosureCompilerTest extends TestCase
 {
     public function test1()
     {
@@ -27,7 +32,8 @@ class JsClosureCompilerTest extends PHPUnit_Framework_TestCase
             $this->compile($src);
         } catch (Minify_JS_ClosureCompiler_Exception $e) {
         }
-        $this->assertInstanceOf('Minify_JS_ClosureCompiler_Exception', $e, 'Throws Minify_JS_ClosureCompiler_Exception');
+        $this->assertInstanceOf('Minify_JS_ClosureCompiler_Exception', $e,
+            'Throws Minify_JS_ClosureCompiler_Exception');
     }
 
     // Test maximum byte size check (default)
@@ -40,7 +46,8 @@ class JsClosureCompilerTest extends PHPUnit_Framework_TestCase
             $this->compile($src);
         } catch (Minify_JS_ClosureCompiler_Exception $e) {
         }
-        $this->assertInstanceOf('Minify_JS_ClosureCompiler_Exception', $e, 'Throws Minify_JS_ClosureCompiler_Exception');
+        $this->assertInstanceOf('Minify_JS_ClosureCompiler_Exception', $e,
+            'Throws Minify_JS_ClosureCompiler_Exception');
 
         $expected = 'POST content larger than ' . Minify_JS_ClosureCompiler::DEFAULT_MAX_BYTES . ' bytes';
         $this->assertEquals($expected, $e->getMessage(), 'Message must tell how big maximum byte size is');
@@ -69,7 +76,8 @@ class JsClosureCompilerTest extends PHPUnit_Framework_TestCase
             ));
         } catch (Minify_JS_ClosureCompiler_Exception $e) {
         }
-        $this->assertInstanceOf('Minify_JS_ClosureCompiler_Exception', $e, 'Throws Minify_JS_ClosureCompiler_Exception');
+        $this->assertInstanceOf('Minify_JS_ClosureCompiler_Exception', $e,
+            'Throws Minify_JS_ClosureCompiler_Exception');
 
         $expected = 'POST content larger than ' . $allowedBytes . ' bytes';
         $this->assertEquals($expected, $e->getMessage(), 'Message must tell how big maximum byte size is');
@@ -88,7 +96,8 @@ class JsClosureCompilerTest extends PHPUnit_Framework_TestCase
             ));
         } catch (Minify_JS_ClosureCompiler_Exception $e) {
         }
-        $this->assertInstanceOf('Minify_JS_ClosureCompiler_Exception', $e, 'Throws Minify_JS_ClosureCompiler_Exception');
+        $this->assertInstanceOf('Minify_JS_ClosureCompiler_Exception', $e,
+            'Throws Minify_JS_ClosureCompiler_Exception');
     }
 
     public function test7()

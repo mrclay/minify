@@ -1,5 +1,9 @@
 <?php
 
+namespace Minify\Test;
+
+use Minify_HTML;
+
 class MinifyHTMLTest extends TestCase
 {
     public function test1()

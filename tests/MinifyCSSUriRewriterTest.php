@@ -1,5 +1,9 @@
 <?php
 
+namespace Minify\Test;
+
+use Minify_CSS_UriRewriter;
+
 class MinifyCSSUriRewriterTest extends TestCase
 {
     public function setUp()

@@ -1,5 +1,10 @@
 <?php
 
+namespace Minify\Test;
+
+use Exception;
+use Minify_YUICompressor;
+
 class MinifyYuiCSSTest extends TestCase
 {
     public static function setupBeforeClass()
@@ -13,7 +18,8 @@ class MinifyYuiCSSTest extends TestCase
         Minify_YUICompressor::$tempDir = sys_get_temp_dir();
     }
 
-    public function setUp() {
+    public function setUp()
+    {
         $this->assertHasJar();
     }
 
@@ -49,7 +55,7 @@ class MinifyYuiCSSTest extends TestCase
     {
         $this->assertNotEmpty(Minify_YUICompressor::$jarFile);
         try {
-            $this->assertFileExists(Minify_YUICompressor::$jarFile , "Have YUI yuicompressor.jar");
+            $this->assertFileExists(Minify_YUICompressor::$jarFile, "Have YUI yuicompressor.jar");
         } catch (Exception $e) {
             $this->markTestSkipped($e->getMessage());
         }

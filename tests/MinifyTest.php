@@ -1,5 +1,13 @@
 <?php
 
+namespace Minify\Test;
+
+use Minify;
+use Minify_Cache_Null;
+use Minify_Controller_Files;
+use Minify_Env;
+use Minify_Source_Factory;
+
 class MinifyTest extends TestCase
 {
     public function test_Minify()
@@ -146,7 +154,8 @@ class MinifyTest extends TestCase
         ));
         $output = $output['content'];
 
-        $this->assertFalse(strpos($output, $defaultOptions['importWarning']), 'Issue 89 : don\'t warn about valid imports');
+        $this->assertFalse(strpos($output, $defaultOptions['importWarning']),
+            'Issue 89 : don\'t warn about valid imports');
 
         // Test Issue 132
         if (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2)) {
@@ -156,7 +165,8 @@ class MinifyTest extends TestCase
                 'encodeOutput' => false,
             ));
 
-            $this->assertEquals(77, $output['headers']['Content-Length'], 'Issue 132 : mbstring.func_overload shouldn\'t cause incorrect Content-Length');
+            $this->assertEquals(77, $output['headers']['Content-Length'],
+                'Issue 132 : mbstring.func_overload shouldn\'t cause incorrect Content-Length');
         }
 
         // Test minifying CSS and responding with Etag/Last-Modified

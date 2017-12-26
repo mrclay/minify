@@ -1,5 +1,13 @@
 <?php
 
+namespace Minify\Test;
+
+use Minify;
+use Minify_Cache_Null;
+use Minify_Controller_Files;
+use Minify_Env;
+use Minify_Source_Factory;
+
 class MinifyLinesTest extends TestCase
 {
     public function test_lines()
