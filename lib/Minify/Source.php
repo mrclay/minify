@@ -180,8 +180,13 @@ class Minify_Source implements Minify_SourceInterface
         } else {
             $content = file_get_contents($this->filepath);
         }
+
         // remove UTF-8 BOM if present
-        return ("\xEF\xBB\xBF" === substr($content, 0, 3)) ? substr($content, 3) : $content;
+        if (strpos($content, "\xEF\xBB\xBF") === 0) {
+            return substr($content, 3);
+        }
+
+        return $content;
     }
 
     /**
