@@ -129,7 +129,7 @@ class Minify_ClosureCompiler
             $this->getOptionsCommandLine($userOptions)
         );
 
-        return join(' ', $args) . ' ' . escapeshellarg($tmpFile);
+        return implode(' ', $args) . ' ' . escapeshellarg($tmpFile);
     }
 
     /**
