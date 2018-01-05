@@ -19,12 +19,12 @@ class Minify_Source implements Minify_SourceInterface
     /**
      * @var int time of last modification
      */
-    protected $lastModified = null;
+    protected $lastModified;
 
     /**
      * @var callback minifier function specifically for this source.
      */
-    protected $minifier = null;
+    protected $minifier;
 
     /**
      * @var array minification options specific to this source.
@@ -34,27 +34,27 @@ class Minify_Source implements Minify_SourceInterface
     /**
      * @var string full path of file
      */
-    protected $filepath = null;
+    protected $filepath;
 
     /**
      * @var string HTTP Content Type (Minify requires one of the constants Minify::TYPE_*)
      */
-    protected $contentType = null;
+    protected $contentType;
 
     /**
      * @var string
      */
-    protected $content = null;
+    protected $content;
 
     /**
      * @var callable
      */
-    protected $getContentFunc = null;
+    protected $getContentFunc;
 
     /**
      * @var string
      */
-    protected $id = null;
+    protected $id;
 
     /**
      * Create a Minify_Source

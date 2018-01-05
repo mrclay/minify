@@ -45,14 +45,14 @@ class Minify
      *
      * @var Minify_CacheInterface
      */
-    private $cache = null;
+    private $cache;
 
     /**
      * Active controller for current request
      *
      * @var Minify_Controller_Base
      */
-    protected $controller = null;
+    protected $controller;
 
     /**
      * @var Minify_Env
@@ -74,12 +74,12 @@ class Minify
      *
      * @var array
      */
-    protected $options = null;
+    protected $options;
 
     /**
      * @var LoggerInterface|null
      */
-    protected $logger = null;
+    protected $logger;
 
     /**
      * @param Minify_CacheInterface $cache

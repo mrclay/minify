@@ -32,15 +32,15 @@ class Minify_ImportProcessor
     }
 
     // allows callback funcs to know the current directory
-    private $_currentDir = null;
+    private $_currentDir;
 
     // allows callback funcs to know the directory of the file that inherits this one
-    private $_previewsDir = null;
+    private $_previewsDir;
 
     // allows _importCB to write the fetched content back to the obj
     private $_importedContent = '';
 
-    private static $_isCss = null;
+    private static $_isCss;
 
     /**
      * @param String $currentDir

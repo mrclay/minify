@@ -102,10 +102,10 @@ class Minify_Env
         return $path;
     }
 
-    protected $server = null;
-    protected $get = null;
-    protected $post = null;
-    protected $cookie = null;
+    protected $server;
+    protected $get;
+    protected $post;
+    protected $cookie;
 
     /**
      * Compute $_SERVER['DOCUMENT_ROOT'] for IIS using SCRIPT_FILENAME and SCRIPT_NAME.
