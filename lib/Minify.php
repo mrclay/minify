@@ -299,19 +299,19 @@ class Minify
                 $cg->sendHeaders();
 
                 return;
-            } else {
-                return array(
-                    'success' => true,
-                    'statusCode' => 304,
-                    'content' => '',
-                    'headers' => $cg->getHeaders(),
-                );
             }
-        } else {
-            // client will need output
-            $headers = $cg->getHeaders();
-            unset($cg);
+
+            return array(
+                'success' => true,
+                'statusCode' => 304,
+                'content' => '',
+                'headers' => $cg->getHeaders(),
+            );
         }
+
+        // client will need output
+        $headers = $cg->getHeaders();
+        unset($cg);
 
         if ($this->options['contentType'] === self::TYPE_CSS && $this->options['rewriteCssUris']) {
             $this->setupUriRewrites();
