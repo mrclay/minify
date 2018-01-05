@@ -4,6 +4,8 @@
  * @package Minify
  */
 
+use InvalidArgumentException;
+
 /**
  * A content source to be minified by Minify.
  *
@@ -19,12 +21,12 @@ class Minify_Source implements Minify_SourceInterface
     /**
      * @var int time of last modification
      */
-    protected $lastModified = null;
+    protected $lastModified;
 
     /**
      * @var callback minifier function specifically for this source.
      */
-    protected $minifier = null;
+    protected $minifier;
 
     /**
      * @var array minification options specific to this source.
@@ -34,27 +36,27 @@ class Minify_Source implements Minify_SourceInterface
     /**
      * @var string full path of file
      */
-    protected $filepath = null;
+    protected $filepath;
 
     /**
      * @var string HTTP Content Type (Minify requires one of the constants Minify::TYPE_*)
      */
-    protected $contentType = null;
+    protected $contentType;
 
     /**
      * @var string
      */
-    protected $content = null;
+    protected $content;
 
     /**
      * @var callable
      */
-    protected $getContentFunc = null;
+    protected $getContentFunc;
 
     /**
      * @var string
      */
-    protected $id = null;
+    protected $id;
 
     /**
      * Create a Minify_Source
@@ -137,7 +139,7 @@ class Minify_Source implements Minify_SourceInterface
             $minifier = 'Minify::nullMinifier';
         }
         if ($minifier !== null && !is_callable($minifier, true)) {
-            throw new \InvalidArgumentException('minifier must be null or a valid callable');
+            throw new InvalidArgumentException('minifier must be null or a valid callable');
         }
         $this->minifier = $minifier;
     }
@@ -180,8 +182,13 @@ class Minify_Source implements Minify_SourceInterface
         } else {
             $content = file_get_contents($this->filepath);
         }
+
         // remove UTF-8 BOM if present
-        return ("\xEF\xBB\xBF" === substr($content, 0, 3)) ? substr($content, 3) : $content;
+        if (strpos($content, "\xEF\xBB\xBF") === 0) {
+            return substr($content, 3);
+        }
+
+        return $content;
     }
 
     /**

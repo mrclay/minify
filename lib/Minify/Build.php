@@ -80,7 +80,6 @@ class Minify_Build
      *
      * @param array $sources array of Minify_Source objects and/or file paths
      *
-     * @return null
      */
     public function __construct($sources)
     {

@@ -14,9 +14,6 @@ use Psr\Log\LoggerInterface;
  * This library was inspired by {@link mailto:flashkot@mail.ru jscsscomp by Maxim Martynyuk}
  * and by the article {@link http://www.hunlock.com/blogs/Supercharged_Javascript "Supercharged JavaScript" by Patrick Hunlock}.
  *
- * Requires PHP 5.1.0.
- * Tested on PHP 5.1.6.
- *
  * @package Minify
  * @author Ryan Grove <ryan@wonko.com>
  * @author Stephen Clay <steve@mrclay.org>
@@ -48,14 +45,14 @@ class Minify
      *
      * @var Minify_CacheInterface
      */
-    private $cache = null;
+    private $cache;
 
     /**
      * Active controller for current request
      *
      * @var Minify_Controller_Base
      */
-    protected $controller = null;
+    protected $controller;
 
     /**
      * @var Minify_Env
@@ -77,12 +74,12 @@ class Minify
      *
      * @var array
      */
-    protected $options = null;
+    protected $options;
 
     /**
      * @var LoggerInterface|null
      */
-    protected $logger = null;
+    protected $logger;
 
     /**
      * @param Minify_CacheInterface $cache
@@ -302,19 +299,19 @@ class Minify
                 $cg->sendHeaders();
 
                 return;
-            } else {
-                return array(
-                    'success' => true,
-                    'statusCode' => 304,
-                    'content' => '',
-                    'headers' => $cg->getHeaders(),
-                );
             }
-        } else {
-            // client will need output
-            $headers = $cg->getHeaders();
-            unset($cg);
+
+            return array(
+                'success' => true,
+                'statusCode' => 304,
+                'content' => '',
+                'headers' => $cg->getHeaders(),
+            );
         }
+
+        // client will need output
+        $headers = $cg->getHeaders();
+        unset($cg);
 
         if ($this->options['contentType'] === self::TYPE_CSS && $this->options['rewriteCssUris']) {
             $this->setupUriRewrites();

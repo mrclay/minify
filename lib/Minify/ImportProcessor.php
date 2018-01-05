@@ -32,15 +32,15 @@ class Minify_ImportProcessor
     }
 
     // allows callback funcs to know the current directory
-    private $_currentDir = null;
+    private $_currentDir;
 
     // allows callback funcs to know the directory of the file that inherits this one
-    private $_previewsDir = null;
+    private $_previewsDir;
 
     // allows _importCB to write the fetched content back to the obj
     private $_importedContent = '';
 
-    private static $_isCss = null;
+    private static $_isCss;
 
     /**
      * @param String $currentDir
@@ -135,7 +135,7 @@ class Minify_ImportProcessor
         // $m[1] is either quoted or not
         $quote = ($m[1][0] === "'" || $m[1][0] === '"') ? $m[1][0] : '';
 
-        $url = ($quote === '') ? $m[1] : substr($m[1], 1, strlen($m[1]) - 2);
+        $url = ($quote === '') ? $m[1] : substr($m[1], 1, -2);
 
         if ('/' !== $url[0]) {
             if (strpos($url, '//') > 0) {
@@ -182,7 +182,7 @@ class Minify_ImportProcessor
     private function truepath($path)
     {
         // whether $path is unix or not
-        $unipath = (strlen($path) == 0) || ($path{0} != '/');
+        $unipath = ('' === $path) || ($path{0} !== '/');
 
         // attempts to detect if path is relative in which case, add cwd
         if (strpos($path, ':') === false && $unipath) {
@@ -194,10 +194,10 @@ class Minify_ImportProcessor
         $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
         $absolutes = array();
         foreach ($parts as $part) {
-            if ('.' == $part) {
+            if ('.' === $part) {
                 continue;
             }
-            if ('..' == $part) {
+            if ('..' === $part) {
                 array_pop($absolutes);
             } else {
                 $absolutes[] = $part;

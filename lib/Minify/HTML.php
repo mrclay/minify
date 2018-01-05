@@ -177,11 +177,11 @@ class Minify_HTML
         return $placeholder;
     }
 
-    protected $_isXhtml = null;
-    protected $_replacementHash = null;
+    protected $_isXhtml;
+    protected $_replacementHash;
     protected $_placeholders = array();
-    protected $_cssMinifier = null;
-    protected $_jsMinifier = null;
+    protected $_cssMinifier;
+    protected $_jsMinifier;
 
     protected function _removePreCB($m)
     {

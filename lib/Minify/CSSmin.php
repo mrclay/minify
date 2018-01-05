@@ -78,11 +78,11 @@ class Minify_CSSmin
                 ,$options['docRoot']
                 ,$options['symlinks']
             );
-        } else {
-            return Minify_CSS_UriRewriter::prepend(
-                $css
-                ,$options['prependRelativePath']
-            );
         }
+
+        return Minify_CSS_UriRewriter::prepend(
+            $css
+            ,$options['prependRelativePath']
+        );
     }
 }

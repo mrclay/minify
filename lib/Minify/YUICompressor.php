@@ -38,7 +38,7 @@ class Minify_YUICompressor
      *
      * @var string
      */
-    public static $jarFile = null;
+    public static $jarFile;
 
     /**
      * Writable temp directory. This must be set before calling minifyJs()
@@ -46,7 +46,7 @@ class Minify_YUICompressor
      *
      * @var string
      */
-    public static $tempDir = null;
+    public static $tempDir;
 
     /**
      * Filepath of "java" executable (may be needed if not in shell's PATH)

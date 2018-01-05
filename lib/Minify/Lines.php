@@ -49,7 +49,7 @@ class Minify_Lines
         $newLines = array();
 
         while (null !== ($line = array_shift($lines))) {
-            if (('' !== $id) && (0 == $i % 50)) {
+            if (('' !== $id) && (0 === $i % 50)) {
                 if ($inComment) {
                     array_push($newLines, '', "/* {$id} *|", '');
                 } else {

@@ -63,7 +63,7 @@ class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler
         $server = array(
             self::$javaExecutable,
             '-server',
-            '-cp', join(':', $classPath),
+            '-cp', implode(':', $classPath),
             self::NG_SERVER,
         );
 
@@ -101,9 +101,9 @@ class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler
 
     private function startServer()
     {
-        $serverCommand = join(' ', $this->getServerCommandLine());
+        $serverCommand = implode(' ', $this->getServerCommandLine());
         $psCommand = $this->shell("ps -o cmd= -C " . self::$javaExecutable);
-        if (array_search($serverCommand, $psCommand) !== false) {
+        if (in_array($serverCommand, $psCommand, true)) {
             // already started!
             return;
         }

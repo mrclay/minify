@@ -38,14 +38,14 @@ class Minify_ClosureCompiler
      *
      * @var string
      */
-    public static $jarFile = null;
+    public static $jarFile;
 
     /**
      * Writable temp directory. This must be set before calling minifyJs().
      *
      * @var string
      */
-    public static $tempDir = null;
+    public static $tempDir;
 
     /**
      * Filepath of "java" executable (may be needed if not in shell's PATH)
@@ -129,7 +129,7 @@ class Minify_ClosureCompiler
             $this->getOptionsCommandLine($userOptions)
         );
 
-        return join(' ', $args) . ' ' . escapeshellarg($tmpFile);
+        return implode(' ', $args) . ' ' . escapeshellarg($tmpFile);
     }
 
     /**
