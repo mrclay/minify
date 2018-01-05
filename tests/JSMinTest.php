@@ -57,7 +57,8 @@ class JSMinTest extends TestCase
      * @param string $label
      * @param string $expClass
      * @param string $expMessage
-     * @dataProvider testJSMinExceptionData
+     *
+     * @dataProvider JSMinExceptionDataProvider
      */
     public function testJSMinException($js, $label, $expClass, $expMessage)
     {
@@ -71,7 +72,7 @@ class JSMinTest extends TestCase
         $this->assertTrue($eClass === $expClass && $eMsg === $expMessage, 'Throw on ' . $label);
     }
 
-    public function testJSMinExceptionData()
+    public function JSMinExceptionDataProvider()
     {
         // $js, $label, $expClass, $expMessage
         return array(
