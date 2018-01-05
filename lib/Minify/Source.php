@@ -4,6 +4,8 @@
  * @package Minify
  */
 
+use InvalidArgumentException;
+
 /**
  * A content source to be minified by Minify.
  *
@@ -137,7 +139,7 @@ class Minify_Source implements Minify_SourceInterface
             $minifier = 'Minify::nullMinifier';
         }
         if ($minifier !== null && !is_callable($minifier, true)) {
-            throw new \InvalidArgumentException('minifier must be null or a valid callable');
+            throw new InvalidArgumentException('minifier must be null or a valid callable');
         }
         $this->minifier = $minifier;
     }

@@ -2,23 +2,34 @@
 
 namespace Minify;
 
+use Minify_Cache_File;
+use Minify_CacheInterface;
+use Minify_Controller_MinApp;
+use Minify_ControllerInterface;
+use Minify_DebugDetector;
+use Minify_Env;
+use Minify_Source_Factory;
 use Props\Container;
+use Psr\Log\LoggerInterface;
+use RuntimeException;
+use Monolog;
+use Minify;
 
 /**
- * @property \Minify_CacheInterface           $cache
- * @property \Minify\Config                   $config
+ * @property Minify_CacheInterface            $cache
+ * @property Config                           $config
  * @property string                           $configPath
- * @property \Minify_ControllerInterface      $controller
+ * @property Minify_ControllerInterface      $controller
  * @property string                           $dir
  * @property string                           $docRoot
- * @property \Minify_Env                      $env
- * @property \Monolog\Handler\ErrorLogHandler $errorLogHandler
+ * @property Minify_Env                      $env
+ * @property Monolog\Handler\ErrorLogHandler $errorLogHandler
  * @property array                            $groupsConfig
  * @property string                           $groupsConfigPath
- * @property \Psr\Log\LoggerInterface         $logger
+ * @property LoggerInterface         $logger
  * @property \Minify                          $minify
  * @property array                            $serveOptions
- * @property \Minify_Source_Factory           $sourceFactory
+ * @property Minify_Source_Factory           $sourceFactory
  * @property array                            $sourceFactoryOptions
  */
 class App extends Container
@@ -38,29 +49,29 @@ class App extends Container
         $this->cache = function (App $app) use ($that) {
             $config = $app->config;
 
-            if ($config->cachePath instanceof \Minify_CacheInterface) {
+            if ($config->cachePath instanceof Minify_CacheInterface) {
                 return $config->cachePath;
             }
 
             if (!$config->cachePath || is_string($config->cachePath)) {
-                return new \Minify_Cache_File($config->cachePath, $config->cacheFileLocking, $app->logger);
+                return new Minify_Cache_File($config->cachePath, $config->cacheFileLocking, $app->logger);
             }
 
             $type = $that->typeOf($config->cachePath);
-            throw new \RuntimeException('$min_cachePath must be a path or implement Minify_CacheInterface.'
+            throw new RuntimeException('$min_cachePath must be a path or implement Minify_CacheInterface.'
                 . " Given $type");
         };
 
         $this->config = function (App $app) {
             $config = (require $app->configPath);
 
-            if ($config instanceof \Minify\Config) {
+            if ($config instanceof Minify\Config) {
                 return $config;
             }
 
             // copy from vars into properties
 
-            $config = new \Minify\Config();
+            $config = new Minify\Config();
 
             $propNames = array_keys(get_object_vars($config));
 
@@ -94,17 +105,17 @@ class App extends Container
             $config = $app->config;
 
             if (empty($config->factories['controller'])) {
-                $ctrl = new \Minify_Controller_MinApp($app->env, $app->sourceFactory, $app->logger);
+                $ctrl = new Minify_Controller_MinApp($app->env, $app->sourceFactory, $app->logger);
             } else {
                 $ctrl = call_user_func($config->factories['controller'], $app);
             }
 
-            if ($ctrl instanceof \Minify_ControllerInterface) {
+            if ($ctrl instanceof Minify_ControllerInterface) {
                 return $ctrl;
             }
 
             $type = $that->typeOf($ctrl);
-            throw new \RuntimeException('$min_factories["controller"] callable must return an implementation'
+            throw new RuntimeException('$min_factories["controller"] callable must return an implementation'
                 ." of Minify_CacheInterface. Returned $type");
         };
 
@@ -118,13 +129,13 @@ class App extends Container
         };
 
         $this->env = function (App $app) {
-            return new \Minify_Env($app->config->envArgs);
+            return new Minify_Env($app->config->envArgs);
         };
 
         $this->errorLogHandler = function (App $app) {
             $format = "%channel%.%level_name%: %message% %context% %extra%";
-            $handler = new \Monolog\Handler\ErrorLogHandler();
-            $handler->setFormatter(new \Monolog\Formatter\LineFormatter($format));
+            $handler = new Monolog\Handler\ErrorLogHandler();
+            $handler->setFormatter(new Monolog\Formatter\LineFormatter($format));
 
             return $handler;
         };
@@ -138,11 +149,11 @@ class App extends Container
         $this->logger = function (App $app) use ($that) {
             $value = $app->config->errorLogger;
 
-            if ($value instanceof \Psr\Log\LoggerInterface) {
+            if ($value instanceof LoggerInterface) {
                 return $value;
             }
 
-            $logger = new \Monolog\Logger('minify');
+            $logger = new Monolog\Logger('minify');
 
             if (!$value) {
                 return $logger;
@@ -150,12 +161,12 @@ class App extends Container
 
             if ($value === true || $value instanceof \FirePHP) {
                 $logger->pushHandler($app->errorLogHandler);
-                $logger->pushHandler(new \Monolog\Handler\FirePHPHandler());
+                $logger->pushHandler(new Monolog\Handler\FirePHPHandler());
 
                 return $logger;
             }
 
-            if ($value instanceof \Monolog\Handler\HandlerInterface) {
+            if ($value instanceof Monolog\Handler\HandlerInterface) {
                 $logger->pushHandler($value);
 
                 return $logger;
@@ -163,14 +174,14 @@ class App extends Container
 
             // BC
             if (is_object($value) && is_callable(array($value, 'log'))) {
-                $handler = new \Minify\Logger\LegacyHandler($value);
+                $handler = new Minify\Logger\LegacyHandler($value);
                 $logger->pushHandler($handler);
 
                 return $logger;
             }
 
             $type = $that->typeOf($value);
-            throw new \RuntimeException('If set, $min_errorLogger must be a PSR-3 logger or a Monolog handler.'
+            throw new RuntimeException('If set, $min_errorLogger must be a PSR-3 logger or a Monolog handler.'
                 ." Given $type");
         };
 
@@ -187,7 +198,7 @@ class App extends Container
             }
 
             $type = $that->typeOf($minify);
-            throw new \RuntimeException('$min_factories["minify"] callable must return a Minify object.'
+            throw new RuntimeException('$min_factories["minify"] callable must return a Minify object.'
                 ." Returned $type");
         };
 
@@ -207,7 +218,7 @@ class App extends Container
             }
 
             if ($config->allowDebugFlag) {
-                $ret['debug'] = \Minify_DebugDetector::shouldDebugRequest($env);
+                $ret['debug'] = Minify_DebugDetector::shouldDebugRequest($env);
             }
 
             if ($config->concatOnly) {
@@ -228,7 +239,7 @@ class App extends Container
         };
 
         $this->sourceFactory = function (App $app) {
-            return new \Minify_Source_Factory($app->env, $app->sourceFactoryOptions, $app->cache);
+            return new Minify_Source_Factory($app->env, $app->sourceFactoryOptions, $app->cache);
         };
 
         $this->sourceFactoryOptions = function (App $app) {
