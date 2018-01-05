@@ -33,7 +33,7 @@
 	},
 	"require-dev": {
 		"firephp/firephp-core": "~0.4.0",
-		"leafo/scssphp": "~0.6.6",
+		"leafo/scssphp": "^0.3 || ^0.6 || ^0.7",
 		"marcusschwarz/lesserphp": "~0.5.1",
 		"meenie/javascript-packer": "~1.1",
 		"phpunit/phpunit": "^4.8.36",

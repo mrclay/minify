@@ -7,7 +7,7 @@ use HTTP_Encoder;
 class HTTPEncoderTest extends TestCase
 {
     /**
-     * @dataProvider testToIe6Data
+     * @dataProvider ToIe6DataProvider
      * @preserveGlobals
      */
     public function testToIe6($ua, $ae, $exp, $desc)
@@ -20,7 +20,7 @@ class HTTPEncoderTest extends TestCase
         $this->assertSame($exp, $ret, $desc);
     }
 
-    public function testToIe6Data()
+    public function ToIe6DataProvider()
     {
         return array(
             array(
@@ -69,7 +69,7 @@ class HTTPEncoderTest extends TestCase
     }
 
     /**
-     * @dataProvider testEncodeNonIeData
+     * @dataProvider EncodeNonIeDataProvider
      */
     public function testEncodeNonIe($ua, $ae, $exp, $desc)
     {
@@ -81,7 +81,7 @@ class HTTPEncoderTest extends TestCase
         $this->assertSame($exp, $ret, $desc);
     }
 
-    public function testEncodeNonIeData()
+    public function EncodeNonIeDataProvider()
     {
         return array(
             array(
