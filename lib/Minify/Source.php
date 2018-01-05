@@ -4,8 +4,6 @@
  * @package Minify
  */
 
-use InvalidArgumentException;
-
 /**
  * A content source to be minified by Minify.
  *
