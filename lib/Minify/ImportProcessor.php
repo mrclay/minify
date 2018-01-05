@@ -135,7 +135,7 @@ class Minify_ImportProcessor
         // $m[1] is either quoted or not
         $quote = ($m[1][0] === "'" || $m[1][0] === '"') ? $m[1][0] : '';
 
-        $url = ($quote === '') ? $m[1] : substr($m[1], 1, -2);
+        $url = ($quote === '') ? $m[1] : substr($m[1], 1, strlen($m[1]) - 2);
 
         if ('/' !== $url[0]) {
             if (strpos($url, '//') > 0) {
