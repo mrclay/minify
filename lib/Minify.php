@@ -14,9 +14,6 @@ use Psr\Log\LoggerInterface;
  * This library was inspired by {@link mailto:flashkot@mail.ru jscsscomp by Maxim Martynyuk}
  * and by the article {@link http://www.hunlock.com/blogs/Supercharged_Javascript "Supercharged JavaScript" by Patrick Hunlock}.
  *
- * Requires PHP 5.1.0.
- * Tested on PHP 5.1.6.
- *
  * @package Minify
  * @author Ryan Grove <ryan@wonko.com>
  * @author Stephen Clay <steve@mrclay.org>
