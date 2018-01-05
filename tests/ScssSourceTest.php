@@ -8,10 +8,6 @@ class ScssSourceTest extends TestCase
 {
     public function setUp()
     {
-        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
-            $this->markTestSkipped('scssphp is not compatible with this PHP version.');
-        }
-
         $this->realDocRoot = $_SERVER['DOCUMENT_ROOT'];
         $_SERVER['DOCUMENT_ROOT'] = self::$document_root;
     }
