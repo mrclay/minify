@@ -103,7 +103,7 @@ class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler
     {
         $serverCommand = implode(' ', $this->getServerCommandLine());
         $psCommand = $this->shell("ps -o cmd= -C " . self::$javaExecutable);
-        if (array_search($serverCommand, $psCommand) !== false) {
+        if (in_array($serverCommand, $psCommand, true)) {
             // already started!
             return;
         }
