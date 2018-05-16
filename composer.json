@@ -41,7 +41,6 @@
 	},
 	"suggest": {
 		"firephp/firephp-core": "Use FirePHP for Log messages",
-		"marcusschwarz/lesserphp": "LESS support",
 		"meenie/javascript-packer": "Keep track of the Packer PHP port using Composer"
 	},
 	"scripts": {
