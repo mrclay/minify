@@ -42,13 +42,13 @@ Edit `min/index.php` to remove the ``die()`` statement and adjust the `vendor` p
 
 You can verify it works via these two URLs:
 
-* http://example.org/min/?f=min/quick-test.js
-* http://example.org/min/?f=min/quick-test.css
+* http://sweet.com/min/?f=min/quick-test.js
+* http://sweet.com/min/?f=min/quick-test.css
 
 If your server supports mod_rewrite, the `?` are not necessary:
 
-* http://example.org/min/f=min/quick-test.js
-* http://example.org/min/f=min/quick-test.css
+* http://sweet.com/min/f=min/quick-test.js
+* http://sweet.com/min/f=min/quick-test.css
 
 ## Having trouble?
 
