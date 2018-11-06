@@ -128,8 +128,8 @@ class HTTP_ConditionalGet
         $etagAppend = '';
         if (isset($spec['encoding'])) {
             $this->_stripEtag = true;
-            $this->_headers['Vary'] = 'Accept-Encoding';
             if ('' !== $spec['encoding']) {
+                $this->_headers['Vary'] = 'Accept-Encoding';
                 if (0 === strpos($spec['encoding'], 'x-')) {
                     $spec['encoding'] = substr($spec['encoding'], 2);
                 }
