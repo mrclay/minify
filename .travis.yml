@@ -37,6 +37,6 @@ before_script:
 
 script:
   - composer validate
-  - phpunit --verbose
+  - vendor/bin/phpunit --verbose
 
 # vim:ts=2:sw=2:et
