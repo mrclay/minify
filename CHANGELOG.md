@@ -1,3 +1,7 @@
+## Version 3.0.4 (2019-09-24)
+
+* See git log for details
+
 ## Version 3.0.3 (2017-11-03)
 
 * Fix closure-compiler's error "redirection limit reached". #618, #619
