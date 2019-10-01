@@ -1,3 +1,7 @@
+## Version 3.0.5 (2019-10-01)
+
+- Fix syntax error in composer.json, #653
+
 ## Version 3.0.4 (2019-09-24)
 
 * See git log for details
