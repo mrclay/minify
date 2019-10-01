@@ -45,7 +45,6 @@ class MinifyTest extends TestCase
             'content' => '',
             'headers' => array(
                 'Expires' => gmdate('D, d M Y H:i:s \G\M\T', $_SERVER['REQUEST_TIME'] + 1800),
-                'Vary' => 'Accept-Encoding',
                 'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
                 'ETag' => "\"pub{$lastModified}\"",
                 'Cache-Control' => 'max-age=1800',
