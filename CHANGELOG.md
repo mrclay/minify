@@ -1,26 +1,32 @@
-## Version 3.0.5 (2019-10-01)
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+## 3.0.5 - 2019-10-01
 
 - Fix syntax error in composer.json, #653
 
-## Version 3.0.4 (2019-09-24)
+## 3.0.4 - 2019-09-24
 
-* See git log for details
+- Fix PHP 7.3 compatibility issues, #648
 
-## Version 3.0.3 (2017-11-03)
+## 3.0.3 - 2017-11-03
 
 * Fix closure-compiler's error "redirection limit reached". #618, #619
 
-## Version 3.0.2 (2017-09-14)
+## 3.0.2 - 2017-09-14
 
 * Fixes syntax error in Groups controller, #613
 * Better-maintained lessphp fork, #610
 * No longer corrupts some chars in some environments, #608
 
-## Version 3.0.1 (2017-06-09)
+## 3.0.1 - 2017-06-09
 
 * Update CSSmin to v4, #599, #590
 
-## Version 3.0.0 (2017-04-03)
+## 3.0.0 - 2017-04-03
+
 * Improved CSS minification via Túbal Martín's CSSMin
 * Easier error identification (just see error_log)
 * Adds feature to serve static files directly
@@ -38,7 +44,8 @@
 * BREAKING: Removes `$min_libPath` option
 * BREAKING: The Minify, source, and controller components have changed APIs
 
-## Version 2.3.0 (2016-03-11)
+## 2.3.0 - 2016-03-11
+
 * Adds `$min_concatOnly` option to just concatenate files
 * Deprecates use of Minify_Loader
 * Deprecates use of Minify_Logger
@@ -46,13 +53,15 @@
 * Deprecates use of FirePHP
 * Deprecates use of DooDigestAuth
 
-## Version 2.2.1 (2014-10-30)
+## 2.2.1 - 2014-10-30
+
 * Builder styled with Bootstrap (thanks to help from acidvertigo)
 * Update CSSmin to v.2.4.8
 * Added WinCache
 * URLs with spaces properly rewritten
 
-## Version 2.2.0 (2014-03-12)
+## 2.2.0 - 2014-03-12
+
 * Fix handling of RegEx in certain situations in JSMin
     * Thanks to Vovan-VE for reporting this
 * Update composer.json with support info
@@ -74,11 +83,13 @@
 * Allow far-future expiration and file versioning with the "v" querystirng parameter in addition to existing method
 * Lots of general code tidy ups
 
-## Version 2.1.7 (2013-07-23)
+## 2.1.7 - 2013-07-23
+
 * Fixes arbitrary file inclusion vulnerability on some systems
     * Thanks to Matt Mecham for reporting this
 
-## Version 2.1.6 (2013-07-19)
+## 2.1.6 - 2013-07-19
+
 * JSMin fixes
 * Prevents some Closure Compiler API failures
 * Uses autoloading for all class loading
@@ -90,7 +101,8 @@
 * CLI script more portable
 * Adds composer.json
 
-## Version 2.1.5 (2012-03-10)
+## 2.1.5 - 2012-03-10
+
 * Removed XSS vulnerability
 * Disabled builder by default
 * command line tools to minify and rewrite URIs in CSS
@@ -99,7 +111,8 @@
 * Closure Compiler uses cURL when allow\_url\_fopen is off
 * Missing file notices when using groups
 
-## Version 2.1.4b (2010-07-10)
+## 2.1.4b - 2010-07-10
+
 * Option to minify JS with Closure Compiler API w/ JSMin failover
 * Cookie/bookmarklet-based debug mode. No HTML editing!
 * Allows 1 file to be missing w/o complete failure
@@ -115,7 +128,8 @@
 * Removed annoying maxFiles limit
 * mbstring.func\_overload usage is safer
 
-## Version 2.1.3 (2009-06-30)
+## 2.1.3 - 2009-06-30
+
 * CSS fixes
     * A few URI rewriting bugs fixed
     * comment/whitespace removal no longer breaks some values
@@ -130,7 +144,8 @@
 * API: Can set contentType Minify\_Source objects (fixes an annoying [caveat](http://groups.google.com/group/minify/msg/8446d32ee99a4961))
 * [Resolved Issue list](http://code.google.com/p/minify/issues/list?can=1&q=label%3ARelease-2.1.2%20status%3AVerified)
 
-## Version 2.1.2 (2009-03-04)
+## 2.1.2 - 2009-03-04
+
 * Javascript fixes
     * Debug mode no longer confused by `*/*` in strings/RegExps (jQuery)
     * quote characters inside RegExp literals no longer cause exception
@@ -142,14 +157,16 @@
 * Builder app doesn't fail on systems without gzdeflate()
 * APC caching class included
 
-## Version 2.1.1 (2008-10-19)
+## 2.1.1 - 2008-10-19
+
 * Bug fix release
 * Detection and workarounds for zlib.output\_compression and non-PHP encoding modules
 * Zlib not required (mod\_rewrite, et.al., can still be used for encoding)
 * HTML : More IE conditional comments preserved
 * Minify\_groupUri() utility fixed
 
-## Version 2.1.0 (2008-09-18)
+## 2.1.0 - 2008-09-18
+
 * "min" default application for quick deployment
 * Minify URI Builder app & bookmarklet for quickly creating minify URIs
 * Relative URIs in CSS file are fixed automatically by default
@@ -165,8 +182,8 @@
 * Minify\_Cache\_File has flock()s (by default)
 * Workaround for Windows mtime reporting bug
 
+## 2.0.0 - 2008-05-22
 
-## Version 2.0.0 (2008-05-22)
 * Complete code overhaul. Minify is now a PEAR-style class and toolkit for building customized minifying file servers.
 * Content-Encoding: deflate/gzip/compress, based on request headers
 * Expanded CSS and HTML minifiers with test cases
@@ -175,10 +192,12 @@
 * Compression & encoding modules lazy-loaded as needed (304 responses use minimal code)
 * Separate utility classes for HTTP encoding and cache control
 
-## Version 1.0.1 (2007-05-05)
+## 1.0.1 - 2007-05-05
+
 * Fixed various problems resolving pathnames when hosted on an NFS mount.
 * Fixed 'undefined constant' notice.
 * Replaced old JSMin library with a much faster custom implementation.
 
-## Version 1.0.0 (2007-05-02)
+## 1.0.0 - 2007-05-02
+
 * First release.
