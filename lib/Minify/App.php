@@ -80,10 +80,12 @@ class App extends Container
             };
             $varNames = array_map($prefixer, $propNames);
 
-            $varDefinedChecker = function ($name) {
-                return array_key_exists($name, get_defined_vars());
-            };
-            $varNames = array_filter($varNames, $varDefinedChecker);
+            $varDefined = get_defined_vars();
+
+            $varNames = array_filter($varNames, function($name) use($varDefined)
+            {
+                return array_key_exists($name, $varDefined);
+            });
 
             $vars = compact($varNames);
 
