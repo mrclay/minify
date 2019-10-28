@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 3.0.6 - 2019-10-28
+
+- Bugfix for option sanitizer, #654, #655
+
 ## 3.0.5 - 2019-10-01
 
 - Fix syntax error in composer.json, #653
