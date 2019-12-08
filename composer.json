@@ -27,7 +27,7 @@
 		"intervention/httpauth": "~2.0",
 		"monolog/monolog": "~1.1|~2.0",
 		"mrclay/jsmin-php": "~2",
-		"mrclay/props-dic": "^2.2",
+		"mrclay/props-dic": "^2.2|^3.0",
 		"php": "^5.3.0 || ^7.0",
 		"tubalmartin/cssmin": "~4",
 		"marcusschwarz/lesserphp": "~0.5.1"
