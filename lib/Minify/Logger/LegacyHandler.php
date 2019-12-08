@@ -10,7 +10,7 @@ class LegacyHandler extends AbstractProcessingHandler
 
     public function __construct($obj)
     {
-        if (!is_callable(array($obj, 'log'))) {
+        if (!\is_callable(array($obj, 'log'))) {
             throw new \InvalidArgumentException('$obj must have a public log() method');
         }
         $this->obj = $obj;
@@ -19,6 +19,6 @@ class LegacyHandler extends AbstractProcessingHandler
 
     protected function write(array $record)
     {
-        $this->obj->log((string)$record['formatted']);
+        $this->obj->log((string) $record['formatted']);
     }
 }

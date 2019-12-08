@@ -5,7 +5,10 @@ namespace Minify\Test;
 use Exception;
 use Minify_ClosureCompiler;
 
-class MinifyClosureCompilerTest extends TestCase
+/**
+ * @internal
+ */
+final class MinifyClosureCompilerTest extends TestCase
 {
     public static function setupBeforeClass()
     {
@@ -17,8 +20,8 @@ class MinifyClosureCompilerTest extends TestCase
         // put it under tests dir as 'compiler.jar'
 
         // set minimum necessary settings
-        Minify_ClosureCompiler::$jarFile = __DIR__ . DIRECTORY_SEPARATOR . 'compiler.jar';
-        Minify_ClosureCompiler::$tempDir = sys_get_temp_dir();
+        Minify_ClosureCompiler::$jarFile = __DIR__ . \DIRECTORY_SEPARATOR . 'compiler.jar';
+        Minify_ClosureCompiler::$tempDir = \sys_get_temp_dir();
     }
 
     /*
@@ -29,11 +32,12 @@ class MinifyClosureCompilerTest extends TestCase
         // clear params
         Minify_ClosureCompiler::$jarFile = null;
         Minify_ClosureCompiler::$tempDir = null;
+
         try {
             Minify_ClosureCompiler::minify('');
-            $this->fail();
+            static::fail();
         } catch (Exception $e) {
-            $this->assertInstanceOf('Minify_ClosureCompiler_Exception', $e);
+            static::assertInstanceOf('Minify_ClosureCompiler_Exception', $e);
         }
         // redo init to make other tests pass
         self::setupBeforeClass();
@@ -45,7 +49,7 @@ class MinifyClosureCompilerTest extends TestCase
     public function test2()
     {
         $this->assertHasJar();
-        $src = "
+        $src = '
     (function (window, undefined){
         function addOne(input) {
             return 1 + input;
@@ -53,10 +57,10 @@ class MinifyClosureCompilerTest extends TestCase
         window.addOne = addOne;
         window.undefined = undefined;
     })(window);
-        ";
-        $minExpected = "(function(a,b){a.addOne=function(a){return 1+a};a.undefined=b})(window);";
+        ';
+        $minExpected = '(function(a,b){a.addOne=function(a){return 1+a};a.undefined=b})(window);';
         $minOutput = Minify_ClosureCompiler::minify($src);
-        $this->assertSame($minExpected, $minOutput, 'minimum necessary settings');
+        static::assertSame($minExpected, $minOutput, 'minimum necessary settings');
     }
 
     /**
@@ -65,13 +69,13 @@ class MinifyClosureCompilerTest extends TestCase
     public function test3()
     {
         $this->assertHasJar();
-        $src = "function unused() {};";
+        $src = 'function unused() {};';
         $minExpected = '';
         $options = array(
-            'compilation_level' => 'ADVANCED_OPTIMIZATIONS'
+            'compilation_level' => 'ADVANCED_OPTIMIZATIONS',
         );
         $minOutput = Minify_ClosureCompiler::minify($src, $options);
-        $this->assertSame($minExpected, $minOutput, 'advanced optimizations');
+        static::assertSame($minExpected, $minOutput, 'advanced optimizations');
     }
 
     /**
@@ -88,7 +92,7 @@ class MinifyClosureCompilerTest extends TestCase
         $src = $this->getDataFile('bug-513.js');
         $minExpected = 'var a=4;';
         $minOutput = Minify_ClosureCompiler::minify($src);
-        $this->assertSame($minExpected, $minOutput, 'advanced optimizations');
+        static::assertSame($minExpected, $minOutput, 'advanced optimizations');
     }
 
     /**
@@ -105,23 +109,24 @@ class MinifyClosureCompilerTest extends TestCase
         );
 
         $res = Minify_ClosureCompiler::minify($src, $options);
-        $this->assertSame($exp, $res);
+        static::assertSame($exp, $res);
 
         $options = array(
             'language_in' => 'ECMASCRIPT6',
         );
         $exp = $this->getDataFile('js/jscomp.polyfilled.min.js');
         $res = Minify_ClosureCompiler::minify($src, $options);
-        $this->assertSame($exp, $res);
+        static::assertSame($exp, $res);
     }
 
     protected function assertHasJar()
     {
-        $this->assertNotEmpty(Minify_ClosureCompiler::$jarFile);
+        static::assertNotEmpty(Minify_ClosureCompiler::$jarFile);
+
         try {
-            $this->assertFileExists(Minify_ClosureCompiler::$jarFile, "Have closure compiler compiler.jar");
+            static::assertFileExists(Minify_ClosureCompiler::$jarFile, 'Have closure compiler compiler.jar');
         } catch (Exception $e) {
-            $this->markTestSkipped($e->getMessage());
+            static::markTestSkipped($e->getMessage());
         }
     }
 }

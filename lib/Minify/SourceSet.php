@@ -1,15 +1,10 @@
 <?php
-/**
- * Class Minify_SourceSet
- * @package Minify
- */
 
 /**
- * @package Minify
+ * Class Minify_SourceSet
  */
 class Minify_SourceSet
 {
-
     /**
      * Get unique string for a set of sources
      *
@@ -22,10 +17,10 @@ class Minify_SourceSet
         $info = array();
         foreach ($sources as $source) {
             $info[] = array(
-                $source->getId(), $source->getMinifier(), $source->getMinifierOptions()
+                $source->getId(), $source->getMinifier(), $source->getMinifierOptions(),
             );
         }
 
-        return md5(serialize($info));
+        return \md5(\serialize($info));
     }
 }

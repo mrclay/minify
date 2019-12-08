@@ -15,7 +15,7 @@ class Minify_LessCssSource extends Minify_Source
     private $parsed;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __construct(array $spec, Minify_CacheInterface $cache)
     {
@@ -37,18 +37,6 @@ class Minify_LessCssSource extends Minify_Source
     }
 
     /**
-     * Get content
-     *
-     * @return string
-     */
-    public function getContent()
-    {
-        $cache = $this->getCache();
-
-        return $cache['compiled'];
-    }
-
-    /**
      * Get lessphp cache object
      *
      * @return array
@@ -66,7 +54,7 @@ class Minify_LessCssSource extends Minify_Source
         $cacheId = $this->getCacheId();
         if ($this->cache->isValid($cacheId, 0)) {
             if ($cache = $this->cache->fetch($cacheId)) {
-                $cache = unserialize($cache);
+                $cache = \unserialize($cache);
             }
         }
 
@@ -74,28 +62,12 @@ class Minify_LessCssSource extends Minify_Source
         $input = $cache ? $cache : $this->filepath;
         $cache = $less->cachedCompile($input);
 
-        if (!is_array($input) || $cache['updated'] > $input['updated']) {
+        if (!\is_array($input) || $cache['updated'] > $input['updated']) {
             $cache['lastModified'] = $this->getMaxLastModified($cache);
-            $this->cache->store($cacheId, serialize($cache));
+            $this->cache->store($cacheId, \serialize($cache));
         }
 
         return $this->parsed = $cache;
-    }
-
-    /**
-     * Calculate maximum last modified of all files,
-     * as the 'updated' timestamp in cache is not the same as file last modified timestamp:
-     * @link https://github.com/leafo/lessphp/blob/v0.4.0/lessc.inc.php#L1904
-     * @return int
-     */
-    private function getMaxLastModified($cache)
-    {
-        $lastModified = 0;
-        foreach ($cache['files'] as $mtime) {
-            $lastModified = max($lastModified, $mtime);
-        }
-
-        return $lastModified;
     }
 
     /**
@@ -107,7 +79,7 @@ class Minify_LessCssSource extends Minify_Source
      */
     private function getCacheId($prefix = 'minify')
     {
-        $md5 = md5($this->filepath);
+        $md5 = \md5($this->filepath);
 
         return "{$prefix}_less2_{$md5}";
     }
@@ -124,5 +96,37 @@ class Minify_LessCssSource extends Minify_Source
         $less->setPreserveComments(true);
 
         return $less;
+    }
+
+    /**
+     * Calculate maximum last modified of all files,
+     * as the 'updated' timestamp in cache is not the same as file last modified timestamp:
+     *
+     * @see https://github.com/leafo/lessphp/blob/v0.4.0/lessc.inc.php#L1904
+     *
+     * @param mixed $cache
+     *
+     * @return int
+     */
+    private function getMaxLastModified($cache)
+    {
+        $lastModified = 0;
+        foreach ($cache['files'] as $mtime) {
+            $lastModified = \max($lastModified, $mtime);
+        }
+
+        return $lastModified;
+    }
+
+    /**
+     * Get content
+     *
+     * @return string
+     */
+    public function getContent()
+    {
+        $cache = $this->getCache();
+
+        return $cache['compiled'];
     }
 }

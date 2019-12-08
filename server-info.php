@@ -13,21 +13,23 @@ if (!$enabled) {
     die('Set $enabled to true to see server info.');
 }
 
-function assertTrue($test, $message) {
+function assertTrue($test, $message)
+{
     if (!$test) {
-        echo "Warning: $message\n";
+        echo "Warning: ${message}\n";
     }
-    return (bool)$test;
+
+    return (bool) $test;
 }
 
-header('Content-Type: text/plain');
+\header('Content-Type: text/plain');
 
 $file = __FILE__;
-$tmp = sys_get_temp_dir();
+$tmp = \sys_get_temp_dir();
 
 echo <<<EOD
-Cache directory : $tmp
-__FILE__        : $file
+Cache directory : ${tmp}
+__FILE__        : ${file}
 SCRIPT_FILENAME : {$_SERVER['SCRIPT_FILENAME']}
 DOCUMENT_ROOT   : {$_SERVER['DOCUMENT_ROOT']}
 SCRIPT_NAME     : {$_SERVER['SCRIPT_NAME']}
@@ -37,21 +39,21 @@ REQUEST_URI     : {$_SERVER['REQUEST_URI']}
 EOD;
 
 $noSlash = assertTrue(
-    0 === preg_match('@[\\\\/]$@', $_SERVER['DOCUMENT_ROOT']),
+    \preg_match('@[\\\\/]$@', $_SERVER['DOCUMENT_ROOT']) === 0,
     'DOCUMENT_ROOT ends in trailing slash'
 );
 
 $isRealPath = assertTrue(
-    false !== realpath($_SERVER['DOCUMENT_ROOT']),
+    \realpath($_SERVER['DOCUMENT_ROOT']) !== false,
     'DOCUMENT_ROOT fails realpath()'
 );
 
 $containsThisFile = assertTrue(
-    0 === strpos(realpath(__FILE__), realpath($_SERVER['DOCUMENT_ROOT'])),
+    \strpos(\realpath(__FILE__), \realpath($_SERVER['DOCUMENT_ROOT'])) === 0,
     'DOCUMENT_ROOT contains this test file'
 );
 
-if (! $noSlash || ! $isRealPath || ! $containsThisFile) {
+if (!$noSlash || !$isRealPath || !$containsThisFile) {
     echo "If you cannot modify DOCUMENT_ROOT, consider setting \$min_documentRoot in config.php\n";
 }
 
@@ -61,8 +63,8 @@ assertTrue(
 );
 
 assertTrue(
-    realpath(__FILE__) === realpath($_SERVER['DOCUMENT_ROOT'] . '/min/server-info.php'),
-    "/min/ is not directly inside DOCUMENT_ROOT."
+    \realpath(__FILE__) === \realpath($_SERVER['DOCUMENT_ROOT'] . '/min/server-info.php'),
+    '/min/ is not directly inside DOCUMENT_ROOT.'
 );
 
 // TODO: rework this
@@ -150,4 +152,4 @@ if (! $passed) {
             . "                    AddOutputFilterByType.";
     }
 }
-*/
+ */

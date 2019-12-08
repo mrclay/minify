@@ -1,13 +1,10 @@
 <?php
 /**
  * Interface Minify_CacheInterface
- * @package Minify
  */
 
 /**
  * Interface for Minify cache adapters
- *
- * @package Minify
  */
 interface Minify_CacheInterface
 {

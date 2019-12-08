@@ -1,17 +1,13 @@
 <?php
 /**
  * Class Minify_ServeConfiguration
- * @package Minify
  */
 
 /**
  * A configuration for Minify::serve() determined by a controller
- *
- * @package Minify
  */
 class Minify_ServeConfiguration
 {
-
     /**
      * @var Minify_SourceInterface[]
      */

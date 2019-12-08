@@ -1,7 +1,6 @@
 <?php
 /**
  * Class Minify_Cache_ZendPlatform
- * @package Minify
  */
 
 /**
@@ -12,20 +11,23 @@
  * <code>
  * Minify::setCache(new Minify_Cache_ZendPlatform());
  * </code>
- *
- * @package Minify
- * @author Patrick van Dissel
  */
 class Minify_Cache_ZendPlatform implements Minify_CacheInterface
 {
+    private $_exp;
+
+    private $_lm;
+
+    private $_data;
+
+    private $_id;
 
     /**
      * Create a Minify_Cache_ZendPlatform object, to be passed to
      * Minify::setCache().
      *
      * @param int $expire seconds until expiration (default = 0
-     * meaning the item will not get an expiration date)
-     *
+     *                    meaning the item will not get an expiration date)
      */
     public function __construct($expire = 0)
     {
@@ -36,7 +38,6 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface
      * Write data to cache.
      *
      * @param string $id cache id
-     *
      * @param string $data
      *
      * @return bool success
@@ -55,21 +56,48 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface
      */
     public function getSize($id)
     {
-        return $this->_fetch($id) ? strlen($this->_data) : false;
+        return $this->_fetch($id) ? \strlen($this->_data) : false;
+    }
+
+    // cache of most recently fetched id
+
+    /**
+     * Fetch data and timestamp from ZendPlatform, store in instance
+     *
+     * @param string $id
+     *
+     * @return bool success
+     */
+    private function _fetch($id)
+    {
+        if ($this->_id === $id) {
+            return true;
+        }
+
+        $ret = output_cache_get($id, $this->_exp);
+        if ($ret === false) {
+            $this->_id = null;
+
+            return false;
+        }
+
+        list($this->_lm, $this->_data) = \explode('|', $ret, 2);
+        $this->_id = $id;
+
+        return true;
     }
 
     /**
      * Does a valid cache entry exist?
      *
-     * @param string $id cache id
-     *
-     * @param int $srcMtime mtime of the original source file(s)
+     * @param string $id       cache id
+     * @param int    $srcMtime mtime of the original source file(s)
      *
      * @return bool exists
      */
     public function isValid($id, $srcMtime)
     {
-        return ($this->_fetch($id) && ($this->_lm >= $srcMtime));
+        return $this->_fetch($id) && ($this->_lm >= $srcMtime);
     }
 
     /**
@@ -92,38 +120,5 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface
     public function fetch($id)
     {
         return $this->_fetch($id) ? $this->_data : '';
-    }
-
-    private $_exp = null;
-
-    // cache of most recently fetched id
-    private $_lm = null;
-    private $_data = null;
-    private $_id = null;
-
-    /**
-     * Fetch data and timestamp from ZendPlatform, store in instance
-     *
-     * @param string $id
-     *
-     * @return bool success
-     */
-    private function _fetch($id)
-    {
-        if ($this->_id === $id) {
-            return true;
-        }
-
-        $ret = output_cache_get($id, $this->_exp);
-        if (false === $ret) {
-            $this->_id = null;
-
-            return false;
-        }
-
-        list($this->_lm, $this->_data) = explode('|', $ret, 2);
-        $this->_id = $id;
-
-        return true;
     }
 }

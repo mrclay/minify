@@ -1,7 +1,6 @@
 <?php
 /**
  * Class Minify_ClosureCompiler
- * @package Minify
  */
 
 /**
@@ -23,10 +22,6 @@
  * --compilation_level WHITESPACE_ONLY, SIMPLE_OPTIMIZATIONS, ADVANCED_OPTIMIZATIONS
  *
  * </code>
- *
- * @package Minify
- * @author Stephen Clay <steve@mrclay.org>
- * @author Elan Ruusamäe <glen@delfi.ee>
  */
 class Minify_ClosureCompiler
 {
@@ -60,19 +55,22 @@ class Minify_ClosureCompiler
      * @var array
      */
     public static $defaultOptions = array(
-        'charset' => 'utf-8',
+        'charset'           => 'utf-8',
         'compilation_level' => 'SIMPLE_OPTIMIZATIONS',
-        'warning_level' => 'QUIET',
+        'warning_level'     => 'QUIET',
     );
 
     /**
      * Minify a Javascript string
      *
      * @param string $js
-     * @param array $options (verbose is ignored)
-     * @see https://code.google.com/p/closure-compiler/source/browse/trunk/README
-     * @return string
+     * @param array  $options (verbose is ignored)
+     *
      * @throws Minify_ClosureCompiler_Exception
+     *
+     * @return string
+     *
+     * @see https://code.google.com/p/closure-compiler/source/browse/trunk/README
      */
     public static function minify($js, $options = array())
     {
@@ -85,115 +83,27 @@ class Minify_ClosureCompiler
      * Process $js using $options.
      *
      * @param string $js
-     * @param array $options
-     * @return string
-     * @throws Exception
+     * @param array  $options
+     *
      * @throws Minify_ClosureCompiler_Exception
+     * @throws Exception
+     *
+     * @return string
      */
     public function process($js, $options)
     {
         $tmpFile = $this->dumpFile(self::$tempDir, $js);
+
         try {
             $result = $this->compile($tmpFile, $options);
         } catch (Exception $e) {
-            unlink($tmpFile);
+            \unlink($tmpFile);
+
             throw $e;
         }
-        unlink($tmpFile);
+        \unlink($tmpFile);
 
         return $result;
-    }
-
-    /**
-     * @param string $tmpFile
-     * @param array $options
-     * @return string
-     * @throws Minify_ClosureCompiler_Exception
-     */
-    protected function compile($tmpFile, $options)
-    {
-        $command = $this->getCommand($options, $tmpFile);
-
-        return implode("\n", $this->shell($command));
-    }
-
-    /**
-     * @param array $userOptions
-     * @param string $tmpFile
-     * @return string
-     */
-    protected function getCommand($userOptions, $tmpFile)
-    {
-        $args = array_merge(
-            $this->getCompilerCommandLine(),
-            $this->getOptionsCommandLine($userOptions)
-        );
-
-        return implode(' ', $args) . ' ' . escapeshellarg($tmpFile);
-    }
-
-    /**
-     * @return array
-     * @throws Minify_ClosureCompiler_Exception
-     */
-    protected function getCompilerCommandLine()
-    {
-        $this->checkJar(self::$jarFile);
-        $server = array(
-            self::$javaExecutable,
-            '-jar',
-            escapeshellarg(self::$jarFile)
-        );
-
-        return $server;
-    }
-
-    /**
-     * @param array $userOptions
-     * @return array
-     */
-    protected function getOptionsCommandLine($userOptions)
-    {
-        $args = array();
-
-        $options = array_merge(
-            static::$defaultOptions,
-            $userOptions
-        );
-
-        foreach ($options as $key => $value) {
-            $args[] = "--{$key} " . escapeshellarg($value);
-        }
-
-        return $args;
-    }
-
-    /**
-     * @param string $jarFile
-     * @throws Minify_ClosureCompiler_Exception
-     */
-    protected function checkJar($jarFile)
-    {
-        if (!is_file($jarFile)) {
-            throw new Minify_ClosureCompiler_Exception('$jarFile(' . $jarFile . ') is not a valid file.');
-        }
-        if (!is_readable($jarFile)) {
-            throw new Minify_ClosureCompiler_Exception('$jarFile(' . $jarFile . ') is not readable.');
-        }
-    }
-
-    /**
-     * @param string $tempDir
-     * @throws Minify_ClosureCompiler_Exception
-     */
-    protected function checkTempdir($tempDir)
-    {
-        if (!is_dir($tempDir)) {
-            throw new Minify_ClosureCompiler_Exception('$tempDir(' . $tempDir . ') is not a valid direcotry.');
-        }
-        if (!is_writable($tempDir)) {
-            throw new Minify_ClosureCompiler_Exception('$tempDir(' . $tempDir . ') is not writable.');
-        }
     }
 
     /**
@@ -201,34 +111,136 @@ class Minify_ClosureCompiler
      *
      * @param string $dir
      * @param string $content
-     * @return string
+     *
      * @throws Minify_ClosureCompiler_Exception
+     *
+     * @return string
      */
     protected function dumpFile($dir, $content)
     {
         $this->checkTempdir($dir);
-        $tmpFile = tempnam($dir, 'cc_');
+        $tmpFile = \tempnam($dir, 'cc_');
         if (!$tmpFile) {
             throw new Minify_ClosureCompiler_Exception('Could not create temp file in "' . $dir . '".');
         }
-        file_put_contents($tmpFile, $content);
+        \file_put_contents($tmpFile, $content);
 
         return $tmpFile;
+    }
+
+    /**
+     * @param string $tempDir
+     *
+     * @throws Minify_ClosureCompiler_Exception
+     */
+    protected function checkTempdir($tempDir)
+    {
+        if (!\is_dir($tempDir)) {
+            throw new Minify_ClosureCompiler_Exception('$tempDir(' . $tempDir . ') is not a valid direcotry.');
+        }
+        if (!\is_writable($tempDir)) {
+            throw new Minify_ClosureCompiler_Exception('$tempDir(' . $tempDir . ') is not writable.');
+        }
+    }
+
+    /**
+     * @param string $tmpFile
+     * @param array  $options
+     *
+     * @throws Minify_ClosureCompiler_Exception
+     *
+     * @return string
+     */
+    protected function compile($tmpFile, $options)
+    {
+        $command = $this->getCommand($options, $tmpFile);
+
+        return \implode("\n", $this->shell($command));
+    }
+
+    /**
+     * @param array  $userOptions
+     * @param string $tmpFile
+     *
+     * @return string
+     */
+    protected function getCommand($userOptions, $tmpFile)
+    {
+        $args = \array_merge(
+            $this->getCompilerCommandLine(),
+            $this->getOptionsCommandLine($userOptions)
+        );
+
+        return \implode(' ', $args) . ' ' . \escapeshellarg($tmpFile);
+    }
+
+    /**
+     * @throws Minify_ClosureCompiler_Exception
+     *
+     * @return array
+     */
+    protected function getCompilerCommandLine()
+    {
+        $this->checkJar(self::$jarFile);
+
+        return array(
+            self::$javaExecutable,
+            '-jar',
+            \escapeshellarg(self::$jarFile),
+        );
+    }
+
+    /**
+     * @param string $jarFile
+     *
+     * @throws Minify_ClosureCompiler_Exception
+     */
+    protected function checkJar($jarFile)
+    {
+        if (!\is_file($jarFile)) {
+            throw new Minify_ClosureCompiler_Exception('$jarFile(' . $jarFile . ') is not a valid file.');
+        }
+        if (!\is_readable($jarFile)) {
+            throw new Minify_ClosureCompiler_Exception('$jarFile(' . $jarFile . ') is not readable.');
+        }
+    }
+
+    /**
+     * @param array $userOptions
+     *
+     * @return array
+     */
+    protected function getOptionsCommandLine($userOptions)
+    {
+        $args = array();
+
+        $options = \array_merge(
+            static::$defaultOptions,
+            $userOptions
+        );
+
+        foreach ($options as $key => $value) {
+            $args[] = "--{$key} " . \escapeshellarg($value);
+        }
+
+        return $args;
     }
 
     /**
      * Execute command, throw if exit code is not in $expectedCodes array
      *
      * @param string $command
-     * @param array $expectedCodes
-     * @return mixed
+     * @param array  $expectedCodes
+     *
      * @throws Minify_ClosureCompiler_Exception
+     *
+     * @return mixed
      */
     protected function shell($command, $expectedCodes = array(0))
     {
-        exec($command, $output, $result_code);
-        if (!in_array($result_code, $expectedCodes)) {
-            throw new Minify_ClosureCompiler_Exception("Unpexpected return code: $result_code");
+        \exec($command, $output, $result_code);
+        if (!\in_array($result_code, $expectedCodes, true)) {
+            throw new Minify_ClosureCompiler_Exception("Unpexpected return code: ${result_code}");
         }
 
         return $output;

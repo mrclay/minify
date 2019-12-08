@@ -2,6 +2,7 @@
 
 namespace Minify;
 
+use Minify;
 use Minify_Cache_File;
 use Minify_CacheInterface;
 use Minify_Controller_MinApp;
@@ -9,32 +10,30 @@ use Minify_ControllerInterface;
 use Minify_DebugDetector;
 use Minify_Env;
 use Minify_Source_Factory;
+use Monolog;
 use Props\Container;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use Monolog;
-use Minify;
 
 /**
- * @property Minify_CacheInterface            $cache
- * @property Config                           $config
- * @property string                           $configPath
+ * @property Minify_CacheInterface           $cache
+ * @property Config                          $config
+ * @property string                          $configPath
  * @property Minify_ControllerInterface      $controller
- * @property string                           $dir
- * @property string                           $docRoot
+ * @property string                          $dir
+ * @property string                          $docRoot
  * @property Minify_Env                      $env
  * @property Monolog\Handler\ErrorLogHandler $errorLogHandler
- * @property array                            $groupsConfig
- * @property string                           $groupsConfigPath
- * @property LoggerInterface         $logger
- * @property \Minify                          $minify
- * @property array                            $serveOptions
+ * @property array                           $groupsConfig
+ * @property string                          $groupsConfigPath
+ * @property LoggerInterface                 $logger
+ * @property \Minify                         $minify
+ * @property array                           $serveOptions
  * @property Minify_Source_Factory           $sourceFactory
- * @property array                            $sourceFactoryOptions
+ * @property array                           $sourceFactoryOptions
  */
 class App extends Container
 {
-
     /**
      * Constructor
      *
@@ -44,7 +43,7 @@ class App extends Container
     {
         $that = $this;
 
-        $this->dir = rtrim($dir, '/\\');
+        $this->dir = \rtrim($dir, '/\\');
 
         $this->cache = function (App $app) use ($that) {
             $config = $app->config;
@@ -53,13 +52,14 @@ class App extends Container
                 return $config->cachePath;
             }
 
-            if (!$config->cachePath || is_string($config->cachePath)) {
+            if (!$config->cachePath || \is_string($config->cachePath)) {
                 return new Minify_Cache_File($config->cachePath, $config->cacheFileLocking, $app->logger);
             }
 
             $type = $that->typeOf($config->cachePath);
+
             throw new RuntimeException('$min_cachePath must be a path or implement Minify_CacheInterface.'
-                . " Given $type");
+                . " Given ${type}");
         };
 
         $this->config = function (App $app) {
@@ -73,25 +73,24 @@ class App extends Container
 
             $config = new Minify\Config();
 
-            $propNames = array_keys(get_object_vars($config));
+            $propNames = \array_keys(\get_object_vars($config));
 
             $prefixer = function ($name) {
-                return "min_$name";
+                return "min_${name}";
             };
-            $varNames = array_map($prefixer, $propNames);
+            $varNames = \array_map($prefixer, $propNames);
 
-            $varDefined = get_defined_vars();
+            $varDefined = \get_defined_vars();
 
-            $varNames = array_filter($varNames, function($name) use($varDefined)
-            {
-                return array_key_exists($name, $varDefined);
+            $varNames = \array_filter($varNames, function ($name) use ($varDefined) {
+                return \array_key_exists($name, $varDefined);
             });
 
-            $vars = compact($varNames);
+            $vars = \compact($varNames);
 
             foreach ($varNames as $varName) {
                 if (isset($vars[$varName])) {
-                    $config->{substr($varName, 4)} = $vars[$varName];
+                    $config->{\substr($varName, 4)} = $vars[$varName];
                 }
             }
 
@@ -114,7 +113,7 @@ class App extends Container
             if (empty($config->factories['controller'])) {
                 $ctrl = new Minify_Controller_MinApp($app->env, $app->sourceFactory, $app->logger);
             } else {
-                $ctrl = call_user_func($config->factories['controller'], $app);
+                $ctrl = \call_user_func($config->factories['controller'], $app);
             }
 
             if ($ctrl instanceof Minify_ControllerInterface) {
@@ -122,8 +121,9 @@ class App extends Container
             }
 
             $type = $that->typeOf($ctrl);
+
             throw new RuntimeException('$min_factories["controller"] callable must return an implementation'
-                ." of Minify_CacheInterface. Returned $type");
+                . " of Minify_CacheInterface. Returned ${type}");
         };
 
         $this->docRoot = function (App $app) {
@@ -140,7 +140,7 @@ class App extends Container
         };
 
         $this->errorLogHandler = function (App $app) {
-            $format = "%channel%.%level_name%: %message% %context% %extra%";
+            $format = '%channel%.%level_name%: %message% %context% %extra%';
             $handler = new Monolog\Handler\ErrorLogHandler();
             $handler->setFormatter(new Monolog\Formatter\LineFormatter($format));
 
@@ -148,7 +148,7 @@ class App extends Container
         };
 
         $this->groupsConfig = function (App $app) {
-            return (require $app->groupsConfigPath);
+            return require $app->groupsConfigPath;
         };
 
         $this->groupsConfigPath = "{$this->dir}/groupsConfig.php";
@@ -180,7 +180,7 @@ class App extends Container
             }
 
             // BC
-            if (is_object($value) && is_callable(array($value, 'log'))) {
+            if (\is_object($value) && \is_callable(array($value, 'log'))) {
                 $handler = new Minify\Logger\LegacyHandler($value);
                 $logger->pushHandler($handler);
 
@@ -188,8 +188,9 @@ class App extends Container
             }
 
             $type = $that->typeOf($value);
+
             throw new RuntimeException('If set, $min_errorLogger must be a PSR-3 logger or a Monolog handler.'
-                ." Given $type");
+                . " Given ${type}");
         };
 
         $this->minify = function (App $app) use ($that) {
@@ -199,14 +200,15 @@ class App extends Container
                 return new \Minify($app->cache, $app->logger);
             }
 
-            $minify = call_user_func($config->factories['minify'], $app);
+            $minify = \call_user_func($config->factories['minify'], $app);
             if ($minify instanceof \Minify) {
                 return $minify;
             }
 
             $type = $that->typeOf($minify);
+
             throw new RuntimeException('$min_factories["minify"] callable must return a Minify object.'
-                ." Returned $type");
+                . " Returned ${type}");
         };
 
         $this->serveOptions = function (App $app) {
@@ -233,7 +235,7 @@ class App extends Container
             }
 
             // check for URI versioning
-            if ($env->get('v') !== null || preg_match('/&\\d/', $app->env->server('QUERY_STRING'))) {
+            if ($env->get('v') !== null || \preg_match('/&\\d/', $app->env->server('QUERY_STRING'))) {
                 $ret['maxAge'] = 31536000;
             }
 
@@ -266,12 +268,24 @@ class App extends Container
                 $ret['checkAllowDirs'] = $serveOptions['checkAllowDirs'];
             }
 
-            if (is_numeric($app->config->uploaderHoursBehind)) {
+            if (\is_numeric($app->config->uploaderHoursBehind)) {
                 $ret['uploaderHoursBehind'] = $app->config->uploaderHoursBehind;
             }
 
             return $ret;
         };
+    }
+
+    /**
+     * @param mixed $var
+     *
+     * @return string
+     */
+    private function typeOf($var)
+    {
+        $type = \gettype($var);
+
+        return $type === 'object' ? \get_class($var) : $type;
     }
 
     public function runServer()
@@ -285,16 +299,5 @@ class App extends Container
         }
 
         $this->minify->serve($this->controller, $this->serveOptions);
-    }
-
-    /**
-     * @param mixed $var
-     * @return string
-     */
-    private function typeOf($var)
-    {
-        $type = gettype($var);
-
-        return $type === 'object' ? get_class($var) : $type;
     }
 }

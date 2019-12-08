@@ -1,7 +1,6 @@
 <?php
 /**
  * Class Minify_Build
- * @package Minify
  */
 
 /**
@@ -30,12 +29,16 @@
  *   ,'setExpires' => (time() + 86400 * 365)
  * ));
  * </code>
- *
- * @package Minify
- * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_Build
 {
+    /**
+     * String to use as ampersand in uri(). Set this to '&' if
+     * you are not HTML-escaping URIs.
+     *
+     * @var string
+     */
+    public static $ampersand = '&amp;';
 
     /**
      * Last modification time of all files in the build
@@ -45,12 +48,27 @@ class Minify_Build
     public $lastModified = 0;
 
     /**
-     * String to use as ampersand in uri(). Set this to '&' if
-     * you are not HTML-escaping URIs.
+     * Create a build object
      *
-     * @var string
+     * @param array $sources array of Minify_Source objects and/or file paths
      */
-    public static $ampersand = '&amp;';
+    public function __construct($sources)
+    {
+        $max = 0;
+        foreach ((array) $sources as $source) {
+            if ($source instanceof Minify_Source) {
+                $max = \max($max, $source->getLastModified());
+            } elseif (\is_string($source)) {
+                if (\strpos($source, '//') === 0) {
+                    $source = $_SERVER['DOCUMENT_ROOT'] . \substr($source, 1);
+                }
+                if (\is_file($source)) {
+                    $max = \max($max, \filemtime($source));
+                }
+            }
+        }
+        $this->lastModified = $max;
+    }
 
     /**
      * Get a time-stamped URI
@@ -64,38 +82,15 @@ class Minify_Build
      * </code>
      *
      * @param string $uri
-     * @param boolean $forceAmpersand (default = false) Force the use of ampersand to
-     * append the timestamp to the URI.
+     * @param bool   $forceAmpersand (default = false) Force the use of ampersand to
+     *                               append the timestamp to the URI
+     *
      * @return string
      */
     public function uri($uri, $forceAmpersand = false)
     {
-        $sep = ($forceAmpersand || strpos($uri, '?') !== false) ? self::$ampersand : '?';
+        $sep = ($forceAmpersand || \strpos($uri, '?') !== false) ? self::$ampersand : '?';
 
         return "{$uri}{$sep}{$this->lastModified}";
-    }
-
-    /**
-     * Create a build object
-     *
-     * @param array $sources array of Minify_Source objects and/or file paths
-     *
-     */
-    public function __construct($sources)
-    {
-        $max = 0;
-        foreach ((array)$sources as $source) {
-            if ($source instanceof Minify_Source) {
-                $max = max($max, $source->getLastModified());
-            } elseif (is_string($source)) {
-                if (0 === strpos($source, '//')) {
-                    $source = $_SERVER['DOCUMENT_ROOT'] . substr($source, 1);
-                }
-                if (is_file($source)) {
-                    $max = max($max, filemtime($source));
-                }
-            }
-        }
-        $this->lastModified = $max;
     }
 }

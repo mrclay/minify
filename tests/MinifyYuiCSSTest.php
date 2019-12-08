@@ -5,7 +5,10 @@ namespace Minify\Test;
 use Exception;
 use Minify_YUICompressor;
 
-class MinifyYuiCSSTest extends TestCase
+/**
+ * @internal
+ */
+final class MinifyYuiCSSTest extends TestCase
 {
     public static function setupBeforeClass()
     {
@@ -14,11 +17,11 @@ class MinifyYuiCSSTest extends TestCase
         // To test more functionality, download a yuicompressor.jar from
         // https://github.com/yui/yuicompressor/releases
         // put it under tests dir as 'yuicompressor.jar'
-        Minify_YUICompressor::$jarFile = __DIR__ . DIRECTORY_SEPARATOR . 'yuicompressor.jar';
-        Minify_YUICompressor::$tempDir = sys_get_temp_dir();
+        Minify_YUICompressor::$jarFile = __DIR__ . \DIRECTORY_SEPARATOR . 'yuicompressor.jar';
+        Minify_YUICompressor::$tempDir = \sys_get_temp_dir();
     }
 
-    public function setUp()
+    protected function setUp()
     {
         $this->assertHasJar();
     }
@@ -37,27 +40,29 @@ class MinifyYuiCSSTest extends TestCase
         // fails with java.lang.StackOverflowError as of Yui 2.4.6
         // unfortunately error output is not caught from yui, so have to guess
         $e = null;
+
         try {
             Minify_YUICompressor::minifyCss($src);
             // if reached here, then Correctly handles input which caused stack overflow in 2.4.6
         } catch (Exception $e) {
-            $this->assertEquals('YUI compressor execution failed.', $e->getMessage());
+            static::assertSame('YUI compressor execution failed.', $e->getMessage());
         }
 
         $options = array(
             'stack-size' => '2m',
         );
         $minOutput = Minify_YUICompressor::minifyCss($src, $options);
-        $this->assertEquals($minExpected, $minOutput);
+        static::assertSame($minExpected, $minOutput);
     }
 
     protected function assertHasJar()
     {
-        $this->assertNotEmpty(Minify_YUICompressor::$jarFile);
+        static::assertNotEmpty(Minify_YUICompressor::$jarFile);
+
         try {
-            $this->assertFileExists(Minify_YUICompressor::$jarFile, "Have YUI yuicompressor.jar");
+            static::assertFileExists(Minify_YUICompressor::$jarFile, 'Have YUI yuicompressor.jar');
         } catch (Exception $e) {
-            $this->markTestSkipped($e->getMessage());
+            static::markTestSkipped($e->getMessage());
         }
     }
 }

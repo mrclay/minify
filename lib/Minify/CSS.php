@@ -1,7 +1,6 @@
 <?php
 /**
  * Class Minify_CSS
- * @package Minify
  */
 
 /**
@@ -10,21 +9,15 @@
  * This class uses Minify_CSS_Compressor and Minify_CSS_UriRewriter to
  * minify CSS and rewrite relative URIs.
  *
- * @package Minify
- * @author Stephen Clay <steve@mrclay.org>
- * @author http://code.google.com/u/1stvamp/ (Issue 64 patch)
- *
  * @deprecated Use Minify_CSSmin
  */
 class Minify_CSS
 {
-
     /**
      * Minify a CSS string
      *
      * @param string $css
-     *
-     * @param array $options available options:
+     * @param array  $options available options:
      *
      * 'preserveComments': (default true) multi-line comments that begin
      * with "/*!" will be preserved with newlines before and after to
@@ -58,22 +51,22 @@ class Minify_CSS
      */
     public static function minify($css, $options = array())
     {
-        $options = array_merge(array(
-            'compress' => true,
-            'removeCharsets' => true,
-            'preserveComments' => true,
-            'currentDir' => null,
-            'docRoot' => $_SERVER['DOCUMENT_ROOT'],
+        $options = \array_merge(array(
+            'compress'            => true,
+            'removeCharsets'      => true,
+            'preserveComments'    => true,
+            'currentDir'          => null,
+            'docRoot'             => $_SERVER['DOCUMENT_ROOT'],
             'prependRelativePath' => null,
-            'symlinks' => array(),
+            'symlinks'            => array(),
         ), $options);
 
         if ($options['removeCharsets']) {
-            $css = preg_replace('/@charset[^;]+;\\s*/', '', $css);
+            $css = \preg_replace('/@charset[^;]+;\\s*/', '', $css);
         }
 
         if ($options['compress']) {
-            if (! $options['preserveComments']) {
+            if (!$options['preserveComments']) {
                 $css = Minify_CSS_Compressor::process($css, $options);
             } else {
                 $processor = array('Minify_CSS_Compressor', 'process');
@@ -81,7 +74,7 @@ class Minify_CSS
             }
         }
 
-        if (! $options['currentDir'] && ! $options['prependRelativePath']) {
+        if (!$options['currentDir'] && !$options['prependRelativePath']) {
             return $css;
         }
 

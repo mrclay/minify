@@ -37,7 +37,7 @@ class Config
     public $allowDebugFlag = false;
 
     /**
-     * @var string|Minify_CacheInterface
+     * @var Minify_CacheInterface|string
      */
     public $cachePath = '';
 

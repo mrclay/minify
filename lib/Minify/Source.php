@@ -1,7 +1,6 @@
 <?php
 /**
  * Class Minify_Source
- * @package Minify
  */
 
 /**
@@ -9,25 +8,21 @@
  *
  * This allows per-source minification options and the mixing of files with
  * content from other sources.
- *
- * @package Minify
- * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_Source implements Minify_SourceInterface
 {
-
     /**
      * @var int time of last modification
      */
     protected $lastModified;
 
     /**
-     * @var callback minifier function specifically for this source.
+     * @var callback minifier function specifically for this source
      */
     protected $minifier;
 
     /**
-     * @var array minification options specific to this source.
+     * @var array minification options specific to this source
      */
     protected $minifyOptions = array();
 
@@ -69,27 +64,33 @@ class Minify_Source implements Minify_SourceInterface
     public function __construct($spec)
     {
         if (isset($spec['filepath'])) {
-            $ext = pathinfo($spec['filepath'], PATHINFO_EXTENSION);
+            $ext = \pathinfo($spec['filepath'], \PATHINFO_EXTENSION);
             switch ($ext) {
-                case 'js': $this->contentType = Minify::TYPE_JS;
+                case 'js':
+                    $this->contentType = Minify::TYPE_JS;
+
                     break;
                 case 'less': // fallthrough
                 case 'scss': // fallthrough
-                case 'css': $this->contentType = Minify::TYPE_CSS;
+                case 'css':
+                    $this->contentType = Minify::TYPE_CSS;
+
                     break;
                 case 'htm': // fallthrough
-                case 'html': $this->contentType = Minify::TYPE_HTML;
+                case 'html':
+                    $this->contentType = Minify::TYPE_HTML;
+
                     break;
             }
             $this->filepath = $spec['filepath'];
             $this->id = $spec['filepath'];
 
             // TODO ideally not touch disk in constructor
-            $this->lastModified = filemtime($spec['filepath']);
+            $this->lastModified = \filemtime($spec['filepath']);
 
             if (!empty($spec['uploaderHoursBehind'])) {
                 // offset for Windows uploaders with out of sync clocks
-                $this->lastModified += round($spec['uploaderHoursBehind'] * 3600);
+                $this->lastModified += \round($spec['uploaderHoursBehind'] * 3600);
             }
         } elseif (isset($spec['id'])) {
             $this->id = 'id::' . $spec['id'];
@@ -98,7 +99,7 @@ class Minify_Source implements Minify_SourceInterface
             } else {
                 $this->getContentFunc = $spec['getContentFunc'];
             }
-            $this->lastModified = isset($spec['lastModified']) ? $spec['lastModified'] : time();
+            $this->lastModified = isset($spec['lastModified']) ? $spec['lastModified'] : \time();
         }
         if (isset($spec['contentType'])) {
             $this->contentType = $spec['contentType'];
@@ -133,10 +134,10 @@ class Minify_Source implements Minify_SourceInterface
     public function setMinifier($minifier = null)
     {
         if ($minifier === '') {
-            error_log(__METHOD__ . " cannot accept empty string. Use 'Minify::nullMinifier' or 'trim'.");
+            \error_log(__METHOD__ . " cannot accept empty string. Use 'Minify::nullMinifier' or 'trim'.");
             $minifier = 'Minify::nullMinifier';
         }
-        if ($minifier !== null && !is_callable($minifier, true)) {
+        if ($minifier !== null && !\is_callable($minifier, true)) {
             throw new InvalidArgumentException('minifier must be null or a valid callable');
         }
         $this->minifier = $minifier;
@@ -171,19 +172,19 @@ class Minify_Source implements Minify_SourceInterface
      */
     public function getContent()
     {
-        if (null === $this->filepath) {
-            if (null === $this->content) {
-                $content = call_user_func($this->getContentFunc, $this->id);
+        if ($this->filepath === null) {
+            if ($this->content === null) {
+                $content = \call_user_func($this->getContentFunc, $this->id);
             } else {
                 $content = $this->content;
             }
         } else {
-            $content = file_get_contents($this->filepath);
+            $content = \file_get_contents($this->filepath);
         }
 
         // remove UTF-8 BOM if present
-        if (strpos($content, "\xEF\xBB\xBF") === 0) {
-            return substr($content, 3);
+        if (\strpos($content, "\xEF\xBB\xBF") === 0) {
+            return \substr($content, 3);
         }
 
         return $content;
@@ -213,7 +214,7 @@ class Minify_Source implements Minify_SourceInterface
         if ($this->filepath
             && !isset($this->minifyOptions['currentDir'])
             && !isset($this->minifyOptions['prependRelativePath'])) {
-            $this->minifyOptions['currentDir'] = dirname($this->filepath);
+            $this->minifyOptions['currentDir'] = \dirname($this->filepath);
         }
     }
 }

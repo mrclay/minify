@@ -1,4 +1,5 @@
 <?php
+
 use Leafo\ScssPhp\Compiler;
 use Leafo\ScssPhp\Server;
 use Leafo\ScssPhp\Version;
@@ -6,7 +7,7 @@ use Leafo\ScssPhp\Version;
 /**
  * Class for using SCSS files
  *
- * @link https://github.com/leafo/scssphp/
+ * @see https://github.com/leafo/scssphp/
  */
 class Minify_ScssCssSource extends Minify_Source
 {
@@ -23,7 +24,7 @@ class Minify_ScssCssSource extends Minify_Source
     private $parsed;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __construct(array $spec, Minify_CacheInterface $cache)
     {
@@ -42,32 +43,6 @@ class Minify_ScssCssSource extends Minify_Source
         $cache = $this->getCache();
 
         return $cache['updated'];
-    }
-
-    /**
-     * Get content
-     *
-     * @return string
-     */
-    public function getContent()
-    {
-        $cache = $this->getCache();
-
-        return $cache['content'];
-    }
-
-    /**
-     * Make a unique cache id for for this source.
-     *
-     * @param string $prefix
-     *
-     * @return string
-     */
-    private function getCacheId($prefix = 'minify')
-    {
-        $md5 = md5($this->filepath);
-
-        return "{$prefix}_scss_{$md5}";
     }
 
     /**
@@ -92,7 +67,7 @@ class Minify_ScssCssSource extends Minify_Source
         $cacheId = $this->getCacheId();
         if ($this->cache->isValid($cacheId, 0)) {
             if ($cache = $this->cache->fetch($cacheId)) {
-                $cache = unserialize($cache);
+                $cache = \unserialize($cache);
             }
         }
 
@@ -102,11 +77,25 @@ class Minify_ScssCssSource extends Minify_Source
             $cache = $this->compile($this->filepath);
         }
 
-        if (!is_array($input) || $cache['updated'] > $input['updated']) {
-            $this->cache->store($cacheId, serialize($cache));
+        if (!\is_array($input) || $cache['updated'] > $input['updated']) {
+            $this->cache->store($cacheId, \serialize($cache));
         }
 
         return $this->parsed = $cache;
+    }
+
+    /**
+     * Make a unique cache id for for this source.
+     *
+     * @param string $prefix
+     *
+     * @return string
+     */
+    private function getCacheId($prefix = 'minify')
+    {
+        $md5 = \md5($this->filepath);
+
+        return "{$prefix}_scss_{$md5}";
     }
 
     /**
@@ -114,7 +103,7 @@ class Minify_ScssCssSource extends Minify_Source
      *
      * @param array $cache Cache object
      *
-     * @return boolean True if compile required.
+     * @return bool true if compile required
      */
     private function cacheIsStale($cache)
     {
@@ -124,7 +113,7 @@ class Minify_ScssCssSource extends Minify_Source
 
         $updated = $cache['updated'];
         foreach ($cache['files'] as $import => $mtime) {
-            $filemtime = filemtime($import);
+            $filemtime = \filemtime($import);
 
             if ($filemtime !== $mtime || $filemtime > $updated) {
                 return true;
@@ -139,38 +128,51 @@ class Minify_ScssCssSource extends Minify_Source
      *
      * @param string $filename Input path (.scss)
      *
-     * @see Server::compile()
      * @return array meta data result of the compile
+     *
+     * @see Server::compile()
      */
     private function compile($filename)
     {
-        $start = microtime(true);
+        $start = \microtime(true);
         $scss = new Compiler();
 
         // set import path directory the input filename resides
         // otherwise @import statements will not find the files
         // and will treat the @import line as css import
-        $scss->setImportPaths(dirname($filename));
+        $scss->setImportPaths(\dirname($filename));
 
-        $css = $scss->compile(file_get_contents($filename), $filename);
-        $elapsed = round((microtime(true) - $start), 4);
+        $css = $scss->compile(\file_get_contents($filename), $filename);
+        $elapsed = \round((\microtime(true) - $start), 4);
 
         $v = Version::VERSION;
-        $ts = date('r', $start);
-        $css = "/* compiled by scssphp $v on $ts (${elapsed}s) */\n\n" . $css;
+        $ts = \date('r', $start);
+        $css = "/* compiled by scssphp ${v} on ${ts} (${elapsed}s) */\n\n" . $css;
 
         $imports = $scss->getParsedFiles();
 
         $updated = 0;
         foreach ($imports as $mtime) {
-            $updated = max($updated, $mtime);
+            $updated = \max($updated, $mtime);
         }
 
         return array(
             'elapsed' => $elapsed, // statistic, can be dropped
             'updated' => $updated,
             'content' => $css,
-            'files' => $imports,
+            'files'   => $imports,
         );
+    }
+
+    /**
+     * Get content
+     *
+     * @return string
+     */
+    public function getContent()
+    {
+        $cache = $this->getCache();
+
+        return $cache['content'];
     }
 }

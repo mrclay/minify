@@ -1,7 +1,6 @@
 <?php
 /**
  * Interface Minify_SourceInterface
- * @package Minify
  */
 
 /**
@@ -9,12 +8,9 @@
  *
  * This allows per-source minification options and the mixing of files with
  * content from other sources.
- *
- * @package Minify
  */
 interface Minify_SourceInterface
 {
-
     /**
      * Get the minifier
      *
@@ -26,6 +22,7 @@ interface Minify_SourceInterface
      * Set the minifier
      *
      * @param callable $minifier
+     *
      * @return void
      */
     public function setMinifier($minifier = null);
@@ -41,6 +38,7 @@ interface Minify_SourceInterface
      * Set options for the minifier
      *
      * @param array $options
+     *
      * @return void
      */
     public function setMinifierOptions(array $options);

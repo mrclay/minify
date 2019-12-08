@@ -1,18 +1,13 @@
 <?php
 /**
  * Class Minify_CommentPreserver
- * @package Minify
  */
 
 /**
  * Process a string in pieces preserving C-style comments that begin with "/*!"
- *
- * @package Minify
- * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_CommentPreserver
 {
-
     /**
      * String to be prepended to each preserved comment
      *
@@ -34,10 +29,11 @@ class Minify_CommentPreserver
      * function will be called. The comments will be surrounded by
      * Minify_CommentPreserver::$preprend and Minify_CommentPreserver::$append.
      *
-     * @param string $content
+     * @param string   $content
      * @param callback $processor function
-     * @param array $args array of extra arguments to pass to the processor
-     * function (default = array())
+     * @param array    $args      array of extra arguments to pass to the processor
+     *                            function (default = array())
+     *
      * @return string
      */
     public static function process($content, $processor, $args = array())
@@ -45,12 +41,12 @@ class Minify_CommentPreserver
         $ret = '';
         while (true) {
             list($beforeComment, $comment, $afterComment) = self::_nextComment($content);
-            if ('' !== $beforeComment) {
+            if ($beforeComment !== '') {
                 $callArgs = $args;
-                array_unshift($callArgs, $beforeComment);
-                $ret .= call_user_func_array($processor, $callArgs);
+                \array_unshift($callArgs, $beforeComment);
+                $ret .= \call_user_func_array($processor, $callArgs);
             }
-            if (false === $comment) {
+            if ($comment === false) {
                 break;
             }
             $ret .= $comment;
@@ -72,15 +68,15 @@ class Minify_CommentPreserver
      */
     private static function _nextComment($in)
     {
-        if (false === ($start = strpos($in, '/*!')) || false === ($end = strpos($in, '*/', $start + 3))) {
+        if (($start = \strpos($in, '/*!')) === false || ($end = \strpos($in, '*/', $start + 3)) === false) {
             return array($in, false, false);
         }
 
-        $beforeComment = substr($in, 0, $start);
-        $comment = self::$prepend . '/*!' . substr($in, $start + 3, $end - $start - 1) . self::$append;
+        $beforeComment = \substr($in, 0, $start);
+        $comment = self::$prepend . '/*!' . \substr($in, $start + 3, $end - $start - 1) . self::$append;
 
-        $endChars = (strlen($in) - $end - 2);
-        $afterComment = (0 === $endChars) ? '' : substr($in, -$endChars);
+        $endChars = (\strlen($in) - $end - 2);
+        $afterComment = ($endChars === 0) ? '' : \substr($in, -$endChars);
 
         return array($beforeComment, $comment, $afterComment);
     }

@@ -1,23 +1,20 @@
 <?php
 /**
  * Class Minify_Controller_Page
- * @package Minify
  */
 
 /**
  * Controller class for serving a single HTML page
  *
- * @link http://code.google.com/p/minify/source/browse/trunk/web/examples/1/index.php#59
- * @package Minify
- * @author Stephen Clay <steve@mrclay.org>
+ * @see http://code.google.com/p/minify/source/browse/trunk/web/examples/1/index.php#59
  */
 class Minify_Controller_Page extends Minify_Controller_Base
 {
-
     /**
      * Set up source of HTML content
      *
      * @param array $options controller and Minify options
+     *
      * @return array Minify options
      *
      * Controller options:
@@ -36,26 +33,26 @@ class Minify_Controller_Page extends Minify_Controller_Base
     {
         if (isset($options['file'])) {
             $sourceSpec = array(
-                'filepath' => $options['file']
+                'filepath' => $options['file'],
             );
             $f = $options['file'];
         } else {
             // strip controller options
             $sourceSpec = array(
                 'content' => $options['content'],
-                'id' => $options['id'],
+                'id'      => $options['id'],
             );
             $f = $options['id'];
             unset($options['content'], $options['id']);
         }
         // something like "builder,index.php" or "directory,file.html"
-        $selectionId = strtr(substr($f, 1 + strlen(dirname(dirname($f)))), '/\\', ',,');
+        $selectionId = \strtr(\substr($f, 1 + \strlen(\dirname($f, 2))), '/\\', ',,');
 
         if (isset($options['minifyAll'])) {
             // this will be the 2nd argument passed to Minify_HTML::minify()
             $sourceSpec['minifyOptions'] = array(
                 'cssMinifier' => array('Minify_CSSmin', 'minify'),
-                'jsMinifier' => array('JSMin\\JSMin', 'minify'),
+                'jsMinifier'  => array('JSMin\\JSMin', 'minify'),
             );
             unset($options['minifyAll']);
         }
@@ -66,4 +63,3 @@ class Minify_Controller_Page extends Minify_Controller_Base
         return new Minify_ServeConfiguration($options, $sources, $selectionId);
     }
 }
-
