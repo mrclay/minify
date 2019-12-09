@@ -1,0 +1,38 @@
+parameters:
+    reportUnmatchedIgnoredErrors: false
+    level: max
+    paths:
+        - %currentWorkingDirectory%/lib/
+    excludes_analyse:
+        - %currentWorkingDirectory%/lib/MrClay/Cli.php
+    ignoreErrors:
+        -
+            message: '/serve\(\) should return array\|void but return statement is missing/'
+            path: %currentWorkingDirectory%/lib/Minify.php
+        -
+            message: '/Result of && is always false/'
+            path: %currentWorkingDirectory%/lib/Minify/Source.php
+        -
+            message: '/comparison using === between \(callable\(\): mixed\)\|null and/'
+            path: %currentWorkingDirectory%/lib/Minify/Source.php
+        -
+            message: '/Call to an undefined method object::log/'
+            path: %currentWorkingDirectory%/lib/Minify/Logger/LegacyHandler.php
+        -
+            message: '/should return string but returns bool\|string/'
+            path: %currentWorkingDirectory%/lib/Minify/JS/JShrink.php
+        -
+            message: '/Else branch is unreachable because previous condition is always true/'
+            path: %currentWorkingDirectory%/lib/Minify/JS/ClosureCompiler.php
+        -
+            message: '/should be compatible with return type/'
+            path: %currentWorkingDirectory%/lib/Minify/Cache/Null.php
+        - '/class Memcache/'
+        - '/type Memcache/'
+        - '/output_cache_get not found/'
+        - '/output_cache_put not found/'
+        - '/function call_user_func_array expects array/'
+        - '/function preg_replace_callback expects callable/'
+        # todo
+        - '/no value type specified in iterable/'
+        - '/Unsafe usage of new static/'
