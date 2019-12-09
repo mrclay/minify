@@ -233,7 +233,6 @@ class Minify_HTML
      */
     protected function _needsCdata($str)
     {
-        /** @noinspection RegExpRedundantEscape */
         return $this->_isXhtml
                &&
                (
@@ -319,7 +318,13 @@ class Minify_HTML
         $openStyle = "<style{$m[1]}";
         $css = $m[2];
         // remove HTML comments
-        $css = (string) \preg_replace('/(?:^\\s*<!--|-->\\s*$)/u', '', $css);
+        if (
+            \strpos($css, '<!--') !== false
+            ||
+            \strpos($css, '-->') !== false
+        ) {
+            $css = (string)\preg_replace('/(?:^\\s*<!--|-->\\s*$)/u', '', $css);
+        }
 
         // remove CDATA section markers
         $css = $this->_removeCdata($css);
