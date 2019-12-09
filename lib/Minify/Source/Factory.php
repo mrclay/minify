@@ -43,6 +43,11 @@ class Minify_Source_Factory
      */
     public function __construct(Minify_Env $env, array $options = array(), Minify_CacheInterface $cache = null)
     {
+        // fallback
+        if ($cache === null) {
+            $cache = new Minify_Cache_Null();
+        }
+
         $this->env = $env;
         $this->options = \array_merge(
             array(
@@ -64,7 +69,11 @@ class Minify_Source_Factory
             }
         }
 
-        if ($this->options['fileChecker'] && !\is_callable($this->options['fileChecker'])) {
+        if (
+            $this->options['fileChecker']
+            &&
+            !\is_callable($this->options['fileChecker'])
+        ) {
             throw new InvalidArgumentException('fileChecker option is not callable');
         }
 
@@ -88,6 +97,17 @@ class Minify_Source_Factory
                 return new Minify_Source($spec);
             }
         );
+    }
+
+    /**
+     * @param string   $basenamePattern A pattern tested against basename. E.g. "~\.css$~"
+     * @param callable $handler         Function that recieves a $spec array and returns a Minify_SourceInterface
+     *
+     * @return void
+     */
+    public function setHandler($basenamePattern, $handler)
+    {
+        $this->handlers[$basenamePattern] = $handler;
     }
 
     /**
@@ -140,7 +160,11 @@ class Minify_Source_Factory
             return new Minify_Source($spec);
         }
 
-        if ($this->options['resolveDocRoot'] && \strpos($spec['filepath'], '//') === 0) {
+        if (
+            $this->options['resolveDocRoot']
+            &&
+            \strpos($spec['filepath'], '//') === 0
+        ) {
             $spec['filepath'] = $this->env->getDocRoot() . \substr($spec['filepath'], 1);
         }
 
@@ -171,7 +195,11 @@ class Minify_Source_Factory
 
         $basename = \basename($spec['filepath']);
 
-        if ($this->options['noMinPattern'] && \preg_match($this->options['noMinPattern'], $basename)) {
+        if (
+            $this->options['noMinPattern']
+            &&
+            \preg_match($this->options['noMinPattern'], $basename)
+        ) {
             if (\preg_match('~\.(css|less)$~i', $basename)) {
                 $spec['minifyOptions']['compress'] = false;
             // we still want URI rewriting to work for CSS
@@ -198,14 +226,5 @@ class Minify_Source_Factory
         }
 
         return $source;
-    }
-
-    /**
-     * @param string   $basenamePattern A pattern tested against basename. E.g. "~\.css$~"
-     * @param callable $handler         Function that recieves a $spec array and returns a Minify_SourceInterface
-     */
-    public function setHandler($basenamePattern, $handler)
-    {
-        $this->handlers[$basenamePattern] = $handler;
     }
 }

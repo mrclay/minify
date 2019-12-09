@@ -41,11 +41,7 @@ class App extends Container
      */
     public function __construct($dir)
     {
-        $that = $this;
-
-        $this->dir = \rtrim($dir, '/\\');
-
-        $this->cache = function (App $app) use ($that) {
+        $cache = function (App $app) {
             $config = $app->config;
 
             if ($config->cachePath instanceof Minify_CacheInterface) {
@@ -56,7 +52,7 @@ class App extends Container
                 return new Minify_Cache_File($config->cachePath, $config->cacheFileLocking, $app->logger);
             }
 
-            $type = $that->typeOf($config->cachePath);
+            $type = $app->typeOf($config->cachePath);
 
             throw new RuntimeException(
                 '$min_cachePath must be a path or implement Minify_CacheInterface.'
@@ -64,8 +60,8 @@ class App extends Container
             );
         };
 
-        $this->config = function (App $app) {
-            $config = (require $app->configPath);
+        $config = function (App $app) {
+            $config = require $app->configPath;
 
             if ($config instanceof Minify\Config) {
                 return $config;
@@ -110,9 +106,7 @@ class App extends Container
             return $config;
         };
 
-        $this->configPath = "{$this->dir}/config.php";
-
-        $this->controller = function (App $app) use ($that) {
+        $controller = function (App $app) {
             $config = $app->config;
 
             if (empty($config->factories['controller'])) {
@@ -125,15 +119,12 @@ class App extends Container
                 return $ctrl;
             }
 
-            $type = $that->typeOf($ctrl);
+            $type = $app->typeOf($ctrl);
 
-            throw new RuntimeException(
-                '$min_factories["controller"] callable must return an implementation'
-                . " of Minify_CacheInterface. Returned ${type}"
-            );
+            throw new RuntimeException('$min_factories["controller"] callable must return an implementation' . " of Minify_CacheInterface. Returned ${type}");
         };
 
-        $this->docRoot = function (App $app) {
+        $docRoot = function (App $app) {
             $config = $app->config;
             if (empty($config->documentRoot)) {
                 return $app->env->getDocRoot();
@@ -142,11 +133,11 @@ class App extends Container
             return $app->env->normalizePath($config->documentRoot);
         };
 
-        $this->env = function (App $app) {
+        $env = function (App $app) {
             return new Minify_Env($app->config->envArgs);
         };
 
-        $this->errorLogHandler = function (App $app) {
+        $errorLogHandler = function (App $app) {
             $format = '%channel%.%level_name%: %message% %context% %extra%';
             $handler = new Monolog\Handler\ErrorLogHandler();
             $handler->setFormatter(new Monolog\Formatter\LineFormatter($format));
@@ -154,13 +145,11 @@ class App extends Container
             return $handler;
         };
 
-        $this->groupsConfig = function (App $app) {
+        $groupsConfig = function (App $app) {
             return require $app->groupsConfigPath;
         };
 
-        $this->groupsConfigPath = "{$this->dir}/groupsConfig.php";
-
-        $this->logger = function (App $app) use ($that) {
+        $logger = function (App $app) {
             $value = $app->config->errorLogger;
 
             if ($value instanceof LoggerInterface) {
@@ -173,7 +162,11 @@ class App extends Container
                 return $logger;
             }
 
-            if ($value === true || $value instanceof \FirePHP) {
+            if (
+                $value === true
+                ||
+                $value instanceof \FirePHP
+            ) {
                 $logger->pushHandler($app->errorLogHandler);
                 $logger->pushHandler(new Monolog\Handler\FirePHPHandler());
 
@@ -194,7 +187,7 @@ class App extends Container
                 return $logger;
             }
 
-            $type = $that->typeOf($value);
+            $type = $app->typeOf($value);
 
             throw new RuntimeException(
                 'If set, $min_errorLogger must be a PSR-3 logger or a Monolog handler.'
@@ -202,7 +195,7 @@ class App extends Container
             );
         };
 
-        $this->minify = function (App $app) use ($that) {
+        $minify = function (App $app) {
             $config = $app->config;
 
             if (empty($config->factories['minify'])) {
@@ -214,7 +207,7 @@ class App extends Container
                 return $minify;
             }
 
-            $type = $that->typeOf($minify);
+            $type = $app->typeOf($minify);
 
             throw new RuntimeException(
                 '$min_factories["minify"] callable must return a Minify object.'
@@ -222,7 +215,7 @@ class App extends Container
             );
         };
 
-        $this->serveOptions = function (App $app) {
+        $serveOptions = function (App $app) {
             $config = $app->config;
             $env = $app->env;
 
@@ -246,7 +239,11 @@ class App extends Container
             }
 
             // check for URI versioning
-            if ($env->get('v') !== null || \preg_match('/&\\d/', $app->env->server('QUERY_STRING'))) {
+            if (
+                $env->get('v') !== null
+                ||
+                \preg_match('/&\\d/', $app->env->server('QUERY_STRING'))
+            ) {
                 $ret['maxAge'] = 31536000;
             }
 
@@ -258,11 +255,11 @@ class App extends Container
             return $ret;
         };
 
-        $this->sourceFactory = function (App $app) {
+        $sourceFactory = function (App $app) {
             return new Minify_Source_Factory($app->env, $app->sourceFactoryOptions, $app->cache);
         };
 
-        $this->sourceFactoryOptions = function (App $app) {
+        $sourceFactoryOptions = function (App $app) {
             $serveOptions = $app->serveOptions;
             $ret = array();
 
@@ -285,11 +282,35 @@ class App extends Container
 
             return $ret;
         };
+
+        $this->dir = \rtrim($dir, '/\\');
+        $this->configPath = "{$this->dir}/config.php";
+        $this->groupsConfigPath = "{$this->dir}/groupsConfig.php";
+
+        $this->errorLogHandler = $errorLogHandler($this);
+        $this->config = $config($this);
+        $this->groupsConfig = $groupsConfig($this);
+        $this->env = $env($this);
+        $this->docRoot = $docRoot($this);
+        $this->logger = $logger($this);
+        $this->cache = $cache($this);
+        $this->serveOptions = $serveOptions($this);
+        $this->sourceFactoryOptions = $sourceFactoryOptions($this);
+        $this->sourceFactory = $sourceFactory($this);
+        $this->controller = $controller($this);
+        $this->minify = $minify($this);
     }
 
+    /**
+     * @return void
+     */
     public function runServer()
     {
-        if (!$this->env->get('f') && $this->env->get('g') === null) {
+        if (
+            !$this->env->get('f')
+            &&
+            $this->env->get('g') === null
+        ) {
             // no spec given
             $msg = '<p>No "f" or "g" parameters were detected.</p>';
             $url = 'https://github.com/mrclay/minify/blob/master/docs/CommonProblems.wiki.md#long-url-parameters-are-ignored';

@@ -1,7 +1,4 @@
 <?php
-/**
- * Interface Minify_CacheInterface
- */
 
 /**
  * Interface for Minify cache adapters
@@ -12,6 +9,8 @@ interface Minify_CacheInterface
      * Send the cached content to output
      *
      * @param string $id cache id (e.g. a filename)
+     *
+     * @return void
      */
     public function display($id);
 
@@ -29,7 +28,7 @@ interface Minify_CacheInterface
      *
      * @param string $id cache id (e.g. a filename)
      *
-     * @return int size in bytes
+     * @return false|int size in bytes or false on error
      */
     public function getSize($id);
 

@@ -1,8 +1,5 @@
 <?php
 
-/**
- * Class Minify_SourceSet
- */
 class Minify_SourceSet
 {
     /**

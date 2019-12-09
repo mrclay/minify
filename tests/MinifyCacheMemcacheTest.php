@@ -13,18 +13,6 @@ final class MinifyCacheMemcacheTest extends TestCase
     /** @var Memcache */
     private $mc;
 
-    protected function setUp()
-    {
-        if (!\function_exists('memcache_set')) {
-            static::markTestSkipped('To test this component, install memcache in PHP');
-        }
-
-        $this->mc = new Memcache();
-        if (!$this->mc->connect('localhost', 11211)) {
-            static::markTestSkipped('Memcache server not found on localhost:11211');
-        }
-    }
-
     public function test1()
     {
         $data = \str_repeat(\md5(\time()) . 'í', 100); // 3400 bytes in UTF-8
@@ -46,5 +34,17 @@ final class MinifyCacheMemcacheTest extends TestCase
 
         $data = \gzencode($data);
         $this->assertTestCache($cache, $id, $data);
+    }
+
+    protected function setUp()
+    {
+        if (!\function_exists('memcache_set')) {
+            static::markTestSkipped('To test this component, install memcache in PHP');
+        }
+
+        $this->mc = new Memcache();
+        if (!$this->mc->connect('localhost', 11211)) {
+            static::markTestSkipped('Memcache server not found on localhost:11211');
+        }
     }
 }

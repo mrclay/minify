@@ -146,10 +146,12 @@ final class HTTPConditionalGetTest extends TestCase
             $_SERVER['HTTP_IF_MODIFIED_SINCE'] = $ims;
         }
 
-        $cg = new HTTP_ConditionalGet(array(
-            'lastModifiedTime' => $lmTime,
-            'encoding'         => 'x-gzip',
-        ));
+        $cg = new HTTP_ConditionalGet(
+            array(
+                'lastModifiedTime' => $lmTime,
+                'encoding'         => 'x-gzip',
+            )
+        );
         $ret = $cg->getHeaders();
         $ret['isValid'] = $cg->cacheIsValid;
 

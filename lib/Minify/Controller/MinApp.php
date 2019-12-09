@@ -1,7 +1,4 @@
 <?php
-/**
- * Class Minify_Controller_MinApp
- */
 
 /**
  * Controller class for requests to /min/index.php
@@ -13,7 +10,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base
      *
      * @param array $options controller and Minify options
      *
-     * @return array Minify options
+     * @return Minify_ServeConfiguration
      */
     public function createConfiguration(array $options)
     {
@@ -78,11 +75,13 @@ class Minify_Controller_MinApp extends Minify_Controller_Base
                         $sources[] = $source;
                     } catch (Minify_Source_FactoryException $e) {
                         $this->logger->error($e->getMessage());
+
                         if ($firstMissing === null) {
                             $firstMissing = \basename($file);
 
                             continue;
                         }
+
                         $secondMissing = \basename($file);
                         $this->logger->info("More than one file was missing: '${firstMissing}', '${secondMissing}'");
 
@@ -91,7 +90,12 @@ class Minify_Controller_MinApp extends Minify_Controller_Base
                 }
             }
         }
-        if (!$localOptions['groupsOnly'] && isset($get['f'])) {
+
+        if (
+            !$localOptions['groupsOnly']
+            &&
+            isset($get['f'])
+        ) {
             // try user files
             // The following restrictions are to limit the URLs that minify will
             // respond to.
@@ -121,7 +125,13 @@ class Minify_Controller_MinApp extends Minify_Controller_Base
                 $hasDots = \strpos($get['b'], '..') !== false;
                 $isDot = $get['b'] === '.';
 
-                if ($isValidBase && !$hasDots && !$isDot) {
+                if (
+                    $isValidBase
+                    &&
+                    !$hasDots
+                    &&
+                    !$isDot
+                ) {
                     // valid base
                     $base = "/{$get['b']}/";
                 } else {
@@ -153,11 +163,13 @@ class Minify_Controller_MinApp extends Minify_Controller_Base
                     $basenames[] = \basename($path, $ext);
                 } catch (Minify_Source_FactoryException $e) {
                     $this->logger->error($e->getMessage());
+
                     if ($firstMissing === null) {
                         $firstMissing = $uri;
 
                         continue;
                     }
+
                     $secondMissing = $uri;
                     $this->logger->info("More than one file was missing: '${firstMissing}', '${secondMissing}`'");
 

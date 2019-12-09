@@ -12,6 +12,8 @@ class Minify_Cache_Null implements Minify_CacheInterface
      * Send the cached content to output
      *
      * @param string $id cache id (e.g. a filename)
+     *
+     * @return void
      */
     public function display($id)
     {
@@ -22,7 +24,7 @@ class Minify_Cache_Null implements Minify_CacheInterface
      *
      * @param string $id cache id (e.g. a filename)
      *
-     * @return string
+     * @return void
      */
     public function fetch($id)
     {
@@ -33,7 +35,7 @@ class Minify_Cache_Null implements Minify_CacheInterface
      *
      * @param string $id cache id (e.g. a filename)
      *
-     * @return int size in bytes
+     * @return void
      */
     public function getSize($id)
     {
@@ -45,7 +47,7 @@ class Minify_Cache_Null implements Minify_CacheInterface
      * @param string $id       cache id (e.g. a filename)
      * @param int    $srcMtime mtime of the original source file(s)
      *
-     * @return bool exists
+     * @return void
      */
     public function isValid($id, $srcMtime)
     {
@@ -57,7 +59,7 @@ class Minify_Cache_Null implements Minify_CacheInterface
      * @param string $id cache id (e.g. a filename)
      * @param string $data
      *
-     * @return bool success
+     * @return void
      */
     public function store($id, $data)
     {

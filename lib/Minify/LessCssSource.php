@@ -65,13 +65,14 @@ class Minify_LessCssSource extends Minify_Source
         $cache = null;
         $cacheId = $this->getCacheId();
         if ($this->cache->isValid($cacheId, 0)) {
-            if ($cache = $this->cache->fetch($cacheId)) {
+            $cache = $this->cache->fetch($cacheId);
+            if ($cache) {
                 $cache = \unserialize($cache);
             }
         }
 
         $less = $this->getCompiler();
-        $input = $cache ? $cache : $this->filepath;
+        $input = $cache ?: $this->filepath;
         $cache = $less->cachedCompile($input);
 
         if (!\is_array($input) || $cache['updated'] > $input['updated']) {
@@ -116,7 +117,7 @@ class Minify_LessCssSource extends Minify_Source
      *
      * @see https://github.com/leafo/lessphp/blob/v0.4.0/lessc.inc.php#L1904
      *
-     * @param mixed $cache
+     * @param array $cache
      *
      * @return int
      */

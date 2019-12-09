@@ -1,7 +1,4 @@
 <?php
-/**
- * Class Minify_Cache_ZendPlatform
- */
 
 /**
  * ZendPlatform-based cache class for Minify
@@ -14,12 +11,26 @@
  */
 class Minify_Cache_ZendPlatform implements Minify_CacheInterface
 {
+    /**
+     * @var int
+     */
     private $_exp;
 
+    /**
+     * cache of most recently fetched id
+     *
+     * @var int|null
+     */
     private $_lm;
 
+    /**
+     * @var mixed
+     */
     private $_data;
 
+    /**
+     * @var string|null
+     */
     private $_id;
 
     /**
@@ -38,6 +49,8 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface
      * Send the cached content to output
      *
      * @param string $id cache id
+     *
+     * @return void
      */
     public function display($id)
     {
@@ -49,7 +62,7 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface
      *
      * @param string $id cache id
      *
-     * @return string
+     * @return string|null
      */
     public function fetch($id)
     {
@@ -63,7 +76,7 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface
      *
      * @param string $id cache id
      *
-     * @return int size in bytes
+     * @return false|int size in bytes or false on error
      */
     public function getSize($id)
     {
@@ -93,6 +106,7 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface
      */
     public function store($id, $data)
     {
+        /** @noinspection PhpComposerExtensionStubsInspection */
         return output_cache_put($id, "{$_SERVER['REQUEST_TIME']}|{$data}");
     }
 
@@ -109,6 +123,7 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface
             return true;
         }
 
+        /** @noinspection PhpComposerExtensionStubsInspection */
         $ret = output_cache_get($id, $this->_exp);
         if ($ret === false) {
             $this->_id = null;

@@ -4,13 +4,18 @@ die('Disabled: use this only for testing');
 /**
  * Fetch and minify a URL (auto-detect HTML/JS/CSS)
  */
-$app = (require __DIR__ . '/../../bootstrap.php');
+$app = require __DIR__ . '/../../bootstrap.php';
 /* @var \Minify\App $app */
 
 $app->cache = new Minify_Cache_Null();
 
 $env = $app->env;
 
+/**
+ * @param string $key
+ *
+ * @return mixed|string|null
+ */
 function getPost($key)
 {
     if (!isset($_POST[$key])) {
@@ -22,20 +27,31 @@ function getPost($key)
         : $_POST[$key];
 }
 
+/**
+ * @param array $headers
+ *
+ * @return array
+ */
 function sniffType($headers)
 {
     $charset = 'utf-8';
     $type = null;
+    $sentType = null;
     $headers = "\n\n" . \implode("\n\n", $headers) . "\n\n";
-    if (\preg_match(
-        '@\\n\\nContent-Type: *([\\w/\\+-]+)( *; *charset *= *([\\w-]+))? *\\n\\n@i',
-        $headers,
-        $m
-    )) {
+
+    if (
+        \preg_match(
+            '@\\n\\nContent-Type: *([\\w/\\+-]+)( *; *charset *= *([\\w-]+))? *\\n\\n@i',
+            $headers,
+            $m
+        )
+    ) {
         $sentType = $m[1];
+
         if (isset($m[3])) {
             $charset = $m[3];
         }
+
         if (\preg_match('@^(?:text|application)/(?:x-)?(?:java|ecma)script$@i', $sentType)) {
             $type = 'application/x-javascript';
         } elseif (\preg_match('@^(?:text|application)/(?:html|xml|xhtml+xml)$@i', $sentType, $m)) {
@@ -46,7 +62,9 @@ function sniffType($headers)
     }
 
     return array(
-        'minify' => $type, 'sent' => $sentType, 'charset' => $charset,
+        'minify'  => $type,
+        'sent'    => $sentType,
+        'charset' => $charset,
     );
 }
 
@@ -62,7 +80,8 @@ if (isset($_POST['url'])) {
     }
 
     $httpOpts = array(
-        'max_redirects' => 0, 'timeout' => 3,
+        'max_redirects' => 0,
+        'timeout'       => 3,
     );
     if ($ua !== '') {
         $httpOpts['user_agent'] = $ua;
@@ -70,11 +89,14 @@ if (isset($_POST['url'])) {
     if ($cook !== '') {
         $httpOpts['header'] = "Cookie: {$cook}\r\n";
     }
-    $ctx = \stream_context_create(array(
-        'http' => $httpOpts,
-    ));
+    $ctx = \stream_context_create(
+        array(
+            'http' => $httpOpts,
+        )
+    );
 
     // fetch
+    /** @noinspection PhpUsageOfSilenceOperatorInspection */
     if (!($fp = @\fopen($url, 'rb', false, $ctx))) {
         die('Couldn\'t open URL.');
     }
@@ -88,9 +110,13 @@ if (isset($_POST['url'])) {
         die('Unrecognized Content-Type: ' . $type['sent']);
     }
 
-    if ($type['minify'] === 'text/html'
-        && isset($_POST['addBase'])
-        && !\preg_match('@<base\\b@i', $content)) {
+    if (
+        $type['minify'] === 'text/html'
+        &&
+        isset($_POST['addBase'])
+        &&
+        !\preg_match('@<base\\b@i', $content)
+    ) {
         $content = \preg_replace(
             '@(<head\\b[^>]*>)@i',
             '$1<base href="' . \htmlspecialchars($url, \ENT_QUOTES, 'UTF-8') . '" />',
@@ -114,13 +140,20 @@ if (isset($_POST['url'])) {
     $source = new Minify_Source($sourceSpec);
 
     $sendType = 'text/plain';
-    if ($type['minify'] === 'text/html' && $env->post('asText') === null) {
+    if (
+        $type['minify'] === 'text/html'
+        &&
+        $env->post('asText') === null
+    ) {
         $sendType = $type['sent'];
     }
+
     if ($type['charset']) {
         $sendType .= ';charset=' . $type['charset'];
     }
+
     \header('Content-Type: ' . $sendType);
+
     // using combine instead of serve because it allows us to specify a
     // Content-Type like application/xhtml+xml IF we need to
 
@@ -130,6 +163,7 @@ if (isset($_POST['url'])) {
         \header('Content-Type: text/html;charset=utf-8');
         echo \htmlspecialchars($e->getMessage(), \ENT_QUOTES, 'UTF-8');
     }
+
     exit();
 }
 
@@ -138,33 +172,44 @@ if (isset($_POST['url'])) {
 $ua = $env->server('HTTP_USER_AGENT');
 
 ?>
-<!DOCTYPE html><head><title>Minify URL</title></head>
+<!DOCTYPE html>
+<head><title>Minify URL</title></head>
 
-<p><strong>Warning! Please do not place this application on a public site.</strong> This should be used only for testing.</p>
+<p>
+    <strong>Warning! Please do not place this application on a public site.</strong> This should be used only for
+    testing.
+</p>
 
 <h1>Fetch and Minify a URL</h1>
-<p>This tool will retrieve the contents of a URL and minify it. 
-The fetched resource Content-Type will determine the minifier used.</p>
+<p>This tool will retrieve the contents of a URL and minify it.
+    The fetched resource Content-Type will determine the minifier used.
+</p>
 
 <form action="?2" method="post">
-<p><label>URL: <input type="text" name="url" value="https://code.jquery.com/jquery-2.2.1.js" size="60"></label></p>
-<p><input type="submit" value="Fetch and minify"></p>
+    <p><label>URL: <input type="text" name="url" value="https://code.jquery.com/jquery-2.2.1.js" size="60"></label></p>
+    <p><input type="submit" value="Fetch and minify"></p>
 
-<fieldset><legend>HTML options</legend>
-<p>If the resource above is sent with an (x)HTML Content-Type, the following options will apply:</p>
-<ul>
-    <li><label><input type="checkbox" name="asText" checked> Return plain text (o/w send the original content type)</label>
-    <li><label><input type="checkbox" name="minCss" checked> Minify CSS</label>
-    <li><label><input type="checkbox" name="minJs" checked> Minify JS</label>
-    <li><label><input type="checkbox" name="addBase" checked> Add BASE element (if not present)</label>
-</ul>
-</fieldset>
+    <fieldset>
+        <legend>HTML options</legend>
+        <p>If the resource above is sent with an (x)HTML Content-Type, the following options will apply:</p>
+        <ul>
+            <li>
+                <label><input type="checkbox" name="asText" checked> Return plain text (o/w send the original content
+                    type)</label>
+            <li><label><input type="checkbox" name="minCss" checked> Minify CSS</label>
+            <li><label><input type="checkbox" name="minJs" checked> Minify JS</label>
+            <li><label><input type="checkbox" name="addBase" checked> Add BASE element (if not present)</label>
+        </ul>
+    </fieldset>
 
-<fieldset><legend>Retreival options</legend>
-<ul>
-    <li><label>User-Agent: <input type="text" name="ua" size="60" value="<?php echo \htmlspecialchars($ua, \ENT_QUOTES, 'UTF-8'); ?>"></label>
-    <li><label>Cookie: <input type="text" name="cook" size="60"></label>
-</ul>
-</fieldset>
+    <fieldset>
+        <legend>Retreival options</legend>
+        <ul>
+            <li><label>User-Agent:
+                    <input type="text" name="ua" size="60"
+                           value="<?php echo \htmlspecialchars($ua, \ENT_QUOTES, 'UTF-8'); ?>"></label>
+            <li><label>Cookie: <input type="text" name="cook" size="60"></label>
+        </ul>
+    </fieldset>
 
 </form>

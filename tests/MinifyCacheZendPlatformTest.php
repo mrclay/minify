@@ -9,14 +9,6 @@ use Minify_Cache_ZendPlatform;
  */
 final class MinifyCacheZendPlatformTest extends TestCase
 {
-    protected function setUp()
-    {
-        if (!\function_exists('output_cache_put')) {
-            // FIXME: be specific what to actually install
-            static::markTestSkipped('To test this component, install ZendPlatform');
-        }
-    }
-
     public function test1()
     {
         $data = \str_repeat(\md5(\time()) . 'í', 100); // 3400 bytes in UTF-8
@@ -24,5 +16,13 @@ final class MinifyCacheZendPlatformTest extends TestCase
 
         $cache = new Minify_Cache_ZendPlatform();
         $this->assertTestCache($cache, $id, $data);
+    }
+
+    protected function setUp()
+    {
+        if (!\function_exists('output_cache_put')) {
+            // FIXME: be specific what to actually install
+            static::markTestSkipped('To test this component, install ZendPlatform');
+        }
     }
 }

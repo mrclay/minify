@@ -16,10 +16,10 @@ $send_301 = function ($url) {
     \http_response_code(301);
     \header('Cache-Control: max-age=31536000');
     \header("Location: ${url}");
-    exit;
+    exit();
 };
 
-$app = (require $bootstrap_file);
+$app = require $bootstrap_file;
 /* @var \Minify\App $app */
 
 if (!$app->config->enableStatic) {
@@ -73,7 +73,11 @@ foreach (\explode('&', $query) as $piece) {
         $send_400();
     }
 
-    if ($key === 'z' && !\preg_match('~^\.(css|js)$~', $value, $m)) {
+    if (
+        $key === 'z'
+        &&
+        !\preg_match('~^\.(css|js)$~', $value, $m)
+    ) {
         $send_400();
     }
 
@@ -86,9 +90,11 @@ if (!$cache_time) {
     die('Directory is not writable.');
 }
 
-$app->env = new Minify_Env(array(
-    'get' => $get_params,
-));
+$app->env = new Minify_Env(
+    array(
+        'get' => $get_params,
+    )
+);
 $ctrl = $app->controller;
 $options = $app->serveOptions;
 $sources = $ctrl->createConfiguration($options)->getSources();
@@ -116,8 +122,14 @@ $content = $app->minify->combine($sources);
 
 // save and send file
 $file = __DIR__ . "/${cache_time}/${query}";
-if (!\is_dir(\dirname($file))) {
-    \mkdir(\dirname($file), 0777, true);
+if (
+    !\is_dir(\dirname($file))
+    &&
+    !\mkdir($concurrentDirectory = \dirname($file), 0777, true)
+    &&
+    !\is_dir($concurrentDirectory)
+) {
+    throw new \RuntimeException(\sprintf('Directory "%s" was not created', $concurrentDirectory));
 }
 
 \file_put_contents($file, $content);

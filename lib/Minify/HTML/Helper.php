@@ -1,68 +1,41 @@
 <?php
-/**
- * Class Minify_HTML_Helper
- */
 
 /**
  * Helpers for writing Minify URIs into HTML
  */
 class Minify_HTML_Helper
 {
+    /**
+     * @var bool
+     */
     public $rewriteWorks = true;
 
+    /**
+     * @var string
+     */
     public $minAppUri = '/min';
 
+    /**
+     * @var string
+     */
     public $groupsConfigFile = '';
 
+    /**
+     * if present, URI will be like g=...
+     *
+     * @var string|null
+     */
     protected $_groupKey;
 
+    /**
+     * @var array
+     */
     protected $_filePaths = array();
 
+    /**
+     * @var int|null
+     */
     protected $_lastModified;
-
-    /**
-     * @param \Minify\App $app
-     *
-     * @return \Minify\App
-     *
-     * @internal
-     */
-    public static function app(\Minify\App $app = null)
-    {
-        static $cached;
-        if ($app) {
-            $cached = $app;
-
-            return $app;
-        }
-        if ($cached === null) {
-            $cached = (require __DIR__ . '/../../../bootstrap.php');
-        }
-
-        return $cached;
-    }
-
-    /**
-     * Get the max(lastModified) of all files
-     *
-     * @param array|string $sources
-     * @param int          $lastModified
-     *
-     * @return int
-     */
-    public static function getLastModified($sources, $lastModified = 0)
-    {
-        $max = $lastModified;
-        $factory = self::app()->sourceFactory;
-
-        /** @var Minify_Source $source */
-        foreach ((array) $sources as $source) {
-            $source = $factory->makeSource($source);
-            $max = \max($max, $source->getLastModified());
-        }
-
-        return $max;
-    }
 
     /**
      * Get an HTML-escaped Minify URI for a group or set of files
@@ -108,6 +81,93 @@ class Minify_HTML_Helper
     }
 
     /**
+     * @param \Minify\App $app
+     *
+     * @return \Minify\App
+     *
+     * @internal
+     */
+    public static function app(\Minify\App $app = null)
+    {
+        static $cached;
+
+        if ($app) {
+            $cached = $app;
+
+            return $app;
+        }
+
+        if ($cached === null) {
+            $cached = require __DIR__ . '/../../../bootstrap.php';
+        }
+
+        return $cached;
+    }
+
+    /**
+     * Get the max(lastModified) of all files
+     *
+     * @param array|string $sources
+     * @param int          $lastModified
+     *
+     * @return int
+     */
+    public static function getLastModified($sources, $lastModified = 0)
+    {
+        $max = $lastModified;
+        $factory = self::app()->sourceFactory;
+
+        /** @var Minify_Source $source */
+        foreach ((array) $sources as $source) {
+            $source = $factory->makeSource($source);
+            $max = \max($max, $source->getLastModified());
+        }
+
+        return $max;
+    }
+
+    /**
+     * Get the shortest URI to minify the set of source files
+     *
+     * @param array  $paths   root-relative URIs of files
+     * @param string $minRoot root-relative URI of the "min" application
+     *
+     * @return string
+     */
+    protected static function _getShortestUri($paths, $minRoot = '/min/')
+    {
+        $pos = 0;
+        $base = '';
+        while (true) {
+            $c = self::_getCommonCharAtPos($paths, $pos);
+            if ($c === '') {
+                break;
+            }
+
+            $base .= $c;
+
+            ++$pos;
+        }
+        $base = (string) \preg_replace('@[^/]+$@', '', $base);
+        $uri = $minRoot . 'f=' . \implode(',', $paths);
+
+        if (\substr($base, -1) === '/') {
+            // we have a base dir!
+            $basedPaths = $paths;
+            $l = \count($paths);
+            for ($i = 0; $i < $l; ++$i) {
+                $basedPaths[$i] = \substr($paths[$i], \strlen($base));
+            }
+            $base = \substr($base, 0, -1);
+            $bUri = $minRoot . 'b=' . $base . '&f=' . \implode(',', $basedPaths);
+
+            $uri = \strlen($uri) < \strlen($bUri) ? $uri : $bUri;
+        }
+
+        return $uri;
+    }
+
+    /**
      * In a given array of strings, find the character they all have at
      * a particular index
      *
@@ -135,46 +195,63 @@ class Minify_HTML_Helper
         return $c;
     }
 
-    // if present, URI will be like g=...
+    /**
+     * Set the files that will comprise the URI we're building
+     *
+     * @param array $files
+     * @param bool  $checkLastModified
+     *
+     * @return void
+     */
+    public function setFiles($files, $checkLastModified = true)
+    {
+        $this->_groupKey = null;
+        if ($checkLastModified) {
+            $this->_lastModified = self::getLastModified($files);
+        }
+        // normalize paths like in /min/f=<paths>
+        foreach ($files as $k => $file) {
+            if (\strpos($file, '//') === 0) {
+                $file = \substr($file, 2);
+            } elseif (\strpos($file, '/') === 0 || \strpos($file, ':\\') === 1) {
+                $file = \substr($file, \strlen(self::app()->env->getDocRoot()) + 1);
+            }
+            $file = \str_replace('\\', '/', $file);
+            $files[$k] = $file;
+        }
+        $this->_filePaths = $files;
+    }
 
     /**
-     * Get the shortest URI to minify the set of source files
+     * Set the group of files that will comprise the URI we're building
      *
-     * @param array  $paths   root-relative URIs of files
-     * @param string $minRoot root-relative URI of the "min" application
+     * @param string $key
+     * @param bool   $checkLastModified
      *
-     * @return string
+     * @return void
      */
-    protected static function _getShortestUri($paths, $minRoot = '/min/')
+    public function setGroup($key, $checkLastModified = true)
     {
-        $pos = 0;
-        $base = '';
-        while (true) {
-            $c = self::_getCommonCharAtPos($paths, $pos);
-            if ($c === '') {
-                break;
+        $this->_groupKey = $key;
+        if ($checkLastModified) {
+            if (!$this->groupsConfigFile) {
+                $this->groupsConfigFile = self::app()->groupsConfigPath;
             }
-            $base .= $c;
+            if (\is_file($this->groupsConfigFile)) {
+                $gc = require $this->groupsConfigFile;
+                $keys = \explode(',', $key);
+                /** @noinspection SuspiciousLoopInspection */
+                foreach ($keys as $key) {
+                    if (!isset($gc[$key])) {
+                        // this can happen if value is null
+                        // which could be solved with array_filter
+                        continue;
+                    }
 
-            ++$pos;
-        }
-        $base = \preg_replace('@[^/]+$@', '', $base);
-        $uri = $minRoot . 'f=' . \implode(',', $paths);
-
-        if (\substr($base, -1) === '/') {
-            // we have a base dir!
-            $basedPaths = $paths;
-            $l = \count($paths);
-            for ($i = 0; $i < $l; ++$i) {
-                $basedPaths[$i] = \substr($paths[$i], \strlen($base));
+                    $this->_lastModified = self::getLastModified($gc[$key], (int) $this->_lastModified);
+                }
             }
-            $base = \substr($base, 0, \strlen($base) - 1);
-            $bUri = $minRoot . 'b=' . $base . '&f=' . \implode(',', $basedPaths);
-
-            $uri = \strlen($uri) < \strlen($bUri) ? $uri : $bUri;
         }
-
-        return $uri;
     }
 
     /**
@@ -191,12 +268,14 @@ class Minify_HTML_Helper
         if (!$this->rewriteWorks) {
             $path .= '?';
         }
+
         if ($this->_groupKey === null) {
-            // @todo: implement shortest uri
+            // @TODO: implement shortest uri
             $path = self::_getShortestUri($this->_filePaths, $path);
         } else {
             $path .= 'g=' . $this->_groupKey;
         }
+
         if ($debug) {
             $path .= '&debug';
         } elseif ($farExpires && $this->_lastModified) {
@@ -204,59 +283,5 @@ class Minify_HTML_Helper
         }
 
         return $path;
-    }
-
-    /**
-     * Set the files that will comprise the URI we're building
-     *
-     * @param array $files
-     * @param bool  $checkLastModified
-     */
-    public function setFiles($files, $checkLastModified = true)
-    {
-        $this->_groupKey = null;
-        if ($checkLastModified) {
-            $this->_lastModified = self::getLastModified($files);
-        }
-        // normalize paths like in /min/f=<paths>
-        foreach ($files as $k => $file) {
-            if (\strpos($file, '//') === 0) {
-                $file = \substr($file, 2);
-            } elseif (\strpos($file, '/') === 0 || \strpos($file, ':\\') === 1) {
-                $file = \substr($file, \strlen(self::app()->env->getDocRoot()) + 1);
-            }
-            $file = \strtr($file, '\\', '/');
-            $files[$k] = $file;
-        }
-        $this->_filePaths = $files;
-    }
-
-    /**
-     * Set the group of files that will comprise the URI we're building
-     *
-     * @param string $key
-     * @param bool   $checkLastModified
-     */
-    public function setGroup($key, $checkLastModified = true)
-    {
-        $this->_groupKey = $key;
-        if ($checkLastModified) {
-            if (!$this->groupsConfigFile) {
-                $this->groupsConfigFile = self::app()->groupsConfigPath;
-            }
-            if (\is_file($this->groupsConfigFile)) {
-                $gc = (require $this->groupsConfigFile);
-                $keys = \explode(',', $key);
-                foreach ($keys as $key) {
-                    if (!isset($gc[$key])) {
-                        // this can happen if value is null
-                        // which could be solved with array_filter
-                        continue;
-                    }
-
-                    $this->_lastModified = self::getLastModified($gc[$key], $this->_lastModified);
-                }
-            }
-        }
     }
 }

@@ -1,7 +1,4 @@
 <?php
-/**
- * Class Minify_Controller_Files
- */
 
 /**
  * Controller class for minifying a set of files

@@ -67,7 +67,7 @@ assertTrue(
     '/min/ is not directly inside DOCUMENT_ROOT.'
 );
 
-// TODO: rework this
+// @TODO: rework this
 /*
 function _test_environment_getHello($url)
 {

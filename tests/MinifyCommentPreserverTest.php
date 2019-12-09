@@ -9,6 +9,20 @@ use Minify_CommentPreserver;
  */
 final class MinifyCommentPreserverTest extends TestCase
 {
+    /**
+     * @param mixed $content
+     * @param mixed $options
+     *
+     * @internal
+     */
+    public static function _test_MCP_processor($content, $options = array())
+    {
+        static $callCount = 0;
+        ++$callCount;
+
+        return $callCount . \strtoupper($content);
+    }
+
     public function test()
     {
         $inOut = array(
@@ -23,19 +37,5 @@ final class MinifyCommentPreserverTest extends TestCase
             $actual = Minify_CommentPreserver::process($in, $processor);
             static::assertSame($expected, $actual, 'Minify_CommentPreserver');
         }
-    }
-
-    /**
-     * @internal
-     *
-     * @param mixed $content
-     * @param mixed $options
-     */
-    public static function _test_MCP_processor($content, $options = array())
-    {
-        static $callCount = 0;
-        ++$callCount;
-
-        return $callCount . \strtoupper($content);
     }
 }

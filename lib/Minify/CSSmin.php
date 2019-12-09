@@ -1,7 +1,5 @@
 <?php
-/**
- * Class Minify_CSSmin
- */
+
 use tubalmartin\CssMin\Minifier as CSSmin;
 
 /**
@@ -58,15 +56,25 @@ class Minify_CSSmin
         );
 
         if ($options['removeCharsets']) {
-            $css = \preg_replace('/@charset[^;]+;\\s*/', '', $css);
+            /** @noinspection NestedPositiveIfStatementsInspection */
+            if (\strpos($css, '@charset') === false) {
+                $css = (string) \preg_replace('/@charset[^;]+;\\s*/', '', $css);
+            }
         }
+
         if ($options['compress']) {
             $obj = new CSSmin();
             $css = $obj->run($css);
         }
-        if (!$options['currentDir'] && !$options['prependRelativePath']) {
+
+        if (
+            !$options['currentDir']
+            &&
+            !$options['prependRelativePath']
+        ) {
             return $css;
         }
+
         if ($options['currentDir']) {
             return Minify_CSS_UriRewriter::rewrite(
                 $css,

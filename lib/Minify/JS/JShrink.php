@@ -1,7 +1,5 @@
 <?php
-/**
- * Class Minify\JS\JShrink
- */
+
 namespace Minify\JS;
 
 /**
@@ -16,7 +14,7 @@ class JShrink
      * the one passed in by the user to create the request specific set of
      * options (stored in the $options attribute).
      *
-     * @var string[]
+     * @var array
      */
     protected static $defaultOptions = array('flaggedComments' => true);
 
@@ -29,7 +27,7 @@ class JShrink
      *
      * @return string
      *
-     * @see JShrink\Minifier::minify()
+     * @see \JShrink\Minifier::minify()
      */
     public static function minify($js, array $options = array())
     {

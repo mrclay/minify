@@ -6,8 +6,8 @@ namespace Minify\StaticService;
  * Build a URI for the static cache
  *
  * @param string $static_uri E.g. "/min/static"
- * @param string $query E.g. "b=scripts&f=1.js,2.js"
- * @param string $type "css" or "js"
+ * @param string $query      E.g. "b=scripts&f=1.js,2.js"
+ * @param string $type       "css" or "js"
  *
  * @return string
  */
@@ -48,7 +48,7 @@ function get_cache_time($auto_create = true)
     }
 
     $time = (string) \time();
-    if (!\mkdir(__DIR__ . "/${time}")) {
+    if (!\mkdir($concurrentDirectory = __DIR__ . "/${time}") && !\is_dir($concurrentDirectory)) {
         return null;
     }
 
@@ -63,6 +63,11 @@ function flush_cache()
     }
 }
 
+/**
+ * @param string $dir
+ *
+ * @return bool
+ */
 function remove_tree($dir)
 {
     $files = \array_diff(\scandir($dir), array('.', '..'));

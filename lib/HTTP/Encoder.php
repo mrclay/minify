@@ -1,7 +1,4 @@
 <?php
-/**
- * Class HTTP_Encoder
- */
 
 /**
  * Encode and send gzipped/deflated content
@@ -64,12 +61,24 @@ class HTTP_Encoder
      */
     public static $compressionLevel = 6;
 
+    /**
+     * @var string
+     */
     protected $_content = '';
 
+    /**
+     * @var array
+     */
     protected $_headers = array();
 
+    /**
+     * @var array
+     */
     protected $_encodeMethod = array('', '');
 
+    /**
+     * @var bool
+     */
     protected $_useMbStrlen = false;
 
     /**
@@ -88,18 +97,30 @@ class HTTP_Encoder
      */
     public function __construct($spec)
     {
-        $this->_useMbStrlen = (\function_exists('mb_strlen')
-                               && (\ini_get('mbstring.func_overload') !== '')
-                               && ((int) \ini_get('mbstring.func_overload') & 2));
-        $this->_content = $spec['content'];
+        $this->_useMbStrlen = (
+            \function_exists('mb_strlen')
+            &&
+            \ini_get('mbstring.func_overload') !== ''
+            &&
+            (int) \ini_get('mbstring.func_overload') & 2
+        );
+
+        $this->_content = (string) $spec['content'];
+
+        /** @noinspection PhpComposerExtensionStubsInspection */
         $this->_headers['Content-Length'] = $this->_useMbStrlen
             ? (string) \mb_strlen($this->_content, '8bit')
             : (string) \strlen($this->_content);
+
         if (isset($spec['type'])) {
             $this->_headers['Content-Type'] = $spec['type'];
         }
-        if (isset($spec['method'])
-            && \in_array($spec['method'], array('gzip', 'deflate', 'compress', ''), true)) {
+
+        if (
+            isset($spec['method'])
+            &&
+            \in_array($spec['method'], array('gzip', 'deflate', 'compress', ''), true)
+        ) {
             $this->_encodeMethod = array($spec['method'], $spec['method']);
         } else {
             $this->_encodeMethod = self::getAcceptedEncoding();
@@ -129,44 +150,72 @@ class HTTP_Encoder
     {
         // @link http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
 
-        if (!isset($_SERVER['HTTP_ACCEPT_ENCODING'])
-            || self::isBuggyIe()) {
+        if (
+            !isset($_SERVER['HTTP_ACCEPT_ENCODING'])
+            ||
+            self::isBuggyIe()
+        ) {
             return array('', '');
         }
+
         $ae = $_SERVER['HTTP_ACCEPT_ENCODING'];
         // gzip checks (quick)
-        if (\strpos($ae, 'gzip,') === 0             // most browsers
-            || \strpos($ae, 'deflate, gzip,') === 0 // opera
+        if (
+            \strpos($ae, 'gzip,') === 0 // most browsers
+            ||
+            \strpos($ae, 'deflate, gzip,') === 0 // opera
         ) {
             return array('gzip', 'gzip');
         }
+
         // gzip checks (slow)
-        if (\preg_match(
-            '@(?:^|,)\\s*((?:x-)?gzip)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@',
-            $ae,
-            $m
-        )) {
+        if (
+            \strpos($ae, 'gzip') !== false
+            &&
+            \preg_match(
+                '@(?:^|,)\\s*((?:x-)?gzip)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@',
+                $ae,
+                $m
+            )
+        ) {
             return array('gzip', $m[1]);
         }
+
         if ($allowDeflate) {
             // deflate checks
             $aeRev = \strrev($ae);
-            if (\strpos($aeRev, 'etalfed ,') === 0 // ie, webkit
-                || \strpos($aeRev, 'etalfed,') === 0 // gecko
-                || \strpos($ae, 'deflate,') === 0 // opera
+            if (
+                \strpos($aeRev, 'etalfed ,') === 0 // ie, webkit
+                ||
+                \strpos($aeRev, 'etalfed,') === 0 // gecko
+                ||
+                \strpos($ae, 'deflate,') === 0 // opera
                 // slow parsing
-                || \preg_match(
-                    '@(?:^|,)\\s*deflate\\s*(?:$|,|;\\s*q=(?:0\\.|1))@',
-                    $ae
-                )) {
+                ||
+                (
+                    \strpos($ae, 'deflate') !== false
+                    &&
+                    \preg_match(
+                        '@(?:^|,)\\s*deflate\\s*(?:$|,|;\\s*q=(?:0\\.|1))@',
+                        $ae
+                    )
+                )
+            ) {
                 return array('deflate', 'deflate');
             }
         }
-        if ($allowCompress && \preg_match(
-            '@(?:^|,)\\s*((?:x-)?compress)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@',
-            $ae,
-            $m
-        )) {
+
+        if (
+            $allowCompress
+            &&
+            \strpos($ae, 'compress,') !== false
+            &&
+            \preg_match(
+                '@(?:^|,)\\s*((?:x-)?compress)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@',
+                $ae,
+                $m
+            )
+        ) {
             return array('compress', $m[1]);
         }
 
@@ -183,17 +232,30 @@ class HTTP_Encoder
         if (empty($_SERVER['HTTP_USER_AGENT'])) {
             return false;
         }
+
         $ua = $_SERVER['HTTP_USER_AGENT'];
         // quick escape for non-IEs
-        if (\strpos($ua, 'Mozilla/4.0 (compatible; MSIE ') !== 0
-            || \strpos($ua, 'Opera') !== false) {
+        if (
+            \strpos($ua, 'Mozilla/4.0 (compatible; MSIE ') !== 0
+            ||
+            \strpos($ua, 'Opera') !== false
+        ) {
             return false;
         }
+
         // no regex = faaast
-        $version = (float) \substr($ua, 30);
+        $version = (int) \substr($ua, 30);
 
         return self::$encodeToIe6
-            ? ($version < 6 || ($version === 6 && \strpos($ua, 'SV1') === false))
+            ? (
+                $version < 6
+                ||
+                (
+                    $version === 6
+                    &&
+                    \strpos($ua, 'SV1') === false
+                )
+            )
             : ($version < 7);
     }
 
@@ -213,7 +275,7 @@ class HTTP_Encoder
         if ($compressionLevel === null) {
             $compressionLevel = self::$compressionLevel;
         }
-        $he = new HTTP_Encoder(array('content' => $content));
+        $he = new self(array('content' => $content));
         $ret = $he->encode($compressionLevel);
         $he->sendAll();
 
@@ -242,24 +304,37 @@ class HTTP_Encoder
         if (!self::isBuggyIe()) {
             $this->_headers['Vary'] = 'Accept-Encoding';
         }
+
         if ($compressionLevel === null) {
             $compressionLevel = self::$compressionLevel;
         }
-        if ($this->_encodeMethod[0] === ''
-            || ($compressionLevel === 0)
-            || !\extension_loaded('zlib')) {
+
+        if (
+            $this->_encodeMethod[0] === ''
+            ||
+            $compressionLevel === 0
+            ||
+            !\extension_loaded('zlib')
+        ) {
             return false;
         }
+
         if ($this->_encodeMethod[0] === 'deflate') {
+            /** @noinspection PhpComposerExtensionStubsInspection */
             $encoded = \gzdeflate($this->_content, $compressionLevel);
         } elseif ($this->_encodeMethod[0] === 'gzip') {
+            /** @noinspection PhpComposerExtensionStubsInspection */
             $encoded = \gzencode($this->_content, $compressionLevel);
         } else {
+            /** @noinspection PhpComposerExtensionStubsInspection */
             $encoded = \gzcompress($this->_content, $compressionLevel);
         }
+
         if ($encoded === false) {
             return false;
         }
+
+        /** @noinspection PhpComposerExtensionStubsInspection */
         $this->_headers['Content-Length'] = $this->_useMbStrlen
             ? (string) \mb_strlen($encoded, '8bit')
             : (string) \strlen($encoded);
@@ -267,6 +342,41 @@ class HTTP_Encoder
         $this->_content = $encoded;
 
         return true;
+    }
+
+    /**
+     * Send output headers and content
+     *
+     * A shortcut for sendHeaders() and echo getContent()
+     *
+     * You must call this before headers are sent and it probably cannot be
+     * used in conjunction with zlib output buffering / mod_gzip. Errors are
+     * not handled purposefully.
+     *
+     * @return void
+     */
+    public function sendAll()
+    {
+        $this->sendHeaders();
+        echo $this->_content;
+    }
+
+    /**
+     * Send output headers
+     *
+     * You must call this before headers are sent and it probably cannot be
+     * used in conjunction with zlib output buffering / mod_gzip. Errors are
+     * not handled purposefully.
+     *
+     * @return void
+     *
+     * @see getHeaders()
+     */
+    public function sendHeaders()
+    {
+        foreach ($this->_headers as $name => $val) {
+            \header($name . ': ' . $val);
+        }
     }
 
     /**
@@ -298,36 +408,5 @@ class HTTP_Encoder
     public function getHeaders()
     {
         return $this->_headers;
-    }
-
-    /**
-     * Send output headers and content
-     *
-     * A shortcut for sendHeaders() and echo getContent()
-     *
-     * You must call this before headers are sent and it probably cannot be
-     * used in conjunction with zlib output buffering / mod_gzip. Errors are
-     * not handled purposefully.
-     */
-    public function sendAll()
-    {
-        $this->sendHeaders();
-        echo $this->_content;
-    }
-
-    /**
-     * Send output headers
-     *
-     * You must call this before headers are sent and it probably cannot be
-     * used in conjunction with zlib output buffering / mod_gzip. Errors are
-     * not handled purposefully.
-     *
-     * @see getHeaders()
-     */
-    public function sendHeaders()
-    {
-        foreach ($this->_headers as $name => $val) {
-            \header($name . ': ' . $val);
-        }
     }
 }

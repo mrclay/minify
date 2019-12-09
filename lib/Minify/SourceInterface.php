@@ -1,7 +1,4 @@
 <?php
-/**
- * Interface Minify_SourceInterface
- */
 
 /**
  * A content source to be minified by Minify.

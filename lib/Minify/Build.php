@@ -1,7 +1,4 @@
 <?php
-/**
- * Class Minify_Build
- */
 
 /**
  * Maintain a single last modification time for a group of Minify sources to
@@ -54,7 +51,9 @@ class Minify_Build
      */
     public function __construct($sources)
     {
+        // init
         $max = 0;
+
         foreach ((array) $sources as $source) {
             if ($source instanceof Minify_Source) {
                 $max = \max($max, $source->getLastModified());
@@ -67,7 +66,8 @@ class Minify_Build
                 }
             }
         }
-        $this->lastModified = $max;
+
+        $this->lastModified = (int) $max;
     }
 
     /**

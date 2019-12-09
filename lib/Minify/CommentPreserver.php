@@ -1,7 +1,4 @@
 <?php
-/**
- * Class Minify_CommentPreserver
- */
 
 /**
  * Process a string in pieces preserving C-style comments that begin with "/*!"
@@ -30,7 +27,7 @@ class Minify_CommentPreserver
      * Minify_CommentPreserver::$preprend and Minify_CommentPreserver::$append.
      *
      * @param string   $content
-     * @param callback $processor function
+     * @param callable $processor function
      * @param array    $args      array of extra arguments to pass to the processor
      *                            function (default = array())
      *

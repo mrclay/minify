@@ -1,7 +1,5 @@
 <?php
-/**
- * Class Minify_Cache_File
- */
+
 use Psr\Log\LoggerInterface;
 
 class Minify_Cache_File implements Minify_CacheInterface
@@ -28,9 +26,11 @@ class Minify_Cache_File implements Minify_CacheInterface
      */
     public function __construct($path = '', $fileLocking = false, LoggerInterface $logger = null)
     {
+        // fallback
         if (!$path) {
             $path = \sys_get_temp_dir();
         }
+
         $this->locking = $fileLocking;
         $this->path = $path;
 
@@ -58,6 +58,8 @@ class Minify_Cache_File implements Minify_CacheInterface
      * Send the cached content to output
      *
      * @param string $id cache id (e.g. a filename)
+     *
+     * @return void
      */
     public function display($id)
     {
@@ -68,6 +70,10 @@ class Minify_Cache_File implements Minify_CacheInterface
         }
 
         $fp = \fopen($this->path . '/' . $id, 'rb');
+        if (!$fp) {
+            return;
+        }
+
         \flock($fp, \LOCK_SH);
         \fpassthru($fp);
         \flock($fp, \LOCK_UN);
@@ -79,7 +85,7 @@ class Minify_Cache_File implements Minify_CacheInterface
      *
      * @param string $id cache id (e.g. a filename)
      *
-     * @return string
+     * @return false|string
      */
     public function fetch($id)
     {
@@ -105,7 +111,7 @@ class Minify_Cache_File implements Minify_CacheInterface
      *
      * @param string $id cache id (e.g. a filename)
      *
-     * @return int size in bytes
+     * @return false|int size in bytes or false on error
      */
     public function getSize($id)
     {
@@ -137,15 +143,17 @@ class Minify_Cache_File implements Minify_CacheInterface
      */
     public function store($id, $data)
     {
-        $flag = $this->locking ? \LOCK_EX : null;
+        $flag = $this->locking ? \LOCK_EX : 0;
         $file = $this->path . '/' . $id;
 
+        /** @noinspection PhpUsageOfSilenceOperatorInspection */
         if (!@\file_put_contents($file, $data, $flag)) {
             $this->logger->warning("Minify_Cache_File: Write failed to '${file}'");
         }
 
         // write control
         if ($data !== $this->fetch($id)) {
+            /** @noinspection PhpUsageOfSilenceOperatorInspection */
             @\unlink($file);
             $this->logger->warning("Minify_Cache_File: Post-write read failed for '${file}'");
 
@@ -170,7 +178,7 @@ class Minify_Cache_File implements Minify_CacheInterface
      *
      * @param string $msg
      *
-     * @return null
+     * @return void
      *
      * @deprecated Use $this->logger
      */

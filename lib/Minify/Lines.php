@@ -1,7 +1,4 @@
 <?php
-/**
- * Class Minify_Lines
- */
 
 /**
  * Add line numbers in C-style comments for easier debugging of combined content
@@ -41,8 +38,12 @@ class Minify_Lines
         $i = 0;
         $newLines = array();
 
-        while (($line = \array_shift($lines)) !== null) {
-            if (($id !== '') && ($i % 50 === 0)) {
+        foreach ($lines as $line) {
+            if (
+                $id !== ''
+                &&
+                $i % 50 === 0
+            ) {
                 if ($inComment) {
                     \array_push($newLines, '', "/* {$id} *|", '');
                 } else {
@@ -60,6 +61,7 @@ class Minify_Lines
         // check for desired URI rewriting
         if (isset($options['currentDir'])) {
             Minify_CSS_UriRewriter::$debugText = '';
+
             $docRoot = isset($options['docRoot']) ? $options['docRoot'] : $_SERVER['DOCUMENT_ROOT'];
             $symlinks = isset($options['symlinks']) ? $options['symlinks'] : array();
 
@@ -76,16 +78,18 @@ class Minify_Lines
     /**
      * Prepend a comment (or note) to the given line
      *
-     * @param string $line      current line of code
-     * @param string $note      content of note/comment
-     * @param bool   $inComment was the parser in a comment at the
-     *                          beginning of the line?
-     * @param int    $padTo     minimum width of comment
+     * @param string     $line      current line of code
+     * @param int|string $note      content of note/comment
+     * @param bool       $inComment was the parser in a comment at the
+     *                              beginning of the line?
+     * @param int        $padTo     minimum width of comment
      *
      * @return string
      */
     private static function _addNote($line, $note, $inComment, $padTo)
     {
+        $note = (string) $note;
+
         if ($inComment) {
             $line = '/* ' . \str_pad($note, $padTo, ' ', \STR_PAD_RIGHT) . ' *| ' . $line;
         } else {
@@ -106,7 +110,7 @@ class Minify_Lines
      */
     private static function _eolInComment($line, $inComment)
     {
-        while (\strlen($line)) {
+        while ($line !== '') {
             if ($inComment) {
                 // only "*/" can end the comment
                 $index = self::_find($line, '*/');
@@ -116,6 +120,7 @@ class Minify_Lines
 
                 // stop comment and keep walking line
                 $inComment = false;
+                /** @noinspection PhpUsageOfSilenceOperatorInspection */
                 @$line = (string) \substr($line, $index + 2);
 
                 continue;
@@ -131,6 +136,7 @@ class Minify_Lines
             if ($single === false || $multi < $single) {
                 // start comment and keep walking line
                 $inComment = true;
+                /** @noinspection PhpUsageOfSilenceOperatorInspection */
                 @$line = (string) \substr($line, $multi + 2);
 
                 continue;
@@ -149,7 +155,7 @@ class Minify_Lines
      * @param string $str   String containing the token
      * @param string $token Token being checked
      *
-     * @return bool
+     * @return false|int
      */
     private static function _find($str, $token)
     {
@@ -184,6 +190,7 @@ class Minify_Lines
         $index = \strpos($str, $token);
         $offset = 0;
 
+        /** @noinspection LoopWhichDoesNotLoopInspection */
         while ($index !== false) {
             foreach ($fakes as $fake => $skip) {
                 $check = \substr($str, $index - $skip, \strlen($fake));

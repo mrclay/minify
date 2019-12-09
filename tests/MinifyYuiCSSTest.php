@@ -21,11 +21,6 @@ final class MinifyYuiCSSTest extends TestCase
         Minify_YUICompressor::$tempDir = \sys_get_temp_dir();
     }
 
-    protected function setUp()
-    {
-        $this->assertHasJar();
-    }
-
     public function test1()
     {
         $src = "/* stack overflow test */
@@ -53,6 +48,11 @@ final class MinifyYuiCSSTest extends TestCase
         );
         $minOutput = Minify_YUICompressor::minifyCss($src, $options);
         static::assertSame($minExpected, $minOutput);
+    }
+
+    protected function setUp()
+    {
+        $this->assertHasJar();
     }
 
     protected function assertHasJar()

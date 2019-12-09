@@ -1,10 +1,6 @@
 <?php
 
 /**
- * Class Minify_ClosureCompiler
- */
-
-/**
  * Run Closure Compiler via NailGun
  *
  * @see https://github.com/martylamb/nailgun
@@ -98,6 +94,9 @@ class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler
         );
     }
 
+    /**
+     * @return void
+     */
     private function startServer()
     {
         $serverCommand = \implode(' ', $this->getServerCommandLine());

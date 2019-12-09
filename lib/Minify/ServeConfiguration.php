@@ -1,7 +1,4 @@
 <?php
-/**
- * Class Minify_ServeConfiguration
- */
 
 /**
  * A configuration for Minify::serve() determined by a controller

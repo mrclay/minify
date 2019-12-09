@@ -10,23 +10,6 @@ use Minify_ClosureCompiler;
  */
 final class MinifyClosureCompilerTest extends TestCase
 {
-    public static function setupBeforeClass()
-    {
-        parent::setupBeforeClass();
-        Minify_ClosureCompiler::$isDebug = true;
-
-        // To test more functionality, download a compiler.jar from
-        // https://github.com/google/closure-compiler#getting-started,
-        // put it under tests dir as 'compiler.jar'
-
-        // set minimum necessary settings
-        Minify_ClosureCompiler::$jarFile = __DIR__ . \DIRECTORY_SEPARATOR . 'compiler.jar';
-        Minify_ClosureCompiler::$tempDir = \sys_get_temp_dir();
-    }
-
-    /*
-     * Test minimisation w/o setting the necessary settings
-     */
     public function test1()
     {
         // clear params
@@ -41,6 +24,24 @@ final class MinifyClosureCompilerTest extends TestCase
         }
         // redo init to make other tests pass
         self::setupBeforeClass();
+    }
+
+    /*
+     * Test minimisation w/o setting the necessary settings
+     */
+
+    public static function setupBeforeClass()
+    {
+        parent::setupBeforeClass();
+        Minify_ClosureCompiler::$isDebug = true;
+
+        // To test more functionality, download a compiler.jar from
+        // https://github.com/google/closure-compiler#getting-started,
+        // put it under tests dir as 'compiler.jar'
+
+        // set minimum necessary settings
+        Minify_ClosureCompiler::$jarFile = __DIR__ . \DIRECTORY_SEPARATOR . 'compiler.jar';
+        Minify_ClosureCompiler::$tempDir = \sys_get_temp_dir();
     }
 
     /**
@@ -61,6 +62,17 @@ final class MinifyClosureCompilerTest extends TestCase
         $minExpected = '(function(a,b){a.addOne=function(a){return 1+a};a.undefined=b})(window);';
         $minOutput = Minify_ClosureCompiler::minify($src);
         static::assertSame($minExpected, $minOutput, 'minimum necessary settings');
+    }
+
+    protected function assertHasJar()
+    {
+        static::assertNotEmpty(Minify_ClosureCompiler::$jarFile);
+
+        try {
+            static::assertFileExists(Minify_ClosureCompiler::$jarFile, 'Have closure compiler compiler.jar');
+        } catch (Exception $e) {
+            static::markTestSkipped($e->getMessage());
+        }
     }
 
     /**
@@ -117,16 +129,5 @@ final class MinifyClosureCompilerTest extends TestCase
         $exp = $this->getDataFile('js/jscomp.polyfilled.min.js');
         $res = Minify_ClosureCompiler::minify($src, $options);
         static::assertSame($exp, $res);
-    }
-
-    protected function assertHasJar()
-    {
-        static::assertNotEmpty(Minify_ClosureCompiler::$jarFile);
-
-        try {
-            static::assertFileExists(Minify_ClosureCompiler::$jarFile, 'Have closure compiler compiler.jar');
-        } catch (Exception $e) {
-            static::markTestSkipped($e->getMessage());
-        }
     }
 }

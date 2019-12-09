@@ -1,7 +1,5 @@
 <?php
-/**
- * Class Minify_Controller_Base
- */
+
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 
@@ -64,7 +62,7 @@ abstract class Minify_Controller_Base implements Minify_ControllerInterface
      *
      * @param string $msg
      *
-     * @return null
+     * @return void
      *
      * @deprecated use $this->logger
      */

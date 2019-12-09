@@ -58,6 +58,60 @@ class Minify_ScssCssSource extends Minify_Source
     }
 
     /**
+     * Get SCSS cache object
+     *
+     * Runs the compilation if needed
+     *
+     * Implements Leafo\ScssPhp\Server logic because we need to get parsed files without parsing actual content
+     *
+     * @return array
+     */
+    private function getCache()
+    {
+        // cache for single run
+        // so that getLastModified and getContent in single request do not add additional cache roundtrips (i.e memcache)
+        if (isset($this->parsed)) {
+            return $this->parsed;
+        }
+
+        // check from cache first
+        $cache = null;
+        $cacheId = $this->getCacheId();
+        if ($this->cache->isValid($cacheId, 0)) {
+            $cache = $this->cache->fetch($cacheId);
+            if ($cache) {
+                $cache = \unserialize($cache);
+            }
+        }
+
+        $input = $cache ?: $this->filepath;
+
+        if ($this->cacheIsStale($cache)) {
+            $cache = $this->compile($this->filepath);
+        }
+
+        if (!\is_array($input) || $cache['updated'] > $input['updated']) {
+            $this->cache->store($cacheId, \serialize($cache));
+        }
+
+        return $this->parsed = $cache;
+    }
+
+    /**
+     * Make a unique cache id for for this source.
+     *
+     * @param string $prefix
+     *
+     * @return string
+     */
+    private function getCacheId($prefix = 'minify')
+    {
+        $md5 = \md5($this->filepath);
+
+        return "{$prefix}_scss_{$md5}";
+    }
+
+    /**
      * Determine whether .scss file needs to be re-compiled.
      *
      * @param array $cache Cache object
@@ -101,11 +155,16 @@ class Minify_ScssCssSource extends Minify_Source
         // and will treat the @import line as css import
         $scss->setImportPaths(\dirname($filename));
 
-        $css = $scss->compile(\file_get_contents($filename), $filename);
+        $content = \file_get_contents($filename);
+        if ($content === false) {
+            throw new RuntimeException('File not readable:' . $filename);
+        }
+
+        $css = $scss->compile($content, $filename);
         $elapsed = \round((\microtime(true) - $start), 4);
 
         $v = Version::VERSION;
-        $ts = \date('r', $start);
+        $ts = \date('r', (int) $start);
         $css = "/* compiled by scssphp ${v} on ${ts} (${elapsed}s) */\n\n" . $css;
 
         $imports = $scss->getParsedFiles();
@@ -121,58 +180,5 @@ class Minify_ScssCssSource extends Minify_Source
             'content' => $css,
             'files'   => $imports,
         );
-    }
-
-    /**
-     * Get SCSS cache object
-     *
-     * Runs the compilation if needed
-     *
-     * Implements Leafo\ScssPhp\Server logic because we need to get parsed files without parsing actual content
-     *
-     * @return array
-     */
-    private function getCache()
-    {
-        // cache for single run
-        // so that getLastModified and getContent in single request do not add additional cache roundtrips (i.e memcache)
-        if (isset($this->parsed)) {
-            return $this->parsed;
-        }
-
-        // check from cache first
-        $cache = null;
-        $cacheId = $this->getCacheId();
-        if ($this->cache->isValid($cacheId, 0)) {
-            if ($cache = $this->cache->fetch($cacheId)) {
-                $cache = \unserialize($cache);
-            }
-        }
-
-        $input = $cache ? $cache : $this->filepath;
-
-        if ($this->cacheIsStale($cache)) {
-            $cache = $this->compile($this->filepath);
-        }
-
-        if (!\is_array($input) || $cache['updated'] > $input['updated']) {
-            $this->cache->store($cacheId, \serialize($cache));
-        }
-
-        return $this->parsed = $cache;
-    }
-
-    /**
-     * Make a unique cache id for for this source.
-     *
-     * @param string $prefix
-     *
-     * @return string
-     */
-    private function getCacheId($prefix = 'minify')
-    {
-        $md5 = \md5($this->filepath);
-
-        return "{$prefix}_scss_{$md5}";
     }
 }

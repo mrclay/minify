@@ -1,7 +1,4 @@
 <?php
-/**
- * Class Minify_Source
- */
 
 /**
  * A content source to be minified by Minify.
@@ -17,7 +14,7 @@ class Minify_Source implements Minify_SourceInterface
     protected $lastModified;
 
     /**
-     * @var callback minifier function specifically for this source
+     * @var callable|null minifier function specifically for this source
      */
     protected $minifier;
 
@@ -81,16 +78,20 @@ class Minify_Source implements Minify_SourceInterface
                     $this->contentType = Minify::TYPE_HTML;
 
                     break;
+                default:
+                    $this->contentType = '';
+
+                    break;
             }
             $this->filepath = $spec['filepath'];
             $this->id = $spec['filepath'];
 
-            // TODO ideally not touch disk in constructor
-            $this->lastModified = \filemtime($spec['filepath']);
+            // @TODO: ideally not touch disk in constructor
+            $this->lastModified = (int) \filemtime($spec['filepath']);
 
             if (!empty($spec['uploaderHoursBehind'])) {
                 // offset for Windows uploaders with out of sync clocks
-                $this->lastModified += \round($spec['uploaderHoursBehind'] * 3600);
+                $this->lastModified += (int) \round($spec['uploaderHoursBehind'] * 3600);
             }
         } elseif (isset($spec['id'])) {
             $this->id = 'id::' . $spec['id'];
@@ -101,12 +102,15 @@ class Minify_Source implements Minify_SourceInterface
             }
             $this->lastModified = isset($spec['lastModified']) ? $spec['lastModified'] : \time();
         }
+
         if (isset($spec['contentType'])) {
             $this->contentType = $spec['contentType'];
         }
+
         if (isset($spec['minifier'])) {
             $this->setMinifier($spec['minifier']);
         }
+
         if (isset($spec['minifyOptions'])) {
             $this->minifyOptions = $spec['minifyOptions'];
         }
@@ -189,12 +193,19 @@ class Minify_Source implements Minify_SourceInterface
     public function setMinifier($minifier = null)
     {
         if ($minifier === '') {
+            /** @noinspection ForgottenDebugOutputInspection */
             \error_log(__METHOD__ . " cannot accept empty string. Use 'Minify::nullMinifier' or 'trim'.");
             $minifier = 'Minify::nullMinifier';
         }
-        if ($minifier !== null && !\is_callable($minifier, true)) {
+
+        if (
+            $minifier !== null
+            &&
+            !\is_callable($minifier, true)
+        ) {
             throw new InvalidArgumentException('minifier must be null or a valid callable');
         }
+
         $this->minifier = $minifier;
     }
 
@@ -207,13 +218,19 @@ class Minify_Source implements Minify_SourceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Setup CSS sources for URI rewriting
+     *
+     * @return void
      */
     public function setupUriRewrites()
     {
-        if ($this->filepath
-            && !isset($this->minifyOptions['currentDir'])
-            && !isset($this->minifyOptions['prependRelativePath'])) {
+        if (
+            $this->filepath
+            &&
+            !isset($this->minifyOptions['currentDir'])
+            &&
+            !isset($this->minifyOptions['prependRelativePath'])
+        ) {
             $this->minifyOptions['currentDir'] = \dirname($this->filepath);
         }
     }

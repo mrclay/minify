@@ -1,7 +1,7 @@
 {
 	"name": "mrclay/minify",
 	"type": "library",
-	"description": "Minify is a PHP5 app that helps you follow several rules for client-side performance. It combines multiple CSS or Javascript files, removes unnecessary whitespace and comments, and serves them with gzip encoding and optimal client-side cache headers",
+	"description": "Minify is a PHP app that helps you follow several rules for client-side performance. It combines multiple CSS or Javascript files, removes unnecessary whitespace and comments, and serves them with gzip encoding and optimal client-side cache headers",
 	"homepage": "https://github.com/mrclay/minify",
 	"license": "BSD-3-Clause",
 	"authors": [
@@ -11,26 +11,16 @@
 			"role": "Developer"
 		}
 	],
-	"support": {
-		"email": "minify@googlegroups.com",
-		"issues": "https://github.com/mrclay/minify/issues",
-		"wiki": "https://github.com/mrclay/minify/blob/master/docs"
-	},
-	"autoload": {
-		"classmap": ["lib/"]
-	},
-	"autoload-dev": {
-		"psr-4": {"Minify\\Test\\": "tests/"}
-	},
 	"require": {
+		"php": "^5.3.0 || ^7.0",
 		"ext-pcre": "*",
 		"intervention/httpauth": "~2.0",
+		"marcusschwarz/lesserphp": "~0.5.1",
 		"monolog/monolog": "~1.1|~2.0",
 		"mrclay/jsmin-php": "~2",
-		"mrclay/props-dic": "^2.2",
-		"php": "^5.3.0 || ^7.0",
-		"tubalmartin/cssmin": "~4",
-		"marcusschwarz/lesserphp": "~0.5.1"
+		"mrclay/props-dic": "^2.2|^3.0",
+		"psr/log": "~1.0",
+		"tubalmartin/cssmin": "~4"
 	},
 	"require-dev": {
 		"firephp/firephp-core": "~0.4.0",
@@ -43,12 +33,27 @@
 		"firephp/firephp-core": "Use FirePHP for Log messages",
 		"meenie/javascript-packer": "Keep track of the Packer PHP port using Composer"
 	},
-	"scripts": {
-		"test": "phpunit"
-	},
 	"extra": {
 		"branch-alias": {
 			"dev-master": "3.0.x-dev"
 		}
+	},
+	"autoload": {
+		"classmap": [
+			"lib/"
+		]
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Minify\\Test\\": "tests/"
+		}
+	},
+	"scripts": {
+		"test": "phpunit"
+	},
+	"support": {
+		"email": "minify@googlegroups.com",
+		"issues": "https://github.com/mrclay/minify/issues",
+		"wiki": "https://github.com/mrclay/minify/blob/master/docs"
 	}
 }

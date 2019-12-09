@@ -9,14 +9,6 @@ use Minify_Cache_APC;
  */
 final class MinifyCacheAPCTest extends TestCase
 {
-    protected function setUp()
-    {
-        if (!\function_exists('apc_store')) {
-            // FIXME: is APCu extension ok too?
-            static::markTestSkipped('To test this component, install APC extension');
-        }
-    }
-
     public function test1()
     {
         $data = \str_repeat(\md5(\time()) . 'í', 100); // 3400 bytes in UTF-8
@@ -24,5 +16,13 @@ final class MinifyCacheAPCTest extends TestCase
 
         $cache = new Minify_Cache_APC();
         $this->assertTestCache($cache, $id, $data);
+    }
+
+    protected function setUp()
+    {
+        if (!\function_exists('apc_store')) {
+            // FIXME: is APCu extension ok too?
+            static::markTestSkipped('To test this component, install APC extension');
+        }
     }
 }

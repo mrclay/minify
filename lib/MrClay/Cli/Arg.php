@@ -31,14 +31,14 @@ use BadMethodCallException;
  * @method \MrClay\Cli\Arg assertReadable() Assert that the specified file/dir must be readable
  * @method \MrClay\Cli\Arg assertWritable() Assert that the specified file/dir must be writable
  *
- * @property bool mayHaveValue
- * @property bool mustHaveValue
- * @property bool assertFile
- * @property bool assertDir
- * @property bool assertReadable
- * @property bool assertWritable
- * @property bool useAsInfile
- * @property bool useAsOutfile
+ * @property bool $mayHaveValue
+ * @property bool $mustHaveValue
+ * @property bool $assertFile
+ * @property bool $assertDir
+ * @property bool $assertReadable
+ * @property bool $assertWritable
+ * @property bool $useAsInfile
+ * @property bool $useAsOutfile
  *
  * @license http://www.opensource.org/licenses/mit-license.php  MIT License
  */
@@ -69,6 +69,23 @@ class Arg
         if ($isRequired) {
             $this->spec['mustHaveValue'] = true;
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getDefaultSpec()
+    {
+        return array(
+            'mayHaveValue'   => false,
+            'mustHaveValue'  => false,
+            'assertFile'     => false,
+            'assertDir'      => false,
+            'assertReadable' => false,
+            'assertWritable' => false,
+            'useAsInfile'    => false,
+            'useAsOutfile'   => false,
+        );
     }
 
     /**
@@ -112,28 +129,23 @@ class Arg
     }
 
     /**
-     * @return array
-     */
-    public function getDefaultSpec()
-    {
-        return array(
-            'mayHaveValue'   => false,
-            'mustHaveValue'  => false,
-            'assertFile'     => false,
-            'assertDir'      => false,
-            'assertReadable' => false,
-            'assertWritable' => false,
-            'useAsInfile'    => false,
-            'useAsOutfile'   => false,
-        );
-    }
-
-    /**
      * @return string
      */
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * @param string $desc
+     *
+     * @return Arg
+     */
+    public function setDescription($desc)
+    {
+        $this->description = $desc;
+
+        return $this;
     }
 
     /**
@@ -150,18 +162,6 @@ class Arg
     public function isRequired()
     {
         return $this->required;
-    }
-
-    /**
-     * @param string $desc
-     *
-     * @return Arg
-     */
-    public function setDescription($desc)
-    {
-        $this->description = $desc;
-
-        return $this;
     }
 
     /**

@@ -7,7 +7,9 @@ require __DIR__ . '/../../bootstrap.php';
 
 $cli = new MrClay\Cli();
 
-$cli->addRequiredArg('d')->assertDir()->setDescription('Your webserver\'s DOCUMENT_ROOT: Relative paths will be rewritten relative to this path.');
+$cli->addRequiredArg('d')
+    ->assertDir()
+    ->setDescription('Your webserver\'s DOCUMENT_ROOT: Relative paths will be rewritten relative to this path.');
 
 $cli->addOptionalArg('o')->useAsOutfile()->setDescription('Outfile: If given, output will be placed in this file.');
 
@@ -36,20 +38,26 @@ $paths = $cli->getPathArgs();
 $sources = array();
 foreach ($paths as $path) {
     if (\is_file($path)) {
-        $sources[] = new Minify_Source(array(
-            'filepath'      => $path,
-            'minifier'      => $pathRewriter,
-            'minifyOptions' => array('docRoot' => $docRoot),
-        ));
+        $sources[] = new Minify_Source(
+            array(
+                'filepath'      => $path,
+                'minifier'      => $pathRewriter,
+                'minifyOptions' => array('docRoot' => $docRoot),
+            )
+        );
     } else {
-        $sources[] = new Minify_Source(array(
-            'id'       => $path,
-            'content'  => "/*** ${path} not found ***/\n",
-            'minifier' => 'Minify::nullMinifier',
-        ));
+        $sources[] = new Minify_Source(
+            array(
+                'id'       => $path,
+                'content'  => "/*** ${path} not found ***/\n",
+                'minifier' => 'Minify::nullMinifier',
+            )
+        );
     }
 }
-$combined = Minify::combine($sources) . "\n";
+
+$minify = new Minify(new Minify_Cache_Null());
+$combined = $minify->combine($sources) . "\n";
 
 if ($testRun) {
     echo $combined;

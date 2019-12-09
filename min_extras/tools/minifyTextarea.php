@@ -1,7 +1,7 @@
 <?php
 die('Disabled: use this only for testing');
 
-$app = (require __DIR__ . '/../../bootstrap.php');
+$app = require __DIR__ . '/../../bootstrap.php';
 /* @var \Minify\App $app */
 
 // use FirePHP if not already setup
@@ -13,6 +13,11 @@ $app->cache = new Minify_Cache_Null();
 
 $env = $app->env;
 
+/**
+ * @param string $txt
+ *
+ * @return string
+ */
 function h($txt)
 {
     return \htmlspecialchars($txt, \ENT_QUOTES, 'UTF-8');
@@ -45,14 +50,17 @@ if ($env->post('method') === 'Minify and serve') {
     $controller = new Minify_Controller_Files($env, $app->sourceFactory, $app->logger);
 
     try {
-        $app->minify->serve($controller, array(
-            'files'       => $source,
-            'contentType' => Minify::TYPE_HTML,
-        ));
+        $app->minify->serve(
+            $controller,
+            array(
+                'files'       => $source,
+                'contentType' => Minify::TYPE_HTML,
+            )
+        );
     } catch (Exception $e) {
         echo h($e->getMessage());
     }
-    exit;
+    exit();
 }
 
 $tpl = array();
@@ -62,7 +70,8 @@ if (\in_array($env->post('method'), $tpl['classes'], true)) {
     $args = array($textIn);
     if ($env->post('method') === 'Minify_HTML') {
         $args[] = array(
-            'cssMinifier' => array('Minify_CSSmin', 'minify'), 'jsMinifier' => array('JSMin\\JSMin', 'minify'),
+            'cssMinifier' => array('Minify_CSSmin', 'minify'),
+            'jsMinifier'  => array('JSMin\\JSMin', 'minify'),
         );
     }
     $func = array($env->post('method'), 'minify');
@@ -84,15 +93,18 @@ sendPage($tpl);
 
 /**
  * @param Exception $e
- * @param string $input
+ * @param string    $input
  *
  * @return string HTML
  */
 function getExceptionMsg(Exception $e, $input)
 {
     $msg = '<p>' . h($e->getMessage()) . '</p>';
-    if (\strpos(\get_class($e), 'JSMin_Unterminated') === 0
-            && \preg_match('~byte (\d+)~', $e->getMessage(), $m)) {
+    if (
+        \strpos(\get_class($e), 'JSMin_Unterminated') === 0
+        &&
+        \preg_match('~byte (\d+)~', $e->getMessage(), $m)
+    ) {
         $msg .= '<pre>';
         if ($m[1] > 200) {
             $msg .= h(\substr($input, ($m[1] - 200), 200));
@@ -118,12 +130,16 @@ function getExceptionMsg(Exception $e, $input)
 function sendPage($vars)
 {
     \header('Content-Type: text/html; charset=utf-8'); ?>
-<!DOCTYPE html><head><title>minifyTextarea</title></head>
+    <!DOCTYPE html>
+    <head><title>minifyTextarea</title></head>
 
-<p><strong>Warning! Please do not place this application on a public site.</strong> This should be used only for testing.</p>
+    <p>
+        <strong>Warning! Please do not place this application on a public site.</strong> This should be used only for
+        testing.
+    </p>
 
-<?php
-if (isset($vars['exceptionMsg'])) {
+    <?php
+    if (isset($vars['exceptionMsg'])) {
         echo $vars['exceptionMsg'];
     }
     if (isset($vars['time'])) {
@@ -135,51 +151,52 @@ if (isset($vars['exceptionMsg'])) {
 </table>
     ';
     } ?>
-<form action="?2" method="post">
-<p><label>Content<br><textarea name="textIn" cols="80" rows="35" style="width:99%"><?php
-if (isset($vars['output'])) {
-        echo h($vars['output']);
-    } ?></textarea></label></p>
-<p>Minify with: 
-<?php foreach ($vars['classes'] as $minClass) { ?>
-    <input type="submit" name="method" value="<?php echo $minClass; ?>">
-<?php } ?>
-</p>
-<p>...or <input type="submit" name="method" value="Minify and serve"> this HTML to the browser. Also minify: 
-<label>CSS <input type="checkbox" name="minCss" checked></label> : 
-<label>JS <input type="checkbox" name="minJs" checked></label>. 
-<label>Insert BASE element w/ href: <input type="text" name="base" size="20"></label>
-</p>
-</form>
-<?php if (isset($vars['selectByte'])) { ?>
-<script>
-function selectText(el, begin, end) {
-    var len = el.value.length;
-    end = end || len;
-    if (begin == null) {
-        el.select();
-    } else {
-        if (el.setSelectionRange) {
-            el.setSelectionRange(begin, end);
-        } else {
-            if (el.createTextRange) {
-                var tr = el.createTextRange()
-                    ,c = "character";
-                tr.moveStart(c, begin);
-                tr.moveEnd(c, end - len);
-                tr.select();
-            } else {
+    <form action="?2" method="post">
+        <p><label>Content<br><textarea name="textIn" cols="80" rows="35" style="width:99%"><?php
+                    if (isset($vars['output'])) {
+                        echo h($vars['output']);
+                    } ?></textarea></label></p>
+        <p>Minify with:
+            <?php foreach ($vars['classes'] as $minClass) { ?>
+                <input type="submit" name="method" value="<?php echo $minClass; ?>">
+            <?php } ?>
+        </p>
+        <p>...or <input type="submit" name="method" value="Minify and serve"> this HTML to the browser. Also minify:
+            <label>CSS <input type="checkbox" name="minCss" checked></label> :
+            <label>JS <input type="checkbox" name="minJs" checked></label>.
+            <label>Insert BASE element w/ href: <input type="text" name="base" size="20"></label>
+        </p>
+    </form>
+    <?php if (isset($vars['selectByte'])) { ?>
+    <script>
+        function selectText(el, begin, end) {
+            var len = el.value.length;
+            end = end || len;
+            if (begin == null) {
                 el.select();
+            } else {
+                if (el.setSelectionRange) {
+                    el.setSelectionRange(begin, end);
+                } else {
+                    if (el.createTextRange) {
+                        var tr = el.createTextRange()
+                            , c = "character";
+                        tr.moveStart(c, begin);
+                        tr.moveEnd(c, end - len);
+                        tr.select();
+                    } else {
+                        el.select();
+                    }
+                }
             }
+            el.focus();
         }
-    }
-    el.focus();
-}
-window.onload = function () {
-    var ta = document.querySelector('textarea[name="textIn"]');
-    selectText(ta, <?php echo $vars['selectByte']; ?>, <?php echo $vars['selectByte'] + 1; ?>);
-};
-</script>
+
+        window.onload = function () {
+            var ta = document.querySelector('textarea[name="textIn"]');
+            selectText(ta, <?php echo $vars['selectByte']; ?>, <?php echo $vars['selectByte'] + 1; ?>);
+        };
+    </script>
 <?php }
-    exit;
+    exit();
 }

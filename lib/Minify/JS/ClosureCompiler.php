@@ -1,14 +1,11 @@
 <?php
-/**
- * Class Minify_JS_ClosureCompiler
- */
 
 /**
  * Minify Javascript using Google's Closure Compiler API
  *
  * @see  http://code.google.com/closure/compiler/
  *
- * @todo can use a stream wrapper to unit test this?
+ * @TODO : can use a stream wrapper to unit test this?
  */
 class Minify_JS_ClosureCompiler
 {
@@ -87,12 +84,19 @@ class Minify_JS_ClosureCompiler
         if (isset($options[self::OPTION_FALLBACK_FUNCTION])) {
             $this->fallbackMinifier = $options[self::OPTION_FALLBACK_FUNCTION];
         }
+
         if (isset($options[self::OPTION_COMPILER_URL])) {
             $this->serviceUrl = $options[self::OPTION_COMPILER_URL];
         }
-        if (isset($options[self::OPTION_ADDITIONAL_OPTIONS]) && \is_array($options[self::OPTION_ADDITIONAL_OPTIONS])) {
+
+        if (
+            isset($options[self::OPTION_ADDITIONAL_OPTIONS])
+            &&
+            \is_array($options[self::OPTION_ADDITIONAL_OPTIONS])
+        ) {
             $this->additionalOptions = $options[self::OPTION_ADDITIONAL_OPTIONS];
         }
+
         if (isset($options[self::OPTION_MAX_BYTES])) {
             $this->maxBytes = (int) $options[self::OPTION_MAX_BYTES];
         }
@@ -127,9 +131,15 @@ class Minify_JS_ClosureCompiler
         $postBody = $this->buildPostBody($js);
 
         if ($this->maxBytes > 0) {
-            $bytes = (\function_exists('mb_strlen') && ((int) \ini_get('mbstring.func_overload') & 2))
+            /** @noinspection PhpComposerExtensionStubsInspection */
+            $bytes = (
+                \function_exists('mb_strlen')
+                &&
+                (int) \ini_get('mbstring.func_overload') & 2
+            )
                 ? \mb_strlen($postBody, '8bit')
                 : \strlen($postBody);
+
             if ($bytes > $this->maxBytes) {
                 throw new Minify_JS_ClosureCompiler_Exception(
                     'POST content larger than ' . $this->maxBytes . ' bytes'
@@ -142,8 +152,7 @@ class Minify_JS_ClosureCompiler
         if (\preg_match('/^Error\(\d\d?\):/', $response)) {
             if (\is_callable($this->fallbackMinifier)) {
                 // use fallback
-                $response = "/* Received errors from Closure Compiler API:\n${response}"
-                            . "\n(Using fallback minifier)\n*/\n";
+                $response = "/* Received errors from Closure Compiler API:\n${response}" . "\n(Using fallback minifier)\n*/\n";
                 $response .= \call_user_func($this->fallbackMinifier, $js);
             } else {
                 throw new Minify_JS_ClosureCompiler_Exception($response);
@@ -178,7 +187,7 @@ class Minify_JS_ClosureCompiler
                     'output_info' => ($returnErrors ? 'errors' : 'compiled_code'),
                 )
             ),
-            null,
+            '',
             '&'
         );
     }
@@ -194,7 +203,10 @@ class Minify_JS_ClosureCompiler
      */
     protected function getResponse($postBody)
     {
-        $allowUrlFopen = \preg_match('/1|yes|on|true/i', \ini_get('allow_url_fopen'));
+        $allowUrlFopen = \preg_match(
+            '/1|yes|on|true/i',
+            (string) \ini_get('allow_url_fopen')
+        );
 
         if ($allowUrlFopen) {
             $contents = \file_get_contents(
@@ -217,6 +229,11 @@ class Minify_JS_ClosureCompiler
             );
         } elseif (\defined('CURLOPT_POST')) {
             $ch = \curl_init($this->serviceUrl);
+            if ($ch === false) {
+                throw new Minify_JS_ClosureCompiler_Exception(
+                    'Could not make HTTP request: curl_init is false'
+                );
+            }
             \curl_setopt($ch, \CURLOPT_POST, true);
             \curl_setopt($ch, \CURLOPT_RETURNTRANSFER, true);
             \curl_setopt($ch, \CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded'));
@@ -237,7 +254,7 @@ class Minify_JS_ClosureCompiler
             );
         }
 
-        return \trim($contents);
+        return \trim((string) $contents);
     }
 }
 

@@ -1,7 +1,4 @@
 <?php
-/**
- * Class Minify_CSS
- */
 
 /**
  * Minify CSS
@@ -65,19 +62,26 @@ class Minify_CSS
         );
 
         if ($options['removeCharsets']) {
-            $css = \preg_replace('/@charset[^;]+;\\s*/', '', $css);
-        }
-
-        if ($options['compress']) {
-            if (!$options['preserveComments']) {
-                $css = Minify_CSS_Compressor::process($css, $options);
-            } else {
-                $processor = array('Minify_CSS_Compressor', 'process');
-                $css = Minify_CommentPreserver::process($css, $processor, array($options));
+            /** @noinspection NestedPositiveIfStatementsInspection */
+            if (\strpos($css, '@charset') === false) {
+                $css = (string) \preg_replace('/@charset[^;]+;\\s*/', '', $css);
             }
         }
 
-        if (!$options['currentDir'] && !$options['prependRelativePath']) {
+        if ($options['compress']) {
+            if ($options['preserveComments']) {
+                $processor = array('Minify_CSS_Compressor', 'process');
+                $css = Minify_CommentPreserver::process($css, $processor, array($options));
+            } else {
+                $css = Minify_CSS_Compressor::process($css, $options);
+            }
+        }
+
+        if (
+            !$options['currentDir']
+            &&
+            !$options['prependRelativePath']
+        ) {
             return $css;
         }
 

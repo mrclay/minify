@@ -29,18 +29,23 @@ final class MinifyTest extends TestCase
         $_SERVER['HTTP_IF_MODIFIED_SINCE'] = \gmdate('D, d M Y H:i:s \G\M\T', $lastModified);
 
         $minify = new Minify(new Minify_Cache_Null());
-        $env = new Minify_Env(array(
-            'server' => $_SERVER,
-        ));
+        $env = new Minify_Env(
+            array(
+                'server' => $_SERVER,
+            )
+        );
         $sourceFactory = new Minify_Source_Factory($env, array(), new Minify_Cache_Null());
         $controller = new Minify_Controller_Files($env, $sourceFactory);
 
-        $output = $minify->serve($controller, array(
-            'files'            => self::$test_files . '/css/styles.css', // controller casts to array
-            'quiet'            => true,
-            'lastModifiedTime' => $lastModified,
-            'encodeOutput'     => false,
-        ));
+        $output = $minify->serve(
+            $controller,
+            array(
+                'files'            => self::$test_files . '/css/styles.css', // controller casts to array
+                'quiet'            => true,
+                'lastModifiedTime' => $lastModified,
+                'encodeOutput'     => false,
+            )
+        );
 
         $expected = array(
             'success'    => true,
@@ -58,8 +63,8 @@ final class MinifyTest extends TestCase
         static::assertSame($expected, $output, '304 response');
 
         static::markTestIncomplete('minifier classes aren\'t loaded for 304s');
-//        $this->assertTrue(!class_exists('Minify_CSSmin', false),
-//            'Minify : minifier classes aren\'t loaded for 304s');
+        //        $this->assertTrue(!class_exists('Minify_CSSmin', false),
+        //            'Minify : minifier classes aren\'t loaded for 304s');
 
         // Test JS and Expires
 
@@ -86,73 +91,90 @@ final class MinifyTest extends TestCase
 
         unset($_SERVER['HTTP_IF_NONE_MATCH'], $_SERVER['HTTP_IF_MODIFIED_SINCE']);
 
-        $env = new Minify_Env(array(
-            'server' => $_SERVER,
-        ));
+        $env = new Minify_Env(
+            array(
+                'server' => $_SERVER,
+            )
+        );
         $sourceFactory = new Minify_Source_Factory($env, array(), new Minify_Cache_Null());
         $controller = new Minify_Controller_Files($env, $sourceFactory);
-        $output = $minify->serve($controller, array(
-            'files' => array(
-                $minifyTestPath . '/email.js',
-                $minifyTestPath . '/QueryString.js',
-            ),
-            'quiet'        => true,
-            'maxAge'       => 86400,
-            'encodeOutput' => false,
-        ));
+        $output = $minify->serve(
+            $controller,
+            array(
+                'files' => array(
+                    $minifyTestPath . '/email.js',
+                    $minifyTestPath . '/QueryString.js',
+                ),
+                'quiet'        => true,
+                'maxAge'       => 86400,
+                'encodeOutput' => false,
+            )
+        );
 
         static::assertSame($expected, $output, 'JS and Expires');
 
         // test for Issue 73
         $expected = ';function h(){}';
-        $output = $minify->serve($controller, array(
-            'files' => array(
-                $minifyTestPath . '/issue73_1.js',
-                $minifyTestPath . '/issue73_2.js',
-            ),
-            'quiet'        => true,
-            'encodeOutput' => false,
-        ));
+        $output = $minify->serve(
+            $controller,
+            array(
+                'files' => array(
+                    $minifyTestPath . '/issue73_1.js',
+                    $minifyTestPath . '/issue73_2.js',
+                ),
+                'quiet'        => true,
+                'encodeOutput' => false,
+            )
+        );
         $output = $output['content'];
 
         static::assertSame($expected, $output, 'Issue 73');
 
         // test for Issue 89
         $expected = \file_get_contents($minifyTestPath . '/issue89_out.min.css');
-        $output = $minify->serve($controller, array(
-            'files' => array(
-                $minifyTestPath . '/issue89_1.css',
-                $minifyTestPath . '/issue89_2.css',
-            ),
-            'quiet'            => true,
-            'encodeOutput'     => false,
-            'bubbleCssImports' => true,
-        ));
+        $output = $minify->serve(
+            $controller,
+            array(
+                'files' => array(
+                    $minifyTestPath . '/issue89_1.css',
+                    $minifyTestPath . '/issue89_2.css',
+                ),
+                'quiet'            => true,
+                'encodeOutput'     => false,
+                'bubbleCssImports' => true,
+            )
+        );
         $output = $output['content'];
 
         static::assertSame($expected, $output, 'Issue 89 : bubbleCssImports');
 
-        $output = $minify->serve($controller, array(
-            'files' => array(
-                $minifyTestPath . '/issue89_1.css',
-                $minifyTestPath . '/issue89_2.css',
-            ),
-            'quiet'        => true,
-            'encodeOutput' => false,
-        ));
+        $output = $minify->serve(
+            $controller,
+            array(
+                'files' => array(
+                    $minifyTestPath . '/issue89_1.css',
+                    $minifyTestPath . '/issue89_2.css',
+                ),
+                'quiet'        => true,
+                'encodeOutput' => false,
+            )
+        );
         $output = $output['content'];
 
         $defaultOptions = $minify->getDefaultOptions();
 
         static::assertSame(0, \strpos($output, $defaultOptions['importWarning']), 'Issue 89 : detect invalid imports');
 
-        $output = $minify->serve($controller, array(
-            'files' => array(
-                $minifyTestPath . '/issue89_1.css',
-            ),
-            'quiet'        => true,
-            'encodeOutput' => false,
-        ));
+        $output = $minify->serve(
+            $controller,
+            array(
+                'files' => array(
+                    $minifyTestPath . '/issue89_1.css',
+                ),
+                'quiet'        => true,
+                'encodeOutput' => false,
+            )
+        );
         $output = $output['content'];
 
         static::assertFalse(
@@ -162,11 +184,14 @@ final class MinifyTest extends TestCase
 
         // Test Issue 132
         if (\function_exists('mb_strlen') && ((int) \ini_get('mbstring.func_overload') & 2)) {
-            $output = $minify->serve($controller, array(
-                'files'        => array(__DIR__ . '/_test_files/js/issue132.js'),
-                'quiet'        => true,
-                'encodeOutput' => false,
-            ));
+            $output = $minify->serve(
+                $controller,
+                array(
+                    'files'        => array(__DIR__ . '/_test_files/js/issue132.js'),
+                    'quiet'        => true,
+                    'encodeOutput' => false,
+                )
+            );
 
             static::assertSame(
                 77,
@@ -196,22 +221,27 @@ final class MinifyTest extends TestCase
             ),
         );
 
-        $env = new Minify_Env(array(
-            'server' => $_SERVER,
-        ));
+        $env = new Minify_Env(
+            array(
+                'server' => $_SERVER,
+            )
+        );
         $sourceFactory = new Minify_Source_Factory($env, array(), new Minify_Cache_Null());
         $controller = new Minify_Controller_Files($env, $sourceFactory);
 
-        $output = $minify->serve($controller, array(
-            'files' => array(
-                self::$test_files . '/css/styles.css',
-                self::$test_files . '/css/comments.css',
-            ),
-            'quiet'            => true,
-            'lastModifiedTime' => $lastModified,
-            'encodeOutput'     => false,
-            'maxAge'           => false,
-        ));
+        $output = $minify->serve(
+            $controller,
+            array(
+                'files' => array(
+                    self::$test_files . '/css/styles.css',
+                    self::$test_files . '/css/comments.css',
+                ),
+                'quiet'            => true,
+                'lastModifiedTime' => $lastModified,
+                'encodeOutput'     => false,
+                'maxAge'           => false,
+            )
+        );
 
         static::assertSame($expected, $output, 'CSS and Etag/Last-Modified');
     }

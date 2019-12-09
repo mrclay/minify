@@ -4,6 +4,4 @@
 
 require __DIR__ . '/../config.php';
 
-$minifyCachePath = isset($min_cachePath)
-    ? $min_cachePath
-    : '';
+$minifyCachePath = isset($min_cachePath) ? $min_cachePath : '';

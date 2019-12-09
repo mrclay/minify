@@ -1,9 +1,4 @@
 <?php
-/**
- * Class Minify_Cache_XCache
- *
- * @see http://xcache.lighttpd.net/
- */
 
 /**
  * XCache-based cache class for Minify
@@ -16,12 +11,26 @@
  **/
 class Minify_Cache_XCache implements Minify_CacheInterface
 {
+    /**
+     * @var int
+     */
     private $_exp;
 
+    /**
+     * cache of most recently fetched id
+     *
+     * @var int|null
+     */
     private $_lm;
 
+    /**
+     * @var mixed
+     */
     private $_data;
 
+    /**
+     * @var string|null
+     */
     private $_id;
 
     /**
@@ -40,6 +49,8 @@ class Minify_Cache_XCache implements Minify_CacheInterface
      * Send the cached content to output
      *
      * @param string $id cache id
+     *
+     * @return void
      */
     public function display($id)
     {
@@ -65,7 +76,7 @@ class Minify_Cache_XCache implements Minify_CacheInterface
      *
      * @param string $id cache id
      *
-     * @return int size in bytes
+     * @return false|int size in bytes
      */
     public function getSize($id)
     {
@@ -74,6 +85,7 @@ class Minify_Cache_XCache implements Minify_CacheInterface
         }
 
         if (\function_exists('mb_strlen') && ((int) \ini_get('mbstring.func_overload') & 2)) {
+            /** @noinspection PhpComposerExtensionStubsInspection */
             return \mb_strlen($this->_data, '8bit');
         }
 
@@ -103,6 +115,7 @@ class Minify_Cache_XCache implements Minify_CacheInterface
      */
     public function store($id, $data)
     {
+        /** @noinspection PhpUndefinedFunctionInspection */
         return xcache_set($id, "{$_SERVER['REQUEST_TIME']}|{$data}", $this->_exp);
     }
 
@@ -119,6 +132,7 @@ class Minify_Cache_XCache implements Minify_CacheInterface
             return true;
         }
 
+        /** @noinspection PhpUndefinedFunctionInspection */
         $ret = xcache_get($id);
         if ($ret === false) {
             $this->_id = null;

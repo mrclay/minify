@@ -9,7 +9,7 @@
  */
 require __DIR__ . '/bootstrap.php';
 
-/*
+/**
  * Get an HTML-escaped Minify URI for a group or set of files. By default, URIs
  * will contain timestamps to allow far-future Expires headers.
  *
@@ -30,6 +30,7 @@ require __DIR__ . '/bootstrap.php';
  *   'minAppUri' : (default '/min') URI of min directory
  *   'rewriteWorks' : (default true) does mod_rewrite work in min app?
  *   'groupsConfigFile' : specify if different
+ *
  * @return string
  */
 function Minify_getUri($keyOrFiles, $opts = array())
@@ -45,7 +46,7 @@ function Minify_getUri($keyOrFiles, $opts = array())
  * Since this makes a bunch of stat() calls, you might not want to check this
  * on every request.
  *
- * @param array $keysAndFiles group keys and/or file paths/URIs
+ * @param array      $keysAndFiles group keys and/or file paths/URIs
  * @param mixed|null $groupsConfigFile
  *
  * @return int latest modification time of all given keys/files
@@ -58,14 +59,18 @@ function Minify_mtime($keysAndFiles, $groupsConfigFile = null)
     }
     $sources = array();
     foreach ($keysAndFiles as $keyOrFile) {
-        if (\is_object($keyOrFile)
-            || \strpos($keyOrFile, '/') === 0
-            || \strpos($keyOrFile, ':\\') === 1) {
+        if (
+            \is_object($keyOrFile)
+            ||
+            \strpos($keyOrFile, '/') === 0
+            ||
+            \strpos($keyOrFile, ':\\') === 1
+        ) {
             // a file/source obj
             $sources[] = $keyOrFile;
         } else {
             if (!$gc) {
-                $gc = (require $groupsConfigFile);
+                $gc = require $groupsConfigFile;
             }
             foreach ($gc[$keyOrFile] as $source) {
                 $sources[] = $source;

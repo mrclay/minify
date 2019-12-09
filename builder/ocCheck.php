@@ -2,7 +2,7 @@
 /**
  * AJAX checks for zlib.output_compression
  */
-$app = (require __DIR__ . '/../bootstrap.php');
+$app = require __DIR__ . '/../bootstrap.php';
 /* @var \Minify\App $app */
 
 $_oc = \ini_get('zlib.output_compression');
@@ -10,7 +10,7 @@ $_oc = \ini_get('zlib.output_compression');
 // allow access only if builder is enabled
 if (!$app->config->enableBuilder) {
     \header('Location: /');
-    exit;
+    exit();
 }
 
 if ($app->env->get('hello')) {

@@ -1,7 +1,4 @@
 <?php
-/**
- * Class Minify_Controller_Page
- */
 
 /**
  * Controller class for serving a single HTML page
@@ -15,7 +12,7 @@ class Minify_Controller_Page extends Minify_Controller_Base
      *
      * @param array $options controller and Minify options
      *
-     * @return array Minify options
+     * @return Minify_ServeConfiguration
      *
      * Controller options:
      *

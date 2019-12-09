@@ -7,11 +7,15 @@ require __DIR__ . '/../../bootstrap.php';
 
 $cli = new MrClay\Cli();
 
-$cli->addOptionalArg('d')->assertDir()->setDescription('Your webserver\'s DOCUMENT_ROOT: Relative paths will be rewritten relative to this path. This is required if you\'re passing in CSS.');
+$cli->addOptionalArg('d')
+    ->assertDir()
+    ->setDescription('Your webserver\'s DOCUMENT_ROOT: Relative paths will be rewritten relative to this path. This is required if you\'re passing in CSS.');
 
 $cli->addOptionalArg('o')->useAsOutfile()->setDescription('Outfile: If given, output will be placed in this file.');
 
-$cli->addOptionalArg('t')->mustHaveValue()->setDescription('Type: must be "css", "js", or "html". This must be provided if passing content via STDIN.');
+$cli->addOptionalArg('t')
+    ->mustHaveValue()
+    ->setDescription('Type: must be "css", "js", or "html". This must be provided if passing content via STDIN.');
 
 if (!$cli->validate()) {
     if ($cli->isHelpRequest) {
@@ -47,16 +51,20 @@ $sources = array();
 if ($paths) {
     foreach ($paths as $path) {
         if (\is_file($path)) {
-            $sources[] = new Minify_Source(array(
-                'filepath'      => $path,
-                'minifyOptions' => array('docRoot' => $docRoot),
-            ));
+            $sources[] = new Minify_Source(
+                array(
+                    'filepath'      => $path,
+                    'minifyOptions' => array('docRoot' => $docRoot),
+                )
+            );
         } else {
-            $sources[] = new Minify_Source(array(
-                'id'       => $path,
-                'content'  => "/*** ${path} not found ***/\n",
-                'minifier' => 'Minify::nullMinifier',
-            ));
+            $sources[] = new Minify_Source(
+                array(
+                    'id'       => $path,
+                    'content'  => "/*** ${path} not found ***/\n",
+                    'minifier' => 'Minify::nullMinifier',
+                )
+            );
         }
     }
 } else {
@@ -66,15 +74,18 @@ if ($paths) {
         exit(1);
     }
     $in = $cli->openInput();
-    $sources[] = new Minify_Source(array(
-        'id'          => 'one',
-        'content'     => \stream_get_contents($in),
-        'contentType' => $type,
-    ));
+    $sources[] = new Minify_Source(
+        array(
+            'id'          => 'one',
+            'content'     => \stream_get_contents($in),
+            'contentType' => $type,
+        )
+    );
     $cli->closeInput();
 }
 
-$combined = Minify::combine($sources) . "\n";
+$minify = new Minify(new Minify_Cache_Null());
+$combined = $minify->combine($sources) . "\n";
 
 $fp = $cli->openOutput();
 \fwrite($fp, $combined);

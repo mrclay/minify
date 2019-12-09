@@ -9,11 +9,6 @@ use Minify_CSS_UriRewriter;
  */
 final class MinifyCSSUriRewriterTest extends TestCase
 {
-    protected function setUp()
-    {
-        Minify_CSS_UriRewriter::$debugText = '';
-    }
-
     public function test1()
     {
         $in = \file_get_contents(self::$test_files . '/css_uriRewriter/in.css');
@@ -57,5 +52,10 @@ final class MinifyCSSUriRewriterTest extends TestCase
         );
 
         static::assertSame($exp, $actual, 'Issue 99, debug: ' . Minify_CSS_UriRewriter::$debugText);
+    }
+
+    protected function setUp()
+    {
+        Minify_CSS_UriRewriter::$debugText = '';
     }
 }

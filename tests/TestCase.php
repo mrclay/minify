@@ -19,25 +19,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get number of bytes in a string regardless of mbstring.func_overload
-     *
-     * @param string $str
-     *
-     * @return int
-     */
-    protected function countBytes($str)
-    {
-        return (\function_exists('mb_strlen') && ((int) \ini_get('mbstring.func_overload') & 2))
-            ? \mb_strlen($str, '8bit')
-            : \strlen($str);
-    }
-
-    /**
      * Common assertion for cache tests.
      *
      * @param Minify_CacheInterface $cache
-     * @param string $id
-     * @param string $data
+     * @param string                $id
+     * @param string                $data
      */
     protected function assertTestCache(Minify_CacheInterface $cache, $id, $data)
     {
@@ -52,6 +38,20 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
         static::assertSame($data, $displayed, "${id} display");
         static::assertSame($data, $cache->fetch($id), "${id} fetch");
+    }
+
+    /**
+     * Get number of bytes in a string regardless of mbstring.func_overload
+     *
+     * @param string $str
+     *
+     * @return int
+     */
+    protected function countBytes($str)
+    {
+        return (\function_exists('mb_strlen') && ((int) \ini_get('mbstring.func_overload') & 2))
+            ? \mb_strlen($str, '8bit')
+            : \strlen($str);
     }
 
     /**

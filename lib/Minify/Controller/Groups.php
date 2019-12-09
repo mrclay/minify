@@ -1,7 +1,4 @@
 <?php
-/**
- * Class Minify_Controller_Groups
- */
 
 /**
  * Controller class for serving predetermined groups of minimized sets, selected
@@ -27,7 +24,9 @@ class Minify_Controller_Groups extends Minify_Controller_Files
      * @param array $options controller and Minify options
      *
      * 'groups': (required) array mapping PATH_INFO strings to arrays
-     * of complete file paths. @return array Minify options
+     * of complete file paths. @return Minify_ServeConfiguration
+     *
+     * @return Minify_ServeConfiguration
      *
      * @see Minify_Controller_Groups
      */

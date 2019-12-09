@@ -14,10 +14,13 @@ final class MinifyHTMLTest extends TestCase
         $src = \file_get_contents(self::$test_files . '/html/before.html');
         $minExpected = \file_get_contents(self::$test_files . '/html/before.min.html');
 
-        $minOutput = Minify_HTML::minify($src, array(
-            'cssMinifier' => array('Minify_CSSmin', 'minify'),
-            'jsMinifier'  => array('JSMin\\JSMin', 'minify'),
-        ));
+        $minOutput = Minify_HTML::minify(
+            $src,
+            array(
+                'cssMinifier' => array('Minify_CSSmin', 'minify'),
+                'jsMinifier'  => array('JSMin\\JSMin', 'minify'),
+            )
+        );
 
         static::assertSame($minExpected, $minOutput);
     }
@@ -27,10 +30,13 @@ final class MinifyHTMLTest extends TestCase
         $src = \file_get_contents(self::$test_files . '/html/before2.html');
         $minExpected = \file_get_contents(self::$test_files . '/html/before2.min.html');
 
-        $minOutput = Minify_HTML::minify($src, array(
-            'cssMinifier' => array('Minify_CSSmin', 'minify'),
-            'jsMinifier'  => array('JSMin\\JSMin', 'minify'),
-        ));
+        $minOutput = Minify_HTML::minify(
+            $src,
+            array(
+                'cssMinifier' => array('Minify_CSSmin', 'minify'),
+                'jsMinifier'  => array('JSMin\\JSMin', 'minify'),
+            )
+        );
 
         static::assertSame($minExpected, $minOutput);
     }

@@ -1,7 +1,4 @@
 <?php
-/**
- * Class Minify_ImportProcessor
- */
 
 /**
  * Linearize a CSS/JS file by including content specified by CSS import
@@ -15,17 +12,55 @@
  */
 class Minify_ImportProcessor
 {
+    /**
+     * @var array
+     */
     public static $filesIncluded = array();
 
+    /**
+     * Bom => Byte-Length
+     *
+     * INFO: https://en.wikipedia.org/wiki/Byte_order_mark
+     *
+     * @var array
+     */
+    private static $BOM = array(
+        "\xef\xbb\xbf"     => 3, // UTF-8 BOM
+        'ï»¿'              => 6, // UTF-8 BOM as "WINDOWS-1252" (one char has [maybe] more then one byte ...)
+        "\x00\x00\xfe\xff" => 4, // UTF-32 (BE) BOM
+        '  þÿ'             => 6, // UTF-32 (BE) BOM as "WINDOWS-1252"
+        "\xff\xfe\x00\x00" => 4, // UTF-32 (LE) BOM
+        'ÿþ  '             => 6, // UTF-32 (LE) BOM as "WINDOWS-1252"
+        "\xfe\xff"         => 2, // UTF-16 (BE) BOM
+        'þÿ'               => 4, // UTF-16 (BE) BOM as "WINDOWS-1252"
+        "\xff\xfe"         => 2, // UTF-16 (LE) BOM
+        'ÿþ'               => 4, // UTF-16 (LE) BOM as "WINDOWS-1252"
+    );
+
+    /**
+     * @var bool
+     */
     private static $_isCss;
 
-    // allows callback funcs to know the current directory
+    /**
+     * allows callback funcs to know the current directory
+     *
+     * @var string
+     */
     private $_currentDir;
 
-    // allows callback funcs to know the directory of the file that inherits this one
+    /**
+     * allows callback funcs to know the directory of the file that inherits this one
+     *
+     * @var string
+     */
     private $_previewsDir;
 
-    // allows _importCB to write the fetched content back to the obj
+    /**
+     * allows _importCB to write the fetched content back to the obj
+     *
+     * @var string
+     */
     private $_importedContent = '';
 
     /**
@@ -38,37 +73,88 @@ class Minify_ImportProcessor
         $this->_previewsDir = $previewsDir;
     }
 
+    /**
+     * @param string $file
+     *
+     * @return string
+     */
     public static function process($file)
     {
         self::$filesIncluded = array();
         self::$_isCss = (\strtolower(\substr($file, -4)) === '.css');
-        $obj = new Minify_ImportProcessor(\dirname($file));
+        $obj = new self(\dirname($file));
 
         return $obj->_getContent($file);
     }
 
+    /**
+     * Remove the BOM from UTF-8 / UTF-16 / UTF-32 strings.
+     *
+     * @param string $str <p>The input string.</p>
+     *
+     * @return string
+     *                <p>A string without UTF-BOM.</p>
+     */
+    private static function remove_bom($str)
+    {
+        if ($str === '') {
+            return '';
+        }
+
+        $str_length = \strlen($str);
+        foreach (self::$BOM as $bom_string => $bom_byte_length) {
+            if (\strpos($str, $bom_string) === 0) {
+                /** @var false|string $str_tmp - needed for PhpStan (stubs error) */
+                $str_tmp = \substr($str, $bom_byte_length, $str_length);
+                if ($str_tmp === false) {
+                    return '';
+                }
+
+                $str_length -= (int) $bom_byte_length;
+
+                $str = (string) $str_tmp;
+            }
+        }
+
+        return $str;
+    }
+
+    /**
+     * @param string $file
+     * @param bool   $is_imported
+     *
+     * @return string
+     */
     private function _getContent($file, $is_imported = false)
     {
-        $file = \preg_replace('~\\?.*~', '', $file);
-        $file = \realpath($file);
-        if (!$file
-            || \in_array($file, self::$filesIncluded, true)
-            || ($content = @\file_get_contents($file)) === false) {
+        $file = \realpath(
+            (string) \preg_replace('~\\?.*~', '', $file)
+        );
+
+        /** @noinspection PhpUsageOfSilenceOperatorInspection */
+        if (
+            !$file
+            ||
+            \in_array($file, self::$filesIncluded, true)
+            ||
+            ($content = @\file_get_contents($file)) === false
+        ) {
             // file missing, already included, or failed read
             return '';
         }
-        self::$filesIncluded[] = \realpath($file);
+
+        self::$filesIncluded[] = $file;
         $this->_currentDir = \dirname($file);
 
-        // remove UTF-8 BOM if present
-        if (\pack('CCC', 0xef, 0xbb, 0xbf) === \substr($content, 0, 3)) {
-            $content = \substr($content, 3);
-        }
+        // remove BOM if present
+        $content = self::remove_bom($content);
+
         // ensure uniform EOLs
         $content = \str_replace("\r\n", "\n", $content);
 
-        // process @imports
-        $pattern = '/
+        if (\strpos($content, '@import') !== false) {
+            // process @imports
+            $pattern = '/
                 @import\\s+
                 (?:url\\(\\s*)?      # maybe url(
                 [\'"]?               # maybe quote
@@ -78,18 +164,27 @@ class Minify_ImportProcessor
                 ([a-zA-Z,\\s]*)?     # 2 = media list
                 ;                    # end token
             /x';
-        $content = \preg_replace_callback($pattern, array($this, '_importCB'), $content);
+            $content = (string) \preg_replace_callback($pattern, array($this, '_importCB'), $content);
+        }
 
-        // You only need to rework the import-path if the script is imported
+        // You only need to rework the import-path if the script is imported.
         if (self::$_isCss && $is_imported) {
             // rewrite remaining relative URIs
-            $pattern = '/url\\(\\s*([^\\)\\s]+)\\s*\\)/';
-            $content = \preg_replace_callback($pattern, array($this, '_urlCB'), $content);
+            /** @noinspection NestedPositiveIfStatementsInspection */
+            if (\strpos($content, 'url(') !== false) {
+                $pattern = '/url\\(\\s*([^\\)\\s]+)\\s*\\)/';
+                $content = (string) \preg_replace_callback($pattern, array($this, '_urlCB'), $content);
+            }
         }
 
         return $this->_importedContent . $content;
     }
 
+    /**
+     * @param string[] $m
+     *
+     * @return string
+     */
     private function _importCB($m)
     {
         $url = $m[1];
@@ -98,49 +193,65 @@ class Minify_ImportProcessor
         if (\strpos($url, '://') > 0) {
             // protocol, leave in place for CSS, comment for JS
             return self::$_isCss
-                ? $m[0]
+                ? (string) $m[0]
                 : '/* Minify_ImportProcessor will not include remote content */';
         }
-        if ($url[0] === '/') {
+
+        if (\strpos($url, '/') === 0) {
             // protocol-relative or root path
             $url = \ltrim($url, '/');
-            $file = \realpath($_SERVER['DOCUMENT_ROOT']) . \DIRECTORY_SEPARATOR
-                    . \strtr($url, '/', \DIRECTORY_SEPARATOR);
+            $file = \realpath($_SERVER['DOCUMENT_ROOT']) . \DIRECTORY_SEPARATOR . \str_replace('/', \DIRECTORY_SEPARATOR, $url);
         } else {
             // relative to current path
-            $file = $this->_currentDir . \DIRECTORY_SEPARATOR
-                    . \strtr($url, '/', \DIRECTORY_SEPARATOR);
+            $file = $this->_currentDir . \DIRECTORY_SEPARATOR . \str_replace('/', \DIRECTORY_SEPARATOR, $url);
         }
-        $obj = new Minify_ImportProcessor(\dirname($file), $this->_currentDir);
+
+        $obj = new self(\dirname($file), $this->_currentDir);
         $content = $obj->_getContent($file, true);
+
         if ($content === '') {
             // failed. leave in place for CSS, comment for JS
             return self::$_isCss
-                ? $m[0]
+                ? (string) $m[0]
                 : "/* Minify_ImportProcessor could not fetch '{$file}' */";
         }
 
-        return (!self::$_isCss || \preg_match('@(?:^$|\\ball\\b)@', $mediaList))
+        return (
+            !self::$_isCss
+            ||
+            (
+                !$mediaList
+                ||
+                \preg_match('@(?:^$|\\ball\\b)@', $mediaList)
+            )
+        )
             ? $content
             : "@media {$mediaList} {\n{$content}\n}\n";
     }
 
+    /**
+     * @param string[] $m
+     *
+     * @return string
+     */
     private function _urlCB($m)
     {
         // $m[1] is either quoted or not
+        /** @noinspection SubStrUsedAsStrPosInspection */
         $quote = ($m[1][0] === "'" || $m[1][0] === '"') ? $m[1][0] : '';
 
-        $url = ($quote === '') ? $m[1] : \substr($m[1], 1, \strlen($m[1]) - 2);
+        $url = ($quote === '') ? $m[1] : \substr($m[1], 1, -1);
 
         if ($url[0] !== '/') {
+            /** @noinspection MissingOrEmptyGroupStatementInspection */
+            /** @noinspection PhpStatementHasEmptyBodyInspection */
             if (\strpos($url, '//') > 0) {
                 // probably starts with protocol, do not alter
             } else {
                 // prepend path with current dir separator (OS-independent)
-                $path = $this->_currentDir
-                        . \DIRECTORY_SEPARATOR . \strtr($url, '/', \DIRECTORY_SEPARATOR);
+                $path = $this->_currentDir . \DIRECTORY_SEPARATOR . \str_replace('/', \DIRECTORY_SEPARATOR, $url);
                 // update the relative path by the directory of the file that imported this one
-                $url = self::getPathDiff(\realpath($this->_previewsDir), $path);
+                $url = $this->getPathDiff((string) \realpath($this->_previewsDir), $path);
             }
         }
 
@@ -160,8 +271,16 @@ class Minify_ImportProcessor
         $realTo = $this->truepath($to);
 
         $arFrom = \explode($ps, \rtrim($realFrom, $ps));
+        \assert(\is_array($arFrom));
         $arTo = \explode($ps, \rtrim($realTo, $ps));
-        while (\count($arFrom) && \count($arTo) && ($arFrom[0] === $arTo[0])) {
+        \assert(\is_array($arTo));
+        while (
+            \count($arFrom)
+            &&
+            \count($arTo)
+            &&
+            $arFrom[0] === $arTo[0]
+        ) {
             \array_shift($arFrom);
             \array_shift($arTo);
         }
@@ -181,16 +300,21 @@ class Minify_ImportProcessor
     private function truepath($path)
     {
         // whether $path is unix or not
-        $unipath = ($path === '') || ($path[0] !== '/');
+        $unipath = $path === '' || $path[0] !== '/';
 
         // attempts to detect if path is relative in which case, add cwd
-        if (\strpos($path, ':') === false && $unipath) {
+        if (
+            $unipath
+            &&
+            \strpos($path, ':') === false
+        ) {
             $path = $this->_currentDir . \DIRECTORY_SEPARATOR . $path;
         }
 
         // resolve path parts (single dot, double dot and double delimiters)
         $path = \str_replace(array('/', '\\'), \DIRECTORY_SEPARATOR, $path);
-        $parts = \array_filter(\explode(\DIRECTORY_SEPARATOR, $path), 'strlen');
+        $parts = \array_filter(\explode(\DIRECTORY_SEPARATOR, $path), '\strlen');
+
         $absolutes = array();
         foreach ($parts as $part) {
             if ($part === '.') {
@@ -204,9 +328,13 @@ class Minify_ImportProcessor
         }
 
         $path = \implode(\DIRECTORY_SEPARATOR, $absolutes);
+
         // resolve any symlinks
-        if (\file_exists($path) && \linkinfo($path) > 0) {
-            $path = \readlink($path);
+        if ($path && \file_exists($path) && \linkinfo($path) > 0) {
+            $pathTmp = \readlink($path);
+            if ($pathTmp !== false) {
+                $path = (string) $pathTmp;
+            }
         }
 
         // put initial separator that could have been lost

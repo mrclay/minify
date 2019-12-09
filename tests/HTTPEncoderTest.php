@@ -9,23 +9,16 @@ use HTTP_Encoder;
  */
 final class HTTPEncoderTest extends TestCase
 {
-    /**
-     * @dataProvider ToIe6DataProvider
-     * @preserveGlobals
-     *
-     * @param mixed $ua
-     * @param mixed $ae
-     * @param mixed $exp
-     * @param mixed $desc
-     */
-    public function testToIe6($ua, $ae, $exp, $desc)
+    public function EncodeNonIeDataProvider()
     {
-        HTTP_Encoder::$encodeToIe6 = true;
-
-        $_SERVER['HTTP_USER_AGENT'] = $ua;
-        $_SERVER['HTTP_ACCEPT_ENCODING'] = $ae;
-        $ret = HTTP_Encoder::getAcceptedEncoding();
-        static::assertSame($exp, $ret, $desc);
+        return array(
+            array(
+                'ua'   => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)',
+                'ae'   => 'gzip, deflate',
+                'exp'  => array('', ''),
+                'desc' => 'IE6 w/ "enhanced security"',
+            ),
+        );
     }
 
     public function ToIe6DataProvider()
@@ -94,16 +87,23 @@ final class HTTPEncoderTest extends TestCase
         static::assertSame($exp, $ret, $desc);
     }
 
-    public function EncodeNonIeDataProvider()
+    /**
+     * @dataProvider ToIe6DataProvider
+     * @preserveGlobals
+     *
+     * @param mixed $ua
+     * @param mixed $ae
+     * @param mixed $exp
+     * @param mixed $desc
+     */
+    public function testToIe6($ua, $ae, $exp, $desc)
     {
-        return array(
-            array(
-                'ua'   => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)',
-                'ae'   => 'gzip, deflate',
-                'exp'  => array('', ''),
-                'desc' => 'IE6 w/ "enhanced security"',
-            ),
-        );
+        HTTP_Encoder::$encodeToIe6 = true;
+
+        $_SERVER['HTTP_USER_AGENT'] = $ua;
+        $_SERVER['HTTP_ACCEPT_ENCODING'] = $ae;
+        $ret = HTTP_Encoder::getAcceptedEncoding();
+        static::assertSame($exp, $ret, $desc . ' | tested: ' . \print_r($ua, true));
     }
 
     public function testZlibEncode()
@@ -126,10 +126,12 @@ final class HTTPEncoderTest extends TestCase
         );
 
         foreach ($encodingTests as $test) {
-            $e = new HTTP_Encoder(array(
-                'content' => $variedContent,
-                'method'  => $test['method'],
-            ));
+            $e = new HTTP_Encoder(
+                array(
+                    'content' => $variedContent,
+                    'method'  => $test['method'],
+                )
+            );
             $e->encode(9);
             $ret = $this->countBytes($e->getContent());
 
@@ -139,8 +141,7 @@ final class HTTPEncoderTest extends TestCase
             static::assertSame($variedContent, $roundTrip, $desc);
 
             // test expected compressed size
-            $desc = "{$test['method']} : compressed to "
-                . \sprintf('%4.2f%% of original', $ret / $variedLength * 100);
+            $desc = "{$test['method']} : compressed to " . \sprintf('%4.2f%% of original', $ret / $variedLength * 100);
             static::assertLessThan(100, \abs($ret - $test['exp']), $desc);
         }
 
@@ -171,8 +172,8 @@ function _phpman_gzdecode($data, &$filename = '', &$error = '', $maxlength = nul
 {
     $mbIntEnc = null;
     $hasMbOverload = (\function_exists('mb_strlen')
-                      && (\ini_get('mbstring.func_overload') !== '')
-                      && ((int) \ini_get('mbstring.func_overload') & 2));
+        && (\ini_get('mbstring.func_overload') !== '')
+        && ((int) \ini_get('mbstring.func_overload') & 2));
     if ($hasMbOverload) {
         $mbIntEnc = \mb_internal_encoding();
         \mb_internal_encoding('8bit');
@@ -312,18 +313,18 @@ function _phpman_gzdecode($data, &$filename = '', &$error = '', $maxlength = nul
     $data = '';
     if ($bodylen > 0) {
         switch ($method) {
-        case 8:
-            // Currently the only supported compression method:
-            $data = \gzinflate($body, $maxlength);
+            case 8:
+                // Currently the only supported compression method:
+                $data = \gzinflate($body, $maxlength);
 
-            break;
-        default:
-            $error = 'Unknown compression method.';
-            if ($mbIntEnc !== null) {
-                \mb_internal_encoding($mbIntEnc);
-            }
+                break;
+            default:
+                $error = 'Unknown compression method.';
+                if ($mbIntEnc !== null) {
+                    \mb_internal_encoding($mbIntEnc);
+                }
 
-            return false;
+                return false;
         }
     }  // zero-byte body content is allowed
     // Verifiy CRC32

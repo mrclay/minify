@@ -9,12 +9,6 @@ use Minify_HTML_Helper;
  */
 final class LessSourceTest extends TestCase
 {
-    protected function setUp()
-    {
-        $this->realDocRoot = $_SERVER['DOCUMENT_ROOT'];
-        $_SERVER['DOCUMENT_ROOT'] = self::$document_root;
-    }
-
     /**
      * @see https://github.com/mrclay/minify/issues/500
      */
@@ -41,5 +35,11 @@ final class LessSourceTest extends TestCase
         $res = Minify_HTML_Helper::getUri('less', $options);
 
         static::assertSame("/min/g=less&amp;{$max}", $res);
+    }
+
+    protected function setUp()
+    {
+        $this->realDocRoot = $_SERVER['DOCUMENT_ROOT'];
+        $_SERVER['DOCUMENT_ROOT'] = self::$document_root;
     }
 }

@@ -10,6 +10,61 @@ use JSMin\JSMin;
  */
 final class JSMinTest extends TestCase
 {
+    public function JSMinExceptionDataProvider()
+    {
+        // $js, $label, $expClass, $expMessage
+        return array(
+            array(
+                '"Hello',
+                'Unterminated String',
+                'JSMin\UnterminatedStringException',
+                'JSMin: Unterminated String at byte 5: "Hello',
+            ),
+
+            array(
+                "return /regexp\n}",
+                'Unterminated RegExp',
+                'JSMin\UnterminatedRegExpException',
+                "JSMin: Unterminated RegExp at byte 14: /regexp\n",
+            ),
+
+            array(
+                "return/regexp\n}",
+                'Unterminated RegExp',
+                'JSMin\UnterminatedRegExpException',
+                "JSMin: Unterminated RegExp at byte 13: /regexp\n",
+            ),
+
+            array(
+                ";return/regexp\n}",
+                'Unterminated RegExp',
+                'JSMin\UnterminatedRegExpException',
+                "JSMin: Unterminated RegExp at byte 14: /regexp\n",
+            ),
+
+            array(
+                ";return /regexp\n}",
+                'Unterminated RegExp',
+                'JSMin\UnterminatedRegExpException',
+                "JSMin: Unterminated RegExp at byte 15: /regexp\n",
+            ),
+
+            array(
+                "typeof/regexp\n}",
+                'Unterminated RegExp',
+                'JSMin\UnterminatedRegExpException',
+                "JSMin: Unterminated RegExp at byte 13: /regexp\n",
+            ),
+
+            array(
+                '/* Comment ',
+                'Unterminated Comment',
+                'JSMin\UnterminatedCommentException',
+                'JSMin: Unterminated comment at byte 11: /* Comment ',
+            ),
+        );
+    }
+
     public function test1()
     {
         $src = \file_get_contents(self::$test_files . '/js/before.js');
@@ -74,60 +129,5 @@ final class JSMinTest extends TestCase
             $eMsg = $e->getMessage();
         }
         static::assertTrue($eClass === $expClass && $eMsg === $expMessage, 'Throw on ' . $label);
-    }
-
-    public function JSMinExceptionDataProvider()
-    {
-        // $js, $label, $expClass, $expMessage
-        return array(
-            array(
-                '"Hello',
-                'Unterminated String',
-                'JSMin\UnterminatedStringException',
-                'JSMin: Unterminated String at byte 5: "Hello',
-            ),
-
-            array(
-                "return /regexp\n}",
-                'Unterminated RegExp',
-                'JSMin\UnterminatedRegExpException',
-                "JSMin: Unterminated RegExp at byte 14: /regexp\n",
-            ),
-
-            array(
-                "return/regexp\n}",
-                'Unterminated RegExp',
-                'JSMin\UnterminatedRegExpException',
-                "JSMin: Unterminated RegExp at byte 13: /regexp\n",
-            ),
-
-            array(
-                ";return/regexp\n}",
-                'Unterminated RegExp',
-                'JSMin\UnterminatedRegExpException',
-                "JSMin: Unterminated RegExp at byte 14: /regexp\n",
-            ),
-
-            array(
-                ";return /regexp\n}",
-                'Unterminated RegExp',
-                'JSMin\UnterminatedRegExpException',
-                "JSMin: Unterminated RegExp at byte 15: /regexp\n",
-            ),
-
-            array(
-                "typeof/regexp\n}",
-                'Unterminated RegExp',
-                'JSMin\UnterminatedRegExpException',
-                "JSMin: Unterminated RegExp at byte 13: /regexp\n",
-            ),
-
-            array(
-                '/* Comment ',
-                'Unterminated Comment',
-                'JSMin\UnterminatedCommentException',
-                'JSMin: Unterminated comment at byte 11: /* Comment ',
-            ),
-        );
     }
 }

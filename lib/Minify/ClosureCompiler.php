@@ -1,7 +1,4 @@
 <?php
-/**
- * Class Minify_ClosureCompiler
- */
 
 /**
  * Compress Javascript using the Closure Compiler
@@ -25,6 +22,9 @@
  */
 class Minify_ClosureCompiler
 {
+    /**
+     * @var bool
+     */
     public static $isDebug = false;
 
     /**
@@ -85,8 +85,8 @@ class Minify_ClosureCompiler
      * @param string $js
      * @param array  $options
      *
-     * @throws Minify_ClosureCompiler_Exception
      * @throws Exception
+     * @throws Minify_ClosureCompiler_Exception
      *
      * @return string
      */
@@ -107,24 +107,33 @@ class Minify_ClosureCompiler
     }
 
     /**
-     * @param string $jarFile
+     * Write $content to a temporary file residing in $dir.
+     *
+     * @param string $dir
+     * @param string $content
      *
      * @throws Minify_ClosureCompiler_Exception
+     *
+     * @return string
      */
-    protected function checkJar($jarFile)
+    protected function dumpFile($dir, $content)
     {
-        if (!\is_file($jarFile)) {
-            throw new Minify_ClosureCompiler_Exception('$jarFile(' . $jarFile . ') is not a valid file.');
+        $this->checkTempdir($dir);
+        $tmpFile = \tempnam($dir, 'cc_');
+        if (!$tmpFile) {
+            throw new Minify_ClosureCompiler_Exception('Could not create temp file in "' . $dir . '".');
         }
-        if (!\is_readable($jarFile)) {
-            throw new Minify_ClosureCompiler_Exception('$jarFile(' . $jarFile . ') is not readable.');
-        }
+        \file_put_contents($tmpFile, $content);
+
+        return $tmpFile;
     }
 
     /**
      * @param string $tempDir
      *
      * @throws Minify_ClosureCompiler_Exception
+     *
+     * @return void
      */
     protected function checkTempdir($tempDir)
     {
@@ -149,28 +158,6 @@ class Minify_ClosureCompiler
         $command = $this->getCommand($options, $tmpFile);
 
         return \implode("\n", $this->shell($command));
-    }
-
-    /**
-     * Write $content to a temporary file residing in $dir.
-     *
-     * @param string $dir
-     * @param string $content
-     *
-     * @throws Minify_ClosureCompiler_Exception
-     *
-     * @return string
-     */
-    protected function dumpFile($dir, $content)
-    {
-        $this->checkTempdir($dir);
-        $tmpFile = \tempnam($dir, 'cc_');
-        if (!$tmpFile) {
-            throw new Minify_ClosureCompiler_Exception('Could not create temp file in "' . $dir . '".');
-        }
-        \file_put_contents($tmpFile, $content);
-
-        return $tmpFile;
     }
 
     /**
@@ -203,6 +190,23 @@ class Minify_ClosureCompiler
             '-jar',
             \escapeshellarg(self::$jarFile),
         );
+    }
+
+    /**
+     * @param string $jarFile
+     *
+     * @throws Minify_ClosureCompiler_Exception
+     *
+     * @return void
+     */
+    protected function checkJar($jarFile)
+    {
+        if (!\is_file($jarFile)) {
+            throw new Minify_ClosureCompiler_Exception('$jarFile(' . $jarFile . ') is not a valid file.');
+        }
+        if (!\is_readable($jarFile)) {
+            throw new Minify_ClosureCompiler_Exception('$jarFile(' . $jarFile . ') is not readable.');
+        }
     }
 
     /**

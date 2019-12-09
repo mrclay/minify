@@ -27,6 +27,33 @@ final class JsClosureCompilerTest extends TestCase
         static::assertSame($minExpected, $minOutput, 'Minify_JS_ClosureCompiler : Overall');
     }
 
+    /**
+     * Call closure compiler, but intercept API limit errors.
+     *
+     * @param string $script
+     * @param array  $options
+     *
+     * @return string
+     */
+    private function compile($script, $options = array())
+    {
+        $result = Minify_JS_ClosureCompiler::minify($script, $options);
+
+        // output may contain an error message, and original source:
+        // /* Received errors from Closure Compiler API:
+        // Error(22): Too many compiles performed recently.  Try again later.
+        // (Using fallback minifier)
+        // */
+        // (function(window,undefined){function addOne(input){return 1+input;}
+        // window.addOne=addOne;window.undefined=undefined;})(window);
+
+        static::assertNotContains('Error(22): Too many compiles', $result);
+
+        return $result;
+    }
+
+    // Test maximum byte size check (default)
+
     public function test2()
     {
         $src = "function blah({ return 'blah';} ";
@@ -43,7 +70,8 @@ final class JsClosureCompilerTest extends TestCase
         );
     }
 
-    // Test maximum byte size check (default)
+    // Test maximum byte size check (no limit)
+
     public function test3()
     {
         $fn = '(function() {})();';
@@ -64,18 +92,23 @@ final class JsClosureCompilerTest extends TestCase
         static::assertSame($expected, $e->getMessage(), 'Message must tell how big maximum byte size is');
     }
 
-    // Test maximum byte size check (no limit)
+    // Test maximum byte size check (custom)
+
     public function test4()
     {
         $src = '(function(){})();';
-        $minOutput = $this->compile($src, array(
-            Minify_JS_ClosureCompiler::OPTION_MAX_BYTES => 0,
-        ));
+        $minOutput = $this->compile(
+            $src,
+            array(
+                Minify_JS_ClosureCompiler::OPTION_MAX_BYTES => 0,
+            )
+        );
 
         static::assertSame($src, $minOutput, 'With no limit set,  it should compile properly');
     }
 
-    // Test maximum byte size check (custom)
+    // Test additional options passed to HTTP request
+
     public function test5()
     {
         $src = '(function() {})();';
@@ -83,9 +116,12 @@ final class JsClosureCompilerTest extends TestCase
         $e = null;
 
         try {
-            $this->compile($src, array(
-                Minify_JS_ClosureCompiler::OPTION_MAX_BYTES => $allowedBytes,
-            ));
+            $this->compile(
+                $src,
+                array(
+                    Minify_JS_ClosureCompiler::OPTION_MAX_BYTES => $allowedBytes,
+                )
+            );
         } catch (Minify_JS_ClosureCompiler_Exception $e) {
         }
         static::assertInstanceOf(
@@ -98,18 +134,20 @@ final class JsClosureCompilerTest extends TestCase
         static::assertSame($expected, $e->getMessage(), 'Message must tell how big maximum byte size is');
     }
 
-    // Test additional options passed to HTTP request
     public function test6()
     {
         $ecmascript3 = '[1,].length;';
         $e = null;
 
         try {
-            $this->compile($ecmascript3, array(
-                Minify_JS_ClosureCompiler::OPTION_ADDITIONAL_OPTIONS => array(
-                    'language' => 'ECMASCRIPT3',
-                ),
-            ));
+            $this->compile(
+                $ecmascript3,
+                array(
+                    Minify_JS_ClosureCompiler::OPTION_ADDITIONAL_OPTIONS => array(
+                        'language' => 'ECMASCRIPT3',
+                    ),
+                )
+            );
         } catch (Minify_JS_ClosureCompiler_Exception $e) {
         }
         static::assertInstanceOf(
@@ -124,36 +162,14 @@ final class JsClosureCompilerTest extends TestCase
         $ecmascript5 = '[1,].length;';
 
         $minExpected = '1;';
-        $minOutput = $this->compile($ecmascript5, array(
-            Minify_JS_ClosureCompiler::OPTION_ADDITIONAL_OPTIONS => array(
-                'language' => 'ECMASCRIPT5',
-            ),
-        ));
+        $minOutput = $this->compile(
+            $ecmascript5,
+            array(
+                Minify_JS_ClosureCompiler::OPTION_ADDITIONAL_OPTIONS => array(
+                    'language' => 'ECMASCRIPT5',
+                ),
+            )
+        );
         static::assertSame($minExpected, $minOutput, 'Language option should make it compile');
-    }
-
-    /**
-     * Call closure compiler, but intercept API limit errors.
-     *
-     * @param string $script
-     * @param array $options
-     *
-     * @return string
-     */
-    private function compile($script, $options = array())
-    {
-        $result = Minify_JS_ClosureCompiler::minify($script, $options);
-
-        // output may contain an error message, and original source:
-        // /* Received errors from Closure Compiler API:
-        // Error(22): Too many compiles performed recently.  Try again later.
-        // (Using fallback minifier)
-        // */
-        // (function(window,undefined){function addOne(input){return 1+input;}
-        // window.addOne=addOne;window.undefined=undefined;})(window);
-
-        static::assertNotContains('Error(22): Too many compiles', $result);
-
-        return $result;
     }
 }

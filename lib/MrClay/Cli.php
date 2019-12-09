@@ -58,12 +58,12 @@ class Cli
     protected $_args = array();
 
     /**
-     * @var resource
+     * @var resource|string|null
      */
     protected $_stdin;
 
     /**
-     * @var resource
+     * @var resource|string|null
      */
     protected $_stdout;
 
@@ -75,10 +75,28 @@ class Cli
         if ($exitIfNoStdin && !\defined('STDIN')) {
             exit('This script is for command-line use only.');
         }
-        if (isset($GLOBALS['argv'][1])
-            && ($GLOBALS['argv'][1] === '-?' || $GLOBALS['argv'][1] === '--help')) {
+
+        if (
+            isset($GLOBALS['argv'][1])
+            &&
+            (
+                $GLOBALS['argv'][1] === '-?'
+                ||
+                $GLOBALS['argv'][1] === '--help'
+            )
+        ) {
             $this->isHelpRequest = true;
         }
+    }
+
+    /**
+     * @param string $letter
+     *
+     * @return Arg
+     */
+    public function addOptionalArg($letter)
+    {
+        return $this->addArgument($letter, false);
     }
 
     /**
@@ -95,26 +113,18 @@ class Cli
         if (!\preg_match('/^[a-zA-Z]$/', $letter)) {
             throw new InvalidArgumentException('$letter must be in [a-zA-Z]');
         }
+
         if (!$arg) {
             $arg = new Arg($required);
         }
+
         $this->_args[$letter] = $arg;
 
         return $arg;
     }
 
     /**
-     * @param Arg|string $letter
-     *
-     * @return Arg
-     */
-    public function addOptionalArg($letter)
-    {
-        return $this->addArgument($letter, false);
-    }
-
-    /**
-     * @param Arg|string $letter
+     * @param string $letter
      *
      * @return Arg
      */
@@ -216,7 +226,7 @@ class Cli
                 $v = \getcwd() . "/${v}";
                 $v = \str_replace('/./', '/', $v);
                 do {
-                    $v = \preg_replace('@/[^/]+/\\.\\./@', '/', $v, 1, $changed);
+                    $v = (string) \preg_replace('@/[^/]+/\\.\\./@', '/', $v, 1, $changed);
                 } while ($changed);
                 $r[$k] = $v;
             }
@@ -236,6 +246,7 @@ class Cli
         if ($this->_stdin === null) {
             return \STDIN;
         }
+
         $this->_stdin = \fopen($this->_stdin, 'rb');
 
         return $this->_stdin;
@@ -253,11 +264,15 @@ class Cli
         if ($this->_stdout === null) {
             return \STDOUT;
         }
+
         $this->_stdout = \fopen($this->_stdout, 'wb');
 
         return $this->_stdout;
     }
 
+    /**
+     * @return bool
+     */
     public function validate()
     {
         $options = '';
@@ -360,6 +375,7 @@ class Cli
                                     $this->addError($letter, 'File not writable: %s', $v);
                                 }
                             } else {
+                                /** @noinspection NestedPositiveIfStatementsInspection */
                                 if (!\is_writable(\dirname($v))) {
                                     $this->addError($letter, 'Directory not writable: %s', \dirname($v));
                                 }
@@ -370,6 +386,7 @@ class Cli
                     }
                 }
             } else {
+                /** @noinspection NestedPositiveIfStatementsInspection */
                 if ($arg->isRequired()) {
                     $this->addError($letter, 'Missing');
                 }
