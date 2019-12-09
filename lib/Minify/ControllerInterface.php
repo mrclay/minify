@@ -1,7 +1,6 @@
 <?php
 
-interface Minify_ControllerInterface
-{
+interface Minify_ControllerInterface {
     /**
      * Create controller sources and options for Minify::serve()
      *

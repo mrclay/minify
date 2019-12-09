@@ -4,8 +4,7 @@ namespace Minify;
 
 use Minify_CacheInterface;
 
-class Config
-{
+class Config {
     /**
      * @var bool
      */

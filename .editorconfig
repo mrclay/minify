@@ -10,7 +10,3 @@ indent_style = space
 indent_size = 4
 insert_final_newline = true
 
-[vendor/**]
-; Use editor default (possible autodetection).
-indent_style =
-indent_size =

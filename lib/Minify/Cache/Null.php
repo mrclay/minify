@@ -6,18 +6,23 @@
  * If this is used, Minify will not use a cache and, for each 200 response, will
  * need to recombine files, minify and encode the output.
  */
-class Minify_Cache_Null implements Minify_CacheInterface
-{
+class Minify_Cache_Null implements Minify_CacheInterface {
     /**
-     * Write data to cache.
+     * Send the cached content to output
      *
      * @param string $id cache id (e.g. a filename)
-     * @param string $data
-     *
-     * @return bool success
      */
-    public function store($id, $data)
-    {
+    public function display($id) {
+    }
+
+    /**
+     * Fetch the cached content
+     *
+     * @param string $id cache id (e.g. a filename)
+     *
+     * @return string
+     */
+    public function fetch($id) {
     }
 
     /**
@@ -27,8 +32,7 @@ class Minify_Cache_Null implements Minify_CacheInterface
      *
      * @return int size in bytes
      */
-    public function getSize($id)
-    {
+    public function getSize($id) {
     }
 
     /**
@@ -39,27 +43,17 @@ class Minify_Cache_Null implements Minify_CacheInterface
      *
      * @return bool exists
      */
-    public function isValid($id, $srcMtime)
-    {
+    public function isValid($id, $srcMtime) {
     }
 
     /**
-     * Send the cached content to output
+     * Write data to cache.
      *
      * @param string $id cache id (e.g. a filename)
-     */
-    public function display($id)
-    {
-    }
-
-    /**
-     * Fetch the cached content
+     * @param string $data
      *
-     * @param string $id cache id (e.g. a filename)
-     *
-     * @return string
+     * @return bool success
      */
-    public function fetch($id)
-    {
+    public function store($id, $data) {
     }
 }

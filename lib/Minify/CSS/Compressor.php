@@ -21,8 +21,7 @@
  *
  * @deprecated Use CSSmin (tubalmartin/cssmin)
  */
-class Minify_CSS_Compressor
-{
+class Minify_CSS_Compressor {
     /**
      * @var array
      */
@@ -40,8 +39,7 @@ class Minify_CSS_Compressor
      *
      * @param array $options (currently ignored)
      */
-    private function __construct($options)
-    {
+    private function __construct($options) {
         $this->_options = $options;
     }
 
@@ -53,11 +51,103 @@ class Minify_CSS_Compressor
      *
      * @return string
      */
-    public static function process($css, $options = array())
-    {
+    public static function process($css, $options = array()) {
         $obj = new Minify_CSS_Compressor($options);
 
         return $obj->_process($css);
+    }
+
+    /**
+     * Process a comment and return a replacement
+     *
+     * @param array $m regex matches
+     *
+     * @return string
+     */
+    protected function _commentCB($m) {
+        $hasSurroundingWs = (\trim($m[0]) !== $m[1]);
+        $m = $m[1];
+        // $m is the comment content w/o the surrounding tokens,
+        // but the return value will replace the entire comment.
+        if ($m === 'keep') {
+            return '/**/';
+        }
+
+        if ($m === '" "') {
+            // component of http://tantek.com/CSS/Examples/midpass.html
+            return '/*" "*/';
+        }
+
+        if (\preg_match('@";\\}\\s*\\}/\\*\\s+@', $m)) {
+            // component of http://tantek.com/CSS/Examples/midpass.html
+            return '/*";}}/* */';
+        }
+
+        if ($this->_inHack) {
+            // inversion: feeding only to one browser
+            $pattern = '@
+                    ^/               # comment started like /*/
+                    \\s*
+                    (\\S[\\s\\S]+?)  # has at least some non-ws content
+                    \\s*
+                    /\\*             # ends like /*/ or /**/
+                @x';
+            if (\preg_match($pattern, $m, $n)) {
+                // end hack mode after this comment, but preserve the hack and comment content
+                $this->_inHack = false;
+
+                return "/*/{$n[1]}/**/";
+            }
+        }
+
+        if (\substr($m, -1) === '\\') { // comment ends like \*/
+            // begin hack mode and preserve hack
+            $this->_inHack = true;
+
+            return '/*\\*/';
+        }
+
+        if ($m !== '' && $m[0] === '/') { // comment looks like /*/ foo */
+            // begin hack mode and preserve hack
+            $this->_inHack = true;
+
+            return '/*/*/';
+        }
+
+        if ($this->_inHack) {
+            // a regular comment ends hack mode but should be preserved
+            $this->_inHack = false;
+
+            return '/**/';
+        }
+
+        // Issue 107: if there's any surrounding whitespace, it may be important, so
+        // replace the comment with a single space
+        return $hasSurroundingWs ? ' ' : ''; // remove all other comments
+    }
+
+    /**
+     * Process a font-family listing and return a replacement
+     *
+     * @param array $m regex matches
+     *
+     * @return string
+     */
+    protected function _fontFamilyCB($m) {
+        // Issue 210: must not eliminate WS between words in unquoted families
+        $flags = \PREG_SPLIT_DELIM_CAPTURE | \PREG_SPLIT_NO_EMPTY;
+        $pieces = \preg_split('/(\'[^\']+\'|"[^"]+")/', $m[1], null, $flags);
+        $out = 'font-family:';
+
+        while (($piece = \array_shift($pieces)) !== null) {
+            if ($piece[0] !== '"' && $piece[0] !== "'") {
+                $piece = \preg_replace('/\\s+/', ' ', $piece);
+                $piece = \preg_replace('/\\s?,\\s?/', ',', $piece);
+            }
+            $out .= $piece;
+        }
+
+        return $out . $m[2];
     }
 
     /**
@@ -67,8 +157,7 @@ class Minify_CSS_Compressor
      *
      * @return string
      */
-    protected function _process($css)
-    {
+    protected function _process($css) {
         $css = \str_replace("\r\n", "\n", $css);
 
         // preserve empty comment after '>'
@@ -165,104 +254,8 @@ class Minify_CSS_Compressor
      *
      * @return string
      */
-    protected function _selectorsCB($m)
-    {
+    protected function _selectorsCB($m) {
         // remove ws around the combinators
         return \preg_replace('/\\s*([,>+~])\\s*/', '$1', $m[0]);
-    }
-
-    /**
-     * Process a comment and return a replacement
-     *
-     * @param array $m regex matches
-     *
-     * @return string
-     */
-    protected function _commentCB($m)
-    {
-        $hasSurroundingWs = (\trim($m[0]) !== $m[1]);
-        $m = $m[1];
-        // $m is the comment content w/o the surrounding tokens,
-        // but the return value will replace the entire comment.
-        if ($m === 'keep') {
-            return '/**/';
-        }
-
-        if ($m === '" "') {
-            // component of http://tantek.com/CSS/Examples/midpass.html
-            return '/*" "*/';
-        }
-
-        if (\preg_match('@";\\}\\s*\\}/\\*\\s+@', $m)) {
-            // component of http://tantek.com/CSS/Examples/midpass.html
-            return '/*";}}/* */';
-        }
-
-        if ($this->_inHack) {
-            // inversion: feeding only to one browser
-            $pattern = '@
-                    ^/               # comment started like /*/
-                    \\s*
-                    (\\S[\\s\\S]+?)  # has at least some non-ws content
-                    \\s*
-                    /\\*             # ends like /*/ or /**/
-                @x';
-            if (\preg_match($pattern, $m, $n)) {
-                // end hack mode after this comment, but preserve the hack and comment content
-                $this->_inHack = false;
-
-                return "/*/{$n[1]}/**/";
-            }
-        }
-
-        if (\substr($m, -1) === '\\') { // comment ends like \*/
-            // begin hack mode and preserve hack
-            $this->_inHack = true;
-
-            return '/*\\*/';
-        }
-
-        if ($m !== '' && $m[0] === '/') { // comment looks like /*/ foo */
-            // begin hack mode and preserve hack
-            $this->_inHack = true;
-
-            return '/*/*/';
-        }
-
-        if ($this->_inHack) {
-            // a regular comment ends hack mode but should be preserved
-            $this->_inHack = false;
-
-            return '/**/';
-        }
-
-        // Issue 107: if there's any surrounding whitespace, it may be important, so
-        // replace the comment with a single space
-        return $hasSurroundingWs ? ' ' : ''; // remove all other comments
-    }
-
-    /**
-     * Process a font-family listing and return a replacement
-     *
-     * @param array $m regex matches
-     *
-     * @return string
-     */
-    protected function _fontFamilyCB($m)
-    {
-        // Issue 210: must not eliminate WS between words in unquoted families
-        $flags = \PREG_SPLIT_DELIM_CAPTURE | \PREG_SPLIT_NO_EMPTY;
-        $pieces = \preg_split('/(\'[^\']+\'|"[^"]+")/', $m[1], null, $flags);
-        $out = 'font-family:';
-
-        while (($piece = \array_shift($pieces)) !== null) {
-            if ($piece[0] !== '"' && $piece[0] !== "'") {
-                $piece = \preg_replace('/\\s+/', ' ', $piece);
-                $piece = \preg_replace('/\\s?,\\s?/', ',', $piece);
-            }
-            $out .= $piece;
-        }
-
-        return $out . $m[2];
     }
 }

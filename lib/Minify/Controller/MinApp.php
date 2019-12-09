@@ -6,8 +6,7 @@
 /**
  * Controller class for requests to /min/index.php
  */
-class Minify_Controller_MinApp extends Minify_Controller_Base
-{
+class Minify_Controller_MinApp extends Minify_Controller_Base {
     /**
      * Set up groups of files as sources
      *
@@ -15,13 +14,12 @@ class Minify_Controller_MinApp extends Minify_Controller_Base
      *
      * @return array Minify options
      */
-    public function createConfiguration(array $options)
-    {
+    public function createConfiguration(array $options) {
         // PHP insecure by default: realpath() and other FS functions can't handle null bytes.
         $get = $this->env->get();
         foreach (array('g', 'b', 'f') as $key) {
             if (isset($get[$key])) {
-                $get[$key] = \str_replace("\x00", '', (string) $get[$key]);
+                $get[$key] = \str_replace("\x00", '', (string)$get[$key]);
             }
         }
 
@@ -70,7 +68,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base
                 if (\is_object($files)) {
                     $files = array($files);
                 } elseif (!\is_array($files)) {
-                    $files = (array) $files;
+                    $files = (array)$files;
                 }
                 foreach ($files as $file) {
                     try {
@@ -177,14 +175,19 @@ class Minify_Controller_MinApp extends Minify_Controller_Base
         }
 
         if ($firstMissing !== null) {
-            \array_unshift($sources, new Minify_Source(array(
-                'id' => 'missingFile',
-                // should not cause cache invalidation
-                'lastModified' => 0,
-                // due to caching, filename is unreliable.
-                'content'  => '/* Minify: at least one missing file. See ' . Minify::URL_DEBUG . " */\n",
-                'minifier' => 'Minify::nullMinifier',
-            )));
+            \array_unshift(
+                $sources,
+                new Minify_Source(
+                    array(
+                        'id'           => 'missingFile',
+                        // should not cause cache invalidation
+                        'lastModified' => 0,
+                        // due to caching, filename is unreliable.
+                        'content'      => '/* Minify: at least one missing file. See ' . Minify::URL_DEBUG . " */\n",
+                        'minifier'     => 'Minify::nullMinifier',
+                    )
+                )
+            );
         }
 
         return new Minify_ServeConfiguration($options, $sources, $selectionId);

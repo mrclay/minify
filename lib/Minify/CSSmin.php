@@ -2,6 +2,7 @@
 /**
  * Class Minify_CSSmin
  */
+
 use tubalmartin\CssMin\Minifier as CSSmin;
 
 /**
@@ -9,8 +10,7 @@ use tubalmartin\CssMin\Minifier as CSSmin;
  *
  * This class uses CSSmin and Minify_CSS_UriRewriter to minify CSS and rewrite relative URIs.
  */
-class Minify_CSSmin
-{
+class Minify_CSSmin {
     /**
      * Minify a CSS string
      *
@@ -43,16 +43,18 @@ class Minify_CSSmin
      *
      * @return string
      */
-    public static function minify($css, $options = array())
-    {
-        $options = \array_merge(array(
-            'compress'            => true,
-            'removeCharsets'      => true,
-            'currentDir'          => null,
-            'docRoot'             => $_SERVER['DOCUMENT_ROOT'],
-            'prependRelativePath' => null,
-            'symlinks'            => array(),
-        ), $options);
+    public static function minify($css, $options = array()) {
+        $options = \array_merge(
+            array(
+                'compress'            => true,
+                'removeCharsets'      => true,
+                'currentDir'          => null,
+                'docRoot'             => $_SERVER['DOCUMENT_ROOT'],
+                'prependRelativePath' => null,
+                'symlinks'            => array(),
+            ),
+            $options
+        );
 
         if ($options['removeCharsets']) {
             $css = \preg_replace('/@charset[^;]+;\\s*/', '', $css);

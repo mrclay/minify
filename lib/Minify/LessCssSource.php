@@ -1,7 +1,6 @@
 <?php
 
-class Minify_LessCssSource extends Minify_Source
-{
+class Minify_LessCssSource extends Minify_Source {
     /**
      * @var Minify_CacheInterface
      */
@@ -17,11 +16,21 @@ class Minify_LessCssSource extends Minify_Source
     /**
      * {@inheritdoc}
      */
-    public function __construct(array $spec, Minify_CacheInterface $cache)
-    {
+    public function __construct(array $spec, Minify_CacheInterface $cache) {
         parent::__construct($spec);
 
         $this->cache = $cache;
+    }
+
+    /**
+     * Get content
+     *
+     * @return string
+     */
+    public function getContent() {
+        $cache = $this->getCache();
+
+        return $cache['compiled'];
     }
 
     /**
@@ -29,8 +38,7 @@ class Minify_LessCssSource extends Minify_Source
      *
      * @return int
      */
-    public function getLastModified()
-    {
+    public function getLastModified() {
         $cache = $this->getCache();
 
         return $cache['lastModified'];
@@ -41,8 +49,7 @@ class Minify_LessCssSource extends Minify_Source
      *
      * @return array
      */
-    private function getCache()
-    {
+    private function getCache() {
         // cache for single run
         // so that getLastModified and getContent in single request do not add additional cache roundtrips (i.e memcache)
         if (isset($this->parsed)) {
@@ -77,8 +84,7 @@ class Minify_LessCssSource extends Minify_Source
      *
      * @return string
      */
-    private function getCacheId($prefix = 'minify')
-    {
+    private function getCacheId($prefix = 'minify') {
         $md5 = \md5($this->filepath);
 
         return "{$prefix}_less2_{$md5}";
@@ -89,8 +95,7 @@ class Minify_LessCssSource extends Minify_Source
      *
      * @return lessc
      */
-    private function getCompiler()
-    {
+    private function getCompiler() {
         $less = new lessc();
         // do not spend CPU time letting less doing minify
         $less->setPreserveComments(true);
@@ -108,25 +113,12 @@ class Minify_LessCssSource extends Minify_Source
      *
      * @return int
      */
-    private function getMaxLastModified($cache)
-    {
+    private function getMaxLastModified($cache) {
         $lastModified = 0;
         foreach ($cache['files'] as $mtime) {
             $lastModified = \max($lastModified, $mtime);
         }
 
         return $lastModified;
-    }
-
-    /**
-     * Get content
-     *
-     * @return string
-     */
-    public function getContent()
-    {
-        $cache = $this->getCache();
-
-        return $cache['compiled'];
     }
 }

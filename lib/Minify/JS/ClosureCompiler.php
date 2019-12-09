@@ -10,12 +10,12 @@
  *
  * @todo can use a stream wrapper to unit test this?
  */
-class Minify_JS_ClosureCompiler
-{
+class Minify_JS_ClosureCompiler {
     /**
-     * @var string The option key for the maximum POST byte size
+     * @var int The default maximum POST byte size according to
+     *      https://developers.google.com/closure/compiler/docs/api-ref
      */
-    const OPTION_MAX_BYTES = 'maxBytes';
+    const DEFAULT_MAX_BYTES = 200000;
 
     /**
      * @var string The option key for additional params. @see __construct
@@ -23,20 +23,19 @@ class Minify_JS_ClosureCompiler
     const OPTION_ADDITIONAL_OPTIONS = 'additionalParams';
 
     /**
-     * @var string The option key for the fallback Minifier
-     */
-    const OPTION_FALLBACK_FUNCTION = 'fallbackFunc';
-
-    /**
      * @var string The option key for the service URL
      */
     const OPTION_COMPILER_URL = 'compilerUrl';
 
     /**
-     * @var int The default maximum POST byte size according to
-     *      https://developers.google.com/closure/compiler/docs/api-ref
+     * @var string The option key for the fallback Minifier
      */
-    const DEFAULT_MAX_BYTES = 200000;
+    const OPTION_FALLBACK_FUNCTION = 'fallbackFunc';
+
+    /**
+     * @var string The option key for the maximum POST byte size
+     */
+    const OPTION_MAX_BYTES = 'maxBytes';
 
     /**
      * @var string[] The default options to pass to the compiler service
@@ -82,8 +81,7 @@ class Minify_JS_ClosureCompiler
      *                     in https://developers.google.com/closure/compiler/docs/api-ref except for js_code and
      *                     output_info
      */
-    public function __construct(array $options = array())
-    {
+    public function __construct(array $options = array()) {
         if (isset($options[self::OPTION_FALLBACK_FUNCTION])) {
             $this->fallbackMinifier = $options[self::OPTION_FALLBACK_FUNCTION];
         }
@@ -94,23 +92,8 @@ class Minify_JS_ClosureCompiler
             $this->additionalOptions = $options[self::OPTION_ADDITIONAL_OPTIONS];
         }
         if (isset($options[self::OPTION_MAX_BYTES])) {
-            $this->maxBytes = (int) $options[self::OPTION_MAX_BYTES];
+            $this->maxBytes = (int)$options[self::OPTION_MAX_BYTES];
         }
-    }
-
-    /**
-     * Minify JavaScript code via HTTP request to a Closure Compiler API
-     *
-     * @param string $js      input code
-     * @param array  $options Options passed to __construct(). @see __construct
-     *
-     * @return string
-     */
-    public static function minify($js, array $options = array())
-    {
-        $obj = new self($options);
-
-        return $obj->min($js);
     }
 
     /**
@@ -118,16 +101,15 @@ class Minify_JS_ClosureCompiler
      *
      * @param string $js JavaScript code
      *
+     * @return string
      * @throws Minify_JS_ClosureCompiler_Exception
      *
-     * @return string
      */
-    public function min($js)
-    {
+    public function min($js) {
         $postBody = $this->buildPostBody($js);
 
         if ($this->maxBytes > 0) {
-            $bytes = (\function_exists('mb_strlen') && ((int) \ini_get('mbstring.func_overload') & 2))
+            $bytes = (\function_exists('mb_strlen') && ((int)\ini_get('mbstring.func_overload') & 2))
                 ? \mb_strlen($postBody, '8bit')
                 : \strlen($postBody);
             if ($bytes > $this->maxBytes) {
@@ -143,7 +125,7 @@ class Minify_JS_ClosureCompiler
             if (\is_callable($this->fallbackMinifier)) {
                 // use fallback
                 $response = "/* Received errors from Closure Compiler API:\n${response}"
-                    . "\n(Using fallback minifier)\n*/\n";
+                            . "\n(Using fallback minifier)\n*/\n";
                 $response .= \call_user_func($this->fallbackMinifier, $js);
             } else {
                 throw new Minify_JS_ClosureCompiler_Exception($response);
@@ -160,6 +142,20 @@ class Minify_JS_ClosureCompiler
     }
 
     /**
+     * Minify JavaScript code via HTTP request to a Closure Compiler API
+     *
+     * @param string $js      input code
+     * @param array  $options Options passed to __construct(). @see __construct
+     *
+     * @return string
+     */
+    public static function minify($js, array $options = array()) {
+        $obj = new self($options);
+
+        return $obj->min($js);
+    }
+
+    /**
      * Build a POST request body
      *
      * @param string $js JavaScript code
@@ -167,8 +163,7 @@ class Minify_JS_ClosureCompiler
      *
      * @return string
      */
-    protected function buildPostBody($js, $returnErrors = false)
-    {
+    protected function buildPostBody($js, $returnErrors = false) {
         return \http_build_query(
             \array_merge(
                 self::$DEFAULT_OPTIONS,
@@ -188,27 +183,32 @@ class Minify_JS_ClosureCompiler
      *
      * @param string $postBody
      *
+     * @return string
      * @throws Minify_JS_ClosureCompiler_Exception
      *
-     * @return string
      */
-    protected function getResponse($postBody)
-    {
+    protected function getResponse($postBody) {
         $allowUrlFopen = \preg_match('/1|yes|on|true/i', \ini_get('allow_url_fopen'));
 
         if ($allowUrlFopen) {
-            $contents = \file_get_contents($this->serviceUrl, false, \stream_context_create(array(
-                'http' => array(
-                    'method'            => 'POST',
-                    'compilation_level' => 'SIMPLE',
-                    'output_format'     => 'text',
-                    'output_info'       => 'compiled_code',
-                    'header'            => "Content-type: application/x-www-form-urlencoded\r\nConnection: close\r\n",
-                    'content'           => $postBody,
-                    'max_redirects'     => 0,
-                    'timeout'           => 15,
-                ),
-            )));
+            $contents = \file_get_contents(
+                $this->serviceUrl,
+                false,
+                \stream_context_create(
+                    array(
+                        'http' => array(
+                            'method'            => 'POST',
+                            'compilation_level' => 'SIMPLE',
+                            'output_format'     => 'text',
+                            'output_info'       => 'compiled_code',
+                            'header'            => "Content-type: application/x-www-form-urlencoded\r\nConnection: close\r\n",
+                            'content'           => $postBody,
+                            'max_redirects'     => 0,
+                            'timeout'           => 15,
+                        ),
+                    )
+                )
+            );
         } elseif (\defined('CURLOPT_POST')) {
             $ch = \curl_init($this->serviceUrl);
             \curl_setopt($ch, \CURLOPT_POST, true);
@@ -235,6 +235,5 @@ class Minify_JS_ClosureCompiler
     }
 }
 
-class Minify_JS_ClosureCompiler_Exception extends Exception
-{
+class Minify_JS_ClosureCompiler_Exception extends Exception {
 }

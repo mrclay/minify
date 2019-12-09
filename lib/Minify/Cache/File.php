@@ -2,10 +2,10 @@
 /**
  * Class Minify_Cache_File
  */
+
 use Psr\Log\LoggerInterface;
 
-class Minify_Cache_File implements Minify_CacheInterface
-{
+class Minify_Cache_File implements Minify_CacheInterface {
     /**
      * @var string
      */
@@ -26,8 +26,7 @@ class Minify_Cache_File implements Minify_CacheInterface
      * @param bool            $fileLocking
      * @param LoggerInterface $logger
      */
-    public function __construct($path = '', $fileLocking = false, LoggerInterface $logger = null)
-    {
+    public function __construct($path = '', $fileLocking = false, LoggerInterface $logger = null) {
         if (!$path) {
             $path = \sys_get_temp_dir();
         }
@@ -41,45 +40,22 @@ class Minify_Cache_File implements Minify_CacheInterface
     }
 
     /**
-     * Get a usable temp directory
-     *
-     * @return string
-     *
-     * @deprecated
-     */
-    public static function tmp()
-    {
-        \trigger_error(__METHOD__ . ' is deprecated in Minfy 3.0', \E_USER_DEPRECATED);
-
-        return \sys_get_temp_dir();
-    }
-
-    /**
-     * Write data to cache.
+     * Send the cached content to output
      *
      * @param string $id cache id (e.g. a filename)
-     * @param string $data
-     *
-     * @return bool success
      */
-    public function store($id, $data)
-    {
-        $flag = $this->locking ? \LOCK_EX : null;
-        $file = $this->path . '/' . $id;
+    public function display($id) {
+        if (!$this->locking) {
+            \readfile($this->path . '/' . $id);
 
-        if (!@\file_put_contents($file, $data, $flag)) {
-            $this->logger->warning("Minify_Cache_File: Write failed to '${file}'");
+            return;
         }
 
-        // write control
-        if ($data !== $this->fetch($id)) {
-            @\unlink($file);
-            $this->logger->warning("Minify_Cache_File: Post-write read failed for '${file}'");
-
-            return false;
-        }
-
-        return true;
+        $fp = \fopen($this->path . '/' . $id, 'rb');
+        \flock($fp, \LOCK_SH);
+        \fpassthru($fp);
+        \flock($fp, \LOCK_UN);
+        \fclose($fp);
     }
 
     /**
@@ -89,8 +65,7 @@ class Minify_Cache_File implements Minify_CacheInterface
      *
      * @return string
      */
-    public function fetch($id)
-    {
+    public function fetch($id) {
         if (!$this->locking) {
             return \file_get_contents($this->path . '/' . $id);
         }
@@ -115,8 +90,7 @@ class Minify_Cache_File implements Minify_CacheInterface
      *
      * @return int size in bytes
      */
-    public function getSize($id)
-    {
+    public function getSize($id) {
         return \filesize($this->path . '/' . $id);
     }
 
@@ -128,31 +102,37 @@ class Minify_Cache_File implements Minify_CacheInterface
      *
      * @return bool exists
      */
-    public function isValid($id, $srcMtime)
-    {
+    public function isValid($id, $srcMtime) {
         $file = $this->path . '/' . $id;
 
         return \is_file($file) && (\filemtime($file) >= $srcMtime);
     }
 
     /**
-     * Send the cached content to output
+     * Write data to cache.
      *
      * @param string $id cache id (e.g. a filename)
+     * @param string $data
+     *
+     * @return bool success
      */
-    public function display($id)
-    {
-        if (!$this->locking) {
-            \readfile($this->path . '/' . $id);
+    public function store($id, $data) {
+        $flag = $this->locking ? \LOCK_EX : null;
+        $file = $this->path . '/' . $id;
 
-            return;
+        if (!@\file_put_contents($file, $data, $flag)) {
+            $this->logger->warning("Minify_Cache_File: Write failed to '${file}'");
         }
 
-        $fp = \fopen($this->path . '/' . $id, 'rb');
-        \flock($fp, \LOCK_SH);
-        \fpassthru($fp);
-        \flock($fp, \LOCK_UN);
-        \fclose($fp);
+        // write control
+        if ($data !== $this->fetch($id)) {
+            @\unlink($file);
+            $this->logger->warning("Minify_Cache_File: Post-write read failed for '${file}'");
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -160,9 +140,21 @@ class Minify_Cache_File implements Minify_CacheInterface
      *
      * @return string
      */
-    public function getPath()
-    {
+    public function getPath() {
         return $this->path;
+    }
+
+    /**
+     * Get a usable temp directory
+     *
+     * @return string
+     *
+     * @deprecated
+     */
+    public static function tmp() {
+        \trigger_error(__METHOD__ . ' is deprecated in Minfy 3.0', \E_USER_DEPRECATED);
+
+        return \sys_get_temp_dir();
     }
 
     /**
@@ -174,8 +166,7 @@ class Minify_Cache_File implements Minify_CacheInterface
      *
      * @deprecated Use $this->logger
      */
-    protected function _log($msg)
-    {
+    protected function _log($msg) {
         \trigger_error(__METHOD__ . ' is deprecated in Minify 3.0.', \E_USER_DEPRECATED);
         $this->logger->warning($msg);
     }

@@ -2,6 +2,7 @@
 /**
  * Class Minify_Controller_Base
  */
+
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 
@@ -10,8 +11,7 @@ use Psr\Log\LoggerInterface;
  *
  * The controller class validates a request and uses it to create a configuration for Minify::serve().
  */
-abstract class Minify_Controller_Base implements Minify_ControllerInterface
-{
+abstract class Minify_Controller_Base implements Minify_ControllerInterface {
     /**
      * @var Minify_Env
      */
@@ -32,8 +32,7 @@ abstract class Minify_Controller_Base implements Minify_ControllerInterface
      * @param Minify_Source_Factory $sourceFactory
      * @param LoggerInterface       $logger
      */
-    public function __construct(Minify_Env $env, Minify_Source_Factory $sourceFactory, LoggerInterface $logger = null)
-    {
+    public function __construct(Minify_Env $env, Minify_Source_Factory $sourceFactory, LoggerInterface $logger = null) {
         $this->env = $env;
         $this->sourceFactory = $sourceFactory;
         if (!$logger) {
@@ -52,6 +51,13 @@ abstract class Minify_Controller_Base implements Minify_ControllerInterface
     abstract public function createConfiguration(array $options);
 
     /**
+     * {@inheritdoc}
+     */
+    public function getEnv() {
+        return $this->env;
+    }
+
+    /**
      * Send message to the Minify logger
      *
      * @param string $msg
@@ -60,17 +66,8 @@ abstract class Minify_Controller_Base implements Minify_ControllerInterface
      *
      * @deprecated use $this->logger
      */
-    public function log($msg)
-    {
+    public function log($msg) {
         \trigger_error(__METHOD__ . ' is deprecated in Minify 3.0.', \E_USER_DEPRECATED);
         $this->logger->info($msg);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getEnv()
-    {
-        return $this->env;
     }
 }

@@ -6,8 +6,7 @@
 /**
  * Helpers for writing Minify URIs into HTML
  */
-class Minify_HTML_Helper
-{
+class Minify_HTML_Helper {
     public $rewriteWorks = true;
 
     public $minAppUri = '/min';
@@ -19,6 +18,76 @@ class Minify_HTML_Helper
     protected $_filePaths = array();
 
     protected $_lastModified;
+
+    /**
+     * @param \Minify\App $app
+     *
+     * @return \Minify\App
+     *
+     * @internal
+     */
+    public static function app(\Minify\App $app = null) {
+        static $cached;
+        if ($app) {
+            $cached = $app;
+
+            return $app;
+        }
+        if ($cached === null) {
+            $cached = (require __DIR__ . '/../../../bootstrap.php');
+        }
+
+        return $cached;
+    }
+
+    /**
+     * Get the max(lastModified) of all files
+     *
+     * @param array|string $sources
+     * @param int          $lastModified
+     *
+     * @return int
+     */
+    public static function getLastModified($sources, $lastModified = 0) {
+        $max = $lastModified;
+        $factory = self::app()->sourceFactory;
+
+        /** @var Minify_Source $source */
+        foreach ((array)$sources as $source) {
+            $source = $factory->makeSource($source);
+            $max = \max($max, $source->getLastModified());
+        }
+
+        return $max;
+    }
+
+    /**
+     * Get non-HTML-escaped URI to minify the specified files
+     *
+     * @param bool $farExpires
+     * @param bool $debug
+     *
+     * @return string
+     */
+    public function getRawUri($farExpires = true, $debug = false) {
+        $path = \rtrim($this->minAppUri, '/') . '/';
+        if (!$this->rewriteWorks) {
+            $path .= '?';
+        }
+        if ($this->_groupKey === null) {
+            // @todo: implement shortest uri
+            $path = self::_getShortestUri($this->_filePaths, $path);
+        } else {
+            $path .= 'g=' . $this->_groupKey;
+        }
+        if ($debug) {
+            $path .= '&debug';
+        } elseif ($farExpires && $this->_lastModified) {
+            $path .= '&' . $this->_lastModified;
+        }
+
+        return $path;
+    }
 
     /**
      * Get an HTML-escaped Minify URI for a group or set of files
@@ -34,16 +103,18 @@ class Minify_HTML_Helper
      *
      * @return string
      */
-    public static function getUri($keyOrFiles, $opts = array())
-    {
-        $opts = \array_merge(array( // default options
-            'farExpires'       => true,
-            'debug'            => false,
-            'charset'          => 'UTF-8',
-            'minAppUri'        => '/min',
-            'rewriteWorks'     => true,
-            'groupsConfigFile' => self::app()->groupsConfigPath,
-        ), $opts);
+    public static function getUri($keyOrFiles, $opts = array()) {
+        $opts = \array_merge(
+            array( // default options
+                   'farExpires'       => true,
+                   'debug'            => false,
+                   'charset'          => 'UTF-8',
+                   'minAppUri'        => '/min',
+                   'rewriteWorks'     => true,
+                   'groupsConfigFile' => self::app()->groupsConfigPath,
+            ),
+            $opts
+        );
 
         $h = new self();
         $h->minAppUri = $opts['minAppUri'];
@@ -60,27 +131,7 @@ class Minify_HTML_Helper
         return \htmlspecialchars($uri, \ENT_QUOTES, $opts['charset']);
     }
 
-    /**
-     * @param \Minify\App $app
-     *
-     * @return \Minify\App
-     *
-     * @internal
-     */
-    public static function app(\Minify\App $app = null)
-    {
-        static $cached;
-        if ($app) {
-            $cached = $app;
-
-            return $app;
-        }
-        if ($cached === null) {
-            $cached = (require __DIR__ . '/../../../bootstrap.php');
-        }
-
-        return $cached;
-    }
+    // if present, URI will be like g=...
 
     /**
      * Set the files that will comprise the URI we're building
@@ -88,8 +139,7 @@ class Minify_HTML_Helper
      * @param array $files
      * @param bool  $checkLastModified
      */
-    public function setFiles($files, $checkLastModified = true)
-    {
+    public function setFiles($files, $checkLastModified = true) {
         $this->_groupKey = null;
         if ($checkLastModified) {
             $this->_lastModified = self::getLastModified($files);
@@ -108,37 +158,12 @@ class Minify_HTML_Helper
     }
 
     /**
-     * Get the max(lastModified) of all files
-     *
-     * @param array|string $sources
-     * @param int          $lastModified
-     *
-     * @return int
-     */
-    public static function getLastModified($sources, $lastModified = 0)
-    {
-        $max = $lastModified;
-        $factory = self::app()->sourceFactory;
-
-        /** @var Minify_Source $source */
-        foreach ((array) $sources as $source) {
-            $source = $factory->makeSource($source);
-            $max = \max($max, $source->getLastModified());
-        }
-
-        return $max;
-    }
-
-    // if present, URI will be like g=...
-
-    /**
      * Set the group of files that will comprise the URI we're building
      *
      * @param string $key
      * @param bool   $checkLastModified
      */
-    public function setGroup($key, $checkLastModified = true)
-    {
+    public function setGroup($key, $checkLastModified = true) {
         $this->_groupKey = $key;
         if ($checkLastModified) {
             if (!$this->groupsConfigFile) {
@@ -161,32 +186,30 @@ class Minify_HTML_Helper
     }
 
     /**
-     * Get non-HTML-escaped URI to minify the specified files
+     * In a given array of strings, find the character they all have at
+     * a particular index
      *
-     * @param bool $farExpires
-     * @param bool $debug
+     * @param array $arr array of strings
+     * @param int   $pos index to check
      *
-     * @return string
+     * @return mixed a common char or '' if any do not match
      */
-    public function getRawUri($farExpires = true, $debug = false)
-    {
-        $path = \rtrim($this->minAppUri, '/') . '/';
-        if (!$this->rewriteWorks) {
-            $path .= '?';
+    protected static function _getCommonCharAtPos($arr, $pos) {
+        if (!isset($arr[0][$pos])) {
+            return '';
         }
-        if ($this->_groupKey === null) {
-            // @todo: implement shortest uri
-            $path = self::_getShortestUri($this->_filePaths, $path);
-        } else {
-            $path .= 'g=' . $this->_groupKey;
+        $c = $arr[0][$pos];
+        $l = \count($arr);
+        if ($l === 1) {
+            return $c;
         }
-        if ($debug) {
-            $path .= '&debug';
-        } elseif ($farExpires && $this->_lastModified) {
-            $path .= '&' . $this->_lastModified;
+        for ($i = 1; $i < $l; ++$i) {
+            if ($arr[$i][$pos] !== $c) {
+                return '';
+            }
         }
 
-        return $path;
+        return $c;
     }
 
     /**
@@ -197,8 +220,7 @@ class Minify_HTML_Helper
      *
      * @return string
      */
-    protected static function _getShortestUri($paths, $minRoot = '/min/')
-    {
+    protected static function _getShortestUri($paths, $minRoot = '/min/') {
         $pos = 0;
         $base = '';
         while (true) {
@@ -227,33 +249,5 @@ class Minify_HTML_Helper
         }
 
         return $uri;
-    }
-
-    /**
-     * In a given array of strings, find the character they all have at
-     * a particular index
-     *
-     * @param array $arr array of strings
-     * @param int   $pos index to check
-     *
-     * @return mixed a common char or '' if any do not match
-     */
-    protected static function _getCommonCharAtPos($arr, $pos)
-    {
-        if (!isset($arr[0][$pos])) {
-            return '';
-        }
-        $c = $arr[0][$pos];
-        $l = \count($arr);
-        if ($l === 1) {
-            return $c;
-        }
-        for ($i = 1; $i < $l; ++$i) {
-            if ($arr[$i][$pos] !== $c) {
-                return '';
-            }
-        }
-
-        return $c;
     }
 }

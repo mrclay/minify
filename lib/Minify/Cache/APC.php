@@ -11,8 +11,7 @@
  * </code>
  *
  **/
-class Minify_Cache_APC implements Minify_CacheInterface
-{
+class Minify_Cache_APC implements Minify_CacheInterface {
     private $_exp;
 
     private $_lm;
@@ -30,9 +29,61 @@ class Minify_Cache_APC implements Minify_CacheInterface
      *
      * @return null
      */
-    public function __construct($expire = 0)
-    {
+    public function __construct($expire = 0) {
         $this->_exp = $expire;
+    }
+
+    /**
+     * Send the cached content to output
+     *
+     * @param string $id cache id
+     */
+    public function display($id) {
+        echo $this->_fetch($id) ? $this->_data : '';
+    }
+
+    /**
+     * Fetch the cached content
+     *
+     * @param string $id cache id
+     *
+     * @return string
+     */
+    public function fetch($id) {
+        return $this->_fetch($id) ? $this->_data : '';
+    }
+
+    // cache of most recently fetched id
+
+    /**
+     * Get the size of a cache entry
+     *
+     * @param string $id cache id
+     *
+     * @return int size in bytes
+     */
+    public function getSize($id) {
+        if (!$this->_fetch($id)) {
+            return false;
+        }
+
+        if (\function_exists('mb_strlen') && ((int)\ini_get('mbstring.func_overload') & 2)) {
+            return \mb_strlen($this->_data, '8bit');
+        }
+
+        return \strlen($this->_data);
+    }
+
+    /**
+     * Does a valid cache entry exist?
+     *
+     * @param string $id       cache id
+     * @param int    $srcMtime mtime of the original source file(s)
+     *
+     * @return bool exists
+     */
+    public function isValid($id, $srcMtime) {
+        return $this->_fetch($id) && ($this->_lm >= $srcMtime);
     }
 
     /**
@@ -43,32 +94,9 @@ class Minify_Cache_APC implements Minify_CacheInterface
      *
      * @return bool success
      */
-    public function store($id, $data)
-    {
+    public function store($id, $data) {
         return \apc_store($id, "{$_SERVER['REQUEST_TIME']}|{$data}", $this->_exp);
     }
-
-    /**
-     * Get the size of a cache entry
-     *
-     * @param string $id cache id
-     *
-     * @return int size in bytes
-     */
-    public function getSize($id)
-    {
-        if (!$this->_fetch($id)) {
-            return false;
-        }
-
-        if (\function_exists('mb_strlen') && ((int) \ini_get('mbstring.func_overload') & 2)) {
-            return \mb_strlen($this->_data, '8bit');
-        }
-
-        return \strlen($this->_data);
-    }
-
-    // cache of most recently fetched id
 
     /**
      * Fetch data and timestamp from apc, store in instance
@@ -77,8 +105,7 @@ class Minify_Cache_APC implements Minify_CacheInterface
      *
      * @return bool success
      */
-    private function _fetch($id)
-    {
+    private function _fetch($id) {
         if ($this->_id === $id) {
             return true;
         }
@@ -93,40 +120,5 @@ class Minify_Cache_APC implements Minify_CacheInterface
         $this->_id = $id;
 
         return true;
-    }
-
-    /**
-     * Does a valid cache entry exist?
-     *
-     * @param string $id       cache id
-     * @param int    $srcMtime mtime of the original source file(s)
-     *
-     * @return bool exists
-     */
-    public function isValid($id, $srcMtime)
-    {
-        return $this->_fetch($id) && ($this->_lm >= $srcMtime);
-    }
-
-    /**
-     * Send the cached content to output
-     *
-     * @param string $id cache id
-     */
-    public function display($id)
-    {
-        echo $this->_fetch($id) ? $this->_data : '';
-    }
-
-    /**
-     * Fetch the cached content
-     *
-     * @param string $id cache id
-     *
-     * @return string
-     */
-    public function fetch($id)
-    {
-        return $this->_fetch($id) ? $this->_data : '';
     }
 }

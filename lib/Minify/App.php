@@ -32,15 +32,13 @@ use RuntimeException;
  * @property Minify_Source_Factory           $sourceFactory
  * @property array                           $sourceFactoryOptions
  */
-class App extends Container
-{
+class App extends Container {
     /**
      * Constructor
      *
      * @param string $dir Directory containing config files
      */
-    public function __construct($dir)
-    {
+    public function __construct($dir) {
         $that = $this;
 
         $this->dir = \rtrim($dir, '/\\');
@@ -58,8 +56,10 @@ class App extends Container
 
             $type = $that->typeOf($config->cachePath);
 
-            throw new RuntimeException('$min_cachePath must be a path or implement Minify_CacheInterface.'
-                . " Given ${type}");
+            throw new RuntimeException(
+                '$min_cachePath must be a path or implement Minify_CacheInterface.'
+                . " Given ${type}"
+            );
         };
 
         $this->config = function (App $app) {
@@ -82,9 +82,12 @@ class App extends Container
 
             $varDefined = \get_defined_vars();
 
-            $varNames = \array_filter($varNames, function ($name) use ($varDefined) {
-                return \array_key_exists($name, $varDefined);
-            });
+            $varNames = \array_filter(
+                $varNames,
+                function ($name) use ($varDefined) {
+                    return \array_key_exists($name, $varDefined);
+                }
+            );
 
             $vars = \compact($varNames);
 
@@ -122,8 +125,10 @@ class App extends Container
 
             $type = $that->typeOf($ctrl);
 
-            throw new RuntimeException('$min_factories["controller"] callable must return an implementation'
-                . " of Minify_CacheInterface. Returned ${type}");
+            throw new RuntimeException(
+                '$min_factories["controller"] callable must return an implementation'
+                . " of Minify_CacheInterface. Returned ${type}"
+            );
         };
 
         $this->docRoot = function (App $app) {
@@ -189,8 +194,10 @@ class App extends Container
 
             $type = $that->typeOf($value);
 
-            throw new RuntimeException('If set, $min_errorLogger must be a PSR-3 logger or a Monolog handler.'
-                . " Given ${type}");
+            throw new RuntimeException(
+                'If set, $min_errorLogger must be a PSR-3 logger or a Monolog handler.'
+                . " Given ${type}"
+            );
         };
 
         $this->minify = function (App $app) use ($that) {
@@ -207,8 +214,10 @@ class App extends Container
 
             $type = $that->typeOf($minify);
 
-            throw new RuntimeException('$min_factories["minify"] callable must return a Minify object.'
-                . " Returned ${type}");
+            throw new RuntimeException(
+                '$min_factories["minify"] callable must return a Minify object.'
+                . " Returned ${type}"
+            );
         };
 
         $this->serveOptions = function (App $app) {
@@ -276,20 +285,7 @@ class App extends Container
         };
     }
 
-    /**
-     * @param mixed $var
-     *
-     * @return string
-     */
-    private function typeOf($var)
-    {
-        $type = \gettype($var);
-
-        return $type === 'object' ? \get_class($var) : $type;
-    }
-
-    public function runServer()
-    {
+    public function runServer() {
         if (!$this->env->get('f') && $this->env->get('g') === null) {
             // no spec given
             $msg = '<p>No "f" or "g" parameters were detected.</p>';
@@ -299,5 +295,16 @@ class App extends Container
         }
 
         $this->minify->serve($this->controller, $this->serveOptions);
+    }
+
+    /**
+     * @param mixed $var
+     *
+     * @return string
+     */
+    private function typeOf($var) {
+        $type = \gettype($var);
+
+        return $type === 'object' ? \get_class($var) : $type;
     }
 }

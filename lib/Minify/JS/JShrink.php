@@ -2,6 +2,7 @@
 /**
  * Class Minify\JS\JShrink
  */
+
 namespace Minify\JS;
 
 /**
@@ -9,8 +10,7 @@ namespace Minify\JS;
  *
  * @see    https://github.com/tedious/JShrink
  */
-class JShrink
-{
+class JShrink {
     /**
      * Contains the default options for minification. This array is merged with
      * the one passed in by the user to create the request specific set of
@@ -31,8 +31,7 @@ class JShrink
      *
      * @see JShrink\Minifier::minify()
      */
-    public static function minify($js, array $options = array())
-    {
+    public static function minify($js, array $options = array()) {
         $options = \array_merge(
             self::$defaultOptions,
             $options

@@ -13,8 +13,7 @@
  *
  * This has a unit test but should be considered "experimental".
  */
-class Minify_ImportProcessor
-{
+class Minify_ImportProcessor {
     public static $filesIncluded = array();
 
     private static $_isCss;
@@ -32,14 +31,12 @@ class Minify_ImportProcessor
      * @param string $currentDir
      * @param string $previewsDir Is only used internally
      */
-    private function __construct($currentDir, $previewsDir = '')
-    {
+    private function __construct($currentDir, $previewsDir = '') {
         $this->_currentDir = $currentDir;
         $this->_previewsDir = $previewsDir;
     }
 
-    public static function process($file)
-    {
+    public static function process($file) {
         self::$filesIncluded = array();
         self::$_isCss = (\strtolower(\substr($file, -4)) === '.css');
         $obj = new Minify_ImportProcessor(\dirname($file));
@@ -47,8 +44,7 @@ class Minify_ImportProcessor
         return $obj->_getContent($file);
     }
 
-    private function _getContent($file, $is_imported = false)
-    {
+    private function _getContent($file, $is_imported = false) {
         $file = \preg_replace('~\\?.*~', '', $file);
         $file = \realpath($file);
         if (!$file
@@ -90,8 +86,7 @@ class Minify_ImportProcessor
         return $this->_importedContent . $content;
     }
 
-    private function _importCB($m)
-    {
+    private function _importCB($m) {
         $url = $m[1];
         $mediaList = \preg_replace('/\\s+/', '', $m[2]);
 
@@ -105,11 +100,11 @@ class Minify_ImportProcessor
             // protocol-relative or root path
             $url = \ltrim($url, '/');
             $file = \realpath($_SERVER['DOCUMENT_ROOT']) . \DIRECTORY_SEPARATOR
-                . \strtr($url, '/', \DIRECTORY_SEPARATOR);
+                    . \strtr($url, '/', \DIRECTORY_SEPARATOR);
         } else {
             // relative to current path
             $file = $this->_currentDir . \DIRECTORY_SEPARATOR
-                . \strtr($url, '/', \DIRECTORY_SEPARATOR);
+                    . \strtr($url, '/', \DIRECTORY_SEPARATOR);
         }
         $obj = new Minify_ImportProcessor(\dirname($file), $this->_currentDir);
         $content = $obj->_getContent($file, true);
@@ -125,8 +120,7 @@ class Minify_ImportProcessor
             : "@media {$mediaList} {\n{$content}\n}\n";
     }
 
-    private function _urlCB($m)
-    {
+    private function _urlCB($m) {
         // $m[1] is either quoted or not
         $quote = ($m[1][0] === "'" || $m[1][0] === '"') ? $m[1][0] : '';
 
@@ -138,7 +132,7 @@ class Minify_ImportProcessor
             } else {
                 // prepend path with current dir separator (OS-independent)
                 $path = $this->_currentDir
-                    . \DIRECTORY_SEPARATOR . \strtr($url, '/', \DIRECTORY_SEPARATOR);
+                        . \DIRECTORY_SEPARATOR . \strtr($url, '/', \DIRECTORY_SEPARATOR);
                 // update the relative path by the directory of the file that imported this one
                 $url = self::getPathDiff(\realpath($this->_previewsDir), $path);
             }
@@ -154,8 +148,7 @@ class Minify_ImportProcessor
      *
      * @return string
      */
-    private function getPathDiff($from, $to, $ps = \DIRECTORY_SEPARATOR)
-    {
+    private function getPathDiff($from, $to, $ps = \DIRECTORY_SEPARATOR) {
         $realFrom = $this->truepath($from);
         $realTo = $this->truepath($to);
 
@@ -178,8 +171,7 @@ class Minify_ImportProcessor
      *
      * @see http://stackoverflow.com/questions/4049856/replace-phps-realpath
      */
-    private function truepath($path)
-    {
+    private function truepath($path) {
         // whether $path is unix or not
         $unipath = ($path === '') || ($path[0] !== '/');
 
@@ -208,6 +200,7 @@ class Minify_ImportProcessor
         if (\file_exists($path) && \linkinfo($path) > 0) {
             $path = \readlink($path);
         }
+
         // put initial separator that could have been lost
         return !$unipath ? '/' . $path : $path;
     }

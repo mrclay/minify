@@ -6,8 +6,7 @@
 /**
  * Add line numbers in C-style comments for easier debugging of combined content
  */
-class Minify_Lines
-{
+class Minify_Lines {
     /**
      * Add line numbers in C-style comments
      *
@@ -28,15 +27,14 @@ class Minify_Lines
      *
      * @return string
      */
-    public static function minify($content, $options = array())
-    {
+    public static function minify($content, $options = array()) {
         $id = (isset($options['id']) && $options['id']) ? $options['id'] : '';
         $content = \str_replace("\r\n", "\n", $content);
 
         $lines = \explode("\n", $content);
         $numLines = \count($lines);
         // determine left padding
-        $padTo = \strlen((string) $numLines); // e.g. 103 lines = 3 digits
+        $padTo = \strlen((string)$numLines); // e.g. 103 lines = 3 digits
         $inComment = false;
         $i = 0;
         $newLines = array();
@@ -66,8 +64,8 @@ class Minify_Lines
             $content = Minify_CSS_UriRewriter::rewrite($content, $options['currentDir'], $docRoot, $symlinks);
 
             $content = "/* Minify_CSS_UriRewriter::\$debugText\n\n"
-                . Minify_CSS_UriRewriter::$debugText . "*/\n"
-                . $content;
+                       . Minify_CSS_UriRewriter::$debugText . "*/\n"
+                       . $content;
         }
 
         return $content;
@@ -84,8 +82,7 @@ class Minify_Lines
      *
      * @return string
      */
-    private static function _addNote($line, $note, $inComment, $padTo)
-    {
+    private static function _addNote($line, $note, $inComment, $padTo) {
         if ($inComment) {
             $line = '/* ' . \str_pad($note, $padTo, ' ', \STR_PAD_RIGHT) . ' *| ' . $line;
         } else {
@@ -104,8 +101,7 @@ class Minify_Lines
      *
      * @return bool
      */
-    private static function _eolInComment($line, $inComment)
-    {
+    private static function _eolInComment($line, $inComment) {
         while (\strlen($line)) {
             if ($inComment) {
                 // only "*/" can end the comment
@@ -116,7 +112,7 @@ class Minify_Lines
 
                 // stop comment and keep walking line
                 $inComment = false;
-                @$line = (string) \substr($line, $index + 2);
+                @$line = (string)\substr($line, $index + 2);
 
                 continue;
             }
@@ -131,7 +127,7 @@ class Minify_Lines
             if ($single === false || $multi < $single) {
                 // start comment and keep walking line
                 $inComment = true;
-                @$line = (string) \substr($line, $multi + 2);
+                @$line = (string)\substr($line, $multi + 2);
 
                 continue;
             }
@@ -151,8 +147,7 @@ class Minify_Lines
      *
      * @return bool
      */
-    private static function _find($str, $token)
-    {
+    private static function _find($str, $token) {
         switch ($token) {
             case '//':
                 $fakes = array(
@@ -195,6 +190,7 @@ class Minify_Lines
                     break;
                 }
             }
+
             // legitimate find
             return $index;
         }

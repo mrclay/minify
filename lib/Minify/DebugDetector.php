@@ -3,10 +3,8 @@
 /**
  * Detect whether request should be debugged
  */
-class Minify_DebugDetector
-{
-    public static function shouldDebugRequest(Minify_Env $env)
-    {
+class Minify_DebugDetector {
+    public static function shouldDebugRequest(Minify_Env $env) {
         if ($env->get('debug') !== null) {
             return true;
         }

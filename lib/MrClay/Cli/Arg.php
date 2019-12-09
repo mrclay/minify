@@ -42,8 +42,7 @@ use BadMethodCallException;
  *
  * @license http://www.opensource.org/licenses/mit-license.php  MIT License
  */
-class Arg
-{
+class Arg {
     /**
      * @var array
      */
@@ -62,94 +61,12 @@ class Arg
     /**
      * @param bool $isRequired
      */
-    public function __construct($isRequired = false)
-    {
+    public function __construct($isRequired = false) {
         $this->spec = $this->getDefaultSpec();
-        $this->required = (bool) $isRequired;
+        $this->required = (bool)$isRequired;
         if ($isRequired) {
             $this->spec['mustHaveValue'] = true;
         }
-    }
-
-    /**
-     * @return array
-     */
-    public function getDefaultSpec()
-    {
-        return array(
-            'mayHaveValue'   => false,
-            'mustHaveValue'  => false,
-            'assertFile'     => false,
-            'assertDir'      => false,
-            'assertReadable' => false,
-            'assertWritable' => false,
-            'useAsInfile'    => false,
-            'useAsOutfile'   => false,
-        );
-    }
-
-    /**
-     * Assert that the argument's value points to a writable file. When
-     * Cli::openOutput() is called, a write pointer to this file will
-     * be provided.
-     *
-     * @return Arg
-     */
-    public function useAsOutfile()
-    {
-        $this->spec['useAsOutfile'] = true;
-
-        return $this->assertFile()->assertWritable();
-    }
-
-    /**
-     * Assert that the argument's value points to a readable file. When
-     * Cli::openInput() is called, a read pointer to this file will
-     * be provided.
-     *
-     * @return Arg
-     */
-    public function useAsInfile()
-    {
-        $this->spec['useAsInfile'] = true;
-
-        return $this->assertFile()->assertReadable();
-    }
-
-    /**
-     * @return array
-     */
-    public function getSpec()
-    {
-        return $this->spec;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param string $desc
-     *
-     * @return Arg
-     */
-    public function setDescription($desc)
-    {
-        $this->description = $desc;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isRequired()
-    {
-        return $this->required;
     }
 
     /**
@@ -158,12 +75,11 @@ class Arg
      * @param string $name
      * @param array  $args
      *
+     * @return Arg
      * @throws BadMethodCallException
      *
-     * @return Arg
      */
-    public function __call($name, array $args = array())
-    {
+    public function __call($name, array $args = array()) {
         if (\array_key_exists($name, $this->spec)) {
             $this->spec[$name] = true;
             if ($name === 'assertFile' || $name === 'assertDir') {
@@ -183,12 +99,85 @@ class Arg
      *
      * @return bool|null
      */
-    public function __get($name)
-    {
+    public function __get($name) {
         if (\array_key_exists($name, $this->spec)) {
             return $this->spec[$name];
         }
 
         return null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDefaultSpec() {
+        return array(
+            'mayHaveValue'   => false,
+            'mustHaveValue'  => false,
+            'assertFile'     => false,
+            'assertDir'      => false,
+            'assertReadable' => false,
+            'assertWritable' => false,
+            'useAsInfile'    => false,
+            'useAsOutfile'   => false,
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription() {
+        return $this->description;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSpec() {
+        return $this->spec;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRequired() {
+        return $this->required;
+    }
+
+    /**
+     * @param string $desc
+     *
+     * @return Arg
+     */
+    public function setDescription($desc) {
+        $this->description = $desc;
+
+        return $this;
+    }
+
+    /**
+     * Assert that the argument's value points to a readable file. When
+     * Cli::openInput() is called, a read pointer to this file will
+     * be provided.
+     *
+     * @return Arg
+     */
+    public function useAsInfile() {
+        $this->spec['useAsInfile'] = true;
+
+        return $this->assertFile()->assertReadable();
+    }
+
+    /**
+     * Assert that the argument's value points to a writable file. When
+     * Cli::openOutput() is called, a write pointer to this file will
+     * be provided.
+     *
+     * @return Arg
+     */
+    public function useAsOutfile() {
+        $this->spec['useAsOutfile'] = true;
+
+        return $this->assertFile()->assertWritable();
     }
 }

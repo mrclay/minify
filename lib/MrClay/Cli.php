@@ -17,8 +17,7 @@ use MrClay\Cli\Arg;
  *
  * @license http://www.opensource.org/licenses/mit-license.php  MIT License
  */
-class Cli
-{
+class Cli {
     /**
      * @var array validation errors
      */
@@ -70,8 +69,7 @@ class Cli
     /**
      * @param bool $exitIfNoStdin (default true) Exit() if STDIN is not defined
      */
-    public function __construct($exitIfNoStdin = true)
-    {
+    public function __construct($exitIfNoStdin = true) {
         if ($exitIfNoStdin && !\defined('STDIN')) {
             exit('This script is for command-line use only.');
         }
@@ -82,26 +80,15 @@ class Cli
     }
 
     /**
-     * @param Arg|string $letter
-     *
-     * @return Arg
-     */
-    public function addOptionalArg($letter)
-    {
-        return $this->addArgument($letter, false);
-    }
-
-    /**
      * @param string   $letter
      * @param bool     $required
      * @param Arg|null $arg
      *
+     * @return Arg
      * @throws InvalidArgumentException
      *
-     * @return Arg
      */
-    public function addArgument($letter, $required, Arg $arg = null)
-    {
+    public function addArgument($letter, $required, Arg $arg = null) {
         if (!\preg_match('/^[a-zA-Z]$/', $letter)) {
             throw new InvalidArgumentException('$letter must be in [a-zA-Z]');
         }
@@ -118,19 +105,23 @@ class Cli
      *
      * @return Arg
      */
-    public function addRequiredArg($letter)
-    {
-        return $this->addArgument($letter, true);
+    public function addOptionalArg($letter) {
+        return $this->addArgument($letter, false);
     }
 
     /**
-     * @param string $letter
+     * @param Arg|string $letter
      *
-     * @return Arg|null
+     * @return Arg
      */
-    public function getArgument($letter)
-    {
-        return isset($this->_args[$letter]) ? $this->_args[$letter] : null;
+    public function addRequiredArg($letter) {
+        return $this->addArgument($letter, true);
+    }
+
+    public function closeInput() {
+        if ($this->_stdin !== null) {
+            \fclose($this->_stdin);
+        }
     }
 
     /*
@@ -138,8 +129,123 @@ class Cli
      *
      * @return bool true if all options are valid
      */
-    public function validate()
-    {
+
+    public function closeOutput() {
+        if ($this->_stdout !== null) {
+            \fclose($this->_stdout);
+        }
+    }
+
+    /**
+     * @param string $letter
+     *
+     * @return Arg|null
+     */
+    public function getArgument($letter) {
+        return isset($this->_args[$letter]) ? $this->_args[$letter] : null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getArgumentsListing() {
+        $r = "\n";
+        foreach ($this->_args as $letter => $arg) {
+            /* @var Arg $arg */
+            $desc = $arg->getDescription();
+            $flag = " -${letter} ";
+            if ($arg->mayHaveValue) {
+                $flag .= '[VAL]';
+            } elseif ($arg->mustHaveValue) {
+                $flag .= 'VAL';
+            }
+            if ($arg->assertFile) {
+                $flag = \str_replace('VAL', 'FILE', $flag);
+            } elseif ($arg->assertDir) {
+                $flag = \str_replace('VAL', 'DIR', $flag);
+            }
+            if ($arg->isRequired()) {
+                $desc = "(required) ${desc}";
+            }
+            $flag = \str_pad($flag, 12, ' ', \STR_PAD_RIGHT);
+            $desc = \wordwrap($desc, 70);
+            $r .= $flag . \str_replace("\n", "\n            ", $desc) . "\n\n";
+        }
+
+        return $r;
+    }
+
+    /**
+     * Get a short list of errors with options
+     *
+     * @return string
+     */
+    public function getErrorReport() {
+        if (empty($this->errors)) {
+            return '';
+        }
+        $r = "Some arguments did not pass validation:\n";
+        foreach ($this->errors as $letter => $arr) {
+            $r .= "  ${letter} : " . \implode(', ', $arr) . "\n";
+        }
+        $r .= "\n";
+
+        return $r;
+    }
+
+    /**
+     * Get the full paths of file(s) passed in as unspecified arguments
+     *
+     * @return array
+     */
+    public function getPathArgs() {
+        $r = $this->moreArgs;
+        foreach ($r as $k => $v) {
+            if ($v[0] !== '/' && $v[0] !== '~') {
+                $v = \getcwd() . "/${v}";
+                $v = \str_replace('/./', '/', $v);
+                do {
+                    $v = \preg_replace('@/[^/]+/\\.\\./@', '/', $v, 1, $changed);
+                } while ($changed);
+                $r[$k] = $v;
+            }
+        }
+
+        return $r;
+    }
+
+    /**
+     * Get resource of open input stream. May be STDIN or a file pointer
+     * to the file specified by an option with 'STDIN'.
+     *
+     * @return resource
+     */
+    public function openInput() {
+        if ($this->_stdin === null) {
+            return \STDIN;
+        }
+        $this->_stdin = \fopen($this->_stdin, 'rb');
+
+        return $this->_stdin;
+    }
+
+    /**
+     * Get resource of open output stream. May be STDOUT or a file pointer
+     * to the file specified by an option with 'STDOUT'. The file will be
+     * truncated to 0 bytes on opening.
+     *
+     * @return resource
+     */
+    public function openOutput() {
+        if ($this->_stdout === null) {
+            return \STDOUT;
+        }
+        $this->_stdout = \fopen($this->_stdout, 'wb');
+
+        return $this->_stdout;
+    }
+
+    public function validate() {
         $options = '';
         $this->errors = array();
         $this->values = array();
@@ -266,130 +372,10 @@ class Cli
      * @param string $msg
      * @param string $value
      */
-    protected function addError($letter, $msg, $value = null)
-    {
+    protected function addError($letter, $msg, $value = null) {
         if ($value !== null) {
             $value = \var_export($value, 1);
         }
         $this->errors[$letter][] = \sprintf($msg, $value);
-    }
-
-    /**
-     * Get the full paths of file(s) passed in as unspecified arguments
-     *
-     * @return array
-     */
-    public function getPathArgs()
-    {
-        $r = $this->moreArgs;
-        foreach ($r as $k => $v) {
-            if ($v[0] !== '/' && $v[0] !== '~') {
-                $v = \getcwd() . "/${v}";
-                $v = \str_replace('/./', '/', $v);
-                do {
-                    $v = \preg_replace('@/[^/]+/\\.\\./@', '/', $v, 1, $changed);
-                } while ($changed);
-                $r[$k] = $v;
-            }
-        }
-
-        return $r;
-    }
-
-    /**
-     * Get a short list of errors with options
-     *
-     * @return string
-     */
-    public function getErrorReport()
-    {
-        if (empty($this->errors)) {
-            return '';
-        }
-        $r = "Some arguments did not pass validation:\n";
-        foreach ($this->errors as $letter => $arr) {
-            $r .= "  ${letter} : " . \implode(', ', $arr) . "\n";
-        }
-        $r .= "\n";
-
-        return $r;
-    }
-
-    /**
-     * @return string
-     */
-    public function getArgumentsListing()
-    {
-        $r = "\n";
-        foreach ($this->_args as $letter => $arg) {
-            /* @var Arg $arg */
-            $desc = $arg->getDescription();
-            $flag = " -${letter} ";
-            if ($arg->mayHaveValue) {
-                $flag .= '[VAL]';
-            } elseif ($arg->mustHaveValue) {
-                $flag .= 'VAL';
-            }
-            if ($arg->assertFile) {
-                $flag = \str_replace('VAL', 'FILE', $flag);
-            } elseif ($arg->assertDir) {
-                $flag = \str_replace('VAL', 'DIR', $flag);
-            }
-            if ($arg->isRequired()) {
-                $desc = "(required) ${desc}";
-            }
-            $flag = \str_pad($flag, 12, ' ', \STR_PAD_RIGHT);
-            $desc = \wordwrap($desc, 70);
-            $r .= $flag . \str_replace("\n", "\n            ", $desc) . "\n\n";
-        }
-
-        return $r;
-    }
-
-    /**
-     * Get resource of open input stream. May be STDIN or a file pointer
-     * to the file specified by an option with 'STDIN'.
-     *
-     * @return resource
-     */
-    public function openInput()
-    {
-        if ($this->_stdin === null) {
-            return \STDIN;
-        }
-        $this->_stdin = \fopen($this->_stdin, 'rb');
-
-        return $this->_stdin;
-    }
-
-    public function closeInput()
-    {
-        if ($this->_stdin !== null) {
-            \fclose($this->_stdin);
-        }
-    }
-
-    /**
-     * Get resource of open output stream. May be STDOUT or a file pointer
-     * to the file specified by an option with 'STDOUT'. The file will be
-     * truncated to 0 bytes on opening.
-     *
-     * @return resource
-     */
-    public function openOutput()
-    {
-        if ($this->_stdout === null) {
-            return \STDOUT;
-        }
-        $this->_stdout = \fopen($this->_stdout, 'wb');
-
-        return $this->_stdout;
-    }
-
-    public function closeOutput()
-    {
-        if ($this->_stdout !== null) {
-            \fclose($this->_stdout);
-        }
     }
 }

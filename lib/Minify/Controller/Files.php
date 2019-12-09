@@ -22,8 +22,7 @@
  * ]);
  * </code>
  */
-class Minify_Controller_Files extends Minify_Controller_Base
-{
+class Minify_Controller_Files extends Minify_Controller_Base {
     /**
      * Set up file sources
      *
@@ -35,8 +34,7 @@ class Minify_Controller_Files extends Minify_Controller_Base
      *
      * 'files': (required) array of complete file paths, or a single path
      */
-    public function createConfiguration(array $options)
-    {
+    public function createConfiguration(array $options) {
         // strip controller options
 
         $files = $options['files'];
@@ -44,7 +42,7 @@ class Minify_Controller_Files extends Minify_Controller_Base
         if (\is_object($files)) {
             $files = array($files);
         } elseif (!\is_array($files)) {
-            $files = (array) $files;
+            $files = (array)$files;
         }
         unset($options['files']);
 

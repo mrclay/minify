@@ -6,8 +6,7 @@
 /**
  * Process a string in pieces preserving C-style comments that begin with "/*!"
  */
-class Minify_CommentPreserver
-{
+class Minify_CommentPreserver {
     /**
      * String to be prepended to each preserved comment
      *
@@ -36,8 +35,7 @@ class Minify_CommentPreserver
      *
      * @return string
      */
-    public static function process($content, $processor, $args = array())
-    {
+    public static function process($content, $processor, $args = array()) {
         $ret = '';
         while (true) {
             list($beforeComment, $comment, $afterComment) = self::_nextComment($content);
@@ -66,8 +64,7 @@ class Minify_CommentPreserver
      * strings. If no comment is found, the entire string is returned as the
      * 1st element and the other two are false.
      */
-    private static function _nextComment($in)
-    {
+    private static function _nextComment($in) {
         if (($start = \strpos($in, '/*!')) === false || ($end = \strpos($in, '*/', $start + 3)) === false) {
             return array($in, false, false);
         }

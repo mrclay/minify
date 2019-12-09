@@ -1,7 +1,6 @@
 <?php
 
-class Minify_Env
-{
+class Minify_Env {
     protected $server;
 
     protected $get;
@@ -10,14 +9,16 @@ class Minify_Env
 
     protected $cookie;
 
-    public function __construct($options = array())
-    {
-        $options = \array_merge(array(
-            'server' => $_SERVER,
-            'get'    => $_GET,
-            'post'   => $_POST,
-            'cookie' => $_COOKIE,
-        ), $options);
+    public function __construct($options = array()) {
+        $options = \array_merge(
+            array(
+                'server' => $_SERVER,
+                'get'    => $_GET,
+                'post'   => $_POST,
+                'cookie' => $_COOKIE,
+            ),
+            $options
+        );
 
         $this->server = $options['server'];
         if (empty($this->server['DOCUMENT_ROOT'])) {
@@ -32,23 +33,34 @@ class Minify_Env
         $this->cookie = $options['cookie'];
     }
 
-    /**
-     * Compute $_SERVER['DOCUMENT_ROOT'] for IIS using SCRIPT_FILENAME and SCRIPT_NAME.
-     *
-     * @param array $server
-     *
-     * @return string
-     */
-    protected function computeDocRoot(array $server)
-    {
-        if (isset($server['SERVER_SOFTWARE']) && \strpos($server['SERVER_SOFTWARE'], 'Microsoft-IIS/') !== 0) {
-            throw new InvalidArgumentException('DOCUMENT_ROOT is not provided and could not be computed');
+    public function cookie($key = null, $default = null) {
+        if ($key === null) {
+            return $this->cookie;
         }
 
-        $substrLength = \strlen($server['SCRIPT_FILENAME']) - \strlen($server['SCRIPT_NAME']);
-        $docRoot = \substr($server['SCRIPT_FILENAME'], 0, $substrLength);
+        return isset($this->cookie[$key]) ? $this->cookie[$key] : $default;
+    }
 
-        return \rtrim($docRoot, '\\');
+    public function get($key = null, $default = null) {
+        if ($key === null) {
+            return $this->get;
+        }
+
+        return isset($this->get[$key]) ? $this->get[$key] : $default;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDocRoot() {
+        return $this->server['DOCUMENT_ROOT'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getRequestUri() {
+        return $this->server['REQUEST_URI'];
     }
 
     /**
@@ -60,8 +72,7 @@ class Minify_Env
      *
      * @return string
      */
-    public function normalizePath($path)
-    {
+    public function normalizePath($path) {
         $realpath = \realpath($path);
         if ($realpath) {
             $path = $realpath;
@@ -76,24 +87,15 @@ class Minify_Env
         return $path;
     }
 
-    /**
-     * @return string
-     */
-    public function getDocRoot()
-    {
-        return $this->server['DOCUMENT_ROOT'];
+    public function post($key = null, $default = null) {
+        if ($key === null) {
+            return $this->post;
+        }
+
+        return isset($this->post[$key]) ? $this->post[$key] : $default;
     }
 
-    /**
-     * @return string
-     */
-    public function getRequestUri()
-    {
-        return $this->server['REQUEST_URI'];
-    }
-
-    public function server($key = null)
-    {
+    public function server($key = null) {
         if ($key === null) {
             return $this->server;
         }
@@ -101,30 +103,21 @@ class Minify_Env
         return isset($this->server[$key]) ? $this->server[$key] : null;
     }
 
-    public function cookie($key = null, $default = null)
-    {
-        if ($key === null) {
-            return $this->cookie;
+    /**
+     * Compute $_SERVER['DOCUMENT_ROOT'] for IIS using SCRIPT_FILENAME and SCRIPT_NAME.
+     *
+     * @param array $server
+     *
+     * @return string
+     */
+    protected function computeDocRoot(array $server) {
+        if (isset($server['SERVER_SOFTWARE']) && \strpos($server['SERVER_SOFTWARE'], 'Microsoft-IIS/') !== 0) {
+            throw new InvalidArgumentException('DOCUMENT_ROOT is not provided and could not be computed');
         }
 
-        return isset($this->cookie[$key]) ? $this->cookie[$key] : $default;
-    }
+        $substrLength = \strlen($server['SCRIPT_FILENAME']) - \strlen($server['SCRIPT_NAME']);
+        $docRoot = \substr($server['SCRIPT_FILENAME'], 0, $substrLength);
 
-    public function get($key = null, $default = null)
-    {
-        if ($key === null) {
-            return $this->get;
-        }
-
-        return isset($this->get[$key]) ? $this->get[$key] : $default;
-    }
-
-    public function post($key = null, $default = null)
-    {
-        if ($key === null) {
-            return $this->post;
-        }
-
-        return isset($this->post[$key]) ? $this->post[$key] : $default;
+        return \rtrim($docRoot, '\\');
     }
 }

@@ -9,11 +9,10 @@
  *
  * @see https://github.com/martylamb/nailgun
  */
-class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler
-{
-    const NG_SERVER = 'com.martiansoftware.nailgun.NGServer';
-
+class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler {
     const CC_MAIN = 'com.google.javascript.jscomp.CommandLineRunner';
+
+    const NG_SERVER = 'com.martiansoftware.nailgun.NGServer';
 
     /**
      * Filepath of "ng" executable (from Nailgun package)
@@ -44,28 +43,14 @@ class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler
     private static $NG_EXIT_CODES = array(0, 227, 229);
 
     /**
-     * @throws Minify_ClosureCompiler_Exception
-     *
-     * @return array
-     */
-    protected function getCompilerCommandLine()
-    {
-        return array(
-            self::$ngExecutable,
-            \escapeshellarg(self::CC_MAIN),
-        );
-    }
-
-    /**
      * @param string $tmpFile
      * @param array  $options
      *
+     * @return string
      * @throws Minify_ClosureCompiler_Exception
      *
-     * @return string
      */
-    protected function compile($tmpFile, $options)
-    {
+    protected function compile($tmpFile, $options) {
         $this->startServer();
 
         $command = $this->getCommand($options, $tmpFile);
@@ -73,16 +58,16 @@ class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler
         return \implode("\n", $this->shell($command, self::$NG_EXIT_CODES));
     }
 
-    private function startServer()
-    {
-        $serverCommand = \implode(' ', $this->getServerCommandLine());
-        $psCommand = $this->shell('ps -o cmd= -C ' . self::$javaExecutable);
-        if (\in_array($serverCommand, $psCommand, true)) {
-            // already started!
-            return;
-        }
-
-        $this->shell("${serverCommand} </dev/null >/dev/null 2>/dev/null & sleep 10");
+    /**
+     * @return array
+     * @throws Minify_ClosureCompiler_Exception
+     *
+     */
+    protected function getCompilerCommandLine() {
+        return array(
+            self::$ngExecutable,
+            \escapeshellarg(self::CC_MAIN),
+        );
     }
 
     /**
@@ -90,8 +75,7 @@ class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler
      *
      * @return array
      */
-    protected function getServerCommandLine()
-    {
+    protected function getServerCommandLine() {
         $this->checkJar(self::$ngJarFile);
         $this->checkJar(self::$jarFile);
 
@@ -104,8 +88,20 @@ class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler
         return array(
             self::$javaExecutable,
             '-server',
-            '-cp', \implode(':', $classPath),
+            '-cp',
+            \implode(':', $classPath),
             self::NG_SERVER,
         );
+    }
+
+    private function startServer() {
+        $serverCommand = \implode(' ', $this->getServerCommandLine());
+        $psCommand = $this->shell('ps -o cmd= -C ' . self::$javaExecutable);
+        if (\in_array($serverCommand, $psCommand, true)) {
+            // already started!
+            return;
+        }
+
+        $this->shell("${serverCommand} </dev/null >/dev/null 2>/dev/null & sleep 10");
     }
 }

@@ -6,8 +6,7 @@
 /**
  * Rewrite file-relative URIs as root-relative in CSS files
  */
-class Minify_CSS_UriRewriter
-{
+class Minify_CSS_UriRewriter {
     /**
      * rewrite() and rewriteRelative() append debugging information here
      *
@@ -53,6 +52,52 @@ class Minify_CSS_UriRewriter
     private static $_prependPath = null;
 
     /**
+     * In CSS content, prepend a path to relative URIs
+     *
+     * @param string $css
+     * @param string $path the path to prepend
+     *
+     * @return string
+     */
+    public static function prepend($css, $path) {
+        self::$_prependPath = $path;
+
+        $css = self::_trimUrls($css);
+
+        $css = self::_owlifySvgPaths($css);
+
+        // append
+        $pattern = '/@import\\s+([\'"])(.*?)[\'"]/';
+        $css = \preg_replace_callback($pattern, array(self::$className, '_processUriCB'), $css);
+
+        $pattern = '/url\\(\\s*([\'"](.*?)[\'"]|[^\\)\\s]+)\\s*\\)/';
+        $css = \preg_replace_callback($pattern, array(self::$className, '_processUriCB'), $css);
+
+        $css = self::_unOwlify($css);
+
+        self::$_prependPath = null;
+
+        return $css;
+    }
+
+    /**
+     * Remove instances of "./" and "../" where possible from a root-relative URI
+     *
+     * @param string $uri
+     *
+     * @return string
+     */
+    public static function removeDots($uri) {
+        $uri = \str_replace('/./', '/', $uri);
+        // inspired by patch from Oleg Cherniy
+        do {
+            $uri = \preg_replace('@/[^/]+/\\.\\./@', '/', $uri, 1, $changed);
+        } while ($changed);
+
+        return $uri;
+    }
+
+    /**
      * In CSS content, rewrite file relative URIs as root relative
      *
      * @param string $css
@@ -71,8 +116,7 @@ class Minify_CSS_UriRewriter
      *
      * @return string
      */
-    public static function rewrite($css, $currentDir, $docRoot = null, $symlinks = array())
-    {
+    public static function rewrite($css, $currentDir, $docRoot = null, $symlinks = array()) {
         self::$_docRoot = self::_realpath(
             $docRoot ? $docRoot : $_SERVER['DOCUMENT_ROOT']
         );
@@ -88,7 +132,7 @@ class Minify_CSS_UriRewriter
         }
 
         self::$debugText .= 'docRoot    : ' . self::$_docRoot . "\n"
-            . 'currentDir : ' . self::$_currentDir . "\n";
+                            . 'currentDir : ' . self::$_currentDir . "\n";
         if (self::$_symlinks) {
             self::$debugText .= 'symlinks : ' . \var_export(self::$_symlinks, 1) . "\n";
         }
@@ -111,6 +155,74 @@ class Minify_CSS_UriRewriter
     }
 
     /**
+     * Get a root relative URI from a file relative URI
+     *
+     * <code>
+     * Minify_CSS_UriRewriter::rewriteRelative(
+     *       '../img/hello.gif'
+     *     , '/home/user/www/css'  // path of CSS file
+     *     , '/home/user/www'      // doc root
+     * );
+     * // returns '/img/hello.gif'
+     *
+     * // example where static files are stored in a symlinked directory
+     * Minify_CSS_UriRewriter::rewriteRelative(
+     *       'hello.gif'
+     *     , '/var/staticFiles/theme'
+     *     , '/home/user/www'
+     *     , array('/home/user/www/static' => '/var/staticFiles')
+     * );
+     * // returns '/static/theme/hello.gif'
+     * </code>
+     *
+     * @param string $uri            file relative URI
+     * @param string $realCurrentDir realpath of the current file's directory
+     * @param string $realDocRoot    realpath of the site document root
+     * @param array  $symlinks       (default = array()) If the file is stored in
+     *                               a symlink-ed directory, provide an array of link paths to
+     *                               real target paths, where the link paths "appear" to be within the document
+     *                               root. E.g.:
+     *                               <code>
+     *                               array('/home/foo/www/not/real/path' => '/real/target/path') // unix
+     *                               array('C:\\htdocs\\not\\real' => 'D:\\real\\target\\path')  // Windows
+     *                               </code>
+     *
+     * @return string
+     */
+    public static function rewriteRelative($uri, $realCurrentDir, $realDocRoot, $symlinks = array()) {
+        // prepend path with current dir separator (OS-independent)
+        $path = \strtr($realCurrentDir, '/', \DIRECTORY_SEPARATOR);
+        $path .= \DIRECTORY_SEPARATOR . \strtr($uri, '/', \DIRECTORY_SEPARATOR);
+
+        self::$debugText .= "file-relative URI  : {$uri}\n"
+                            . "path prepended     : {$path}\n";
+
+        // "unresolve" a symlink back to doc root
+        foreach ($symlinks as $link => $target) {
+            if (\strpos($path, $target) === 0) {
+                // replace $target with $link
+                $path = $link . \substr($path, \strlen($target));
+
+                self::$debugText .= "symlink unresolved : {$path}\n";
+
+                break;
+            }
+        }
+        // strip doc root
+        $path = \substr($path, \strlen($realDocRoot));
+
+        self::$debugText .= "docroot stripped   : {$path}\n";
+
+        // fix to root-relative URI
+        $uri = \strtr($path, '/\\', '//');
+        $uri = self::removeDots($uri);
+
+        self::$debugText .= "traversals removed : {$uri}\n\n";
+
+        return $uri;
+    }
+
+    /**
      * Get realpath with any trailing slash removed. If realpath() fails,
      * just remove the trailing slash.
      *
@@ -118,32 +230,13 @@ class Minify_CSS_UriRewriter
      *
      * @return mixed path with no trailing slash
      */
-    protected static function _realpath($path)
-    {
+    protected static function _realpath($path) {
         $realPath = \realpath($path);
         if ($realPath !== false) {
             $path = $realPath;
         }
 
         return \rtrim($path, '/\\');
-    }
-
-    /**
-     * @param string $css
-     *
-     * @return string
-     */
-    private static function _trimUrls($css)
-    {
-        $pattern = '/
-            url\\(      # url(
-            \\s*
-            ([^\\)]+?)  # 1 = URI (assuming does not contain ")")
-            \\s*
-            \\)         # )
-        /x';
-
-        return \preg_replace($pattern, 'url($1)', $css);
     }
 
     /**
@@ -156,57 +249,10 @@ class Minify_CSS_UriRewriter
      *
      * @return string
      */
-    private static function _owlifySvgPaths($css)
-    {
+    private static function _owlifySvgPaths($css) {
         $pattern = '~\b((?:clip-path|mask|-webkit-mask)\s*\:\s*)url(\(\s*#\w+\s*\))~';
 
         return \preg_replace($pattern, '$1owl$2', $css);
-    }
-
-    /**
-     * Undo work of _owlify
-     *
-     * @param string $css
-     *
-     * @return string
-     *
-     * @see _owlifySvgPaths
-     */
-    private static function _unOwlify($css)
-    {
-        $pattern = '~\b((?:clip-path|mask|-webkit-mask)\s*\:\s*)owl~';
-
-        return \preg_replace($pattern, '$1url', $css);
-    }
-
-    /**
-     * In CSS content, prepend a path to relative URIs
-     *
-     * @param string $css
-     * @param string $path the path to prepend
-     *
-     * @return string
-     */
-    public static function prepend($css, $path)
-    {
-        self::$_prependPath = $path;
-
-        $css = self::_trimUrls($css);
-
-        $css = self::_owlifySvgPaths($css);
-
-        // append
-        $pattern = '/@import\\s+([\'"])(.*?)[\'"]/';
-        $css = \preg_replace_callback($pattern, array(self::$className, '_processUriCB'), $css);
-
-        $pattern = '/url\\(\\s*([\'"](.*?)[\'"]|[^\\)\\s]+)\\s*\\)/';
-        $css = \preg_replace_callback($pattern, array(self::$className, '_processUriCB'), $css);
-
-        $css = self::_unOwlify($css);
-
-        self::$_prependPath = null;
-
-        return $css;
     }
 
     /**
@@ -214,8 +260,7 @@ class Minify_CSS_UriRewriter
      *
      * @return string
      */
-    private static function _processUriCB($m)
-    {
+    private static function _processUriCB($m) {
         // $m matched either '/@import\\s+([\'"])(.*?)[\'"]/' or '/url\\(\\s*([^\\)\\s]+)\\s*\\)/'
         $isImport = ($m[0][0] === '@');
         // determine URI and the quote character (if any)
@@ -260,89 +305,34 @@ class Minify_CSS_UriRewriter
     }
 
     /**
-     * Get a root relative URI from a file relative URI
-     *
-     * <code>
-     * Minify_CSS_UriRewriter::rewriteRelative(
-     *       '../img/hello.gif'
-     *     , '/home/user/www/css'  // path of CSS file
-     *     , '/home/user/www'      // doc root
-     * );
-     * // returns '/img/hello.gif'
-     *
-     * // example where static files are stored in a symlinked directory
-     * Minify_CSS_UriRewriter::rewriteRelative(
-     *       'hello.gif'
-     *     , '/var/staticFiles/theme'
-     *     , '/home/user/www'
-     *     , array('/home/user/www/static' => '/var/staticFiles')
-     * );
-     * // returns '/static/theme/hello.gif'
-     * </code>
-     *
-     * @param string $uri            file relative URI
-     * @param string $realCurrentDir realpath of the current file's directory
-     * @param string $realDocRoot    realpath of the site document root
-     * @param array  $symlinks       (default = array()) If the file is stored in
-     *                               a symlink-ed directory, provide an array of link paths to
-     *                               real target paths, where the link paths "appear" to be within the document
-     *                               root. E.g.:
-     *                               <code>
-     *                               array('/home/foo/www/not/real/path' => '/real/target/path') // unix
-     *                               array('C:\\htdocs\\not\\real' => 'D:\\real\\target\\path')  // Windows
-     *                               </code>
+     * @param string $css
      *
      * @return string
      */
-    public static function rewriteRelative($uri, $realCurrentDir, $realDocRoot, $symlinks = array())
-    {
-        // prepend path with current dir separator (OS-independent)
-        $path = \strtr($realCurrentDir, '/', \DIRECTORY_SEPARATOR);
-        $path .= \DIRECTORY_SEPARATOR . \strtr($uri, '/', \DIRECTORY_SEPARATOR);
+    private static function _trimUrls($css) {
+        $pattern = '/
+            url\\(      # url(
+            \\s*
+            ([^\\)]+?)  # 1 = URI (assuming does not contain ")")
+            \\s*
+            \\)         # )
+        /x';
 
-        self::$debugText .= "file-relative URI  : {$uri}\n"
-            . "path prepended     : {$path}\n";
-
-        // "unresolve" a symlink back to doc root
-        foreach ($symlinks as $link => $target) {
-            if (\strpos($path, $target) === 0) {
-                // replace $target with $link
-                $path = $link . \substr($path, \strlen($target));
-
-                self::$debugText .= "symlink unresolved : {$path}\n";
-
-                break;
-            }
-        }
-        // strip doc root
-        $path = \substr($path, \strlen($realDocRoot));
-
-        self::$debugText .= "docroot stripped   : {$path}\n";
-
-        // fix to root-relative URI
-        $uri = \strtr($path, '/\\', '//');
-        $uri = self::removeDots($uri);
-
-        self::$debugText .= "traversals removed : {$uri}\n\n";
-
-        return $uri;
+        return \preg_replace($pattern, 'url($1)', $css);
     }
 
     /**
-     * Remove instances of "./" and "../" where possible from a root-relative URI
+     * Undo work of _owlify
      *
-     * @param string $uri
+     * @param string $css
      *
      * @return string
+     *
+     * @see _owlifySvgPaths
      */
-    public static function removeDots($uri)
-    {
-        $uri = \str_replace('/./', '/', $uri);
-        // inspired by patch from Oleg Cherniy
-        do {
-            $uri = \preg_replace('@/[^/]+/\\.\\./@', '/', $uri, 1, $changed);
-        } while ($changed);
+    private static function _unOwlify($css) {
+        $pattern = '~\b((?:clip-path|mask|-webkit-mask)\s*\:\s*)owl~';
 
-        return $uri;
+        return \preg_replace($pattern, '$1url', $css);
     }
 }

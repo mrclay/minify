@@ -11,8 +11,7 @@
  *
  * @deprecated Use Minify_CSSmin
  */
-class Minify_CSS
-{
+class Minify_CSS {
     /**
      * Minify a CSS string
      *
@@ -49,17 +48,19 @@ class Minify_CSS
      *
      * @return string
      */
-    public static function minify($css, $options = array())
-    {
-        $options = \array_merge(array(
-            'compress'            => true,
-            'removeCharsets'      => true,
-            'preserveComments'    => true,
-            'currentDir'          => null,
-            'docRoot'             => $_SERVER['DOCUMENT_ROOT'],
-            'prependRelativePath' => null,
-            'symlinks'            => array(),
-        ), $options);
+    public static function minify($css, $options = array()) {
+        $options = \array_merge(
+            array(
+                'compress'            => true,
+                'removeCharsets'      => true,
+                'preserveComments'    => true,
+                'currentDir'          => null,
+                'docRoot'             => $_SERVER['DOCUMENT_ROOT'],
+                'prependRelativePath' => null,
+                'symlinks'            => array(),
+            ),
+            $options
+        );
 
         if ($options['removeCharsets']) {
             $css = \preg_replace('/@charset[^;]+;\\s*/', '', $css);
