@@ -2,10 +2,10 @@
 /**
  * Class Minify_Cache_File
  */
-
 use Psr\Log\LoggerInterface;
 
-class Minify_Cache_File implements Minify_CacheInterface {
+class Minify_Cache_File implements Minify_CacheInterface
+{
     /**
      * @var string
      */
@@ -26,7 +26,8 @@ class Minify_Cache_File implements Minify_CacheInterface {
      * @param bool            $fileLocking
      * @param LoggerInterface $logger
      */
-    public function __construct($path = '', $fileLocking = false, LoggerInterface $logger = null) {
+    public function __construct($path = '', $fileLocking = false, LoggerInterface $logger = null)
+    {
         if (!$path) {
             $path = \sys_get_temp_dir();
         }
@@ -40,11 +41,26 @@ class Minify_Cache_File implements Minify_CacheInterface {
     }
 
     /**
+     * Get a usable temp directory
+     *
+     * @return string
+     *
+     * @deprecated
+     */
+    public static function tmp()
+    {
+        \trigger_error(__METHOD__ . ' is deprecated in Minfy 3.0', \E_USER_DEPRECATED);
+
+        return \sys_get_temp_dir();
+    }
+
+    /**
      * Send the cached content to output
      *
      * @param string $id cache id (e.g. a filename)
      */
-    public function display($id) {
+    public function display($id)
+    {
         if (!$this->locking) {
             \readfile($this->path . '/' . $id);
 
@@ -65,7 +81,8 @@ class Minify_Cache_File implements Minify_CacheInterface {
      *
      * @return string
      */
-    public function fetch($id) {
+    public function fetch($id)
+    {
         if (!$this->locking) {
             return \file_get_contents($this->path . '/' . $id);
         }
@@ -90,7 +107,8 @@ class Minify_Cache_File implements Minify_CacheInterface {
      *
      * @return int size in bytes
      */
-    public function getSize($id) {
+    public function getSize($id)
+    {
         return \filesize($this->path . '/' . $id);
     }
 
@@ -102,7 +120,8 @@ class Minify_Cache_File implements Minify_CacheInterface {
      *
      * @return bool exists
      */
-    public function isValid($id, $srcMtime) {
+    public function isValid($id, $srcMtime)
+    {
         $file = $this->path . '/' . $id;
 
         return \is_file($file) && (\filemtime($file) >= $srcMtime);
@@ -116,7 +135,8 @@ class Minify_Cache_File implements Minify_CacheInterface {
      *
      * @return bool success
      */
-    public function store($id, $data) {
+    public function store($id, $data)
+    {
         $flag = $this->locking ? \LOCK_EX : null;
         $file = $this->path . '/' . $id;
 
@@ -140,21 +160,9 @@ class Minify_Cache_File implements Minify_CacheInterface {
      *
      * @return string
      */
-    public function getPath() {
+    public function getPath()
+    {
         return $this->path;
-    }
-
-    /**
-     * Get a usable temp directory
-     *
-     * @return string
-     *
-     * @deprecated
-     */
-    public static function tmp() {
-        \trigger_error(__METHOD__ . ' is deprecated in Minfy 3.0', \E_USER_DEPRECATED);
-
-        return \sys_get_temp_dir();
     }
 
     /**
@@ -166,7 +174,8 @@ class Minify_Cache_File implements Minify_CacheInterface {
      *
      * @deprecated Use $this->logger
      */
-    protected function _log($msg) {
+    protected function _log($msg)
+    {
         \trigger_error(__METHOD__ . ' is deprecated in Minify 3.0.', \E_USER_DEPRECATED);
         $this->logger->warning($msg);
     }

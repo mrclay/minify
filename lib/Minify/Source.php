@@ -9,7 +9,8 @@
  * This allows per-source minification options and the mixing of files with
  * content from other sources.
  */
-class Minify_Source implements Minify_SourceInterface {
+class Minify_Source implements Minify_SourceInterface
+{
     /**
      * @var int time of last modification
      */
@@ -60,7 +61,8 @@ class Minify_Source implements Minify_SourceInterface {
      *
      * @param array $spec options
      */
-    public function __construct($spec) {
+    public function __construct($spec)
+    {
         if (isset($spec['filepath'])) {
             $ext = \pathinfo($spec['filepath'], \PATHINFO_EXTENSION);
             switch ($ext) {
@@ -113,7 +115,8 @@ class Minify_Source implements Minify_SourceInterface {
     /**
      * {@inheritdoc}
      */
-    public function getContent() {
+    public function getContent()
+    {
         if ($this->filepath === null) {
             if ($this->content === null) {
                 $content = \call_user_func($this->getContentFunc, $this->id);
@@ -135,49 +138,56 @@ class Minify_Source implements Minify_SourceInterface {
     /**
      * {@inheritdoc}
      */
-    public function getContentType() {
+    public function getContentType()
+    {
         return $this->contentType;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getFilePath() {
+    public function getFilePath()
+    {
         return $this->filepath;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getLastModified() {
+    public function getLastModified()
+    {
         return $this->lastModified;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getMinifier() {
+    public function getMinifier()
+    {
         return $this->minifier;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getMinifierOptions() {
+    public function getMinifierOptions()
+    {
         return $this->minifyOptions;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setMinifier($minifier = null) {
+    public function setMinifier($minifier = null)
+    {
         if ($minifier === '') {
             \error_log(__METHOD__ . " cannot accept empty string. Use 'Minify::nullMinifier' or 'trim'.");
             $minifier = 'Minify::nullMinifier';
@@ -191,14 +201,16 @@ class Minify_Source implements Minify_SourceInterface {
     /**
      * {@inheritdoc}
      */
-    public function setMinifierOptions(array $options) {
+    public function setMinifierOptions(array $options)
+    {
         $this->minifyOptions = $options;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setupUriRewrites() {
+    public function setupUriRewrites()
+    {
         if ($this->filepath
             && !isset($this->minifyOptions['currentDir'])
             && !isset($this->minifyOptions['prependRelativePath'])) {

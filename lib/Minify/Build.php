@@ -30,7 +30,8 @@
  * ));
  * </code>
  */
-class Minify_Build {
+class Minify_Build
+{
     /**
      * String to use as ampersand in uri(). Set this to '&' if
      * you are not HTML-escaping URIs.
@@ -51,9 +52,10 @@ class Minify_Build {
      *
      * @param array $sources array of Minify_Source objects and/or file paths
      */
-    public function __construct($sources) {
+    public function __construct($sources)
+    {
         $max = 0;
-        foreach ((array)$sources as $source) {
+        foreach ((array) $sources as $source) {
             if ($source instanceof Minify_Source) {
                 $max = \max($max, $source->getLastModified());
             } elseif (\is_string($source)) {
@@ -85,7 +87,8 @@ class Minify_Build {
      *
      * @return string
      */
-    public function uri($uri, $forceAmpersand = false) {
+    public function uri($uri, $forceAmpersand = false)
+    {
         $sep = ($forceAmpersand || \strpos($uri, '?') !== false) ? self::$ampersand : '?';
 
         return "{$uri}{$sep}{$this->lastModified}";

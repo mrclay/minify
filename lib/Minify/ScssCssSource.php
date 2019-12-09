@@ -9,7 +9,8 @@ use Leafo\ScssPhp\Version;
  *
  * @see https://github.com/leafo/scssphp/
  */
-class Minify_ScssCssSource extends Minify_Source {
+class Minify_ScssCssSource extends Minify_Source
+{
     /**
      * @var Minify_CacheInterface
      */
@@ -25,7 +26,8 @@ class Minify_ScssCssSource extends Minify_Source {
     /**
      * {@inheritdoc}
      */
-    public function __construct(array $spec, Minify_CacheInterface $cache) {
+    public function __construct(array $spec, Minify_CacheInterface $cache)
+    {
         parent::__construct($spec);
 
         $this->cache = $cache;
@@ -36,7 +38,8 @@ class Minify_ScssCssSource extends Minify_Source {
      *
      * @return string
      */
-    public function getContent() {
+    public function getContent()
+    {
         $cache = $this->getCache();
 
         return $cache['content'];
@@ -47,7 +50,8 @@ class Minify_ScssCssSource extends Minify_Source {
      *
      * @return int
      */
-    public function getLastModified() {
+    public function getLastModified()
+    {
         $cache = $this->getCache();
 
         return $cache['updated'];
@@ -60,7 +64,8 @@ class Minify_ScssCssSource extends Minify_Source {
      *
      * @return bool true if compile required
      */
-    private function cacheIsStale($cache) {
+    private function cacheIsStale($cache)
+    {
         if (!$cache) {
             return true;
         }
@@ -86,7 +91,8 @@ class Minify_ScssCssSource extends Minify_Source {
      *
      * @see Server::compile()
      */
-    private function compile($filename) {
+    private function compile($filename)
+    {
         $start = \microtime(true);
         $scss = new Compiler();
 
@@ -126,7 +132,8 @@ class Minify_ScssCssSource extends Minify_Source {
      *
      * @return array
      */
-    private function getCache() {
+    private function getCache()
+    {
         // cache for single run
         // so that getLastModified and getContent in single request do not add additional cache roundtrips (i.e memcache)
         if (isset($this->parsed)) {
@@ -162,7 +169,8 @@ class Minify_ScssCssSource extends Minify_Source {
      *
      * @return string
      */
-    private function getCacheId($prefix = 'minify') {
+    private function getCacheId($prefix = 'minify')
+    {
         $md5 = \md5($this->filepath);
 
         return "{$prefix}_scss_{$md5}";

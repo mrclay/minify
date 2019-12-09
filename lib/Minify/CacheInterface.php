@@ -6,7 +6,8 @@
 /**
  * Interface for Minify cache adapters
  */
-interface Minify_CacheInterface {
+interface Minify_CacheInterface
+{
     /**
      * Send the cached content to output
      *

@@ -6,7 +6,8 @@
 /**
  * Helpers for writing Minify URIs into HTML
  */
-class Minify_HTML_Helper {
+class Minify_HTML_Helper
+{
     public $rewriteWorks = true;
 
     public $minAppUri = '/min';
@@ -26,7 +27,8 @@ class Minify_HTML_Helper {
      *
      * @internal
      */
-    public static function app(\Minify\App $app = null) {
+    public static function app(\Minify\App $app = null)
+    {
         static $cached;
         if ($app) {
             $cached = $app;
@@ -48,45 +50,18 @@ class Minify_HTML_Helper {
      *
      * @return int
      */
-    public static function getLastModified($sources, $lastModified = 0) {
+    public static function getLastModified($sources, $lastModified = 0)
+    {
         $max = $lastModified;
         $factory = self::app()->sourceFactory;
 
         /** @var Minify_Source $source */
-        foreach ((array)$sources as $source) {
+        foreach ((array) $sources as $source) {
             $source = $factory->makeSource($source);
             $max = \max($max, $source->getLastModified());
         }
 
         return $max;
-    }
-
-    /**
-     * Get non-HTML-escaped URI to minify the specified files
-     *
-     * @param bool $farExpires
-     * @param bool $debug
-     *
-     * @return string
-     */
-    public function getRawUri($farExpires = true, $debug = false) {
-        $path = \rtrim($this->minAppUri, '/') . '/';
-        if (!$this->rewriteWorks) {
-            $path .= '?';
-        }
-        if ($this->_groupKey === null) {
-            // @todo: implement shortest uri
-            $path = self::_getShortestUri($this->_filePaths, $path);
-        } else {
-            $path .= 'g=' . $this->_groupKey;
-        }
-        if ($debug) {
-            $path .= '&debug';
-        } elseif ($farExpires && $this->_lastModified) {
-            $path .= '&' . $this->_lastModified;
-        }
-
-        return $path;
     }
 
     /**
@@ -103,15 +78,16 @@ class Minify_HTML_Helper {
      *
      * @return string
      */
-    public static function getUri($keyOrFiles, $opts = array()) {
+    public static function getUri($keyOrFiles, $opts = array())
+    {
         $opts = \array_merge(
             array( // default options
-                   'farExpires'       => true,
-                   'debug'            => false,
-                   'charset'          => 'UTF-8',
-                   'minAppUri'        => '/min',
-                   'rewriteWorks'     => true,
-                   'groupsConfigFile' => self::app()->groupsConfigPath,
+                'farExpires'       => true,
+                'debug'            => false,
+                'charset'          => 'UTF-8',
+                'minAppUri'        => '/min',
+                'rewriteWorks'     => true,
+                'groupsConfigFile' => self::app()->groupsConfigPath,
             ),
             $opts
         );
@@ -131,60 +107,6 @@ class Minify_HTML_Helper {
         return \htmlspecialchars($uri, \ENT_QUOTES, $opts['charset']);
     }
 
-    // if present, URI will be like g=...
-
-    /**
-     * Set the files that will comprise the URI we're building
-     *
-     * @param array $files
-     * @param bool  $checkLastModified
-     */
-    public function setFiles($files, $checkLastModified = true) {
-        $this->_groupKey = null;
-        if ($checkLastModified) {
-            $this->_lastModified = self::getLastModified($files);
-        }
-        // normalize paths like in /min/f=<paths>
-        foreach ($files as $k => $file) {
-            if (\strpos($file, '//') === 0) {
-                $file = \substr($file, 2);
-            } elseif (\strpos($file, '/') === 0 || \strpos($file, ':\\') === 1) {
-                $file = \substr($file, \strlen(self::app()->env->getDocRoot()) + 1);
-            }
-            $file = \strtr($file, '\\', '/');
-            $files[$k] = $file;
-        }
-        $this->_filePaths = $files;
-    }
-
-    /**
-     * Set the group of files that will comprise the URI we're building
-     *
-     * @param string $key
-     * @param bool   $checkLastModified
-     */
-    public function setGroup($key, $checkLastModified = true) {
-        $this->_groupKey = $key;
-        if ($checkLastModified) {
-            if (!$this->groupsConfigFile) {
-                $this->groupsConfigFile = self::app()->groupsConfigPath;
-            }
-            if (\is_file($this->groupsConfigFile)) {
-                $gc = (require $this->groupsConfigFile);
-                $keys = \explode(',', $key);
-                foreach ($keys as $key) {
-                    if (!isset($gc[$key])) {
-                        // this can happen if value is null
-                        // which could be solved with array_filter
-                        continue;
-                    }
-
-                    $this->_lastModified = self::getLastModified($gc[$key], $this->_lastModified);
-                }
-            }
-        }
-    }
-
     /**
      * In a given array of strings, find the character they all have at
      * a particular index
@@ -194,7 +116,8 @@ class Minify_HTML_Helper {
      *
      * @return mixed a common char or '' if any do not match
      */
-    protected static function _getCommonCharAtPos($arr, $pos) {
+    protected static function _getCommonCharAtPos($arr, $pos)
+    {
         if (!isset($arr[0][$pos])) {
             return '';
         }
@@ -212,6 +135,8 @@ class Minify_HTML_Helper {
         return $c;
     }
 
+    // if present, URI will be like g=...
+
     /**
      * Get the shortest URI to minify the set of source files
      *
@@ -220,7 +145,8 @@ class Minify_HTML_Helper {
      *
      * @return string
      */
-    protected static function _getShortestUri($paths, $minRoot = '/min/') {
+    protected static function _getShortestUri($paths, $minRoot = '/min/')
+    {
         $pos = 0;
         $base = '';
         while (true) {
@@ -249,5 +175,88 @@ class Minify_HTML_Helper {
         }
 
         return $uri;
+    }
+
+    /**
+     * Get non-HTML-escaped URI to minify the specified files
+     *
+     * @param bool $farExpires
+     * @param bool $debug
+     *
+     * @return string
+     */
+    public function getRawUri($farExpires = true, $debug = false)
+    {
+        $path = \rtrim($this->minAppUri, '/') . '/';
+        if (!$this->rewriteWorks) {
+            $path .= '?';
+        }
+        if ($this->_groupKey === null) {
+            // @todo: implement shortest uri
+            $path = self::_getShortestUri($this->_filePaths, $path);
+        } else {
+            $path .= 'g=' . $this->_groupKey;
+        }
+        if ($debug) {
+            $path .= '&debug';
+        } elseif ($farExpires && $this->_lastModified) {
+            $path .= '&' . $this->_lastModified;
+        }
+
+        return $path;
+    }
+
+    /**
+     * Set the files that will comprise the URI we're building
+     *
+     * @param array $files
+     * @param bool  $checkLastModified
+     */
+    public function setFiles($files, $checkLastModified = true)
+    {
+        $this->_groupKey = null;
+        if ($checkLastModified) {
+            $this->_lastModified = self::getLastModified($files);
+        }
+        // normalize paths like in /min/f=<paths>
+        foreach ($files as $k => $file) {
+            if (\strpos($file, '//') === 0) {
+                $file = \substr($file, 2);
+            } elseif (\strpos($file, '/') === 0 || \strpos($file, ':\\') === 1) {
+                $file = \substr($file, \strlen(self::app()->env->getDocRoot()) + 1);
+            }
+            $file = \strtr($file, '\\', '/');
+            $files[$k] = $file;
+        }
+        $this->_filePaths = $files;
+    }
+
+    /**
+     * Set the group of files that will comprise the URI we're building
+     *
+     * @param string $key
+     * @param bool   $checkLastModified
+     */
+    public function setGroup($key, $checkLastModified = true)
+    {
+        $this->_groupKey = $key;
+        if ($checkLastModified) {
+            if (!$this->groupsConfigFile) {
+                $this->groupsConfigFile = self::app()->groupsConfigPath;
+            }
+            if (\is_file($this->groupsConfigFile)) {
+                $gc = (require $this->groupsConfigFile);
+                $keys = \explode(',', $key);
+                foreach ($keys as $key) {
+                    if (!isset($gc[$key])) {
+                        // this can happen if value is null
+                        // which could be solved with array_filter
+                        continue;
+                    }
+
+                    $this->_lastModified = self::getLastModified($gc[$key], $this->_lastModified);
+                }
+            }
+        }
     }
 }

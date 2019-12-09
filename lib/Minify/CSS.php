@@ -11,7 +11,8 @@
  *
  * @deprecated Use Minify_CSSmin
  */
-class Minify_CSS {
+class Minify_CSS
+{
     /**
      * Minify a CSS string
      *
@@ -48,7 +49,8 @@ class Minify_CSS {
      *
      * @return string
      */
-    public static function minify($css, $options = array()) {
+    public static function minify($css, $options = array())
+    {
         $options = \array_merge(
             array(
                 'compress'            => true,

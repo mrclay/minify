@@ -6,7 +6,8 @@
 /**
  * Rewrite file-relative URIs as root-relative in CSS files
  */
-class Minify_CSS_UriRewriter {
+class Minify_CSS_UriRewriter
+{
     /**
      * rewrite() and rewriteRelative() append debugging information here
      *
@@ -59,7 +60,8 @@ class Minify_CSS_UriRewriter {
      *
      * @return string
      */
-    public static function prepend($css, $path) {
+    public static function prepend($css, $path)
+    {
         self::$_prependPath = $path;
 
         $css = self::_trimUrls($css);
@@ -87,7 +89,8 @@ class Minify_CSS_UriRewriter {
      *
      * @return string
      */
-    public static function removeDots($uri) {
+    public static function removeDots($uri)
+    {
         $uri = \str_replace('/./', '/', $uri);
         // inspired by patch from Oleg Cherniy
         do {
@@ -116,7 +119,8 @@ class Minify_CSS_UriRewriter {
      *
      * @return string
      */
-    public static function rewrite($css, $currentDir, $docRoot = null, $symlinks = array()) {
+    public static function rewrite($css, $currentDir, $docRoot = null, $symlinks = array())
+    {
         self::$_docRoot = self::_realpath(
             $docRoot ? $docRoot : $_SERVER['DOCUMENT_ROOT']
         );
@@ -189,7 +193,8 @@ class Minify_CSS_UriRewriter {
      *
      * @return string
      */
-    public static function rewriteRelative($uri, $realCurrentDir, $realDocRoot, $symlinks = array()) {
+    public static function rewriteRelative($uri, $realCurrentDir, $realDocRoot, $symlinks = array())
+    {
         // prepend path with current dir separator (OS-independent)
         $path = \strtr($realCurrentDir, '/', \DIRECTORY_SEPARATOR);
         $path .= \DIRECTORY_SEPARATOR . \strtr($uri, '/', \DIRECTORY_SEPARATOR);
@@ -230,7 +235,8 @@ class Minify_CSS_UriRewriter {
      *
      * @return mixed path with no trailing slash
      */
-    protected static function _realpath($path) {
+    protected static function _realpath($path)
+    {
         $realPath = \realpath($path);
         if ($realPath !== false) {
             $path = $realPath;
@@ -249,7 +255,8 @@ class Minify_CSS_UriRewriter {
      *
      * @return string
      */
-    private static function _owlifySvgPaths($css) {
+    private static function _owlifySvgPaths($css)
+    {
         $pattern = '~\b((?:clip-path|mask|-webkit-mask)\s*\:\s*)url(\(\s*#\w+\s*\))~';
 
         return \preg_replace($pattern, '$1owl$2', $css);
@@ -260,7 +267,8 @@ class Minify_CSS_UriRewriter {
      *
      * @return string
      */
-    private static function _processUriCB($m) {
+    private static function _processUriCB($m)
+    {
         // $m matched either '/@import\\s+([\'"])(.*?)[\'"]/' or '/url\\(\\s*([^\\)\\s]+)\\s*\\)/'
         $isImport = ($m[0][0] === '@');
         // determine URI and the quote character (if any)
@@ -309,7 +317,8 @@ class Minify_CSS_UriRewriter {
      *
      * @return string
      */
-    private static function _trimUrls($css) {
+    private static function _trimUrls($css)
+    {
         $pattern = '/
             url\\(      # url(
             \\s*
@@ -330,7 +339,8 @@ class Minify_CSS_UriRewriter {
      *
      * @see _owlifySvgPaths
      */
-    private static function _unOwlify($css) {
+    private static function _unOwlify($css)
+    {
         $pattern = '~\b((?:clip-path|mask|-webkit-mask)\s*\:\s*)owl~';
 
         return \preg_replace($pattern, '$1url', $css);

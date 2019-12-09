@@ -9,7 +9,8 @@
  * This allows per-source minification options and the mixing of files with
  * content from other sources.
  */
-interface Minify_SourceInterface {
+interface Minify_SourceInterface
+{
     /**
      * Get content
      *

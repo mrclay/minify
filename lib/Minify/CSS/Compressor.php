@@ -21,7 +21,8 @@
  *
  * @deprecated Use CSSmin (tubalmartin/cssmin)
  */
-class Minify_CSS_Compressor {
+class Minify_CSS_Compressor
+{
     /**
      * @var array
      */
@@ -39,7 +40,8 @@ class Minify_CSS_Compressor {
      *
      * @param array $options (currently ignored)
      */
-    private function __construct($options) {
+    private function __construct($options)
+    {
         $this->_options = $options;
     }
 
@@ -51,7 +53,8 @@ class Minify_CSS_Compressor {
      *
      * @return string
      */
-    public static function process($css, $options = array()) {
+    public static function process($css, $options = array())
+    {
         $obj = new Minify_CSS_Compressor($options);
 
         return $obj->_process($css);
@@ -64,7 +67,8 @@ class Minify_CSS_Compressor {
      *
      * @return string
      */
-    protected function _commentCB($m) {
+    protected function _commentCB($m)
+    {
         $hasSurroundingWs = (\trim($m[0]) !== $m[1]);
         $m = $m[1];
         // $m is the comment content w/o the surrounding tokens,
@@ -133,7 +137,8 @@ class Minify_CSS_Compressor {
      *
      * @return string
      */
-    protected function _fontFamilyCB($m) {
+    protected function _fontFamilyCB($m)
+    {
         // Issue 210: must not eliminate WS between words in unquoted families
         $flags = \PREG_SPLIT_DELIM_CAPTURE | \PREG_SPLIT_NO_EMPTY;
         $pieces = \preg_split('/(\'[^\']+\'|"[^"]+")/', $m[1], null, $flags);
@@ -157,7 +162,8 @@ class Minify_CSS_Compressor {
      *
      * @return string
      */
-    protected function _process($css) {
+    protected function _process($css)
+    {
         $css = \str_replace("\r\n", "\n", $css);
 
         // preserve empty comment after '>'
@@ -254,7 +260,8 @@ class Minify_CSS_Compressor {
      *
      * @return string
      */
-    protected function _selectorsCB($m) {
+    protected function _selectorsCB($m)
+    {
         // remove ws around the combinators
         return \preg_replace('/\\s*([,>+~])\\s*/', '$1', $m[0]);
     }

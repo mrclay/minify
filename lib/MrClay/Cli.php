@@ -17,7 +17,8 @@ use MrClay\Cli\Arg;
  *
  * @license http://www.opensource.org/licenses/mit-license.php  MIT License
  */
-class Cli {
+class Cli
+{
     /**
      * @var array validation errors
      */
@@ -69,7 +70,8 @@ class Cli {
     /**
      * @param bool $exitIfNoStdin (default true) Exit() if STDIN is not defined
      */
-    public function __construct($exitIfNoStdin = true) {
+    public function __construct($exitIfNoStdin = true)
+    {
         if ($exitIfNoStdin && !\defined('STDIN')) {
             exit('This script is for command-line use only.');
         }
@@ -84,11 +86,12 @@ class Cli {
      * @param bool     $required
      * @param Arg|null $arg
      *
-     * @return Arg
      * @throws InvalidArgumentException
      *
+     * @return Arg
      */
-    public function addArgument($letter, $required, Arg $arg = null) {
+    public function addArgument($letter, $required, Arg $arg = null)
+    {
         if (!\preg_match('/^[a-zA-Z]$/', $letter)) {
             throw new InvalidArgumentException('$letter must be in [a-zA-Z]');
         }
@@ -105,7 +108,8 @@ class Cli {
      *
      * @return Arg
      */
-    public function addOptionalArg($letter) {
+    public function addOptionalArg($letter)
+    {
         return $this->addArgument($letter, false);
     }
 
@@ -114,11 +118,13 @@ class Cli {
      *
      * @return Arg
      */
-    public function addRequiredArg($letter) {
+    public function addRequiredArg($letter)
+    {
         return $this->addArgument($letter, true);
     }
 
-    public function closeInput() {
+    public function closeInput()
+    {
         if ($this->_stdin !== null) {
             \fclose($this->_stdin);
         }
@@ -130,7 +136,8 @@ class Cli {
      * @return bool true if all options are valid
      */
 
-    public function closeOutput() {
+    public function closeOutput()
+    {
         if ($this->_stdout !== null) {
             \fclose($this->_stdout);
         }
@@ -141,14 +148,16 @@ class Cli {
      *
      * @return Arg|null
      */
-    public function getArgument($letter) {
+    public function getArgument($letter)
+    {
         return isset($this->_args[$letter]) ? $this->_args[$letter] : null;
     }
 
     /**
      * @return string
      */
-    public function getArgumentsListing() {
+    public function getArgumentsListing()
+    {
         $r = "\n";
         foreach ($this->_args as $letter => $arg) {
             /* @var Arg $arg */
@@ -180,7 +189,8 @@ class Cli {
      *
      * @return string
      */
-    public function getErrorReport() {
+    public function getErrorReport()
+    {
         if (empty($this->errors)) {
             return '';
         }
@@ -198,7 +208,8 @@ class Cli {
      *
      * @return array
      */
-    public function getPathArgs() {
+    public function getPathArgs()
+    {
         $r = $this->moreArgs;
         foreach ($r as $k => $v) {
             if ($v[0] !== '/' && $v[0] !== '~') {
@@ -220,7 +231,8 @@ class Cli {
      *
      * @return resource
      */
-    public function openInput() {
+    public function openInput()
+    {
         if ($this->_stdin === null) {
             return \STDIN;
         }
@@ -236,7 +248,8 @@ class Cli {
      *
      * @return resource
      */
-    public function openOutput() {
+    public function openOutput()
+    {
         if ($this->_stdout === null) {
             return \STDOUT;
         }
@@ -245,7 +258,8 @@ class Cli {
         return $this->_stdout;
     }
 
-    public function validate() {
+    public function validate()
+    {
         $options = '';
         $this->errors = array();
         $this->values = array();
@@ -372,7 +386,8 @@ class Cli {
      * @param string $msg
      * @param string $value
      */
-    protected function addError($letter, $msg, $value = null) {
+    protected function addError($letter, $msg, $value = null)
+    {
         if ($value !== null) {
             $value = \var_export($value, 1);
         }

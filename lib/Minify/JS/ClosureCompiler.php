@@ -10,7 +10,8 @@
  *
  * @todo can use a stream wrapper to unit test this?
  */
-class Minify_JS_ClosureCompiler {
+class Minify_JS_ClosureCompiler
+{
     /**
      * @var int The default maximum POST byte size according to
      *      https://developers.google.com/closure/compiler/docs/api-ref
@@ -81,7 +82,8 @@ class Minify_JS_ClosureCompiler {
      *                     in https://developers.google.com/closure/compiler/docs/api-ref except for js_code and
      *                     output_info
      */
-    public function __construct(array $options = array()) {
+    public function __construct(array $options = array())
+    {
         if (isset($options[self::OPTION_FALLBACK_FUNCTION])) {
             $this->fallbackMinifier = $options[self::OPTION_FALLBACK_FUNCTION];
         }
@@ -92,8 +94,23 @@ class Minify_JS_ClosureCompiler {
             $this->additionalOptions = $options[self::OPTION_ADDITIONAL_OPTIONS];
         }
         if (isset($options[self::OPTION_MAX_BYTES])) {
-            $this->maxBytes = (int)$options[self::OPTION_MAX_BYTES];
+            $this->maxBytes = (int) $options[self::OPTION_MAX_BYTES];
         }
+    }
+
+    /**
+     * Minify JavaScript code via HTTP request to a Closure Compiler API
+     *
+     * @param string $js      input code
+     * @param array  $options Options passed to __construct(). @see __construct
+     *
+     * @return string
+     */
+    public static function minify($js, array $options = array())
+    {
+        $obj = new self($options);
+
+        return $obj->min($js);
     }
 
     /**
@@ -101,15 +118,16 @@ class Minify_JS_ClosureCompiler {
      *
      * @param string $js JavaScript code
      *
-     * @return string
      * @throws Minify_JS_ClosureCompiler_Exception
      *
+     * @return string
      */
-    public function min($js) {
+    public function min($js)
+    {
         $postBody = $this->buildPostBody($js);
 
         if ($this->maxBytes > 0) {
-            $bytes = (\function_exists('mb_strlen') && ((int)\ini_get('mbstring.func_overload') & 2))
+            $bytes = (\function_exists('mb_strlen') && ((int) \ini_get('mbstring.func_overload') & 2))
                 ? \mb_strlen($postBody, '8bit')
                 : \strlen($postBody);
             if ($bytes > $this->maxBytes) {
@@ -142,20 +160,6 @@ class Minify_JS_ClosureCompiler {
     }
 
     /**
-     * Minify JavaScript code via HTTP request to a Closure Compiler API
-     *
-     * @param string $js      input code
-     * @param array  $options Options passed to __construct(). @see __construct
-     *
-     * @return string
-     */
-    public static function minify($js, array $options = array()) {
-        $obj = new self($options);
-
-        return $obj->min($js);
-    }
-
-    /**
      * Build a POST request body
      *
      * @param string $js JavaScript code
@@ -163,7 +167,8 @@ class Minify_JS_ClosureCompiler {
      *
      * @return string
      */
-    protected function buildPostBody($js, $returnErrors = false) {
+    protected function buildPostBody($js, $returnErrors = false)
+    {
         return \http_build_query(
             \array_merge(
                 self::$DEFAULT_OPTIONS,
@@ -183,11 +188,12 @@ class Minify_JS_ClosureCompiler {
      *
      * @param string $postBody
      *
-     * @return string
      * @throws Minify_JS_ClosureCompiler_Exception
      *
+     * @return string
      */
-    protected function getResponse($postBody) {
+    protected function getResponse($postBody)
+    {
         $allowUrlFopen = \preg_match('/1|yes|on|true/i', \ini_get('allow_url_fopen'));
 
         if ($allowUrlFopen) {
@@ -235,5 +241,6 @@ class Minify_JS_ClosureCompiler {
     }
 }
 
-class Minify_JS_ClosureCompiler_Exception extends Exception {
+class Minify_JS_ClosureCompiler_Exception extends Exception
+{
 }

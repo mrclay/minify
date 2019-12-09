@@ -25,7 +25,8 @@
  *
  * @todo unit tests, $options docs
  */
-class Minify_YUICompressor {
+class Minify_YUICompressor
+{
     /**
      * Filepath of the YUI Compressor jar file. This must be set before
      * calling minifyJs() or minifyCss().
@@ -59,7 +60,8 @@ class Minify_YUICompressor {
      *
      * @see http://www.julienlecomte.net/yuicompressor/README
      */
-    public static function minifyCss($css, $options = array()) {
+    public static function minifyCss($css, $options = array())
+    {
         return self::_minify('css', $css, $options);
     }
 
@@ -73,11 +75,13 @@ class Minify_YUICompressor {
      *
      * @see http://www.julienlecomte.net/yuicompressor/README
      */
-    public static function minifyJs($js, $options = array()) {
+    public static function minifyJs($js, $options = array())
+    {
         return self::_minify('js', $js, $options);
     }
 
-    private static function _getCmd($userOptions, $type, $tmpFile) {
+    private static function _getCmd($userOptions, $type, $tmpFile)
+    {
         $defaults = array(
             'charset'               => '',
             'line-break'            => 5000,
@@ -97,7 +101,7 @@ class Minify_YUICompressor {
                 ? " --charset {$o['charset']}"
                 : '')
                . (\is_numeric($o['line-break']) && $o['line-break'] >= 0
-                ? ' --line-break ' . (int)$o['line-break']
+                ? ' --line-break ' . (int) $o['line-break']
                 : '');
         if ($type === 'js') {
             foreach (array('nomunge', 'preserve-semi', 'disable-optimizations') as $opt) {
@@ -110,7 +114,8 @@ class Minify_YUICompressor {
         return $cmd . ' ' . \escapeshellarg($tmpFile);
     }
 
-    private static function _minify($type, $content, $options) {
+    private static function _minify($type, $content, $options)
+    {
         self::_prepare();
         if (!($tmpFile = \tempnam(self::$tempDir, 'yuic_'))) {
             throw new Exception('Minify_YUICompressor : could not create temp file in "' . self::$tempDir . '".');
@@ -126,7 +131,8 @@ class Minify_YUICompressor {
         return \implode("\n", $output);
     }
 
-    private static function _prepare() {
+    private static function _prepare()
+    {
         if (!\is_file(self::$jarFile)) {
             throw new Exception('Minify_YUICompressor : $jarFile(' . self::$jarFile . ') is not a valid file.');
         }

@@ -11,7 +11,8 @@
  * </code>
  *
  **/
-class Minify_Cache_APC implements Minify_CacheInterface {
+class Minify_Cache_APC implements Minify_CacheInterface
+{
     private $_exp;
 
     private $_lm;
@@ -29,7 +30,8 @@ class Minify_Cache_APC implements Minify_CacheInterface {
      *
      * @return null
      */
-    public function __construct($expire = 0) {
+    public function __construct($expire = 0)
+    {
         $this->_exp = $expire;
     }
 
@@ -38,7 +40,8 @@ class Minify_Cache_APC implements Minify_CacheInterface {
      *
      * @param string $id cache id
      */
-    public function display($id) {
+    public function display($id)
+    {
         echo $this->_fetch($id) ? $this->_data : '';
     }
 
@@ -49,7 +52,8 @@ class Minify_Cache_APC implements Minify_CacheInterface {
      *
      * @return string
      */
-    public function fetch($id) {
+    public function fetch($id)
+    {
         return $this->_fetch($id) ? $this->_data : '';
     }
 
@@ -62,12 +66,13 @@ class Minify_Cache_APC implements Minify_CacheInterface {
      *
      * @return int size in bytes
      */
-    public function getSize($id) {
+    public function getSize($id)
+    {
         if (!$this->_fetch($id)) {
             return false;
         }
 
-        if (\function_exists('mb_strlen') && ((int)\ini_get('mbstring.func_overload') & 2)) {
+        if (\function_exists('mb_strlen') && ((int) \ini_get('mbstring.func_overload') & 2)) {
             return \mb_strlen($this->_data, '8bit');
         }
 
@@ -82,7 +87,8 @@ class Minify_Cache_APC implements Minify_CacheInterface {
      *
      * @return bool exists
      */
-    public function isValid($id, $srcMtime) {
+    public function isValid($id, $srcMtime)
+    {
         return $this->_fetch($id) && ($this->_lm >= $srcMtime);
     }
 
@@ -94,7 +100,8 @@ class Minify_Cache_APC implements Minify_CacheInterface {
      *
      * @return bool success
      */
-    public function store($id, $data) {
+    public function store($id, $data)
+    {
         return \apc_store($id, "{$_SERVER['REQUEST_TIME']}|{$data}", $this->_exp);
     }
 
@@ -105,7 +112,8 @@ class Minify_Cache_APC implements Minify_CacheInterface {
      *
      * @return bool success
      */
-    private function _fetch($id) {
+    private function _fetch($id)
+    {
         if ($this->_id === $id) {
             return true;
         }

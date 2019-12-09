@@ -1,6 +1,7 @@
 <?php
 
-class Minify_Source_Factory {
+class Minify_Source_Factory
+{
     /**
      * @var array
      */
@@ -40,7 +41,8 @@ class Minify_Source_Factory {
      *                         moves back, this should not be needed.
      * @param Minify_CacheInterface $cache Optional cache for handling .less files.
      */
-    public function __construct(Minify_Env $env, array $options = array(), Minify_CacheInterface $cache = null) {
+    public function __construct(Minify_Env $env, array $options = array(), Minify_CacheInterface $cache = null)
+    {
         $this->env = $env;
         $this->options = \array_merge(
             array(
@@ -91,11 +93,12 @@ class Minify_Source_Factory {
     /**
      * @param string $file
      *
-     * @return string
      * @throws Minify_Source_FactoryException
      *
+     * @return string
      */
-    public function checkIsFile($file) {
+    public function checkIsFile($file)
+    {
         $realpath = \realpath($file);
         if (!$realpath) {
             throw new Minify_Source_FactoryException("File failed realpath(): ${file}");
@@ -116,11 +119,12 @@ class Minify_Source_Factory {
     /**
      * @param mixed $spec
      *
-     * @return Minify_SourceInterface
      * @throws Minify_Source_FactoryException
      *
+     * @return Minify_SourceInterface
      */
-    public function makeSource($spec) {
+    public function makeSource($spec)
+    {
         if (\is_string($spec)) {
             $spec = array(
                 'filepath' => $spec,
@@ -145,7 +149,7 @@ class Minify_Source_Factory {
         }
 
         if ($this->options['checkAllowDirs']) {
-            $allowDirs = (array)$this->options['allowDirs'];
+            $allowDirs = (array) $this->options['allowDirs'];
             $inAllowedDir = false;
             $filePath = $this->env->normalizePath($spec['filepath']);
             foreach ($allowDirs as $allowDir) {
@@ -170,7 +174,7 @@ class Minify_Source_Factory {
         if ($this->options['noMinPattern'] && \preg_match($this->options['noMinPattern'], $basename)) {
             if (\preg_match('~\.(css|less)$~i', $basename)) {
                 $spec['minifyOptions']['compress'] = false;
-                // we still want URI rewriting to work for CSS
+            // we still want URI rewriting to work for CSS
             } else {
                 $spec['minifier'] = 'Minify::nullMinifier';
             }
@@ -200,7 +204,8 @@ class Minify_Source_Factory {
      * @param string   $basenamePattern A pattern tested against basename. E.g. "~\.css$~"
      * @param callable $handler         Function that recieves a $spec array and returns a Minify_SourceInterface
      */
-    public function setHandler($basenamePattern, $handler) {
+    public function setHandler($basenamePattern, $handler)
+    {
         $this->handlers[$basenamePattern] = $handler;
     }
 }

@@ -19,7 +19,8 @@
  * If the above code were placed in /serve.php, it would enable the URLs
  * /serve.php/js and /serve.php/css
  */
-class Minify_Controller_Groups extends Minify_Controller_Files {
+class Minify_Controller_Groups extends Minify_Controller_Files
+{
     /**
      * Set up groups of files as sources
      *
@@ -30,7 +31,8 @@ class Minify_Controller_Groups extends Minify_Controller_Files {
      *
      * @see Minify_Controller_Groups
      */
-    public function createConfiguration(array $options) {
+    public function createConfiguration(array $options)
+    {
         // strip controller options
         $groups = $options['groups'];
         unset($options['groups']);
@@ -58,7 +60,7 @@ class Minify_Controller_Groups extends Minify_Controller_Files {
         if (\is_object($files)) {
             $files = array($files);
         } elseif (!\is_array($files)) {
-            $files = (array)$files;
+            $files = (array) $files;
         }
 
         $options['files'] = $files;

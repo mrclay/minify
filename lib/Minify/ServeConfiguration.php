@@ -6,7 +6,8 @@
 /**
  * A configuration for Minify::serve() determined by a controller
  */
-class Minify_ServeConfiguration {
+class Minify_ServeConfiguration
+{
     /**
      * @var Minify_SourceInterface[]
      */
@@ -27,7 +28,8 @@ class Minify_ServeConfiguration {
      * @param Minify_SourceInterface[] $sources
      * @param string                   $selectionId
      */
-    public function __construct(array $options, array $sources = array(), $selectionId = '') {
+    public function __construct(array $options, array $sources = array(), $selectionId = '')
+    {
         $this->options = $options;
         $this->sources = $sources;
         $this->selectionId = $selectionId;
@@ -36,7 +38,8 @@ class Minify_ServeConfiguration {
     /**
      * @return array
      */
-    public function getOptions() {
+    public function getOptions()
+    {
         return $this->options;
     }
 
@@ -49,14 +52,16 @@ class Minify_ServeConfiguration {
      *
      * @return string
      */
-    public function getSelectionId() {
+    public function getSelectionId()
+    {
         return $this->selectionId;
     }
 
     /**
      * @return Minify_SourceInterface[]
      */
-    public function getSources() {
+    public function getSources()
+    {
         return $this->sources;
     }
 }

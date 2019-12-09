@@ -3,7 +3,8 @@
 /**
  * Class Minify_SourceSet
  */
-class Minify_SourceSet {
+class Minify_SourceSet
+{
     /**
      * Get unique string for a set of sources
      *
@@ -11,7 +12,8 @@ class Minify_SourceSet {
      *
      * @return string
      */
-    public static function getDigest($sources) {
+    public static function getDigest($sources)
+    {
         $info = array();
         foreach ($sources as $source) {
             $info[] = array(

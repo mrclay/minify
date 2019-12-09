@@ -9,7 +9,8 @@
  *
  * @see https://github.com/martylamb/nailgun
  */
-class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler {
+class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler
+{
     const CC_MAIN = 'com.google.javascript.jscomp.CommandLineRunner';
 
     const NG_SERVER = 'com.martiansoftware.nailgun.NGServer';
@@ -46,11 +47,12 @@ class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler {
      * @param string $tmpFile
      * @param array  $options
      *
-     * @return string
      * @throws Minify_ClosureCompiler_Exception
      *
+     * @return string
      */
-    protected function compile($tmpFile, $options) {
+    protected function compile($tmpFile, $options)
+    {
         $this->startServer();
 
         $command = $this->getCommand($options, $tmpFile);
@@ -59,11 +61,12 @@ class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler {
     }
 
     /**
-     * @return array
      * @throws Minify_ClosureCompiler_Exception
      *
+     * @return array
      */
-    protected function getCompilerCommandLine() {
+    protected function getCompilerCommandLine()
+    {
         return array(
             self::$ngExecutable,
             \escapeshellarg(self::CC_MAIN),
@@ -75,7 +78,8 @@ class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler {
      *
      * @return array
      */
-    protected function getServerCommandLine() {
+    protected function getServerCommandLine()
+    {
         $this->checkJar(self::$ngJarFile);
         $this->checkJar(self::$jarFile);
 
@@ -94,7 +98,8 @@ class Minify_NailgunClosureCompiler extends Minify_ClosureCompiler {
         );
     }
 
-    private function startServer() {
+    private function startServer()
+    {
         $serverCommand = \implode(' ', $this->getServerCommandLine());
         $psCommand = $this->shell('ps -o cmd= -C ' . self::$javaExecutable);
         if (\in_array($serverCommand, $psCommand, true)) {

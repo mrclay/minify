@@ -12,7 +12,8 @@
  * Minify::setCache(new Minify_Cache_ZendPlatform());
  * </code>
  */
-class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
+class Minify_Cache_ZendPlatform implements Minify_CacheInterface
+{
     private $_exp;
 
     private $_lm;
@@ -28,7 +29,8 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
      * @param int $expire seconds until expiration (default = 0
      *                    meaning the item will not get an expiration date)
      */
-    public function __construct($expire = 0) {
+    public function __construct($expire = 0)
+    {
         $this->_exp = $expire;
     }
 
@@ -37,7 +39,8 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
      *
      * @param string $id cache id
      */
-    public function display($id) {
+    public function display($id)
+    {
         echo $this->_fetch($id) ? $this->_data : '';
     }
 
@@ -48,7 +51,8 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
      *
      * @return string
      */
-    public function fetch($id) {
+    public function fetch($id)
+    {
         return $this->_fetch($id) ? $this->_data : '';
     }
 
@@ -61,7 +65,8 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
      *
      * @return int size in bytes
      */
-    public function getSize($id) {
+    public function getSize($id)
+    {
         return $this->_fetch($id) ? \strlen($this->_data) : false;
     }
 
@@ -73,7 +78,8 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
      *
      * @return bool exists
      */
-    public function isValid($id, $srcMtime) {
+    public function isValid($id, $srcMtime)
+    {
         return $this->_fetch($id) && ($this->_lm >= $srcMtime);
     }
 
@@ -85,7 +91,8 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
      *
      * @return bool success
      */
-    public function store($id, $data) {
+    public function store($id, $data)
+    {
         return output_cache_put($id, "{$_SERVER['REQUEST_TIME']}|{$data}");
     }
 
@@ -96,7 +103,8 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface {
      *
      * @return bool success
      */
-    private function _fetch($id) {
+    private function _fetch($id)
+    {
         if ($this->_id === $id) {
             return true;
         }

@@ -23,7 +23,8 @@
  *
  * </code>
  */
-class Minify_ClosureCompiler {
+class Minify_ClosureCompiler
+{
     public static $isDebug = false;
 
     /**
@@ -65,13 +66,14 @@ class Minify_ClosureCompiler {
      * @param string $js
      * @param array  $options (verbose is ignored)
      *
-     * @return string
-     *
      * @throws Minify_ClosureCompiler_Exception
+     *
+     * @return string
      *
      * @see https://code.google.com/p/closure-compiler/source/browse/trunk/README
      */
-    public static function minify($js, $options = array()) {
+    public static function minify($js, $options = array())
+    {
         $min = new static();
 
         return $min->process($js, $options);
@@ -83,12 +85,13 @@ class Minify_ClosureCompiler {
      * @param string $js
      * @param array  $options
      *
-     * @return string
      * @throws Minify_ClosureCompiler_Exception
-     *
      * @throws Exception
+     *
+     * @return string
      */
-    public function process($js, $options) {
+    public function process($js, $options)
+    {
         $tmpFile = $this->dumpFile(self::$tempDir, $js);
 
         try {
@@ -108,7 +111,8 @@ class Minify_ClosureCompiler {
      *
      * @throws Minify_ClosureCompiler_Exception
      */
-    protected function checkJar($jarFile) {
+    protected function checkJar($jarFile)
+    {
         if (!\is_file($jarFile)) {
             throw new Minify_ClosureCompiler_Exception('$jarFile(' . $jarFile . ') is not a valid file.');
         }
@@ -122,7 +126,8 @@ class Minify_ClosureCompiler {
      *
      * @throws Minify_ClosureCompiler_Exception
      */
-    protected function checkTempdir($tempDir) {
+    protected function checkTempdir($tempDir)
+    {
         if (!\is_dir($tempDir)) {
             throw new Minify_ClosureCompiler_Exception('$tempDir(' . $tempDir . ') is not a valid direcotry.');
         }
@@ -135,11 +140,12 @@ class Minify_ClosureCompiler {
      * @param string $tmpFile
      * @param array  $options
      *
-     * @return string
      * @throws Minify_ClosureCompiler_Exception
      *
+     * @return string
      */
-    protected function compile($tmpFile, $options) {
+    protected function compile($tmpFile, $options)
+    {
         $command = $this->getCommand($options, $tmpFile);
 
         return \implode("\n", $this->shell($command));
@@ -151,11 +157,12 @@ class Minify_ClosureCompiler {
      * @param string $dir
      * @param string $content
      *
-     * @return string
      * @throws Minify_ClosureCompiler_Exception
      *
+     * @return string
      */
-    protected function dumpFile($dir, $content) {
+    protected function dumpFile($dir, $content)
+    {
         $this->checkTempdir($dir);
         $tmpFile = \tempnam($dir, 'cc_');
         if (!$tmpFile) {
@@ -172,7 +179,8 @@ class Minify_ClosureCompiler {
      *
      * @return string
      */
-    protected function getCommand($userOptions, $tmpFile) {
+    protected function getCommand($userOptions, $tmpFile)
+    {
         $args = \array_merge(
             $this->getCompilerCommandLine(),
             $this->getOptionsCommandLine($userOptions)
@@ -182,11 +190,12 @@ class Minify_ClosureCompiler {
     }
 
     /**
-     * @return array
      * @throws Minify_ClosureCompiler_Exception
      *
+     * @return array
      */
-    protected function getCompilerCommandLine() {
+    protected function getCompilerCommandLine()
+    {
         $this->checkJar(self::$jarFile);
 
         return array(
@@ -201,7 +210,8 @@ class Minify_ClosureCompiler {
      *
      * @return array
      */
-    protected function getOptionsCommandLine($userOptions) {
+    protected function getOptionsCommandLine($userOptions)
+    {
         $args = array();
 
         $options = \array_merge(
@@ -222,11 +232,12 @@ class Minify_ClosureCompiler {
      * @param string $command
      * @param array  $expectedCodes
      *
-     * @return mixed
      * @throws Minify_ClosureCompiler_Exception
      *
+     * @return mixed
      */
-    protected function shell($command, $expectedCodes = array(0)) {
+    protected function shell($command, $expectedCodes = array(0))
+    {
         \exec($command, $output, $result_code);
         if (!\in_array($result_code, $expectedCodes, true)) {
             throw new Minify_ClosureCompiler_Exception("Unpexpected return code: ${result_code}");
@@ -236,5 +247,6 @@ class Minify_ClosureCompiler {
     }
 }
 
-class Minify_ClosureCompiler_Exception extends Exception {
+class Minify_ClosureCompiler_Exception extends Exception
+{
 }

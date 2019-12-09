@@ -55,7 +55,8 @@
  * }
  * </code>
  */
-class HTTP_ConditionalGet {
+class HTTP_ConditionalGet
+{
     /**
      * Does the client have a valid copy of the requested resource?
      *
@@ -108,7 +109,8 @@ class HTTP_ConditionalGet {
      * After the max-age period has passed, the browser will again send a
      * conditional GET to revalidate its cache.
      */
-    public function __construct($spec) {
+    public function __construct($spec)
+    {
         $scope = (isset($spec['isPublic']) && $spec['isPublic'])
             ? 'public'
             : 'private';
@@ -170,16 +172,33 @@ class HTTP_ConditionalGet {
      *                                "private" will be sent, allowing only browser caching.
      * @param array $options          (default empty) additional options for constructor
      */
-    public static function check($lastModifiedTime = null, $isPublic = false, $options = array()) {
+    public static function check($lastModifiedTime = null, $isPublic = false, $options = array())
+    {
         if ($lastModifiedTime !== null) {
-            $options['lastModifiedTime'] = (int)$lastModifiedTime;
+            $options['lastModifiedTime'] = (int) $lastModifiedTime;
         }
-        $options['isPublic'] = (bool)$isPublic;
+        $options['isPublic'] = (bool) $isPublic;
         $cg = new HTTP_ConditionalGet($options);
         $cg->sendHeaders();
         if ($cg->cacheIsValid) {
             exit();
         }
+    }
+
+    /**
+     * Get a GMT formatted date for use in HTTP headers
+     *
+     * <code>
+     * header('Expires: ' . HTTP_ConditionalGet::gmtdate($time));
+     * </code>
+     *
+     * @param int $time unix timestamp
+     *
+     * @return string
+     */
+    public static function gmtDate($time)
+    {
+        return \gmdate('D, d M Y H:i:s \G\M\T', $time);
     }
 
     /**
@@ -198,23 +217,9 @@ class HTTP_ConditionalGet {
      *
      * @return array
      */
-    public function getHeaders() {
+    public function getHeaders()
+    {
         return $this->_headers;
-    }
-
-    /**
-     * Get a GMT formatted date for use in HTTP headers
-     *
-     * <code>
-     * header('Expires: ' . HTTP_ConditionalGet::gmtdate($time));
-     * </code>
-     *
-     * @param int $time unix timestamp
-     *
-     * @return string
-     */
-    public static function gmtDate($time) {
-        return \gmdate('D, d M Y H:i:s \G\M\T', $time);
     }
 
     /**
@@ -228,7 +233,8 @@ class HTTP_ConditionalGet {
      * call header() again (but probably have not effect) and getHeaders() will
      * still return the headers.
      */
-    public function sendHeaders() {
+    public function sendHeaders()
+    {
         $headers = $this->_headers;
         if (\array_key_exists('_responseCode', $headers)) {
             // FastCGI environments require 3rd arg to header() to be set
@@ -252,7 +258,8 @@ class HTTP_ConditionalGet {
      *
      * @return int copy of input $bytes
      */
-    public function setContentLength($bytes) {
+    public function setContentLength($bytes)
+    {
         return $this->_headers['Content-Length'] = $bytes;
     }
 
@@ -261,7 +268,8 @@ class HTTP_ConditionalGet {
      *
      * @return bool
      */
-    protected function _isCacheValid() {
+    protected function _isCacheValid()
+    {
         if ($this->_etag === null) {
             // lmTime is copied to ETag, so this condition implies that the
             // server sent neither ETag nor Last-Modified, so the client can't
@@ -280,7 +288,8 @@ class HTTP_ConditionalGet {
      * @param string $hash
      * @param string $scope
      */
-    protected function _setEtag($hash, $scope) {
+    protected function _setEtag($hash, $scope)
+    {
         $this->_etag = '"' . \substr($scope, 0, 3) . $hash . '"';
         $this->_headers['ETag'] = $this->_etag;
     }
@@ -288,8 +297,9 @@ class HTTP_ConditionalGet {
     /**
      * @param int $time
      */
-    protected function _setLastModified($time) {
-        $this->_lmTime = (int)$time;
+    protected function _setLastModified($time)
+    {
+        $this->_lmTime = (int) $time;
         $this->_headers['Last-Modified'] = self::gmtDate($time);
     }
 
@@ -298,7 +308,8 @@ class HTTP_ConditionalGet {
      *
      * @return string
      */
-    protected function normalizeEtag($etag) {
+    protected function normalizeEtag($etag)
+    {
         $etag = \trim($etag);
 
         return $this->_stripEtag
@@ -309,7 +320,8 @@ class HTTP_ConditionalGet {
     /**
      * @return bool
      */
-    protected function resourceMatchedEtag() {
+    protected function resourceMatchedEtag()
+    {
         if (!isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
             return false;
         }
@@ -335,7 +347,8 @@ class HTTP_ConditionalGet {
     /**
      * @return bool
      */
-    protected function resourceNotModified() {
+    protected function resourceNotModified()
+    {
         if (!isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
             return false;
         }

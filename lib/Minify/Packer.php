@@ -16,8 +16,10 @@
 /**
  * Minify Javascript using Dean Edward's Packer
  */
-class Minify_Packer {
-    public static function minify($code, $options = array()) {
+class Minify_Packer
+{
+    public static function minify($code, $options = array())
+    {
         // @todo: set encoding options based on $options :)
         $packer = new JavascriptPacker($code, 'Normal', true, false);
 
