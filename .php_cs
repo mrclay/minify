@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 return PhpCsFixer\Config::create()
-    ->setUsingCache(false)
+    ->setUsingCache(true)
     ->setRiskyAllowed(true)
     ->setRules(
         [
@@ -236,3 +236,5 @@ return PhpCsFixer\Config::create()
             ->ignoreDotFiles(true)
             ->ignoreVCS(true)
     );
+
+// vim:ft=php
