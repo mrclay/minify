@@ -18,6 +18,10 @@ jobs:
     - php: "7.2"
     - php: "7.3"
     - php: "7.4snapshot"
+    - name: "Php CS Fixer"
+      php: "7.3"
+      env:
+      - PHP_CS_FIXER=1
 
 env:
   - CLOSURE_VERSION: 20161024
@@ -37,7 +41,14 @@ before_script:
   - tests/dl-closure.sh
 
 script:
+  - PATH=vendor/bin:$PATH
   - composer validate
+  - |
+    if [ "$PHP_CS_FIXER" ]; then
+      composer config --unset platform.php
+      composer require --dev friendsofphp/php-cs-fixer:2.16
+      php-cs-fixer fix --verbose --diff --dry-run --ansi
+    fi
   - vendor/bin/phpunit --verbose
 
 # vim:ts=2:sw=2:et
