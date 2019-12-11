@@ -1,8 +1,6 @@
 <?php
 /**
  * Class HTTP_Encoder
- * @package Minify
- * @subpackage HTTP
  */
 
 /**
@@ -38,14 +36,9 @@
  * Note: If you don't need header mgmt, use PHP's native gzencode, gzdeflate,
  * and gzcompress functions for gzip, deflate, and compress-encoding
  * respectively.
- *
- * @package Minify
- * @subpackage HTTP
- * @author Stephen Clay <steve@mrclay.org>
  */
 class HTTP_Encoder
 {
-
     /**
      * Should the encoder allow HTTP encoding to IE6?
      *
@@ -89,11 +82,11 @@ class HTTP_Encoder
     {
         $this->_useMbStrlen = (function_exists('mb_strlen')
                                && (ini_get('mbstring.func_overload') !== '')
-                               && ((int)ini_get('mbstring.func_overload') & 2));
+                               && ((int) ini_get('mbstring.func_overload') & 2));
         $this->_content = $spec['content'];
         $this->_headers['Content-Length'] = $this->_useMbStrlen
-            ? (string)mb_strlen($this->_content, '8bit')
-            : (string)strlen($this->_content);
+            ? (string) mb_strlen($this->_content, '8bit')
+            : (string) strlen($this->_content);
         if (isset($spec['type'])) {
             $this->_headers['Content-Type'] = $spec['type'];
         }
@@ -180,7 +173,6 @@ class HTTP_Encoder
      * rarely sent by servers, so client support could be buggier.
      *
      * @param bool $allowCompress allow the older compress encoding
-     *
      * @param bool $allowDeflate allow the more recent deflate encoding
      *
      * @return array two values, 1st is the actual encoding method, 2nd is the
@@ -191,40 +183,44 @@ class HTTP_Encoder
     {
         // @link http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
 
-        if (! isset($_SERVER['HTTP_ACCEPT_ENCODING'])
+        if (!isset($_SERVER['HTTP_ACCEPT_ENCODING'])
             || self::isBuggyIe()) {
             return array('', '');
         }
         $ae = $_SERVER['HTTP_ACCEPT_ENCODING'];
         // gzip checks (quick)
-        if (0 === strpos($ae, 'gzip,')             // most browsers
-            || 0 === strpos($ae, 'deflate, gzip,') // opera
+        if (strpos($ae, 'gzip,') === 0             // most browsers
+            || strpos($ae, 'deflate, gzip,') === 0 // opera
         ) {
             return array('gzip', 'gzip');
         }
         // gzip checks (slow)
         if (preg_match(
-                '@(?:^|,)\\s*((?:x-)?gzip)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@'
-                ,$ae
-                ,$m)) {
+            '@(?:^|,)\\s*((?:x-)?gzip)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@',
+            $ae,
+            $m
+        )) {
             return array('gzip', $m[1]);
         }
         if ($allowDeflate) {
             // deflate checks
             $aeRev = strrev($ae);
-            if (0 === strpos($aeRev, 'etalfed ,') // ie, webkit
-                || 0 === strpos($aeRev, 'etalfed,') // gecko
-                || 0 === strpos($ae, 'deflate,') // opera
+            if (strpos($aeRev, 'etalfed ,') === 0 // ie, webkit
+                || strpos($aeRev, 'etalfed,') === 0 // gecko
+                || strpos($ae, 'deflate,') === 0 // opera
                 // slow parsing
                 || preg_match(
-                    '@(?:^|,)\\s*deflate\\s*(?:$|,|;\\s*q=(?:0\\.|1))@', $ae)) {
+                    '@(?:^|,)\\s*deflate\\s*(?:$|,|;\\s*q=(?:0\\.|1))@',
+                    $ae
+                )) {
                 return array('deflate', 'deflate');
             }
         }
         if ($allowCompress && preg_match(
-                '@(?:^|,)\\s*((?:x-)?compress)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@'
-                ,$ae
-                ,$m)) {
+            '@(?:^|,)\\s*((?:x-)?compress)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@',
+            $ae,
+            $m
+        )) {
             return array('compress', $m[1]);
         }
 
@@ -250,13 +246,13 @@ class HTTP_Encoder
      */
     public function encode($compressionLevel = null)
     {
-        if (! self::isBuggyIe()) {
+        if (!self::isBuggyIe()) {
             $this->_headers['Vary'] = 'Accept-Encoding';
         }
-        if (null === $compressionLevel) {
+        if ($compressionLevel === null) {
             $compressionLevel = self::$compressionLevel;
         }
-        if ('' === $this->_encodeMethod[0]
+        if ($this->_encodeMethod[0] === ''
             || ($compressionLevel == 0)
             || !extension_loaded('zlib')) {
             return false;
@@ -268,12 +264,12 @@ class HTTP_Encoder
         } else {
             $encoded = gzcompress($this->_content, $compressionLevel);
         }
-        if (false === $encoded) {
+        if ($encoded === false) {
             return false;
         }
         $this->_headers['Content-Length'] = $this->_useMbStrlen
-            ? (string)mb_strlen($encoded, '8bit')
-            : (string)strlen($encoded);
+            ? (string) mb_strlen($encoded, '8bit')
+            : (string) strlen($encoded);
         $this->_headers['Content-Encoding'] = $this->_encodeMethod[1];
         $this->_content = $encoded;
 
@@ -286,7 +282,6 @@ class HTTP_Encoder
      * This is a convenience method for common use of the class
      *
      * @param string $content
-     *
      * @param int $compressionLevel given to zlib functions. If not given, the
      * class default will be used.
      *
@@ -294,7 +289,7 @@ class HTTP_Encoder
      */
     public static function output($content, $compressionLevel = null)
     {
-        if (null === $compressionLevel) {
+        if ($compressionLevel === null) {
             $compressionLevel = self::$compressionLevel;
         }
         $he = new HTTP_Encoder(array('content' => $content));
@@ -316,20 +311,23 @@ class HTTP_Encoder
         }
         $ua = $_SERVER['HTTP_USER_AGENT'];
         // quick escape for non-IEs
-        if (0 !== strpos($ua, 'Mozilla/4.0 (compatible; MSIE ')
-            || false !== strpos($ua, 'Opera')) {
+        if (strpos($ua, 'Mozilla/4.0 (compatible; MSIE ') !== 0
+            || strpos($ua, 'Opera') !== false) {
             return false;
         }
         // no regex = faaast
-        $version = (float)substr($ua, 30);
+        $version = (float) substr($ua, 30);
 
         return self::$encodeToIe6
-            ? ($version < 6 || ($version == 6 && false === strpos($ua, 'SV1')))
+            ? ($version < 6 || ($version == 6 && strpos($ua, 'SV1') === false))
             : ($version < 7);
     }
 
     protected $_content = '';
+
     protected $_headers = array();
+
     protected $_encodeMethod = array('', '');
+
     protected $_useMbStrlen = false;
 }

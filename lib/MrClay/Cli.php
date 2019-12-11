@@ -2,8 +2,8 @@
 
 namespace MrClay;
 
-use MrClay\Cli\Arg;
 use InvalidArgumentException;
+use MrClay\Cli\Arg;
 
 /**
  * Forms a front controller for a console app, handling and validating arguments (options)
@@ -15,12 +15,10 @@ use InvalidArgumentException;
  * solely through the file pointers provided by openInput()/openOutput(), you can make your
  * app more flexible to end users.
  *
- * @author Steve Clay <steve@mrclay.org>
  * @license http://www.opensource.org/licenses/mit-license.php  MIT License
  */
 class Cli
 {
-
     /**
      * @var array validation errors
      */
@@ -62,19 +60,19 @@ class Cli
     /**
      * @var resource
      */
-    protected $_stdin = null;
+    protected $_stdin;
 
     /**
      * @var resource
      */
-    protected $_stdout = null;
+    protected $_stdout;
 
     /**
      * @param bool $exitIfNoStdin (default true) Exit() if STDIN is not defined
      */
     public function __construct($exitIfNoStdin = true)
     {
-        if ($exitIfNoStdin && ! defined('STDIN')) {
+        if ($exitIfNoStdin && !defined('STDIN')) {
             exit('This script is for command-line use only.');
         }
         if (isset($GLOBALS['argv'][1])
@@ -85,6 +83,7 @@ class Cli
 
     /**
      * @param Arg|string $letter
+     *
      * @return Arg
      */
     public function addOptionalArg($letter)
@@ -94,6 +93,7 @@ class Cli
 
     /**
      * @param Arg|string $letter
+     *
      * @return Arg
      */
     public function addRequiredArg($letter)
@@ -105,15 +105,17 @@ class Cli
      * @param string $letter
      * @param bool $required
      * @param Arg|null $arg
-     * @return Arg
+     *
      * @throws InvalidArgumentException
+     *
+     * @return Arg
      */
     public function addArgument($letter, $required, Arg $arg = null)
     {
-        if (! preg_match('/^[a-zA-Z]$/', $letter)) {
+        if (!preg_match('/^[a-zA-Z]$/', $letter)) {
             throw new InvalidArgumentException('$letter must be in [a-zA-Z]');
         }
-        if (! $arg) {
+        if (!$arg) {
             $arg = new Arg($required);
         }
         $this->_args[$letter] = $arg;
@@ -123,6 +125,7 @@ class Cli
 
     /**
      * @param string $letter
+     *
      * @return Arg|null
      */
     public function getArgument($letter)
@@ -170,35 +173,36 @@ class Cli
                 if (is_bool($o[$letter])) {
 
                     // remove from argv copy
-                    $k = array_search("-$letter", $argvCopy);
+                    $k = array_search("-${letter}", $argvCopy);
                     if ($k !== false) {
                         array_splice($argvCopy, $k, 1);
                     }
 
                     if ($arg->mustHaveValue) {
-                        $this->addError($letter, "Missing value");
+                        $this->addError($letter, 'Missing value');
                     } else {
                         $this->values[$letter] = true;
                     }
                 } else {
                     // string
                     $this->values[$letter] = $o[$letter];
-                    $v =& $this->values[$letter];
+                    $v = &$this->values[$letter];
 
                     // remove from argv copy
                     // first look for -ovalue or -o=value
-                    $pattern = "/^-{$letter}=?" . preg_quote($v, '/') . "$/";
+                    $pattern = "/^-{$letter}=?" . preg_quote($v, '/') . '$/';
                     $foundInArgv = false;
                     foreach ($argvCopy as $k => $argV) {
                         if (preg_match($pattern, $argV)) {
                             array_splice($argvCopy, $k, 1);
                             $foundInArgv = true;
+
                             break;
                         }
                     }
-                    if (! $foundInArgv) {
+                    if (!$foundInArgv) {
                         // space separated
-                        $k = array_search("-$letter", $argvCopy);
+                        $k = array_search("-${letter}", $argvCopy);
                         if ($k !== false) {
                             array_splice($argvCopy, $k, 2);
                         }
@@ -206,17 +210,17 @@ class Cli
 
                     // check that value isn't really another option
                     if (strlen($lettersUsed) > 1) {
-                        $pattern = "/^-[" . str_replace($letter, '', $lettersUsed) . "]/i";
+                        $pattern = '/^-[' . str_replace($letter, '', $lettersUsed) . ']/i';
                         if (preg_match($pattern, $v)) {
-                            $this->addError($letter, "Value was read as another option: %s", $v);
+                            $this->addError($letter, 'Value was read as another option: %s', $v);
 
                             return false;
                         }
                     }
                     if ($arg->assertFile || $arg->assertDir) {
                         if ($v[0] !== '/' && $v[0] !== '~') {
-                            $this->values["$letter.raw"] = $v;
-                            $v = getcwd() . "/$v";
+                            $this->values["${letter}.raw"] = $v;
+                            $v = getcwd() . "/${v}";
                         }
                     }
                     if ($arg->assertFile) {
@@ -225,28 +229,29 @@ class Cli
                         } elseif ($arg->useAsOutfile) {
                             $this->_stdout = $v;
                         }
-                        if ($arg->assertReadable && ! is_readable($v)) {
-                            $this->addError($letter, "File not readable: %s", $v);
+                        if ($arg->assertReadable && !is_readable($v)) {
+                            $this->addError($letter, 'File not readable: %s', $v);
+
                             continue;
                         }
                         if ($arg->assertWritable) {
                             if (is_file($v)) {
-                                if (! is_writable($v)) {
-                                    $this->addError($letter, "File not writable: %s", $v);
+                                if (!is_writable($v)) {
+                                    $this->addError($letter, 'File not writable: %s', $v);
                                 }
                             } else {
-                                if (! is_writable(dirname($v))) {
-                                    $this->addError($letter, "Directory not writable: %s", dirname($v));
+                                if (!is_writable(dirname($v))) {
+                                    $this->addError($letter, 'Directory not writable: %s', dirname($v));
                                 }
                             }
                         }
-                    } elseif ($arg->assertDir && $arg->assertWritable && ! is_writable($v)) {
-                        $this->addError($letter, "Directory not readable: %s", $v);
+                    } elseif ($arg->assertDir && $arg->assertWritable && !is_writable($v)) {
+                        $this->addError($letter, 'Directory not readable: %s', $v);
                     }
                 }
             } else {
                 if ($arg->isRequired()) {
-                    $this->addError($letter, "Missing");
+                    $this->addError($letter, 'Missing');
                 }
             }
         }
@@ -266,7 +271,7 @@ class Cli
         $r = $this->moreArgs;
         foreach ($r as $k => $v) {
             if ($v[0] !== '/' && $v[0] !== '~') {
-                $v = getcwd() . "/$v";
+                $v = getcwd() . "/${v}";
                 $v = str_replace('/./', '/', $v);
                 do {
                     $v = preg_replace('@/[^/]+/\\.\\./@', '/', $v, 1, $changed);
@@ -290,7 +295,7 @@ class Cli
         }
         $r = "Some arguments did not pass validation:\n";
         foreach ($this->errors as $letter => $arr) {
-            $r .= "  $letter : " . implode(', ', $arr) . "\n";
+            $r .= "  ${letter} : " . implode(', ', $arr) . "\n";
         }
         $r .= "\n";
 
@@ -306,11 +311,11 @@ class Cli
         foreach ($this->_args as $letter => $arg) {
             /* @var Arg $arg  */
             $desc = $arg->getDescription();
-            $flag = " -$letter ";
+            $flag = " -${letter} ";
             if ($arg->mayHaveValue) {
-                $flag .= "[VAL]";
+                $flag .= '[VAL]';
             } elseif ($arg->mustHaveValue) {
-                $flag .= "VAL";
+                $flag .= 'VAL';
             }
             if ($arg->assertFile) {
                 $flag = str_replace('VAL', 'FILE', $flag);
@@ -318,9 +323,9 @@ class Cli
                 $flag = str_replace('VAL', 'DIR', $flag);
             }
             if ($arg->isRequired()) {
-                $desc = "(required) $desc";
+                $desc = "(required) ${desc}";
             }
-            $flag = str_pad($flag, 12, " ", STR_PAD_RIGHT);
+            $flag = str_pad($flag, 12, ' ', STR_PAD_RIGHT);
             $desc = wordwrap($desc, 70);
             $r .= $flag . str_replace("\n", "\n            ", $desc) . "\n\n";
         }
@@ -336,18 +341,17 @@ class Cli
      */
     public function openInput()
     {
-        if (null === $this->_stdin) {
+        if ($this->_stdin === null) {
             return STDIN;
-        } else {
-            $this->_stdin = fopen($this->_stdin, 'rb');
-
-            return $this->_stdin;
         }
+        $this->_stdin = fopen($this->_stdin, 'rb');
+
+        return $this->_stdin;
     }
 
     public function closeInput()
     {
-        if (null !== $this->_stdin) {
+        if ($this->_stdin !== null) {
             fclose($this->_stdin);
         }
     }
@@ -361,18 +365,17 @@ class Cli
      */
     public function openOutput()
     {
-        if (null === $this->_stdout) {
+        if ($this->_stdout === null) {
             return STDOUT;
-        } else {
-            $this->_stdout = fopen($this->_stdout, 'wb');
-
-            return $this->_stdout;
         }
+        $this->_stdout = fopen($this->_stdout, 'wb');
+
+        return $this->_stdout;
     }
 
     public function closeOutput()
     {
-        if (null !== $this->_stdout) {
+        if ($this->_stdout !== null) {
             fclose($this->_stdout);
         }
     }
@@ -390,4 +393,3 @@ class Cli
         $this->errors[$letter][] = sprintf($msg, $value);
     }
 }
-

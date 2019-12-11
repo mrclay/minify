@@ -5,6 +5,9 @@ namespace Minify\Test;
 use Exception;
 use JSMin\JSMin;
 
+/**
+ * @internal
+ */
 class JSMinTest extends TestCase
 {
     public function test1()
@@ -33,7 +36,7 @@ class JSMinTest extends TestCase
 
     public function test4()
     {
-        $have_overload = function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2);
+        $have_overload = function_exists('mb_strlen') && ((int) ini_get('mbstring.func_overload') & 2);
         if (!$have_overload) {
             $this->markTestSkipped();
         }
@@ -63,6 +66,7 @@ class JSMinTest extends TestCase
     public function testJSMinException($js, $label, $expClass, $expMessage)
     {
         $eClass = $eMsg = '';
+
         try {
             JSMin::minify($js);
         } catch (Exception $e) {
@@ -80,7 +84,7 @@ class JSMinTest extends TestCase
                 '"Hello',
                 'Unterminated String',
                 'JSMin\UnterminatedStringException',
-                "JSMin: Unterminated String at byte 5: \"Hello",
+                'JSMin: Unterminated String at byte 5: "Hello',
             ),
 
             array(
@@ -119,10 +123,10 @@ class JSMinTest extends TestCase
             ),
 
             array(
-                "/* Comment ",
+                '/* Comment ',
                 'Unterminated Comment',
                 'JSMin\UnterminatedCommentException',
-                "JSMin: Unterminated comment at byte 11: /* Comment ",
+                'JSMin: Unterminated comment at byte 11: /* Comment ',
             ),
         );
     }

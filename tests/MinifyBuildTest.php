@@ -5,6 +5,9 @@ namespace Minify\Test;
 use Minify_Build;
 use Minify_Source;
 
+/**
+ * @internal
+ */
 class MinifyBuildTest extends TestCase
 {
     public function test()

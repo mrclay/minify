@@ -2,7 +2,6 @@
 
 class Minify_Env
 {
-
     /**
      * @return string
      */
@@ -23,8 +22,8 @@ class Minify_Env
     {
         $options = array_merge(array(
             'server' => $_SERVER,
-            'get' => $_GET,
-            'post' => $_POST,
+            'get'    => $_GET,
+            'post'   => $_POST,
             'cookie' => $_COOKIE,
         ), $options);
 
@@ -43,7 +42,7 @@ class Minify_Env
 
     public function server($key = null)
     {
-        if (null === $key) {
+        if ($key === null) {
             return $this->server;
         }
 
@@ -52,7 +51,7 @@ class Minify_Env
 
     public function cookie($key = null, $default = null)
     {
-        if (null === $key) {
+        if ($key === null) {
             return $this->cookie;
         }
 
@@ -61,7 +60,7 @@ class Minify_Env
 
     public function get($key = null, $default = null)
     {
-        if (null === $key) {
+        if ($key === null) {
             return $this->get;
         }
 
@@ -70,7 +69,7 @@ class Minify_Env
 
     public function post($key = null, $default = null)
     {
-        if (null === $key) {
+        if ($key === null) {
             return $this->post;
         }
 
@@ -103,19 +102,23 @@ class Minify_Env
     }
 
     protected $server;
+
     protected $get;
+
     protected $post;
+
     protected $cookie;
 
     /**
      * Compute $_SERVER['DOCUMENT_ROOT'] for IIS using SCRIPT_FILENAME and SCRIPT_NAME.
      *
      * @param array $server
+     *
      * @return string
      */
     protected function computeDocRoot(array $server)
     {
-        if (isset($server['SERVER_SOFTWARE']) && 0 !== strpos($server['SERVER_SOFTWARE'], 'Microsoft-IIS/')) {
+        if (isset($server['SERVER_SOFTWARE']) && strpos($server['SERVER_SOFTWARE'], 'Microsoft-IIS/') !== 0) {
             throw new InvalidArgumentException('DOCUMENT_ROOT is not provided and could not be computed');
         }
 

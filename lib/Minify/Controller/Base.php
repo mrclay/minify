@@ -1,23 +1,17 @@
 <?php
 /**
  * Class Minify_Controller_Base
- * @package Minify
  */
-
-use Psr\Log\LoggerInterface;
 use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 /**
  * Base class for Minify controller
  *
  * The controller class validates a request and uses it to create a configuration for Minify::serve().
- *
- * @package Minify
- * @author Stephen Clay <steve@mrclay.org>
  */
 abstract class Minify_Controller_Base implements Minify_ControllerInterface
 {
-
     /**
      * @var Minify_Env
      */
@@ -63,6 +57,7 @@ abstract class Minify_Controller_Base implements Minify_ControllerInterface
      * @param string $msg
      *
      * @return null
+     *
      * @deprecated use $this->logger
      */
     public function log($msg)

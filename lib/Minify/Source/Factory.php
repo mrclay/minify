@@ -2,7 +2,6 @@
 
 class Minify_Source_Factory
 {
-
     /**
      * @var array
      */
@@ -40,32 +39,30 @@ class Minify_Source_Factory
      *                         file, use the touch command to update the mtime on the server. If the mtime
      *                         jumps ahead by a number of hours, set this variable to that number. If the mtime
      *                         moves back, this should not be needed.
-     *
      * @param Minify_CacheInterface $cache Optional cache for handling .less files.
-     *
      */
     public function __construct(Minify_Env $env, array $options = array(), Minify_CacheInterface $cache = null)
     {
         $this->env = $env;
         $this->options = array_merge(array(
-            'noMinPattern' => '@[-\\.]min\\.(?:[a-zA-Z]+)$@i', // matched against basename
-            'fileChecker' => array($this, 'checkIsFile'),
-            'resolveDocRoot' => true,
-            'checkAllowDirs' => true,
-            'allowDirs' => array('//'),
+            'noMinPattern'        => '@[-\\.]min\\.(?:[a-zA-Z]+)$@i', // matched against basename
+            'fileChecker'         => array($this, 'checkIsFile'),
+            'resolveDocRoot'      => true,
+            'checkAllowDirs'      => true,
+            'allowDirs'           => array('//'),
             'uploaderHoursBehind' => 0,
         ), $options);
 
         // resolve // in allowDirs
         $docRoot = $env->getDocRoot();
         foreach ($this->options['allowDirs'] as $i => $dir) {
-            if (0 === strpos($dir, '//')) {
+            if (strpos($dir, '//') === 0) {
                 $this->options['allowDirs'][$i] = $docRoot . substr($dir, 1);
             }
         }
 
         if ($this->options['fileChecker'] && !is_callable($this->options['fileChecker'])) {
-            throw new InvalidArgumentException("fileChecker option is not callable");
+            throw new InvalidArgumentException('fileChecker option is not callable');
         }
 
         $this->setHandler('~\.less$~i', function ($spec) use ($cache) {
@@ -92,24 +89,25 @@ class Minify_Source_Factory
 
     /**
      * @param string $file
-     * @return string
      *
      * @throws Minify_Source_FactoryException
+     *
+     * @return string
      */
     public function checkIsFile($file)
     {
         $realpath = realpath($file);
         if (!$realpath) {
-            throw new Minify_Source_FactoryException("File failed realpath(): $file");
+            throw new Minify_Source_FactoryException("File failed realpath(): ${file}");
         }
 
         $basename = basename($file);
-        if (0 === strpos($basename, '.')) {
-            throw new Minify_Source_FactoryException("Filename starts with period (may be hidden): $basename");
+        if (strpos($basename, '.') === 0) {
+            throw new Minify_Source_FactoryException("Filename starts with period (may be hidden): ${basename}");
         }
 
         if (!is_file($realpath) || !is_readable($realpath)) {
-            throw new Minify_Source_FactoryException("Not a file or isn't readable: $file");
+            throw new Minify_Source_FactoryException("Not a file or isn't readable: ${file}");
         }
 
         return $realpath;
@@ -118,9 +116,9 @@ class Minify_Source_Factory
     /**
      * @param mixed $spec
      *
-     * @return Minify_SourceInterface
-     *
      * @throws Minify_Source_FactoryException
+     *
+     * @return Minify_SourceInterface
      */
     public function makeSource($spec)
     {
@@ -139,7 +137,7 @@ class Minify_Source_Factory
             return new Minify_Source($spec);
         }
 
-        if ($this->options['resolveDocRoot'] && 0 === strpos($spec['filepath'], '//')) {
+        if ($this->options['resolveDocRoot'] && strpos($spec['filepath'], '//') === 0) {
             $spec['filepath'] = $this->env->getDocRoot() . substr($spec['filepath'], 1);
         }
 
@@ -148,7 +146,7 @@ class Minify_Source_Factory
         }
 
         if ($this->options['checkAllowDirs']) {
-            $allowDirs = (array)$this->options['allowDirs'];
+            $allowDirs = (array) $this->options['allowDirs'];
             $inAllowedDir = false;
             $filePath = $this->env->normalizePath($spec['filepath']);
             foreach ($allowDirs as $allowDir) {
@@ -159,9 +157,10 @@ class Minify_Source_Factory
 
             if (!$inAllowedDir) {
                 $allowDirsStr = implode(';', $allowDirs);
+
                 throw new Minify_Source_FactoryException("File '{$spec['filepath']}' is outside \$allowDirs "
-                    . "($allowDirsStr). If the path is resolved via an alias/symlink, look into the "
-                    . "\$min_symlinks option.");
+                    . "(${allowDirsStr}). If the path is resolved via an alias/symlink, look into the "
+                    . '$min_symlinks option.');
             }
         }
 
@@ -170,7 +169,7 @@ class Minify_Source_Factory
         if ($this->options['noMinPattern'] && preg_match($this->options['noMinPattern'], $basename)) {
             if (preg_match('~\.(css|less)$~i', $basename)) {
                 $spec['minifyOptions']['compress'] = false;
-                // we still want URI rewriting to work for CSS
+            // we still want URI rewriting to work for CSS
             } else {
                 $spec['minifier'] = 'Minify::nullMinifier';
             }
@@ -184,12 +183,13 @@ class Minify_Source_Factory
         foreach ($this->handlers as $basenamePattern => $handler) {
             if (preg_match($basenamePattern, $basename)) {
                 $source = call_user_func($handler, $spec);
+
                 break;
             }
         }
 
         if (!$source) {
-            throw new Minify_Source_FactoryException("Handler not found for file: $basename");
+            throw new Minify_Source_FactoryException("Handler not found for file: ${basename}");
         }
 
         return $source;

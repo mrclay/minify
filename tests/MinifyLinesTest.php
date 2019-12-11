@@ -8,9 +8,12 @@ use Minify_Controller_Files;
 use Minify_Env;
 use Minify_Source_Factory;
 
+/**
+ * @internal
+ */
 class MinifyLinesTest extends TestCase
 {
-    public function test_lines()
+    public function testLines()
     {
         $env = new Minify_Env(array(
             'server' => array(
@@ -21,17 +24,17 @@ class MinifyLinesTest extends TestCase
         $controller = new Minify_Controller_Files($env, $sourceFactory);
         $minify = new Minify(new Minify_Cache_Null());
 
-        $files = glob(self::$test_files . "/lines/*.in.js");
+        $files = glob(self::$test_files . '/lines/*.in.js');
 
         // uncomment to debug one
         //$files = array(self::$test_files . "/lines/basic.in.js");
 
         foreach ($files as $file) {
             $ret = $minify->serve($controller, array(
-                'debug' => true,
-                'quiet' => true,
+                'debug'        => true,
+                'quiet'        => true,
                 'encodeOutput' => false,
-                'files' => array($file),
+                'files'        => array($file),
             ));
 
             $outFile = str_replace('.in.js', '.out.js', $file);
@@ -41,7 +44,7 @@ class MinifyLinesTest extends TestCase
             // uncomment to set up expected output
             //file_put_contents($outFile, $ret['content']);
 
-            $this->assertEquals($exp, $ret['content'], "Did not match: " . basename($outFile));
+            $this->assertEquals($exp, $ret['content'], 'Did not match: ' . basename($outFile));
         }
     }
 }

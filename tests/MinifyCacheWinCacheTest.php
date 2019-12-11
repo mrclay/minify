@@ -4,12 +4,15 @@ namespace Minify\Test;
 
 use Minify_Cache_WinCache;
 
+/**
+ * @internal
+ */
 class MinifyCacheWinCacheTest extends TestCase
 {
     public function setUp()
     {
         if (!function_exists('wincache_ucache_info')) {
-            $this->markTestSkipped("To test this component, install WinCache extension");
+            $this->markTestSkipped('To test this component, install WinCache extension');
         }
     }
 

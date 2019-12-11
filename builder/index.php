@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 $app = (require __DIR__ . '/../bootstrap.php');
 /* @var \Minify\App $app */
@@ -7,15 +7,15 @@ $config = $app->config;
 
 // recommend $min_symlinks setting for Apache UserDir
 $symlinkOption = '';
-if (0 === strpos($app->env->server("SERVER_SOFTWARE"), 'Apache/')
+if (strpos($app->env->server('SERVER_SOFTWARE'), 'Apache/') === 0
     && preg_match('@^/\\~(\\w+)/@', $app->env->server('REQUEST_URI'), $m)
 ) {
     $userDir = DIRECTORY_SEPARATOR . $m[1] . DIRECTORY_SEPARATOR;
-    if (false !== strpos(__FILE__, $userDir)) {
+    if (strpos(__FILE__, $userDir) !== false) {
         $sm = array();
         $sm["//~{$m[1]}"] = dirname(__DIR__);
         $array = str_replace('array (', 'array(', var_export($sm, 1));
-        $symlinkOption = "\$min_symlinks = $array;";
+        $symlinkOption = "\$min_symlinks = ${array};";
     }
 }
 
@@ -28,8 +28,8 @@ if ($config->builderPassword && $config->builderPassword !== '') {
     $auth = new Intervention\Httpauth\Httpauth(array(
         'username' => 'admin',
         'password' => $config->builderPassword,
-        'type' => 'digest',
-        'realm' => 'Minify Builder',
+        'type'     => 'digest',
+        'realm'    => 'Minify Builder',
     ));
     $auth->secure();
 }
@@ -60,13 +60,13 @@ b {color:#c00}
 #jsDidntLoad {display:none;}
 </style>
 <body>
-<?php if ($symlinkOption): ?>
+<?php if ($symlinkOption) { ?>
     <div class=topNote><strong>Note:</strong> It looks like you're running Minify in a user
  directory. You may need the following option in /min/config.php to have URIs
  correctly rewritten in CSS output:
  <br><textarea id=symlinkOpt rows=3 cols=80 readonly><?php echo htmlspecialchars($symlinkOption); ?></textarea>
 </div>
-<?php endif; ?>
+<?php } ?>
 
 <p class=topWarning id=jsDidntLoad><strong>Uh Oh.</strong> Minify was unable to
     serve Javascript for this app. To troubleshoot this,
@@ -209,8 +209,8 @@ $content = ob_get_clean();
 
 $controller = new Minify_Controller_Page($app->env, $app->sourceFactory);
 $minify = $app->minify->serve($controller, array(
-    'content' => $content,
-    'id' => __FILE__,
+    'content'          => $content,
+    'id'               => __FILE__,
     'lastModifiedTime' => max(
         // regenerate cache if any of these change
         filemtime(__FILE__),

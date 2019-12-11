@@ -1,25 +1,23 @@
 <?php
 /**
  * Class Minify_HTML_Helper
- * @package Minify
  */
 
 /**
  * Helpers for writing Minify URIs into HTML
- *
- * @package Minify
- * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_HTML_Helper
 {
     public $rewriteWorks = true;
+
     public $minAppUri = '/min';
+
     public $groupsConfigFile = '';
 
     /**
      * Get an HTML-escaped Minify URI for a group or set of files
      *
-     * @param string|array $keyOrFiles a group key or array of filepaths/URIs
+     * @param array|string $keyOrFiles a group key or array of filepaths/URIs
      * @param array $opts options:
      *   'farExpires' : (default true) append a modified timestamp for cache revving
      *   'debug' : (default false) append debug flag
@@ -27,20 +25,21 @@ class Minify_HTML_Helper
      *   'minAppUri' : (default '/min') URI of min directory
      *   'rewriteWorks' : (default true) does mod_rewrite work in min app?
      *   'groupsConfigFile' : specify if different
+     *
      * @return string
      */
     public static function getUri($keyOrFiles, $opts = array())
     {
         $opts = array_merge(array( // default options
-            'farExpires' => true,
-            'debug' => false,
-            'charset' => 'UTF-8',
-            'minAppUri' => '/min',
-            'rewriteWorks' => true,
+            'farExpires'       => true,
+            'debug'            => false,
+            'charset'          => 'UTF-8',
+            'minAppUri'        => '/min',
+            'rewriteWorks'     => true,
             'groupsConfigFile' => self::app()->groupsConfigPath,
         ), $opts);
 
-        $h = new self;
+        $h = new self();
         $h->minAppUri = $opts['minAppUri'];
         $h->rewriteWorks = $opts['rewriteWorks'];
         $h->groupsConfigFile = $opts['groupsConfigFile'];
@@ -60,24 +59,25 @@ class Minify_HTML_Helper
      *
      * @param bool $farExpires
      * @param bool $debug
+     *
      * @return string
      */
     public function getRawUri($farExpires = true, $debug = false)
     {
         $path = rtrim($this->minAppUri, '/') . '/';
-        if (! $this->rewriteWorks) {
+        if (!$this->rewriteWorks) {
             $path .= '?';
         }
-        if (null === $this->_groupKey) {
+        if ($this->_groupKey === null) {
             // @todo: implement shortest uri
             $path = self::_getShortestUri($this->_filePaths, $path);
         } else {
-            $path .= "g=" . $this->_groupKey;
+            $path .= 'g=' . $this->_groupKey;
         }
         if ($debug) {
-            $path .= "&debug";
+            $path .= '&debug';
         } elseif ($farExpires && $this->_lastModified) {
-            $path .= "&" . $this->_lastModified;
+            $path .= '&' . $this->_lastModified;
         }
 
         return $path;
@@ -97,9 +97,9 @@ class Minify_HTML_Helper
         }
         // normalize paths like in /min/f=<paths>
         foreach ($files as $k => $file) {
-            if (0 === strpos($file, '//')) {
+            if (strpos($file, '//') === 0) {
                 $file = substr($file, 2);
-            } elseif (0 === strpos($file, '/') || 1 === strpos($file, ':\\')) {
+            } elseif (strpos($file, '/') === 0 || strpos($file, ':\\') === 1) {
                 $file = substr($file, strlen(self::app()->env->getDocRoot()) + 1);
             }
             $file = strtr($file, '\\', '/');
@@ -118,7 +118,7 @@ class Minify_HTML_Helper
     {
         $this->_groupKey = $key;
         if ($checkLastModified) {
-            if (! $this->groupsConfigFile) {
+            if (!$this->groupsConfigFile) {
                 $this->groupsConfigFile = self::app()->groupsConfigPath;
             }
             if (is_file($this->groupsConfigFile)) {
@@ -142,6 +142,7 @@ class Minify_HTML_Helper
      *
      * @param array|string $sources
      * @param int $lastModified
+     *
      * @return int
      */
     public static function getLastModified($sources, $lastModified = 0)
@@ -150,7 +151,7 @@ class Minify_HTML_Helper
         $factory = self::app()->sourceFactory;
 
         /** @var Minify_Source $source */
-        foreach ((array)$sources as $source) {
+        foreach ((array) $sources as $source) {
             $source = $factory->makeSource($source);
             $max = max($max, $source->getLastModified());
         }
@@ -160,7 +161,9 @@ class Minify_HTML_Helper
 
     /**
      * @param \Minify\App $app
+     *
      * @return \Minify\App
+     *
      * @internal
      */
     public static function app(\Minify\App $app = null)
@@ -178,9 +181,11 @@ class Minify_HTML_Helper
         return $cached;
     }
 
-    protected $_groupKey = null; // if present, URI will be like g=...
+    protected $_groupKey; // if present, URI will be like g=...
+
     protected $_filePaths = array();
-    protected $_lastModified = null;
+
+    protected $_lastModified;
 
     /**
      * In a given array of strings, find the character they all have at
@@ -188,6 +193,7 @@ class Minify_HTML_Helper
      *
      * @param array $arr array of strings
      * @param int $pos index to check
+     *
      * @return mixed a common char or '' if any do not match
      */
     protected static function _getCommonCharAtPos($arr, $pos)
@@ -214,6 +220,7 @@ class Minify_HTML_Helper
      *
      * @param array $paths root-relative URIs of files
      * @param string $minRoot root-relative URI of the "min" application
+     *
      * @return string
      */
     protected static function _getShortestUri($paths, $minRoot = '/min/')
@@ -224,9 +231,9 @@ class Minify_HTML_Helper
             $c = self::_getCommonCharAtPos($paths, $pos);
             if ($c === '') {
                 break;
-            } else {
-                $base .= $c;
             }
+            $base .= $c;
+
             ++$pos;
         }
         $base = preg_replace('@[^/]+$@', '', $base);

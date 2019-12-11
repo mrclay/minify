@@ -15,7 +15,7 @@ class Minify_LessCssSource extends Minify_Source
     private $parsed;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __construct(array $spec, Minify_CacheInterface $cache)
     {
@@ -85,7 +85,11 @@ class Minify_LessCssSource extends Minify_Source
     /**
      * Calculate maximum last modified of all files,
      * as the 'updated' timestamp in cache is not the same as file last modified timestamp:
-     * @link https://github.com/leafo/lessphp/blob/v0.4.0/lessc.inc.php#L1904
+     *
+     * @see https://github.com/leafo/lessphp/blob/v0.4.0/lessc.inc.php#L1904
+     *
+     * @param mixed $cache
+     *
      * @return int
      */
     private function getMaxLastModified($cache)

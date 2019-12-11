@@ -1,7 +1,6 @@
 <?php
 /**
  * Class Minify_CSS_Compressor
- * @package Minify
  */
 
 /**
@@ -20,20 +19,14 @@
  * Compressed files with shorter lines are also easier to diff. If this is
  * unacceptable please use CSSmin instead.
  *
- * @package Minify
- * @author Stephen Clay <steve@mrclay.org>
- * @author http://code.google.com/u/1stvamp/ (Issue 64 patch)
- *
  * @deprecated Use CSSmin (tubalmartin/cssmin)
  */
 class Minify_CSS_Compressor
 {
-
     /**
      * Minify a CSS string
      *
      * @param string $css
-     *
      * @param array $options (currently ignored)
      *
      * @return string
@@ -48,7 +41,7 @@ class Minify_CSS_Compressor
     /**
      * @var array
      */
-    protected $_options = null;
+    protected $_options;
 
     /**
      * Are we "in" a hack? I.e. are some browsers targetted until the next comment?
@@ -262,7 +255,7 @@ class Minify_CSS_Compressor
         $pieces = preg_split('/(\'[^\']+\'|"[^"]+")/', $m[1], null, $flags);
         $out = 'font-family:';
 
-        while (null !== ($piece = array_shift($pieces))) {
+        while (($piece = array_shift($pieces)) !== null) {
             if ($piece[0] !== '"' && $piece[0] !== "'") {
                 $piece = preg_replace('/\\s+/', ' ', $piece);
                 $piece = preg_replace('/\\s?,\\s?/', ',', $piece);

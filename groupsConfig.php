@@ -1,7 +1,6 @@
 <?php
 /**
  * Groups configuration for default Minify implementation
- * @package Minify
  */
 
 /**
@@ -12,8 +11,8 @@
  **/
 
 return array(
-//    'testJs' => array('//minify/quick-test.js'),
-//    'testCss' => array('//minify/quick-test.css'),
-//    'js' => array('//js/file1.js', '//js/file2.js'),
-//    'css' => array('//css/file1.css', '//css/file2.css'),
+    //    'testJs' => array('//minify/quick-test.js'),
+    //    'testCss' => array('//minify/quick-test.css'),
+    //    'js' => array('//js/file1.js', '//js/file2.js'),
+    //    'css' => array('//css/file1.css', '//css/file2.css'),
 );

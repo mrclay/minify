@@ -1,7 +1,6 @@
 <?php
 /**
  * Class Minify_ImportProcessor
- * @package Minify
  */
 
 /**
@@ -13,10 +12,6 @@
  * processed!
  *
  * This has a unit test but should be considered "experimental".
- *
- * @package Minify
- * @author Stephen Clay <steve@mrclay.org>
- * @author Simon Schick <simonsimcity@gmail.com>
  */
 class Minify_ImportProcessor
 {
@@ -43,10 +38,10 @@ class Minify_ImportProcessor
     private static $_isCss;
 
     /**
-     * @param String $currentDir
-     * @param String $previewsDir Is only used internally
+     * @param string $currentDir
+     * @param string $previewsDir Is only used internally
      */
-    private function __construct($currentDir, $previewsDir = "")
+    private function __construct($currentDir, $previewsDir = '')
     {
         $this->_currentDir = $currentDir;
         $this->_previewsDir = $previewsDir;
@@ -56,9 +51,9 @@ class Minify_ImportProcessor
     {
         $file = preg_replace('~\\?.*~', '', $file);
         $file = realpath($file);
-        if (! $file
+        if (!$file
             || in_array($file, self::$filesIncluded)
-            || false === ($content = @file_get_contents($file))) {
+            || ($content = @file_get_contents($file)) === false) {
             // file missing, already included, or failed read
             return '';
         }
@@ -66,7 +61,7 @@ class Minify_ImportProcessor
         $this->_currentDir = dirname($file);
 
         // remove UTF-8 BOM if present
-        if (pack("CCC",0xef,0xbb,0xbf) === substr($content, 0, 3)) {
+        if (pack('CCC', 0xef, 0xbb, 0xbf) === substr($content, 0, 3)) {
             $content = substr($content, 3);
         }
         // ensure uniform EOLs
@@ -104,9 +99,9 @@ class Minify_ImportProcessor
             // protocol, leave in place for CSS, comment for JS
             return self::$_isCss
                 ? $m[0]
-                : "/* Minify_ImportProcessor will not include remote content */";
+                : '/* Minify_ImportProcessor will not include remote content */';
         }
-        if ('/' === $url[0]) {
+        if ($url[0] === '/') {
             // protocol-relative or root path
             $url = ltrim($url, '/');
             $file = realpath($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR
@@ -118,7 +113,7 @@ class Minify_ImportProcessor
         }
         $obj = new Minify_ImportProcessor(dirname($file), $this->_currentDir);
         $content = $obj->_getContent($file, true);
-        if ('' === $content) {
+        if ($content === '') {
             // failed. leave in place for CSS, comment for JS
             return self::$_isCss
                 ? $m[0]
@@ -137,7 +132,7 @@ class Minify_ImportProcessor
 
         $url = ($quote === '') ? $m[1] : substr($m[1], 1, strlen($m[1]) - 2);
 
-        if ('/' !== $url[0]) {
+        if ($url[0] !== '/') {
             if (strpos($url, '//') > 0) {
                 // probably starts with protocol, do not alter
             } else {
@@ -156,6 +151,7 @@ class Minify_ImportProcessor
      * @param string $from
      * @param string $to
      * @param string $ps
+     *
      * @return string
      */
     private function getPathDiff($from, $to, $ps = DIRECTORY_SEPARATOR)
@@ -170,19 +166,22 @@ class Minify_ImportProcessor
             array_shift($arTo);
         }
 
-        return str_pad("", count($arFrom) * 3, '..' . $ps) . implode($ps, $arTo);
+        return str_pad('', count($arFrom) * 3, '..' . $ps) . implode($ps, $arTo);
     }
 
     /**
      * This function is to replace PHP's extremely buggy realpath().
-     * @param string $path The original path, can be relative etc.
-     * @return string The resolved path, it might not exist.
+     *
+     * @param string $path the original path, can be relative etc
+     *
+     * @return string the resolved path, it might not exist
+     *
      * @see http://stackoverflow.com/questions/4049856/replace-phps-realpath
      */
     private function truepath($path)
     {
         // whether $path is unix or not
-        $unipath = ('' === $path) || ($path{0} !== '/');
+        $unipath = ($path === '') || ($path[0] !== '/');
 
         // attempts to detect if path is relative in which case, add cwd
         if (strpos($path, ':') === false && $unipath) {
@@ -194,10 +193,10 @@ class Minify_ImportProcessor
         $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
         $absolutes = array();
         foreach ($parts as $part) {
-            if ('.' === $part) {
+            if ($part === '.') {
                 continue;
             }
-            if ('..' === $part) {
+            if ($part === '..') {
                 array_pop($absolutes);
             } else {
                 $absolutes[] = $part;
@@ -210,8 +209,6 @@ class Minify_ImportProcessor
             $path = readlink($path);
         }
         // put initial separator that could have been lost
-        $path = !$unipath ? '/' . $path : $path;
-
-        return $path;
+        return !$unipath ? '/' . $path : $path;
     }
 }

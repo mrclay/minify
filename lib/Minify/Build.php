@@ -1,7 +1,6 @@
 <?php
 /**
  * Class Minify_Build
- * @package Minify
  */
 
 /**
@@ -30,13 +29,9 @@
  *   ,'setExpires' => (time() + 86400 * 365)
  * ));
  * </code>
- *
- * @package Minify
- * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_Build
 {
-
     /**
      * Last modification time of all files in the build
      *
@@ -64,8 +59,9 @@ class Minify_Build
      * </code>
      *
      * @param string $uri
-     * @param boolean $forceAmpersand (default = false) Force the use of ampersand to
-     * append the timestamp to the URI.
+     * @param bool $forceAmpersand (default = false) Force the use of ampersand to
+     * append the timestamp to the URI
+     *
      * @return string
      */
     public function uri($uri, $forceAmpersand = false)
@@ -79,16 +75,15 @@ class Minify_Build
      * Create a build object
      *
      * @param array $sources array of Minify_Source objects and/or file paths
-     *
      */
     public function __construct($sources)
     {
         $max = 0;
-        foreach ((array)$sources as $source) {
+        foreach ((array) $sources as $source) {
             if ($source instanceof Minify_Source) {
                 $max = max($max, $source->getLastModified());
             } elseif (is_string($source)) {
-                if (0 === strpos($source, '//')) {
+                if (strpos($source, '//') === 0) {
                     $source = $_SERVER['DOCUMENT_ROOT'] . substr($source, 1);
                 }
                 if (is_file($source)) {

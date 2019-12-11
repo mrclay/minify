@@ -5,6 +5,9 @@ namespace Minify\Test;
 use Minify_HTML_Helper;
 use Minify_Source;
 
+/**
+ * @internal
+ */
 class MinifyHTMLHelperTest extends TestCase
 {
     private $realDocRoot;
@@ -38,20 +41,17 @@ class MinifyHTMLHelperTest extends TestCase
         $actual = Minify_HTML_Helper::getUri(array($file1, $file2));
         $this->assertEquals($expected, $actual, 'given filepaths');
 
-        $expected = "/min/g=notRealGroup&amp;debug";
+        $expected = '/min/g=notRealGroup&amp;debug';
         $actual = Minify_HTML_Helper::getUri('notRealGroup', array('debug' => true));
         $this->assertEquals($expected, $actual, 'non-existent group & debug');
 
         $expected = "/myApp/min/?g=css&amp;{$maxTime}";
         $actual = Minify_HTML_Helper::getUri('css', array(
-            'rewriteWorks' => false
-        ,
-            'minAppUri' => '/myApp/min/'
-        ,
-            'groupsConfigFile' => self::$test_files . '/htmlHelper_groupsConfig.php'
+            'rewriteWorks'     => false,
+            'minAppUri'        => '/myApp/min/',
+            'groupsConfigFile' => self::$test_files . '/htmlHelper_groupsConfig.php',
         ));
         $this->assertEquals($expected, $actual, 'existing group');
-
 
         $utilsFile = dirname(__DIR__) . '/min/utils.php';
         if (is_file($utilsFile)) {
@@ -59,8 +59,8 @@ class MinifyHTMLHelperTest extends TestCase
 
             $fiveSecondsAgo = $_SERVER['REQUEST_TIME'] - 5;
             $obj = new Minify_Source(array(
-                'id' => '1',
-                'content' => '1',
+                'id'           => '1',
+                'content'      => '1',
                 'lastModified' => $fiveSecondsAgo,
             ));
 
@@ -68,14 +68,13 @@ class MinifyHTMLHelperTest extends TestCase
             $this->assertEquals($fiveSecondsAgo, $output, 'utils.php : Minify_mtime w/ files & obj');
 
             $obj = new Minify_Source(array(
-                'id' => '2',
-                'content' => '2',
+                'id'           => '2',
+                'content'      => '2',
                 'lastModified' => strtotime('2000-01-01'),
             ));
             $output = Minify_mtime(array(
-                $obj
-            ,
-                'css'
+                $obj,
+                'css',
             ), self::$test_files . '/htmlHelper_groupsConfig.php');
             $this->assertEquals($maxTime, $output, 'utils.php : Minify_mtime w/ obj & group');
         }

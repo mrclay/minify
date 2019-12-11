@@ -2,6 +2,7 @@
 
 namespace Minify;
 
+use Minify;
 use Minify_Cache_File;
 use Minify_CacheInterface;
 use Minify_Controller_MinApp;
@@ -9,11 +10,10 @@ use Minify_ControllerInterface;
 use Minify_DebugDetector;
 use Minify_Env;
 use Minify_Source_Factory;
+use Monolog;
 use Props\Container;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use Monolog;
-use Minify;
 
 /**
  * @property Minify_CacheInterface            $cache
@@ -34,7 +34,6 @@ use Minify;
  */
 class App extends Container
 {
-
     /**
      * Constructor
      *
@@ -58,8 +57,9 @@ class App extends Container
             }
 
             $type = $that->typeOf($config->cachePath);
+
             throw new RuntimeException('$min_cachePath must be a path or implement Minify_CacheInterface.'
-                . " Given $type");
+                . " Given ${type}");
         };
 
         $this->config = function (App $app) {
@@ -76,14 +76,13 @@ class App extends Container
             $propNames = array_keys(get_object_vars($config));
 
             $prefixer = function ($name) {
-                return "min_$name";
+                return "min_${name}";
             };
             $varNames = array_map($prefixer, $propNames);
 
             $varDefined = get_defined_vars();
 
-            $varNames = array_filter($varNames, function($name) use($varDefined)
-            {
+            $varNames = array_filter($varNames, function ($name) use ($varDefined) {
                 return array_key_exists($name, $varDefined);
             });
 
@@ -122,8 +121,9 @@ class App extends Container
             }
 
             $type = $that->typeOf($ctrl);
+
             throw new RuntimeException('$min_factories["controller"] callable must return an implementation'
-                ." of Minify_CacheInterface. Returned $type");
+                . " of Minify_CacheInterface. Returned ${type}");
         };
 
         $this->docRoot = function (App $app) {
@@ -140,7 +140,7 @@ class App extends Container
         };
 
         $this->errorLogHandler = function (App $app) {
-            $format = "%channel%.%level_name%: %message% %context% %extra%";
+            $format = '%channel%.%level_name%: %message% %context% %extra%';
             $handler = new Monolog\Handler\ErrorLogHandler();
             $handler->setFormatter(new Monolog\Formatter\LineFormatter($format));
 
@@ -148,7 +148,7 @@ class App extends Container
         };
 
         $this->groupsConfig = function (App $app) {
-            return (require $app->groupsConfigPath);
+            return require $app->groupsConfigPath;
         };
 
         $this->groupsConfigPath = "{$this->dir}/groupsConfig.php";
@@ -188,8 +188,9 @@ class App extends Container
             }
 
             $type = $that->typeOf($value);
+
             throw new RuntimeException('If set, $min_errorLogger must be a PSR-3 logger or a Monolog handler.'
-                ." Given $type");
+                . " Given ${type}");
         };
 
         $this->minify = function (App $app) use ($that) {
@@ -205,8 +206,9 @@ class App extends Container
             }
 
             $type = $that->typeOf($minify);
+
             throw new RuntimeException('$min_factories["minify"] callable must return a Minify object.'
-                ." Returned $type");
+                . " Returned ${type}");
         };
 
         $this->serveOptions = function (App $app) {
@@ -289,6 +291,7 @@ class App extends Container
 
     /**
      * @param mixed $var
+     *
      * @return string
      */
     private function typeOf($var)

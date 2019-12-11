@@ -4,6 +4,9 @@ namespace Minify\Test;
 
 use Minify_Cache_File;
 
+/**
+ * @internal
+ */
 class MinifyCacheFileTest extends TestCase
 {
     public function test1()

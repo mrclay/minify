@@ -7,15 +7,15 @@ if (is_file(__DIR__ . '/bootstrap.php')) {
     $bootstrap_file = __DIR__ . '/../bootstrap.php';
 }
 
-$send_400 = function($content = 'Bad URL') {
+$send_400 = function ($content = 'Bad URL') {
     http_response_code(400);
     die($content);
 };
 
-$send_301 = function($url) {
+$send_301 = function ($url) {
     http_response_code(301);
-    header("Cache-Control: max-age=31536000");
-    header("Location: $url");
+    header('Cache-Control: max-age=31536000');
+    header("Location: ${url}");
     exit;
 };
 
@@ -59,7 +59,7 @@ $query = $m[2];
 // these parameters anyway.
 $get_params = array();
 foreach (explode('&', $query) as $piece) {
-    if (false === strpos($piece, '=')) {
+    if (strpos($piece, '=') === false) {
         $send_400();
     }
 
@@ -97,31 +97,31 @@ if (!$sources) {
     die('File not found');
 }
 if ($sources[0]->getId() === 'id::missingFile') {
-    $send_400("Bad URL: missing file");
+    $send_400('Bad URL: missing file');
 }
 
 // we need URL to end in appropriate extension
 $type = $sources[0]->getContentType();
 $ext = ($type === Minify::TYPE_JS) ? '.js' : '.css';
-if (substr($query, - strlen($ext)) !== $ext) {
-    $send_301("$root_uri/$cache_time/{$query}&z=$ext");
+if (substr($query, -strlen($ext)) !== $ext) {
+    $send_301("${root_uri}/${cache_time}/{$query}&z=${ext}");
 }
 
 // fix the cache dir in the URL
 if ($cache_time !== $requested_cache_dir) {
-    $send_301("$root_uri/$cache_time/$query");
+    $send_301("${root_uri}/${cache_time}/${query}");
 }
 
 $content = $app->minify->combine($sources);
 
 // save and send file
-$file = __DIR__ . "/$cache_time/$query";
+$file = __DIR__ . "/${cache_time}/${query}";
 if (!is_dir(dirname($file))) {
     mkdir(dirname($file), 0777, true);
 }
 
 file_put_contents($file, $content);
 
-header("Content-Type: $type;charset=utf-8");
-header("Cache-Control: max-age=31536000");
+header("Content-Type: ${type};charset=utf-8");
+header('Cache-Control: max-age=31536000');
 echo $content;

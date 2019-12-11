@@ -1,19 +1,13 @@
 <?php
 /**
  * Class Minify\JS\JShrink
- *
- * @package Minify
  */
-
 namespace Minify\JS;
 
 /**
  * Wrapper to Javascript Minifier built in PHP http://www.tedivm.com
  *
- * @package Minify
- * @author  Elan Ruusamäe <glen@pld-linux.org>
- * @link    https://github.com/tedious/JShrink
- *
+ * @see    https://github.com/tedious/JShrink
  */
 class JShrink
 {
@@ -34,6 +28,7 @@ class JShrink
      * @param  array  $options Various runtime options in an associative array
      *
      * @see JShrink\Minifier::minify()
+     *
      * @return string
      */
     public static function minify($js, array $options = array())

@@ -4,7 +4,6 @@ die('Disabled: use this only for testing');
 /**
  * Fetch and minify a URL (auto-detect HTML/JS/CSS)
  */
-
 $app = (require __DIR__ . '/../../bootstrap.php');
 /* @var \Minify\App $app */
 
@@ -12,23 +11,27 @@ $app->cache = new Minify_Cache_Null();
 
 $env = $app->env;
 
-function getPost($key) {
-    if (! isset($_POST[$key])) {
+function getPost($key)
+{
+    if (!isset($_POST[$key])) {
         return null;
     }
+
     return get_magic_quotes_gpc()
         ? stripslashes($_POST[$key])
         : $_POST[$key];
 }
 
-function sniffType($headers) {
+function sniffType($headers)
+{
     $charset = 'utf-8';
     $type = null;
     $headers = "\n\n" . implode("\n\n", $headers) . "\n\n";
     if (preg_match(
-            '@\\n\\nContent-Type: *([\\w/\\+-]+)( *; *charset *= *([\\w-]+))? *\\n\\n@i'
-            ,$headers
-            ,$m)) {
+        '@\\n\\nContent-Type: *([\\w/\\+-]+)( *; *charset *= *([\\w-]+))? *\\n\\n@i',
+        $headers,
+        $m
+    )) {
         $sentType = $m[1];
         if (isset($m[3])) {
             $charset = $m[3];
@@ -41,28 +44,25 @@ function sniffType($headers) {
             $type = $sentType;
         }
     }
+
     return array(
-        'minify' => $type
-        ,'sent' => $sentType
-        ,'charset' => $charset
+        'minify' => $type, 'sent' => $sentType, 'charset' => $charset,
     );
 }
 
 if (isset($_POST['url'])) {
-    
     require '../config.php';
-    
+
     $url = trim($env->post('url'));
     $ua = trim($env->post('ua'));
     $cook = trim($env->post('cook'));
-    
-    if (! preg_match('@^https?://@', $url)) {
+
+    if (!preg_match('@^https?://@', $url)) {
         die('HTTP(s) only.');
     }
-    
+
     $httpOpts = array(
-        'max_redirects' => 0
-        ,'timeout' => 3
+        'max_redirects' => 0, 'timeout' => 3,
     );
     if ($ua !== '') {
         $httpOpts['user_agent'] = $ua;
@@ -71,37 +71,37 @@ if (isset($_POST['url'])) {
         $httpOpts['header'] = "Cookie: {$cook}\r\n";
     }
     $ctx = stream_context_create(array(
-        'http' => $httpOpts
+        'http' => $httpOpts,
     ));
-    
+
     // fetch
-    if (! ($fp = @fopen($url, 'r', false, $ctx))) {
+    if (!($fp = @fopen($url, 'r', false, $ctx))) {
         die('Couldn\'t open URL.');
     }
     $meta = stream_get_meta_data($fp);
     $content = stream_get_contents($fp);
     fclose($fp);
-    
+
     // get type info
     $type = sniffType($meta['wrapper_data']);
-    if (! $type['minify']) {
+    if (!$type['minify']) {
         die('Unrecognized Content-Type: ' . $type['sent']);
     }
-        
-    if ($type['minify'] === 'text/html' 
+
+    if ($type['minify'] === 'text/html'
         && isset($_POST['addBase'])
-        && ! preg_match('@<base\\b@i', $content)) {
+        && !preg_match('@<base\\b@i', $content)) {
         $content = preg_replace(
-            '@(<head\\b[^>]*>)@i'
-            ,'$1<base href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '" />'
-            ,$content
+            '@(<head\\b[^>]*>)@i',
+            '$1<base href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '" />',
+            $content
         );
     }
-    
+
     $sourceSpec['content'] = $content;
     $sourceSpec['id'] = 'foo';
     $sourceSpec['contentType'] = $type['minify'];
-    
+
     if ($type['minify'] === 'text/html') {
         if ($env->post('minJs')) {
             $sourceSpec['minifyOptions']['jsMinifier'] = array('JSMin\\JSMin', 'minify');
@@ -112,7 +112,7 @@ if (isset($_POST['url'])) {
     }
 
     $source = new Minify_Source($sourceSpec);
-    
+
     $sendType = 'text/plain';
     if ($type['minify'] === 'text/html' && $env->post('asText') === null) {
         $sendType = $type['sent'];

@@ -1,7 +1,6 @@
 <?php
 /**
  * Class Minify_Cache_Wincache
- * @package Minify
  */
 
 /**
@@ -11,8 +10,6 @@
  * Minify::setCache(new Minify_Cache_WinCache());
  * </code>
  *
- * @package Minify
- * @author Matthias Fax
  **/
 class Minify_Cache_WinCache implements Minify_CacheInterface
 {
@@ -28,7 +25,7 @@ class Minify_Cache_WinCache implements Minify_CacheInterface
     public function __construct($expire = 0)
     {
         if (!function_exists('wincache_ucache_info')) {
-            throw new Exception("WinCache for PHP is not installed to be able to use Minify_Cache_WinCache!");
+            throw new Exception('WinCache for PHP is not installed to be able to use Minify_Cache_WinCache!');
         }
         $this->_exp = $expire;
     }
@@ -37,7 +34,6 @@ class Minify_Cache_WinCache implements Minify_CacheInterface
      * Write data to cache.
      *
      * @param string $id cache id
-     *
      * @param string $data
      *
      * @return bool success
@@ -62,23 +58,22 @@ class Minify_Cache_WinCache implements Minify_CacheInterface
 
         if (function_exists('mb_strlen') && ((int) ini_get('mbstring.func_overload') & 2)) {
             return mb_strlen($this->_data, '8bit');
-        } else {
-            return strlen($this->_data);
         }
+
+        return strlen($this->_data);
     }
 
     /**
      * Does a valid cache entry exist?
      *
      * @param string $id cache id
-     *
      * @param int $srcMtime mtime of the original source file(s)
      *
      * @return bool exists
      */
     public function isValid($id, $srcMtime)
     {
-        return ($this->_fetch($id) && ($this->_lm >= $srcMtime));
+        return $this->_fetch($id) && ($this->_lm >= $srcMtime);
     }
 
     /**
@@ -103,12 +98,14 @@ class Minify_Cache_WinCache implements Minify_CacheInterface
         return $this->_fetch($id) ? $this->_data : '';
     }
 
-    private $_exp = null;
+    private $_exp;
 
     // cache of most recently fetched id
-    private $_lm = null;
-    private $_data = null;
-    private $_id = null;
+    private $_lm;
+
+    private $_data;
+
+    private $_id;
 
     /**
      * Fetch data and timestamp from WinCache, store in instance

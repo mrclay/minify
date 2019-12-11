@@ -19,6 +19,6 @@ class LegacyHandler extends AbstractProcessingHandler
 
     protected function write(array $record)
     {
-        $this->obj->log((string)$record['formatted']);
+        $this->obj->log((string) $record['formatted']);
     }
 }

@@ -1,7 +1,6 @@
 <?php
 /**
  * Class Minify_Source
- * @package Minify
  */
 
 /**
@@ -9,25 +8,21 @@
  *
  * This allows per-source minification options and the mixing of files with
  * content from other sources.
- *
- * @package Minify
- * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_Source implements Minify_SourceInterface
 {
-
     /**
      * @var int time of last modification
      */
     protected $lastModified;
 
     /**
-     * @var callback minifier function specifically for this source.
+     * @var callback minifier function specifically for this source
      */
     protected $minifier;
 
     /**
-     * @var array minification options specific to this source.
+     * @var array minification options specific to this source
      */
     protected $minifyOptions = array();
 
@@ -72,13 +67,16 @@ class Minify_Source implements Minify_SourceInterface
             $ext = pathinfo($spec['filepath'], PATHINFO_EXTENSION);
             switch ($ext) {
                 case 'js': $this->contentType = Minify::TYPE_JS;
+
                     break;
                 case 'less': // fallthrough
                 case 'scss': // fallthrough
                 case 'css': $this->contentType = Minify::TYPE_CSS;
+
                     break;
                 case 'htm': // fallthrough
                 case 'html': $this->contentType = Minify::TYPE_HTML;
+
                     break;
             }
             $this->filepath = $spec['filepath'];
@@ -171,8 +169,8 @@ class Minify_Source implements Minify_SourceInterface
      */
     public function getContent()
     {
-        if (null === $this->filepath) {
-            if (null === $this->content) {
+        if ($this->filepath === null) {
+            if ($this->content === null) {
                 $content = call_user_func($this->getContentFunc, $this->id);
             } else {
                 $content = $this->content;

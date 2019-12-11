@@ -1,9 +1,7 @@
 <?php
 /**
  * Class Minify
- * @package Minify
  */
-
 use Psr\Log\LoggerInterface;
 
 /**
@@ -14,16 +12,13 @@ use Psr\Log\LoggerInterface;
  * This library was inspired by {@link mailto:flashkot@mail.ru jscsscomp by Maxim Martynyuk}
  * and by the article {@link http://www.hunlock.com/blogs/Supercharged_Javascript "Supercharged JavaScript" by Patrick Hunlock}.
  *
- * @package Minify
- * @author Ryan Grove <ryan@wonko.com>
- * @author Stephen Clay <steve@mrclay.org>
  * @copyright 2008 Ryan Grove, Stephen Clay. All rights reserved.
  * @license http://opensource.org/licenses/bsd-license.php  New BSD License
- * @link https://github.com/mrclay/minify
+ *
+ * @see https://github.com/mrclay/minify
  */
 class Minify
 {
-
     /**
      * API version
      *
@@ -34,10 +29,13 @@ class Minify
     const VERSION = 3;
 
     const TYPE_CSS = 'text/css';
+
     const TYPE_HTML = 'text/html';
+
     // there is some debate over the ideal JS Content-Type, but this is the
     // Apache default and what Yahoo! uses..
     const TYPE_JS = 'application/x-javascript';
+
     const URL_DEBUG = 'https://github.com/mrclay/minify/blob/master/docs/Debugging.wiki.md';
 
     /**
@@ -99,30 +97,30 @@ class Minify
     public function getDefaultOptions()
     {
         return array(
-            'isPublic' => true,
+            'isPublic'     => true,
             'encodeOutput' => function_exists('gzdeflate'),
             'encodeMethod' => null, // determine later
-            'encodeLevel' => 9,
+            'encodeLevel'  => 9,
 
             'minifiers' => array(
-                Minify::TYPE_JS => array('JSMin\\JSMin', 'minify'),
-                Minify::TYPE_CSS => array('Minify_CSSmin', 'minify'),
+                Minify::TYPE_JS   => array('JSMin\\JSMin', 'minify'),
+                Minify::TYPE_CSS  => array('Minify_CSSmin', 'minify'),
                 Minify::TYPE_HTML => array('Minify_HTML', 'minify'),
             ),
             'minifierOptions' => array(), // no minifier options
 
             'contentTypeCharset' => 'utf-8',
-            'maxAge' => 1800, // 30 minutes
-            'rewriteCssUris' => true,
-            'bubbleCssImports' => false,
-            'quiet' => false, // serve() will send headers and output
-            'debug' => false,
-            'concatOnly' => false,
+            'maxAge'             => 1800, // 30 minutes
+            'rewriteCssUris'     => true,
+            'bubbleCssImports'   => false,
+            'quiet'              => false, // serve() will send headers and output
+            'debug'              => false,
+            'concatOnly'         => false,
 
             // if you override these, the response codes MUST be directly after
             // the first space.
             'badRequestHeader' => 'HTTP/1.0 400 Bad Request',
-            'errorHeader' => 'HTTP/1.0 500 Internal Server Error',
+            'errorHeader'      => 'HTTP/1.0 500 Internal Server Error',
 
             // callback function to see/modify content of all sources
             'postprocessor' => null,
@@ -135,7 +133,7 @@ class Minify
              * appear too late in the combined stylesheet. If found, serve() will prepend
              * the output with this warning.
              */
-            'importWarning' => "/* See https://github.com/mrclay/minify/blob/master/docs/CommonProblems.wiki.md#imports-can-appear-in-invalid-locations-in-combined-css-files */\n"
+            'importWarning' => "/* See https://github.com/mrclay/minify/blob/master/docs/CommonProblems.wiki.md#imports-can-appear-in-invalid-locations-in-combined-css-files */\n",
         );
     }
 
@@ -176,6 +174,7 @@ class Minify
      *
      * 'debug' : set to true to minify all sources with the 'Lines' controller, which
      * eases the debugging of combined files. This also prevents 304 responses.
+     *
      * @see Minify_Lines::minify()
      *
      * 'concatOnly' : set to true to disable minification and simply concatenate the files.
@@ -211,14 +210,13 @@ class Minify
      * Any controller options are documented in that controller's createConfiguration() method.
      *
      * @param Minify_ControllerInterface $controller instance of subclass of Minify_Controller_Base
-     *
      * @param array                      $options    controller/serve options
      *
-     * @return null|array if the 'quiet' option is set to true, an array
-     * with keys "success" (bool), "statusCode" (int), "content" (string), and
-     * "headers" (array).
-     *
      * @throws Exception
+     *
+     * @return array|null if the 'quiet' option is set to true, an array
+     * with keys "success" (bool), "statusCode" (int), "content" (string), and
+     * "headers" (array)
      */
     public function serve(Minify_ControllerInterface $controller, $options = array())
     {
@@ -239,16 +237,16 @@ class Minify
         // check request validity
         if (!$this->sources) {
             // invalid request!
-            if (! $this->options['quiet']) {
+            if (!$this->options['quiet']) {
                 $this->errorExit($this->options['badRequestHeader'], self::URL_DEBUG);
             } else {
-                list(,$statusCode) = explode(' ', $this->options['badRequestHeader']);
+                list(, $statusCode) = explode(' ', $this->options['badRequestHeader']);
 
                 return array(
-                    'success' => false,
-                    'statusCode' => (int)$statusCode,
-                    'content' => '',
-                    'headers' => array(),
+                    'success'    => false,
+                    'statusCode' => (int) $statusCode,
+                    'content'    => '',
+                    'headers'    => array(),
                 );
             }
         }
@@ -273,7 +271,7 @@ class Minify
                 // getAcceptedEncoding(false, false) leaves out compress and deflate as options.
                 $list = HTTP_Encoder::getAcceptedEncoding(false, false);
                 list($this->options['encodeMethod'], $contentEncoding) = $list;
-                $sendVary = ! HTTP_Encoder::isBuggyIe();
+                $sendVary = !HTTP_Encoder::isBuggyIe();
             }
         } else {
             $this->options['encodeMethod'] = ''; // identity (no encoding)
@@ -282,8 +280,8 @@ class Minify
         // check client cache
         $cgOptions = array(
             'lastModifiedTime' => $this->options['lastModifiedTime'],
-            'isPublic' => $this->options['isPublic'],
-            'encoding' => $this->options['encodeMethod'],
+            'isPublic'         => $this->options['isPublic'],
+            'encoding'         => $this->options['encodeMethod'],
         );
 
         if ($this->options['maxAge'] > 0) {
@@ -295,17 +293,17 @@ class Minify
         $cg = new HTTP_ConditionalGet($cgOptions);
         if ($cg->cacheIsValid) {
             // client's cache is valid
-            if (! $this->options['quiet']) {
+            if (!$this->options['quiet']) {
                 $cg->sendHeaders();
 
                 return;
             }
 
             return array(
-                'success' => true,
+                'success'    => true,
                 'statusCode' => 304,
-                'content' => '',
-                'headers' => $cg->getHeaders(),
+                'content'    => '',
+                'headers'    => $cg->getHeaders(),
             );
         }
 
@@ -332,7 +330,7 @@ class Minify
         }
 
         // check server cache
-        if (! $this->options['debug']) {
+        if (!$this->options['debug']) {
             // using cache
             // the goal is to use only the cache methods to sniff the length and
             // output the content, as they do not require ever loading the file into
@@ -350,9 +348,10 @@ class Minify
                     $content = $this->combineMinify();
                 } catch (Exception $e) {
                     $this->logger && $this->logger->critical($e->getMessage());
-                    if (! $this->options['quiet']) {
+                    if (!$this->options['quiet']) {
                         $this->errorExit($this->options['errorHeader'], self::URL_DEBUG);
                     }
+
                     throw $e;
                 }
                 $this->cache->store($cacheId, $content);
@@ -363,17 +362,19 @@ class Minify
         } else {
             // no cache
             $cacheIsReady = false;
+
             try {
                 $content = $this->combineMinify();
             } catch (Exception $e) {
                 $this->logger && $this->logger->critical($e->getMessage());
-                if (! $this->options['quiet']) {
+                if (!$this->options['quiet']) {
                     $this->errorExit($this->options['errorHeader'], self::URL_DEBUG);
                 }
+
                 throw $e;
             }
         }
-        if (! $cacheIsReady && $this->options['encodeMethod']) {
+        if (!$cacheIsReady && $this->options['encodeMethod']) {
             // still need to encode
             $content = gzencode($content, $this->options['encodeLevel']);
         }
@@ -382,7 +383,7 @@ class Minify
         if ($cacheIsReady) {
             $headers['Content-Length'] = $cacheContentLength;
         } else {
-            if (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2)) {
+            if (function_exists('mb_strlen') && ((int) ini_get('mbstring.func_overload') & 2)) {
                 $headers['Content-Length'] = mb_strlen($content, '8bit');
             } else {
                 $headers['Content-Length'] = strlen($content);
@@ -401,7 +402,7 @@ class Minify
             $headers['Vary'] = 'Accept-Encoding';
         }
 
-        if (! $this->options['quiet']) {
+        if (!$this->options['quiet']) {
             // output headers & content
             foreach ($headers as $name => $val) {
                 header($name . ': ' . $val);
@@ -413,10 +414,10 @@ class Minify
             }
         } else {
             return array(
-                'success' => true,
+                'success'    => true,
                 'statusCode' => 200,
-                'content' => $cacheIsReady ? $this->cache->fetch($fullCacheId) : $content,
-                'headers' => $headers,
+                'content'    => $cacheIsReady ? $this->cache->fetch($fullCacheId) : $content,
+                'headers'    => $headers,
             );
         }
     }
@@ -427,8 +428,7 @@ class Minify
      * No internal caching will be used and the content will not be HTTP encoded.
      *
      * @param array $sources array of filepaths and/or Minify_Source objects
-     *
-     * @param array $options (optional) array of options for serve.
+     * @param array $options (optional) array of options for serve
      *
      * @return string
      */
@@ -444,9 +444,9 @@ class Minify
         $controller = new Minify_Controller_Files($env, $sourceFactory, $this->logger);
 
         $options = array_merge($options, array(
-            'files' => (array)$sources,
-            'quiet' => true,
-            'encodeMethod' => '',
+            'files'            => (array) $sources,
+            'quiet'            => true,
+            'encodeMethod'     => '',
             'lastModifiedTime' => 0,
         ));
         $out = $this->serve($controller, $options);
@@ -464,24 +464,24 @@ class Minify
      * @param string $msgHtml HTML message for the client
      *
      * @return void
+     *
      * @internal This is not part of the public API and is subject to change
-     * @access private
      */
     public function errorExit($header, $url = '', $msgHtml = '')
     {
         $url = htmlspecialchars($url, ENT_QUOTES);
-        list(,$h1) = explode(' ', $header, 2);
+        list(, $h1) = explode(' ', $header, 2);
         $h1 = htmlspecialchars($h1);
         // FastCGI environments require 3rd arg to header() to be set
         list(, $code) = explode(' ', $header, 3);
         header($header, true, $code);
         header('Content-Type: text/html; charset=utf-8');
-        echo "<h1>$h1</h1>";
+        echo "<h1>${h1}</h1>";
         if ($msgHtml) {
             echo $msgHtml;
         }
         if ($url) {
-            echo "<p>Please see <a href='$url'>$url</a>.</p>";
+            echo "<p>Please see <a href='${url}'>${url}</a>.</p>";
         }
         exit;
     }
@@ -490,6 +490,7 @@ class Minify
      * Default minifier for .min or -min JS files.
      *
      * @param string $content
+     *
      * @return string
      */
     public static function nullMinifier($content)
@@ -537,9 +538,9 @@ class Minify
     /**
      * Combines sources and minifies the result.
      *
-     * @return string
-     *
      * @throws Exception
+     *
+     * @return string
      */
     protected function combineMinify()
     {
@@ -590,10 +591,11 @@ class Minify
             // do we need to process our group right now?
             if ($i > 0                               // yes, we have at least the first group populated
                 && (
-                    ! $source                        // yes, we ran out of sources
+                    !$source                        // yes, we ran out of sources
                     || $type === self::TYPE_CSS      // yes, to process CSS individually (avoiding PCRE bugs/limits)
                     || $minifier !== $lastMinifier   // yes, minifier changed
-                    || $options !== $lastOptions)) { // yes, options changed
+                    || $options !== $lastOptions
+                )) { // yes, options changed
                 // minify previous sources with last settings
                 $imploded = implode($implodeSeparator, $groupToProcessTogether);
                 $groupToProcessTogether = array();
@@ -601,7 +603,7 @@ class Minify
                     try {
                         $content[] = call_user_func($lastMinifier, $imploded, $lastOptions);
                     } catch (Exception $e) {
-                        throw new Exception("Exception in minifier: " . $e->getMessage());
+                        throw new Exception('Exception in minifier: ' . $e->getMessage());
                     }
                 } else {
                     $content[] = $imploded;
@@ -618,7 +620,7 @@ class Minify
 
         $content = implode($implodeSeparator, $content);
 
-        if ($type === self::TYPE_CSS && false !== strpos($content, '@import')) {
+        if ($type === self::TYPE_CSS && strpos($content, '@import') !== false) {
             $content = $this->handleCssImports($content);
         }
 
@@ -671,12 +673,11 @@ class Minify
         if ($this->options['bubbleCssImports']) {
             // bubble CSS imports
             preg_match_all('/@import.*?;/', $css, $imports);
-            $css = implode('', $imports[0]) . preg_replace('/@import.*?;/', '', $css);
 
-            return $css;
+            return implode('', $imports[0]) . preg_replace('/@import.*?;/', '', $css);
         }
 
-        if ('' === $this->options['importWarning']) {
+        if ($this->options['importWarning'] === '') {
             return $css;
         }
 
@@ -684,8 +685,8 @@ class Minify
         $noCommentCss = preg_replace('@/\\*[\\s\\S]*?\\*/@', '', $css);
         $lastImportPos = strrpos($noCommentCss, '@import');
         $firstBlockPos = strpos($noCommentCss, '{');
-        if (false !== $lastImportPos
-            && false !== $firstBlockPos
+        if ($lastImportPos !== false
+            && $firstBlockPos !== false
             && $firstBlockPos < $lastImportPos
         ) {
             // { appears before @import : prepend warning
@@ -738,7 +739,7 @@ class Minify
         }
 
         if (empty($options['contentType'])) {
-            if (null === $type) {
+            if ($type === null) {
                 $type = 'text/plain';
             }
             $options['contentType'] = $type;

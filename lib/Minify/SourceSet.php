@@ -1,15 +1,9 @@
 <?php
 /**
  * Class Minify_SourceSet
- * @package Minify
- */
-
-/**
- * @package Minify
  */
 class Minify_SourceSet
 {
-
     /**
      * Get unique string for a set of sources
      *
@@ -22,7 +16,7 @@ class Minify_SourceSet
         $info = array();
         foreach ($sources as $source) {
             $info[] = array(
-                $source->getId(), $source->getMinifier(), $source->getMinifierOptions()
+                $source->getId(), $source->getMinifier(), $source->getMinifierOptions(),
             );
         }
 

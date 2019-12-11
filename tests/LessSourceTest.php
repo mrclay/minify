@@ -4,6 +4,9 @@ namespace Minify\Test;
 
 use Minify_HTML_Helper;
 
+/**
+ * @internal
+ */
 class LessSourceTest extends TestCase
 {
     public function setUp()
@@ -13,14 +16,14 @@ class LessSourceTest extends TestCase
     }
 
     /**
-     * @link https://github.com/mrclay/minify/issues/500
+     * @see https://github.com/mrclay/minify/issues/500
      */
     public function testLessTimestamp()
     {
         $baseDir = self::$test_files;
 
-        $mainLess = "$baseDir/main.less";
-        $includedLess = "$baseDir/included.less";
+        $mainLess = "${baseDir}/main.less";
+        $includedLess = "${baseDir}/included.less";
 
         // touch timestamp with 1s difference
         touch($mainLess);
@@ -33,7 +36,7 @@ class LessSourceTest extends TestCase
         $max = max($mtime1, $mtime2);
 
         $options = array(
-            'groupsConfigFile' => "$baseDir/htmlHelper_groupsConfig.php",
+            'groupsConfigFile' => "${baseDir}/htmlHelper_groupsConfig.php",
         );
         $res = Minify_HTML_Helper::getUri('less', $options);
 

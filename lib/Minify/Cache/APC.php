@@ -1,7 +1,6 @@
 <?php
 /**
  * Class Minify_Cache_APC
- * @package Minify
  */
 
 /**
@@ -11,16 +10,12 @@
  * Minify::setCache(new Minify_Cache_APC());
  * </code>
  *
- * @package Minify
- * @author Chris Edwards
  **/
 class Minify_Cache_APC implements Minify_CacheInterface
 {
-
     /**
      * Create a Minify_Cache_APC object, to be passed to
      * Minify::setCache().
-     *
      *
      * @param int $expire seconds until expiration (default = 0
      * meaning the item will not get an expiration date)
@@ -36,7 +31,6 @@ class Minify_Cache_APC implements Minify_CacheInterface
      * Write data to cache.
      *
      * @param string $id cache id
-     *
      * @param string $data
      *
      * @return bool success
@@ -55,29 +49,28 @@ class Minify_Cache_APC implements Minify_CacheInterface
      */
     public function getSize($id)
     {
-        if (! $this->_fetch($id)) {
+        if (!$this->_fetch($id)) {
             return false;
         }
 
-        if (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2)) {
+        if (function_exists('mb_strlen') && ((int) ini_get('mbstring.func_overload') & 2)) {
             return mb_strlen($this->_data, '8bit');
-        } else {
-            return strlen($this->_data);
         }
+
+        return strlen($this->_data);
     }
 
     /**
      * Does a valid cache entry exist?
      *
      * @param string $id cache id
-     *
      * @param int $srcMtime mtime of the original source file(s)
      *
      * @return bool exists
      */
     public function isValid($id, $srcMtime)
     {
-        return ($this->_fetch($id) && ($this->_lm >= $srcMtime));
+        return $this->_fetch($id) && ($this->_lm >= $srcMtime);
     }
 
     /**
@@ -102,12 +95,14 @@ class Minify_Cache_APC implements Minify_CacheInterface
         return $this->_fetch($id) ? $this->_data : '';
     }
 
-    private $_exp = null;
+    private $_exp;
 
     // cache of most recently fetched id
-    private $_lm = null;
-    private $_data = null;
-    private $_id = null;
+    private $_lm;
+
+    private $_data;
+
+    private $_id;
 
     /**
      * Fetch data and timestamp from apc, store in instance
@@ -122,7 +117,7 @@ class Minify_Cache_APC implements Minify_CacheInterface
             return true;
         }
         $ret = apc_fetch($id);
-        if (false === $ret) {
+        if ($ret === false) {
             $this->_id = null;
 
             return false;

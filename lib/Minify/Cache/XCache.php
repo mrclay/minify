@@ -2,8 +2,7 @@
 /**
  * Class Minify_Cache_XCache
  *
- * @link http://xcache.lighttpd.net/
- * @package Minify
+ * @see http://xcache.lighttpd.net/
  */
 
 /**
@@ -14,12 +13,9 @@
  * Minify::setCache(new Minify_Cache_XCache());
  * </code>
  *
- * @package Minify
- * @author Elan Ruusamäe <glen@delfi.ee>
  **/
 class Minify_Cache_XCache implements Minify_CacheInterface
 {
-
     /**
      * Create a Minify_Cache_XCache object, to be passed to
      * Minify::setCache().
@@ -37,6 +33,7 @@ class Minify_Cache_XCache implements Minify_CacheInterface
      *
      * @param string $id cache id
      * @param string $data
+     *
      * @return bool success
      */
     public function store($id, $data)
@@ -48,19 +45,20 @@ class Minify_Cache_XCache implements Minify_CacheInterface
      * Get the size of a cache entry
      *
      * @param string $id cache id
+     *
      * @return int size in bytes
      */
     public function getSize($id)
     {
-        if (! $this->_fetch($id)) {
+        if (!$this->_fetch($id)) {
             return false;
         }
 
-        if (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2)) {
+        if (function_exists('mb_strlen') && ((int) ini_get('mbstring.func_overload') & 2)) {
             return mb_strlen($this->_data, '8bit');
-        } else {
-            return strlen($this->_data);
         }
+
+        return strlen($this->_data);
     }
 
     /**
@@ -68,11 +66,12 @@ class Minify_Cache_XCache implements Minify_CacheInterface
      *
      * @param string $id cache id
      * @param int $srcMtime mtime of the original source file(s)
+     *
      * @return bool exists
      */
     public function isValid($id, $srcMtime)
     {
-        return ($this->_fetch($id) && ($this->_lm >= $srcMtime));
+        return $this->_fetch($id) && ($this->_lm >= $srcMtime);
     }
 
     /**
@@ -89,6 +88,7 @@ class Minify_Cache_XCache implements Minify_CacheInterface
      * Fetch the cached content
      *
      * @param string $id cache id
+     *
      * @return string
      */
     public function fetch($id)
@@ -96,17 +96,20 @@ class Minify_Cache_XCache implements Minify_CacheInterface
         return $this->_fetch($id) ? $this->_data : '';
     }
 
-    private $_exp = null;
+    private $_exp;
 
     // cache of most recently fetched id
-    private $_lm = null;
-    private $_data = null;
-    private $_id = null;
+    private $_lm;
+
+    private $_data;
+
+    private $_id;
 
     /**
      * Fetch data and timestamp from xcache, store in instance
      *
      * @param string $id
+     *
      * @return bool success
      */
     private function _fetch($id)
@@ -116,7 +119,7 @@ class Minify_Cache_XCache implements Minify_CacheInterface
         }
 
         $ret = xcache_get($id);
-        if (false === $ret) {
+        if ($ret === false) {
             $this->_id = null;
 
             return false;

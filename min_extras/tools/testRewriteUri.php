@@ -8,11 +8,16 @@ $env = $app->env;
 
 header('Content-Type: text/html;charset=utf-8');
 
-function h($str) { return htmlspecialchars($str, ENT_QUOTES); }
+function h($str)
+{
+    return htmlspecialchars($str, ENT_QUOTES);
+}
 
-function getInput($name, $default = '', $size = 50) {
+function getInput($name, $default = '', $size = 50)
+{
     global $env;
     $val = $env->post($name, $default);
+
     return "<input type='text' name='{$name}' value='" . h($val) . "' size='{$size}' />";
 }
 
@@ -26,7 +31,7 @@ $out = '';
 
 if ($env->post('css')) {
     $symlinks = array();
-    if ('' !== ($target = $env->post('symTarget'))) {
+    if (($target = $env->post('symTarget')) !== '') {
         $symlinks[$env->post('symLink')] = $target;
     }
     $css = Minify_CSS_UriRewriter::rewrite(
@@ -35,7 +40,7 @@ if ($env->post('css')) {
         $env->post('docRoot'),
         $symlinks
     );
-    $out = "<hr /><pre><code>" . h($css) . '</code></pre>';
+    $out = '<hr /><pre><code>' . h($css) . '</code></pre>';
 }
 
 ?>

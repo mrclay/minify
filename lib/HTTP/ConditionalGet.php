@@ -1,8 +1,6 @@
 <?php
 /**
  * Class HTTP_ConditionalGet
- * @package Minify
- * @subpackage HTTP
  */
 
 /**
@@ -56,13 +54,9 @@
  *     exit();
  * }
  * </code>
- * @package Minify
- * @subpackage HTTP
- * @author Stephen Clay <steve@mrclay.org>
  */
 class HTTP_ConditionalGet
 {
-
     /**
      * Does the client have a valid copy of the requested resource?
      *
@@ -71,7 +65,7 @@ class HTTP_ConditionalGet
      *
      * @var bool
      */
-    public $cacheIsValid = null;
+    public $cacheIsValid;
 
     /**
      * @param array $spec options
@@ -116,7 +110,7 @@ class HTTP_ConditionalGet
         // backwards compatibility (can be removed later)
         if (isset($spec['setExpires'])
             && is_numeric($spec['setExpires'])
-            && ! isset($spec['maxAge'])) {
+            && !isset($spec['maxAge'])) {
             $spec['maxAge'] = $spec['setExpires'] - $_SERVER['REQUEST_TIME'];
         }
         if (isset($spec['maxAge'])) {
@@ -128,9 +122,9 @@ class HTTP_ConditionalGet
         $etagAppend = '';
         if (isset($spec['encoding'])) {
             $this->_stripEtag = true;
-            if ('' !== $spec['encoding']) {
+            if ($spec['encoding'] !== '') {
                 $this->_headers['Vary'] = 'Accept-Encoding';
-                if (0 === strpos($spec['encoding'], 'x-')) {
+                if (strpos($spec['encoding'], 'x-') === 0) {
                     $spec['encoding'] = substr($spec['encoding'], 2);
                 }
                 $etagAppend = ';' . substr($spec['encoding'], 0, 2);
@@ -227,19 +221,17 @@ class HTTP_ConditionalGet
      *
      * @param int $lastModifiedTime if given, both ETag AND Last-Modified headers
      * will be sent with content. This is recommended.
-     *
      * @param bool $isPublic (default false) if true, the Cache-Control header
      * will contain "public", allowing proxies to cache the content. Otherwise
      * "private" will be sent, allowing only browser caching.
-     *
      * @param array $options (default empty) additional options for constructor
      */
     public static function check($lastModifiedTime = null, $isPublic = false, $options = array())
     {
-        if (null !== $lastModifiedTime) {
-            $options['lastModifiedTime'] = (int)$lastModifiedTime;
+        if ($lastModifiedTime !== null) {
+            $options['lastModifiedTime'] = (int) $lastModifiedTime;
         }
-        $options['isPublic'] = (bool)$isPublic;
+        $options['isPublic'] = (bool) $isPublic;
         $cg = new HTTP_ConditionalGet($options);
         $cg->sendHeaders();
         if ($cg->cacheIsValid) {
@@ -264,13 +256,15 @@ class HTTP_ConditionalGet
     }
 
     protected $_headers = array();
-    protected $_lmTime = null;
-    protected $_etag = null;
+
+    protected $_lmTime;
+
+    protected $_etag;
+
     protected $_stripEtag = false;
 
     /**
      * @param string $hash
-     *
      * @param string $scope
      */
     protected function _setEtag($hash, $scope)
@@ -284,7 +278,7 @@ class HTTP_ConditionalGet
      */
     protected function _setLastModified($time)
     {
-        $this->_lmTime = (int)$time;
+        $this->_lmTime = (int) $time;
         $this->_headers['Last-Modified'] = self::gmtDate($time);
     }
 
@@ -295,7 +289,7 @@ class HTTP_ConditionalGet
      */
     protected function _isCacheValid()
     {
-        if (null === $this->_etag) {
+        if ($this->_etag === null) {
             // lmTime is copied to ETag, so this condition implies that the
             // server sent neither ETag nor Last-Modified, so the client can't
             // possibly has a valid cache.

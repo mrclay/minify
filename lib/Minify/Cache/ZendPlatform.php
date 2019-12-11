@@ -1,7 +1,6 @@
 <?php
 /**
  * Class Minify_Cache_ZendPlatform
- * @package Minify
  */
 
 /**
@@ -12,20 +11,15 @@
  * <code>
  * Minify::setCache(new Minify_Cache_ZendPlatform());
  * </code>
- *
- * @package Minify
- * @author Patrick van Dissel
  */
 class Minify_Cache_ZendPlatform implements Minify_CacheInterface
 {
-
     /**
      * Create a Minify_Cache_ZendPlatform object, to be passed to
      * Minify::setCache().
      *
      * @param int $expire seconds until expiration (default = 0
      * meaning the item will not get an expiration date)
-     *
      */
     public function __construct($expire = 0)
     {
@@ -36,7 +30,6 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface
      * Write data to cache.
      *
      * @param string $id cache id
-     *
      * @param string $data
      *
      * @return bool success
@@ -62,14 +55,13 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface
      * Does a valid cache entry exist?
      *
      * @param string $id cache id
-     *
      * @param int $srcMtime mtime of the original source file(s)
      *
      * @return bool exists
      */
     public function isValid($id, $srcMtime)
     {
-        return ($this->_fetch($id) && ($this->_lm >= $srcMtime));
+        return $this->_fetch($id) && ($this->_lm >= $srcMtime);
     }
 
     /**
@@ -94,12 +86,14 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface
         return $this->_fetch($id) ? $this->_data : '';
     }
 
-    private $_exp = null;
+    private $_exp;
 
     // cache of most recently fetched id
-    private $_lm = null;
-    private $_data = null;
-    private $_id = null;
+    private $_lm;
+
+    private $_data;
+
+    private $_id;
 
     /**
      * Fetch data and timestamp from ZendPlatform, store in instance
@@ -115,7 +109,7 @@ class Minify_Cache_ZendPlatform implements Minify_CacheInterface
         }
 
         $ret = output_cache_get($id, $this->_exp);
-        if (false === $ret) {
+        if ($ret === false) {
             $this->_id = null;
 
             return false;

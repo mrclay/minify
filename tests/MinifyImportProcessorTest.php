@@ -4,6 +4,9 @@ namespace Minify\Test;
 
 use Minify_ImportProcessor;
 
+/**
+ * @internal
+ */
 class MinifyImportProcessorTest extends TestCase
 {
     public function test()
@@ -23,7 +26,10 @@ class MinifyImportProcessorTest extends TestCase
             realpath($linDir . '/lib/css/example.css'),
         );
 
-        $this->assertEquals($expectedIncludes, Minify_ImportProcessor::$filesIncluded,
-            'included right files in right order');
+        $this->assertEquals(
+            $expectedIncludes,
+            Minify_ImportProcessor::$filesIncluded,
+            'included right files in right order'
+        );
     }
 }

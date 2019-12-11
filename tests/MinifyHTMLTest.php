@@ -4,6 +4,9 @@ namespace Minify\Test;
 
 use Minify_HTML;
 
+/**
+ * @internal
+ */
 class MinifyHTMLTest extends TestCase
 {
     public function test1()
@@ -13,7 +16,7 @@ class MinifyHTMLTest extends TestCase
 
         $minOutput = Minify_HTML::minify($src, array(
             'cssMinifier' => array('Minify_CSSmin', 'minify'),
-            'jsMinifier' => array('JSMin\\JSMin', 'minify'),
+            'jsMinifier'  => array('JSMin\\JSMin', 'minify'),
         ));
 
         $this->assertEquals($minExpected, $minOutput);
@@ -26,7 +29,7 @@ class MinifyHTMLTest extends TestCase
 
         $minOutput = Minify_HTML::minify($src, array(
             'cssMinifier' => array('Minify_CSSmin', 'minify'),
-            'jsMinifier' => array('JSMin\\JSMin', 'minify'),
+            'jsMinifier'  => array('JSMin\\JSMin', 'minify'),
         ));
 
         $this->assertEquals($minExpected, $minOutput);

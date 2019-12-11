@@ -1,7 +1,6 @@
 <?php
 /**
  * Class Minify_ClosureCompiler
- * @package Minify
  */
 
 /**
@@ -23,10 +22,6 @@
  * --compilation_level WHITESPACE_ONLY, SIMPLE_OPTIMIZATIONS, ADVANCED_OPTIMIZATIONS
  *
  * </code>
- *
- * @package Minify
- * @author Stephen Clay <steve@mrclay.org>
- * @author Elan Ruusamäe <glen@delfi.ee>
  */
 class Minify_ClosureCompiler
 {
@@ -60,9 +55,9 @@ class Minify_ClosureCompiler
      * @var array
      */
     public static $defaultOptions = array(
-        'charset' => 'utf-8',
+        'charset'           => 'utf-8',
         'compilation_level' => 'SIMPLE_OPTIMIZATIONS',
-        'warning_level' => 'QUIET',
+        'warning_level'     => 'QUIET',
     );
 
     /**
@@ -70,9 +65,12 @@ class Minify_ClosureCompiler
      *
      * @param string $js
      * @param array $options (verbose is ignored)
+     *
      * @see https://code.google.com/p/closure-compiler/source/browse/trunk/README
-     * @return string
+     *
      * @throws Minify_ClosureCompiler_Exception
+     *
+     * @return string
      */
     public static function minify($js, $options = array())
     {
@@ -86,17 +84,21 @@ class Minify_ClosureCompiler
      *
      * @param string $js
      * @param array $options
-     * @return string
+     *
      * @throws Exception
      * @throws Minify_ClosureCompiler_Exception
+     *
+     * @return string
      */
     public function process($js, $options)
     {
         $tmpFile = $this->dumpFile(self::$tempDir, $js);
+
         try {
             $result = $this->compile($tmpFile, $options);
         } catch (Exception $e) {
             unlink($tmpFile);
+
             throw $e;
         }
         unlink($tmpFile);
@@ -107,8 +109,10 @@ class Minify_ClosureCompiler
     /**
      * @param string $tmpFile
      * @param array $options
-     * @return string
+     *
      * @throws Minify_ClosureCompiler_Exception
+     *
+     * @return string
      */
     protected function compile($tmpFile, $options)
     {
@@ -120,6 +124,7 @@ class Minify_ClosureCompiler
     /**
      * @param array $userOptions
      * @param string $tmpFile
+     *
      * @return string
      */
     protected function getCommand($userOptions, $tmpFile)
@@ -133,23 +138,24 @@ class Minify_ClosureCompiler
     }
 
     /**
-     * @return array
      * @throws Minify_ClosureCompiler_Exception
+     *
+     * @return array
      */
     protected function getCompilerCommandLine()
     {
         $this->checkJar(self::$jarFile);
-        $server = array(
+
+        return array(
             self::$javaExecutable,
             '-jar',
-            escapeshellarg(self::$jarFile)
+            escapeshellarg(self::$jarFile),
         );
-
-        return $server;
     }
 
     /**
      * @param array $userOptions
+     *
      * @return array
      */
     protected function getOptionsCommandLine($userOptions)
@@ -170,6 +176,7 @@ class Minify_ClosureCompiler
 
     /**
      * @param string $jarFile
+     *
      * @throws Minify_ClosureCompiler_Exception
      */
     protected function checkJar($jarFile)
@@ -184,6 +191,7 @@ class Minify_ClosureCompiler
 
     /**
      * @param string $tempDir
+     *
      * @throws Minify_ClosureCompiler_Exception
      */
     protected function checkTempdir($tempDir)
@@ -201,8 +209,10 @@ class Minify_ClosureCompiler
      *
      * @param string $dir
      * @param string $content
-     * @return string
+     *
      * @throws Minify_ClosureCompiler_Exception
+     *
+     * @return string
      */
     protected function dumpFile($dir, $content)
     {
@@ -221,14 +231,16 @@ class Minify_ClosureCompiler
      *
      * @param string $command
      * @param array $expectedCodes
-     * @return mixed
+     *
      * @throws Minify_ClosureCompiler_Exception
+     *
+     * @return mixed
      */
     protected function shell($command, $expectedCodes = array(0))
     {
         exec($command, $output, $result_code);
         if (!in_array($result_code, $expectedCodes)) {
-            throw new Minify_ClosureCompiler_Exception("Unpexpected return code: $result_code");
+            throw new Minify_ClosureCompiler_Exception("Unpexpected return code: ${result_code}");
         }
 
         return $output;

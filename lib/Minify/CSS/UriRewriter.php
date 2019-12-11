@@ -1,18 +1,13 @@
 <?php
 /**
  * Class Minify_CSS_UriRewriter
- * @package Minify
  */
 
 /**
  * Rewrite file-relative URIs as root-relative in CSS files
- *
- * @package Minify
- * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_CSS_UriRewriter
 {
-
     /**
      * rewrite() and rewriteRelative() append debugging information here
      *
@@ -24,12 +19,9 @@ class Minify_CSS_UriRewriter
      * In CSS content, rewrite file relative URIs as root relative
      *
      * @param string $css
-     *
-     * @param string $currentDir The directory of the current CSS file.
-     *
-     * @param string $docRoot The document root of the web site in which
-     * the CSS file resides (default = $_SERVER['DOCUMENT_ROOT']).
-     *
+     * @param string $currentDir the directory of the current CSS file
+     * @param string $docRoot the document root of the web site in which
+     * the CSS file resides (default = $_SERVER['DOCUMENT_ROOT'])
      * @param array $symlinks (default = array()) If the CSS file is stored in
      * a symlink-ed directory, provide an array of link paths to
      * target paths, where the link paths are within the document root. Because
@@ -58,10 +50,10 @@ class Minify_CSS_UriRewriter
             self::$_symlinks[$link] = self::_realpath($target);
         }
 
-        self::$debugText .= "docRoot    : " . self::$_docRoot . "\n"
-                          . "currentDir : " . self::$_currentDir . "\n";
+        self::$debugText .= 'docRoot    : ' . self::$_docRoot . "\n"
+                          . 'currentDir : ' . self::$_currentDir . "\n";
         if (self::$_symlinks) {
-            self::$debugText .= "symlinks : " . var_export(self::$_symlinks, 1) . "\n";
+            self::$debugText .= 'symlinks : ' . var_export(self::$_symlinks, 1) . "\n";
         }
         self::$debugText .= "\n";
 
@@ -85,8 +77,7 @@ class Minify_CSS_UriRewriter
      * In CSS content, prepend a path to relative URIs
      *
      * @param string $css
-     *
-     * @param string $path The path to prepend.
+     * @param string $path the path to prepend
      *
      * @return string
      */
@@ -97,7 +88,7 @@ class Minify_CSS_UriRewriter
         $css = self::_trimUrls($css);
 
         $css = self::_owlifySvgPaths($css);
-        
+
         // append
         $pattern = '/@import\\s+([\'"])(.*?)[\'"]/';
         $css = preg_replace_callback($pattern, array(self::$className, '_processUriCB'), $css);
@@ -134,11 +125,8 @@ class Minify_CSS_UriRewriter
      * </code>
      *
      * @param string $uri file relative URI
-     *
-     * @param string $realCurrentDir realpath of the current file's directory.
-     *
-     * @param string $realDocRoot realpath of the site document root.
-     *
+     * @param string $realCurrentDir realpath of the current file's directory
+     * @param string $realDocRoot realpath of the site document root
      * @param array $symlinks (default = array()) If the file is stored in
      * a symlink-ed directory, provide an array of link paths to
      * real target paths, where the link paths "appear" to be within the document
@@ -161,7 +149,7 @@ class Minify_CSS_UriRewriter
 
         // "unresolve" a symlink back to doc root
         foreach ($symlinks as $link => $target) {
-            if (0 === strpos($path, $target)) {
+            if (strpos($path, $target) === 0) {
                 // replace $target with $link
                 $path = $link . substr($path, strlen($target));
 
@@ -310,7 +298,7 @@ class Minify_CSS_UriRewriter
                     $root = '';
                     $rootRelative = $uri;
                     $uri = $root . self::removeDots($rootRelative);
-                } elseif (preg_match('@^((https?\:)?//([^/]+))/@', $uri, $m) && (false !== strpos($m[3], '.'))) {
+                } elseif (preg_match('@^((https?\:)?//([^/]+))/@', $uri, $m) && (strpos($m[3], '.') !== false)) {
                     $root = $m[1];
                     $rootRelative = substr($uri, strlen($root));
                     $uri = $root . self::removeDots($rootRelative);
@@ -320,18 +308,19 @@ class Minify_CSS_UriRewriter
 
         if ($isImport) {
             return "@import {$quoteChar}{$uri}{$quoteChar}";
-        } else {
-            return "url({$quoteChar}{$uri}{$quoteChar})";
         }
+
+        return "url({$quoteChar}{$uri}{$quoteChar})";
     }
 
     /**
      * Mungs some inline SVG URL declarations so they won't be touched
      *
-     * @link https://github.com/mrclay/minify/issues/517
+     * @see https://github.com/mrclay/minify/issues/517
      * @see _unOwlify
      *
      * @param string $css
+     *
      * @return string
      */
     private static function _owlifySvgPaths($css)
@@ -347,6 +336,7 @@ class Minify_CSS_UriRewriter
      * @see _owlifySvgPaths
      *
      * @param string $css
+     *
      * @return string
      */
     private static function _unOwlify($css)

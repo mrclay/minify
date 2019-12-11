@@ -4,13 +4,16 @@ namespace Minify\Test;
 
 use Minify_Cache_APC;
 
+/**
+ * @internal
+ */
 class MinifyCacheAPCTest extends TestCase
 {
     public function setUp()
     {
         if (!function_exists('apc_store')) {
             // FIXME: is APCu extension ok too?
-            $this->markTestSkipped("To test this component, install APC extension");
+            $this->markTestSkipped('To test this component, install APC extension');
         }
     }
 

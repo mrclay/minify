@@ -6,7 +6,7 @@ use Leafo\ScssPhp\Version;
 /**
  * Class for using SCSS files
  *
- * @link https://github.com/leafo/scssphp/
+ * @see https://github.com/leafo/scssphp/
  */
 class Minify_ScssCssSource extends Minify_Source
 {
@@ -23,7 +23,7 @@ class Minify_ScssCssSource extends Minify_Source
     private $parsed;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __construct(array $spec, Minify_CacheInterface $cache)
     {
@@ -114,7 +114,7 @@ class Minify_ScssCssSource extends Minify_Source
      *
      * @param array $cache Cache object
      *
-     * @return boolean True if compile required.
+     * @return bool true if compile required
      */
     private function cacheIsStale($cache)
     {
@@ -140,6 +140,7 @@ class Minify_ScssCssSource extends Minify_Source
      * @param string $filename Input path (.scss)
      *
      * @see Server::compile()
+     *
      * @return array meta data result of the compile
      */
     private function compile($filename)
@@ -157,7 +158,7 @@ class Minify_ScssCssSource extends Minify_Source
 
         $v = Version::VERSION;
         $ts = date('r', $start);
-        $css = "/* compiled by scssphp $v on $ts (${elapsed}s) */\n\n" . $css;
+        $css = "/* compiled by scssphp ${v} on ${ts} (${elapsed}s) */\n\n" . $css;
 
         $imports = $scss->getParsedFiles();
 
@@ -170,7 +171,7 @@ class Minify_ScssCssSource extends Minify_Source
             'elapsed' => $elapsed, // statistic, can be dropped
             'updated' => $updated,
             'content' => $css,
-            'files' => $imports,
+            'files'   => $imports,
         );
     }
 }

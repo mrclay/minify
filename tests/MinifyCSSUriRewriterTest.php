@@ -4,6 +4,9 @@ namespace Minify\Test;
 
 use Minify_CSS_UriRewriter;
 
+/**
+ * @internal
+ */
 class MinifyCSSUriRewriterTest extends TestCase
 {
     public function setUp()
@@ -16,9 +19,10 @@ class MinifyCSSUriRewriterTest extends TestCase
         $in = file_get_contents(self::$test_files . '/css_uriRewriter/in.css');
         $expected = file_get_contents(self::$test_files . '/css_uriRewriter/exp.css');
         $actual = Minify_CSS_UriRewriter::rewrite(
-            $in
-            , self::$test_files . '/css_uriRewriter' // currentDir
-            , self::$document_root // use DOCUMENT_ROOT = '/full/path/to/min_unit_tests'
+            $in,
+            self::$test_files . '/css_uriRewriter' // currentDir
+            ,
+            self::$document_root // use DOCUMENT_ROOT = '/full/path/to/min_unit_tests'
         );
 
         $this->assertEquals($expected, $actual, 'rewrite, debug: ' . Minify_CSS_UriRewriter::$debugText);
@@ -47,9 +51,9 @@ class MinifyCSSUriRewriterTest extends TestCase
         $in = '../../../../assets/skins/sam/sprite.png';
         $exp = '/yui/assets/skins/sam/sprite.png';
         $actual = Minify_CSS_UriRewriter::rewriteRelative(
-            $in
-            , 'sf_root_dir\web\yui\menu\assets\skins\sam'
-            , 'sf_root_dir\web'
+            $in,
+            'sf_root_dir\web\yui\menu\assets\skins\sam',
+            'sf_root_dir\web'
         );
 
         $this->assertEquals($exp, $actual, 'Issue 99, debug: ' . Minify_CSS_UriRewriter::$debugText);

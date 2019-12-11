@@ -5,7 +5,7 @@ die('Must be rewritten for new API');
 
 require __DIR__ . '/../../bootstrap.php';
 
-$cli = new MrClay\Cli;
+$cli = new MrClay\Cli();
 
 $cli->addOptionalArg('d')->assertDir()->setDescription('Your webserver\'s DOCUMENT_ROOT: Relative paths will be rewritten relative to this path. This is required if you\'re passing in CSS.');
 
@@ -13,7 +13,7 @@ $cli->addOptionalArg('o')->useAsOutfile()->setDescription('Outfile: If given, ou
 
 $cli->addOptionalArg('t')->mustHaveValue()->setDescription('Type: must be "css", "js", or "html". This must be provided if passing content via STDIN.');
 
-if (! $cli->validate()) {
+if (!$cli->validate()) {
     if ($cli->isHelpRequest) {
         echo "The Minify CLI tool!\n\n";
     }
@@ -34,7 +34,7 @@ $docRoot = $cli->values['d'];
 $type = $cli->values['t'];
 
 if (is_string($type)) {
-    if (! in_array($type, array('js', 'css', 'html'))) {
+    if (!in_array($type, array('js', 'css', 'html'))) {
         echo "Type argument invalid\n";
         exit(1);
     }
@@ -48,27 +48,27 @@ if ($paths) {
     foreach ($paths as $path) {
         if (is_file($path)) {
             $sources[] = new Minify_Source(array(
-                'filepath' => $path,
+                'filepath'      => $path,
                 'minifyOptions' => array('docRoot' => $docRoot),
             ));
         } else {
             $sources[] = new Minify_Source(array(
-                'id' => $path,
-                'content' => "/*** $path not found ***/\n",
+                'id'       => $path,
+                'content'  => "/*** ${path} not found ***/\n",
                 'minifier' => 'Minify::nullMinifier',
             ));
         }
     }
 } else {
     // not paths input, expect STDIN
-    if (! $type) {
+    if (!$type) {
         echo "Type must be specified to use STDIN\n";
         exit(1);
     }
     $in = $cli->openInput();
     $sources[] = new Minify_Source(array(
-        'id' => 'one',
-        'content' => stream_get_contents($in),
+        'id'          => 'one',
+        'content'     => stream_get_contents($in),
         'contentType' => $type,
     ));
     $cli->closeInput();

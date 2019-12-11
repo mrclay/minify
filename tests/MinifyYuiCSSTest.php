@@ -5,6 +5,9 @@ namespace Minify\Test;
 use Exception;
 use Minify_YUICompressor;
 
+/**
+ * @internal
+ */
 class MinifyYuiCSSTest extends TestCase
 {
     public static function setupBeforeClass()
@@ -37,6 +40,7 @@ class MinifyYuiCSSTest extends TestCase
         // fails with java.lang.StackOverflowError as of Yui 2.4.6
         // unfortunately error output is not caught from yui, so have to guess
         $e = null;
+
         try {
             Minify_YUICompressor::minifyCss($src);
             // if reached here, then Correctly handles input which caused stack overflow in 2.4.6
@@ -54,8 +58,9 @@ class MinifyYuiCSSTest extends TestCase
     protected function assertHasJar()
     {
         $this->assertNotEmpty(Minify_YUICompressor::$jarFile);
+
         try {
-            $this->assertFileExists(Minify_YUICompressor::$jarFile, "Have YUI yuicompressor.jar");
+            $this->assertFileExists(Minify_YUICompressor::$jarFile, 'Have YUI yuicompressor.jar');
         } catch (Exception $e) {
             $this->markTestSkipped($e->getMessage());
         }

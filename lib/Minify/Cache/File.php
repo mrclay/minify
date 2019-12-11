@@ -1,14 +1,11 @@
 <?php
 /**
  * Class Minify_Cache_File
- * @package Minify
  */
-
 use Psr\Log\LoggerInterface;
 
 class Minify_Cache_File implements Minify_CacheInterface
 {
-
     /**
      * @var string
      */
@@ -31,7 +28,7 @@ class Minify_Cache_File implements Minify_CacheInterface
      */
     public function __construct($path = '', $fileLocking = false, LoggerInterface $logger = null)
     {
-        if (! $path) {
+        if (!$path) {
             $path = sys_get_temp_dir();
         }
         $this->locking = $fileLocking;
@@ -47,7 +44,6 @@ class Minify_Cache_File implements Minify_CacheInterface
      * Write data to cache.
      *
      * @param string $id cache id (e.g. a filename)
-     *
      * @param string $data
      *
      * @return bool success
@@ -57,14 +53,14 @@ class Minify_Cache_File implements Minify_CacheInterface
         $flag = $this->locking ? LOCK_EX : null;
         $file = $this->path . '/' . $id;
 
-        if (! @file_put_contents($file, $data, $flag)) {
-            $this->logger->warning("Minify_Cache_File: Write failed to '$file'");
+        if (!@file_put_contents($file, $data, $flag)) {
+            $this->logger->warning("Minify_Cache_File: Write failed to '${file}'");
         }
 
         // write control
         if ($data !== $this->fetch($id)) {
             @unlink($file);
-            $this->logger->warning("Minify_Cache_File: Post-write read failed for '$file'");
+            $this->logger->warning("Minify_Cache_File: Post-write read failed for '${file}'");
 
             return false;
         }
@@ -88,7 +84,6 @@ class Minify_Cache_File implements Minify_CacheInterface
      * Does a valid cache entry exist?
      *
      * @param string $id cache id (e.g. a filename)
-     *
      * @param int $srcMtime mtime of the original source file(s)
      *
      * @return bool exists
@@ -97,7 +92,7 @@ class Minify_Cache_File implements Minify_CacheInterface
     {
         $file = $this->path . '/' . $id;
 
-        return (is_file($file) && (filemtime($file) >= $srcMtime));
+        return is_file($file) && (filemtime($file) >= $srcMtime);
     }
 
     /**
@@ -160,6 +155,7 @@ class Minify_Cache_File implements Minify_CacheInterface
      * Get a usable temp directory
      *
      * @return string
+     *
      * @deprecated
      */
     public static function tmp()
@@ -171,8 +167,11 @@ class Minify_Cache_File implements Minify_CacheInterface
 
     /**
      * Send message to the Minify logger
+     *
      * @param string $msg
+     *
      * @return null
+     *
      * @deprecated Use $this->logger
      */
     protected function _log($msg)

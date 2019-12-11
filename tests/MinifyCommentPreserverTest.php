@@ -4,13 +4,16 @@ namespace Minify\Test;
 
 use Minify_CommentPreserver;
 
+/**
+ * @internal
+ */
 class MinifyCommentPreserverTest extends TestCase
 {
     public function test()
     {
         $inOut = array(
-            '/*!*/' => "\n/*!*/\n",
-            '/*!*/a' => "\n/*!*/\n1A",
+            '/*!*/'        => "\n/*!*/\n",
+            '/*!*/a'       => "\n/*!*/\n1A",
             'a/*!*//*!*/b' => "2A\n/*!*/\n\n/*!*/\n3B",
             'a/*!*/b/*!*/' => "4A\n/*!*/\n5B\n/*!*/\n",
         );
@@ -24,11 +27,15 @@ class MinifyCommentPreserverTest extends TestCase
 
     /**
      * @internal
+     *
+     * @param mixed $content
+     * @param mixed $options
      */
     public static function _test_MCP_processor($content, $options = array())
     {
         static $callCount = 0;
         ++$callCount;
+
         return $callCount . strtoupper($content);
     }
 }

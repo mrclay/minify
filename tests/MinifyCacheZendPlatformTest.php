@@ -4,13 +4,16 @@ namespace Minify\Test;
 
 use Minify_Cache_ZendPlatform;
 
+/**
+ * @internal
+ */
 class MinifyCacheZendPlatformTest extends TestCase
 {
     public function setUp()
     {
         if (!function_exists('output_cache_put')) {
             // FIXME: be specific what to actually install
-            $this->markTestSkipped("To test this component, install ZendPlatform");
+            $this->markTestSkipped('To test this component, install ZendPlatform');
         }
     }
 

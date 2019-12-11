@@ -31,16 +31,15 @@ use BadMethodCallException;
  * @method \MrClay\Cli\Arg assertReadable() Assert that the specified file/dir must be readable
  * @method \MrClay\Cli\Arg assertWritable() Assert that the specified file/dir must be writable
  *
- * @property-read bool mayHaveValue
- * @property-read bool mustHaveValue
- * @property-read bool assertFile
- * @property-read bool assertDir
- * @property-read bool assertReadable
- * @property-read bool assertWritable
- * @property-read bool useAsInfile
- * @property-read bool useAsOutfile
+ * @property bool mayHaveValue
+ * @property bool mustHaveValue
+ * @property bool assertFile
+ * @property bool assertDir
+ * @property bool assertReadable
+ * @property bool assertWritable
+ * @property bool useAsInfile
+ * @property bool useAsOutfile
  *
- * @author Steve Clay <steve@mrclay.org>
  * @license http://www.opensource.org/licenses/mit-license.php  MIT License
  */
 class Arg
@@ -51,14 +50,14 @@ class Arg
     public function getDefaultSpec()
     {
         return array(
-            'mayHaveValue' => false,
-            'mustHaveValue' => false,
-            'assertFile' => false,
-            'assertDir' => false,
+            'mayHaveValue'   => false,
+            'mustHaveValue'  => false,
+            'assertFile'     => false,
+            'assertDir'      => false,
             'assertReadable' => false,
             'assertWritable' => false,
-            'useAsInfile' => false,
-            'useAsOutfile' => false,
+            'useAsInfile'    => false,
+            'useAsOutfile'   => false,
         );
     }
 
@@ -93,6 +92,7 @@ class Arg
      * Assert that the argument's value points to a writable file. When
      * Cli::openOutput() is called, a write pointer to this file will
      * be provided.
+     *
      * @return Arg
      */
     public function useAsOutfile()
@@ -106,6 +106,7 @@ class Arg
      * Assert that the argument's value points to a readable file. When
      * Cli::openInput() is called, a read pointer to this file will
      * be provided.
+     *
      * @return Arg
      */
     public function useAsInfile()
@@ -125,6 +126,7 @@ class Arg
 
     /**
      * @param string $desc
+     *
      * @return Arg
      */
     public function setDescription($desc)
@@ -155,8 +157,10 @@ class Arg
      *
      * @param string $name
      * @param array $args
-     * @return Arg
+     *
      * @throws BadMethodCallException
+     *
+     * @return Arg
      */
     public function __call($name, array $args = array())
     {
@@ -176,6 +180,7 @@ class Arg
      * Note: magic properties declared in class PHPDOC
      *
      * @param string $name
+     *
      * @return bool|null
      */
     public function __get($name)

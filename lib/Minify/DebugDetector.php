@@ -2,9 +2,6 @@
 
 /**
  * Detect whether request should be debugged
- *
- * @package Minify
- * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_DebugDetector
 {
