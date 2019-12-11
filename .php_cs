@@ -2,7 +2,7 @@
 
 return PhpCsFixer\Config::create()
     ->setUsingCache(true)
-    ->setRiskyAllowed(true)
+    ->setRiskyAllowed(false)
     ->setRules(
         [
             'align_multiline_comment'                       => [
@@ -27,7 +27,6 @@ return PhpCsFixer\Config::create()
             'class_keyword_remove'                          => false,
             'combine_consecutive_issets'                    => true,
             'combine_consecutive_unsets'                    => true,
-            'combine_nested_dirname'                        => true,
             // 'compact_nullable_typehint'                  => true, // PHP >= 7.1
             'concat_space'                                  => [
                 'spacing' => 'one',
@@ -35,21 +34,15 @@ return PhpCsFixer\Config::create()
             'date_time_immutable'                           => false,
             'declare_equal_normalize'                       => true,
             'declare_strict_types'                          => false, // some tests need declare_strict_types === 0
-            'dir_constant'                                  => true,
             'elseif'                                        => true,
             'encoding'                                      => true,
-            'ereg_to_preg'                                  => true,
             'error_suppression'                             => false,
             'escape_implicit_backslashes'                   => false,
             'explicit_indirect_variable'                    => true,
             'explicit_string_variable'                      => true,
-            'final_internal_class'                          => true,
-            'fopen_flag_order'                              => true,
-            'fopen_flags'                                   => true,
             'full_opening_tag'                              => true,
             'fully_qualified_strict_types'                  => false, // maybe better for readability, so keep it ...
             'function_declaration'                          => true,
-            'function_to_constant'                          => true,
             'function_typehint_space'                       => true,
             'general_phpdoc_annotation_remove'              => [
                 'annotations' => [
@@ -70,7 +63,6 @@ return PhpCsFixer\Config::create()
                 'syntax' => 'short',
             ],
             */
-            'logical_operators'                             => true,
             'lowercase_cast'                                => true,
             'lowercase_constants'                           => true,
             'lowercase_keywords'                            => true,
@@ -82,16 +74,12 @@ return PhpCsFixer\Config::create()
                 'keep_multiple_spaces_after_comma' => false,
             ],
             'method_chaining_indentation'                   => false, // maybe better for readability, so keep it ...
-            'modernize_types_casting'                       => true,
             'multiline_comment_opening_closing'             => false, // maybe better for readability, so keep it ...
             'multiline_whitespace_before_semicolons'        => [
                 'strategy' => 'no_multi_line',
             ],
-            'native_constant_invocation'                    => true,
             'native_function_casing'                        => true,
-            'native_function_invocation'                    => true,
             'new_with_braces'                               => true,
-            'no_alias_functions'                            => true,
             'no_alternative_syntax'                         => true,
             'no_binary_string'                              => true,
             'no_blank_lines_after_class_opening'            => false,
@@ -103,7 +91,6 @@ return PhpCsFixer\Config::create()
             'no_empty_phpdoc'                               => true,
             'no_empty_statement'                            => true,
             'no_extra_blank_lines'                          => true,
-            'no_homoglyph_names'                            => true,
             'no_leading_import_slash'                       => true,
             'no_leading_namespace_whitespace'               => true,
             'no_mixed_echo_print'                           => [
@@ -111,7 +98,6 @@ return PhpCsFixer\Config::create()
             ],
             'no_multiline_whitespace_around_double_arrow'   => true,
             'no_null_property_initialization'               => true,
-            'no_php4_constructor'                           => true,
             'no_short_bool_cast'                            => true,
             'no_short_echo_tag'                             => true,
             'no_singleline_whitespace_before_semicolons'    => true,
@@ -128,13 +114,11 @@ return PhpCsFixer\Config::create()
             'no_unneeded_curly_braces'                      => true,
             'no_unneeded_final_method'                      => true,
             'no_unreachable_default_argument_value'         => false, // do not changes the logic of the code ...
-            'no_unset_on_property'                          => true,
             'no_unused_imports'                             => true,
             'no_useless_else'                               => true,
             'no_useless_return'                             => true,
             'no_whitespace_before_comma_in_array'           => true,
             'no_whitespace_in_blank_line'                   => true,
-            'non_printable_character'                       => true,
             'normalize_index_brace'                         => true,
             'not_operator_with_space'                       => false,
             'not_operator_with_successor_space'             => false,
@@ -169,29 +153,17 @@ return PhpCsFixer\Config::create()
                 'sort_algorithm'  => 'alpha',
             ],
             'phpdoc_var_without_name'                       => true,
-            'php_unit_construct'                            => true,
-            'php_unit_dedicate_assert'                      => true,
-            'php_unit_expectation'                          => true,
             'php_unit_fqcn_annotation'                      => true,
             'php_unit_internal_class'                       => true,
             'php_unit_method_casing'                        => true,
-            'php_unit_mock'                                 => true,
-            'php_unit_namespaced'                           => true,
-            'php_unit_no_expectation_annotation'            => true,
             'php_unit_ordered_covers'                       => true,
-            'php_unit_set_up_tear_down_visibility'          => true,
-            'php_unit_strict'                               => true,
-            'php_unit_test_annotation'                      => true,
-            'php_unit_test_case_static_method_calls'        => true,
             'php_unit_test_class_requires_covers'           => false,
-            'pow_to_exponentiation'                         => true,
             'pre_increment'                                 => false,
             'protected_to_private'                          => true,
             'return_assignment'                             => true,
             'return_type_declaration'                       => true,
             // 'self_accessor'                                 => true, // PHP >= 5.4
             'semicolon_after_instruction'                   => true,
-            'set_type_to_cast'                              => true,
             'short_scalar_cast'                             => true,
             'silenced_deprecation_error'                    => false,
             'simplified_null_return'                        => false, // maybe better for readability, so keep it ...
@@ -207,9 +179,6 @@ return PhpCsFixer\Config::create()
             'standardize_increment'                         => false, // maybe better for readability, so keep it ...
             'standardize_not_equals'                        => true,
             // 'static_lambda'                                 => true, // PHP >= 5.4
-            'strict_comparison'                             => true,
-            'strict_param'                                  => true,
-            'string_line_ending'                            => true,
             'switch_case_semicolon_to_colon'                => true,
             'switch_case_space'                             => true,
             'ternary_operator_spaces'                       => true,
