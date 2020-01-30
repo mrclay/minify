@@ -7,35 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.7] - 2019-12-10
 
-- Allow mrclay/props-dic ^3.0 (#658)
+- Allow mrclay/props-dic ^3.0, [#658]
 
 [3.0.7]: https://github.com/mrclay/minify/compare/3.0.6...3.0.7
+[#658]: https://github.com/mrclay/minify/pull/658
 
-## 3.0.6 - 2019-10-28
+## [3.0.6] - 2019-10-28
 
-- Bugfix for option sanitizer, #654, #655
+- Bugfix for option sanitizer, [#654], [#655]
 
-## 3.0.5 - 2019-10-01
+[3.0.6]: https://github.com/mrclay/minify/compare/3.0.5...3.0.6
+[#654]: https://github.com/mrclay/minify/issues/654
+[#655]: https://github.com/mrclay/minify/pull/655
 
-- Fix syntax error in composer.json, #653
+## [3.0.5] - 2019-10-01
+
+- Fix syntax error in composer.json, [#653]
+
+[3.0.5]: https://github.com/mrclay/minify/compare/3.0.4...3.0.5
+[#653]: https://github.com/mrclay/minify/pull/653
 
 ## 3.0.4 - 2019-09-24
 
-- Fix PHP 7.3 compatibility issues, #648
+- Fix PHP 7.3 compatibility issues, [#648]
 
-## 3.0.3 - 2017-11-03
+[3.0.4]: https://github.com/mrclay/minify/compare/3.0.3...3.0.4
+[#648]: https://github.com/mrclay/minify/issues/648
 
-* Fix closure-compiler's error "redirection limit reached". #618, #619
+## [3.0.3] - 2017-11-03
 
-## 3.0.2 - 2017-09-14
+- Fix closure-compiler's error "redirection limit reached". [#618], [#619]
 
-* Fixes syntax error in Groups controller, #613
-* Better-maintained lessphp fork, #610
-* No longer corrupts some chars in some environments, #608
+[3.0.3]: https://github.com/mrclay/minify/compare/3.0.2...3.0.3
+[#618]: https://github.com/mrclay/minify/pull/618
+[#619]: https://github.com/mrclay/minify/issues/619
 
-## 3.0.1 - 2017-06-09
+## [3.0.2] - 2017-09-14
 
-* Update CSSmin to v4, #599, #590
+- Fixes syntax error in Groups controller, [#613]
+- Better-maintained lessphp fork, [#610]
+- No longer corrupts some chars in some environments, [#608]
+
+[3.0.2]: https://github.com/mrclay/minify/compare/3.0.1...3.0.2
+[#608]: https://github.com/mrclay/minify/pull/608
+[#610]: https://github.com/mrclay/minify/pull/610
+[#613]: https://github.com/mrclay/minify/issues/613
+
+## [3.0.1] - 2017-06-09
+
+- Update CSSmin to v4, [#599], [#590]
+
+[3.0.1]: https://github.com/mrclay/minify/compare/3.0.0...3.0.1
+[#590]: https://github.com/mrclay/minify/issues/590
+[#599]: https://github.com/mrclay/minify/pull/599
 
 ## 3.0.0 - 2017-04-03
 
