@@ -6,7 +6,7 @@ use Minify_HTML_Helper;
 
 class ScssSourceTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->realDocRoot = $_SERVER['DOCUMENT_ROOT'];
         $_SERVER['DOCUMENT_ROOT'] = self::$document_root;
@@ -32,9 +32,9 @@ class ScssSourceTest extends TestCase
 
         $max = max($mtime1, $mtime2);
 
-        $options = array(
+        $options = [
             'groupsConfigFile' => "$baseDir/htmlHelper_groupsConfig.php",
-        );
+        ];
         $res = Minify_HTML_Helper::getUri('scss', $options);
 
         $this->assertEquals("/min/g=scss&amp;{$max}", $res);

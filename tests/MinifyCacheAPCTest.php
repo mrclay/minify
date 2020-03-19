@@ -6,17 +6,17 @@ use Minify_Cache_APC;
 
 class MinifyCacheAPCTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
-        if (!function_exists('apc_store')) {
+        if (! function_exists('apc_store')) {
             // FIXME: is APCu extension ok too?
-            $this->markTestSkipped("To test this component, install APC extension");
+            $this->markTestSkipped('To test this component, install APC extension');
         }
     }
 
     public function test1()
     {
-        $data = str_repeat(md5(time()) . 'í', 100); // 3400 bytes in UTF-8
+        $data = str_repeat(md5(time()).'í', 100); // 3400 bytes in UTF-8
         $id = 'Minify_test_cache';
 
         $cache = new Minify_Cache_APC();

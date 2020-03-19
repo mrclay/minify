@@ -7,7 +7,7 @@ use Minify_ClosureCompiler;
 
 class MinifyClosureCompilerTest extends TestCase
 {
-    public static function setupBeforeClass()
+    public static function setupBeforeClass(): void
     {
         parent::setupBeforeClass();
         Minify_ClosureCompiler::$isDebug = true;
@@ -17,7 +17,7 @@ class MinifyClosureCompilerTest extends TestCase
         // put it under tests dir as 'compiler.jar'
 
         // set minimum necessary settings
-        Minify_ClosureCompiler::$jarFile = __DIR__ . DIRECTORY_SEPARATOR . 'compiler.jar';
+        Minify_ClosureCompiler::$jarFile = __DIR__.DIRECTORY_SEPARATOR.'compiler.jar';
         Minify_ClosureCompiler::$tempDir = sys_get_temp_dir();
     }
 
@@ -40,12 +40,12 @@ class MinifyClosureCompilerTest extends TestCase
     }
 
     /**
-     * Test minimisation with the minimum necessary settings
+     * Test minimisation with the minimum necessary settings.
      */
     public function test2()
     {
         $this->assertHasJar();
-        $src = "
+        $src = '
     (function (window, undefined){
         function addOne(input) {
             return 1 + input;
@@ -53,29 +53,29 @@ class MinifyClosureCompilerTest extends TestCase
         window.addOne = addOne;
         window.undefined = undefined;
     })(window);
-        ";
-        $minExpected = "(function(a,b){a.addOne=function(a){return 1+a};a.undefined=b})(window);";
+        ';
+        $minExpected = '(function(a,b){a.addOne=function(a){return 1+a};a.undefined=b})(window);';
         $minOutput = Minify_ClosureCompiler::minify($src);
         $this->assertSame($minExpected, $minOutput, 'minimum necessary settings');
     }
 
     /**
-     * Test minimisation with advanced compilation level
+     * Test minimisation with advanced compilation level.
      */
     public function test3()
     {
         $this->assertHasJar();
-        $src = "function unused() {};";
+        $src = 'function unused() {};';
         $minExpected = '';
-        $options = array(
-            'compilation_level' => 'ADVANCED_OPTIMIZATIONS'
-        );
+        $options = [
+            'compilation_level' => 'ADVANCED_OPTIMIZATIONS',
+        ];
         $minOutput = Minify_ClosureCompiler::minify($src, $options);
         $this->assertSame($minExpected, $minOutput, 'advanced optimizations');
     }
 
     /**
-     * Test that closure compiler does not produce unneeded noise
+     * Test that closure compiler does not produce unneeded noise.
      *
      * @see https://code.google.com/p/closure-compiler/issues/detail?id=513
      *
@@ -100,16 +100,16 @@ class MinifyClosureCompilerTest extends TestCase
 
         $src = $this->getDataFile('js/jscomp.polyfill.js');
         $exp = $this->getDataFile('js/jscomp.polyfill.min.js');
-        $options = array(
+        $options = [
             'language_in' => 'ECMASCRIPT3',
-        );
+        ];
 
         $res = Minify_ClosureCompiler::minify($src, $options);
         $this->assertSame($exp, $res);
 
-        $options = array(
+        $options = [
             'language_in' => 'ECMASCRIPT6',
-        );
+        ];
         $exp = $this->getDataFile('js/jscomp.polyfilled.min.js');
         $res = Minify_ClosureCompiler::minify($src, $options);
         $this->assertSame($exp, $res);
@@ -119,7 +119,7 @@ class MinifyClosureCompilerTest extends TestCase
     {
         $this->assertNotEmpty(Minify_ClosureCompiler::$jarFile);
         try {
-            $this->assertFileExists(Minify_ClosureCompiler::$jarFile, "Have closure compiler compiler.jar");
+            $this->assertFileExists(Minify_ClosureCompiler::$jarFile, 'Have closure compiler compiler.jar');
         } catch (Exception $e) {
             $this->markTestSkipped($e->getMessage());
         }
