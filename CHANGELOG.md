@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.8] - 2020-03-19
+
+- Removed deprecated get_magic_quotes_gpc() function that since PHP 5.4.0 returns FALSE always, and since PHP 7.4 is deprecated, [#661]
+
+[3.0.8]: https://github.com/mrclay/minify/compare/3.0.7...3.0.8
+[#661]: https://github.com/mrclay/minify/pull/661
+
 ## [3.0.7] - 2019-12-10
 
 - Allow mrclay/props-dic ^3.0, [#658]
