@@ -5,7 +5,7 @@ dist: trusty
 jobs:
   fast_finish: true
   allow_failures:
-    - php: "7.4snapshot"
+    - php: "7.4"
     - php: "nightly"
   include:
     - php: "5.3"
@@ -17,7 +17,7 @@ jobs:
     - php: "7.1"
     - php: "7.2"
     - php: "7.3"
-    - php: "7.4snapshot"
+    - php: "7.4"
 
 env:
   - CLOSURE_VERSION: 20161024
