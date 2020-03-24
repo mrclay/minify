@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- http://phpunit.de/manual/current/en/appendixes.configuration.html -->
+<!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
 <phpunit
 	backupGlobals="false"
 	backupStaticAttributes="false"
@@ -10,7 +10,6 @@
 	convertWarningsToExceptions="true"
 	processIsolation="false"
 	stopOnFailure="false"
-	syntaxCheck="false"
 	bootstrap="vendor/autoload.php">
 
 	<testsuites>
@@ -32,6 +31,7 @@
 			<directory>.</directory>
 			<exclude>
 				<directory>tests</directory>
+				<directory>vendor</directory>
 			</exclude>
 		</whitelist>
 	</filter>
