@@ -164,7 +164,7 @@ class Minify_HTML
 
     protected function _commentCB($m)
     {
-        return (0 === strpos($m[1], '[') || false !== strpos($m[1], '<!['))
+        return (0 === strpos($m[1], '[') || false !== strpos($m[1], '<![') || 0 === strpos($m[1], '#'))
             ? $m[0]
             : '';
     }
