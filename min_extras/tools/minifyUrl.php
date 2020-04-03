@@ -12,7 +12,8 @@ $app->cache = new Minify_Cache_Null();
 
 $env = $app->env;
 
-function getPost($key) {
+function getPost($key)
+{
     if (! isset($_POST[$key])) {
         return null;
     }
@@ -21,14 +22,16 @@ function getPost($key) {
         : $_POST[$key];
 }
 
-function sniffType($headers) {
+function sniffType($headers)
+{
     $charset = 'utf-8';
     $type = null;
     $headers = "\n\n" . implode("\n\n", $headers) . "\n\n";
     if (preg_match(
-            '@\\n\\nContent-Type: *([\\w/\\+-]+)( *; *charset *= *([\\w-]+))? *\\n\\n@i'
-            ,$headers
-            ,$m)) {
+        '@\\n\\nContent-Type: *([\\w/\\+-]+)( *; *charset *= *([\\w-]+))? *\\n\\n@i',
+        $headers,
+        $m
+    )) {
         $sentType = $m[1];
         if (isset($m[3])) {
             $charset = $m[3];
@@ -49,7 +52,6 @@ function sniffType($headers) {
 }
 
 if (isset($_POST['url'])) {
-    
     require '../config.php';
     
     $url = trim($env->post('url'));
@@ -88,13 +90,13 @@ if (isset($_POST['url'])) {
         die('Unrecognized Content-Type: ' . $type['sent']);
     }
         
-    if ($type['minify'] === 'text/html' 
+    if ($type['minify'] === 'text/html'
         && isset($_POST['addBase'])
         && ! preg_match('@<base\\b@i', $content)) {
         $content = preg_replace(
-            '@(<head\\b[^>]*>)@i'
-            ,'$1<base href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '" />'
-            ,$content
+            '@(<head\\b[^>]*>)@i',
+            '$1<base href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '" />',
+            $content
         );
     }
     

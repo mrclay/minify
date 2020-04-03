@@ -73,4 +73,3 @@ class Minify_Controller_Groups extends Minify_Controller_Files
         return parent::createConfiguration($options);
     }
 }
-

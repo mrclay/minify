@@ -170,7 +170,7 @@ class Minify_Source_Factory
         if ($this->options['noMinPattern'] && preg_match($this->options['noMinPattern'], $basename)) {
             if (preg_match('~\.(css|less)$~i', $basename)) {
                 $spec['minifyOptions']['compress'] = false;
-                // we still want URI rewriting to work for CSS
+            // we still want URI rewriting to work for CSS
             } else {
                 $spec['minifier'] = 'Minify::nullMinifier';
             }

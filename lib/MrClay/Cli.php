@@ -390,4 +390,3 @@ class Cli
         $this->errors[$letter][] = sprintf($msg, $value);
     }
 }
-

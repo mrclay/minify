@@ -204,9 +204,10 @@ class HTTP_Encoder
         }
         // gzip checks (slow)
         if (preg_match(
-                '@(?:^|,)\\s*((?:x-)?gzip)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@'
-                ,$ae
-                ,$m)) {
+            '@(?:^|,)\\s*((?:x-)?gzip)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@',
+            $ae,
+            $m
+        )) {
             return array('gzip', $m[1]);
         }
         if ($allowDeflate) {
@@ -217,14 +218,17 @@ class HTTP_Encoder
                 || 0 === strpos($ae, 'deflate,') // opera
                 // slow parsing
                 || preg_match(
-                    '@(?:^|,)\\s*deflate\\s*(?:$|,|;\\s*q=(?:0\\.|1))@', $ae)) {
+                    '@(?:^|,)\\s*deflate\\s*(?:$|,|;\\s*q=(?:0\\.|1))@',
+                    $ae
+                )) {
                 return array('deflate', 'deflate');
             }
         }
         if ($allowCompress && preg_match(
-                '@(?:^|,)\\s*((?:x-)?compress)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@'
-                ,$ae
-                ,$m)) {
+            '@(?:^|,)\\s*((?:x-)?compress)\\s*(?:$|,|;\\s*q=(?:0\\.|1))@',
+            $ae,
+            $m
+        )) {
             return array('compress', $m[1]);
         }
 

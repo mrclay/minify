@@ -7,12 +7,12 @@ if (is_file(__DIR__ . '/bootstrap.php')) {
     $bootstrap_file = __DIR__ . '/../bootstrap.php';
 }
 
-$send_400 = function($content = 'Bad URL') {
+$send_400 = function ($content = 'Bad URL') {
     http_response_code(400);
     die($content);
 };
 
-$send_301 = function($url) {
+$send_301 = function ($url) {
     http_response_code(301);
     header("Cache-Control: max-age=31536000");
     header("Location: $url");

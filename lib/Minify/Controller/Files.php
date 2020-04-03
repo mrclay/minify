@@ -68,4 +68,3 @@ class Minify_Controller_Files extends Minify_Controller_Base
         return new Minify_ServeConfiguration($options, $sources);
     }
 }
-

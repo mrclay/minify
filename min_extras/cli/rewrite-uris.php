@@ -27,7 +27,7 @@ $outfile = $cli->values['o'];
 $testRun = $cli->values['t'];
 $docRoot = $cli->values['d'];
 
-$pathRewriter = function($css, $options) {
+$pathRewriter = function ($css, $options) {
     return Minify_CSS_UriRewriter::rewrite($css, $options['currentDir'], $options['docRoot']);
 };
 
@@ -54,9 +54,8 @@ $combined = Minify::combine($sources) . "\n";
 if ($testRun) {
     echo $combined;
     echo Minify_CSS_UriRewriter::$debugText . "\n";
-} else  {
+} else {
     $fp = $cli->openOutput();
     fwrite($fp, $combined);
     $cli->closeOutput();
 }
-

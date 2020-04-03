@@ -45,4 +45,3 @@ class MinifyCacheMemcacheTest extends TestCase
         $this->assertTestCache($cache, $id, $data);
     }
 }
-

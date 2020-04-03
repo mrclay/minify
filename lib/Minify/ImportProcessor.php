@@ -66,7 +66,7 @@ class Minify_ImportProcessor
         $this->_currentDir = dirname($file);
 
         // remove UTF-8 BOM if present
-        if (pack("CCC",0xef,0xbb,0xbf) === substr($content, 0, 3)) {
+        if (pack("CCC", 0xef, 0xbb, 0xbf) === substr($content, 0, 3)) {
             $content = substr($content, 3);
         }
         // ensure uniform EOLs

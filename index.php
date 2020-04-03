@@ -1,9 +1,9 @@
 <?php
 /**
  * Sets up MinApp controller and serves files
- * 
+ *
  * DO NOT EDIT! Configure this utility via config.php and groupsConfig.php
- * 
+ *
  * @package Minify
  */
 

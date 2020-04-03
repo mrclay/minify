@@ -13,7 +13,8 @@ if (!$enabled) {
     die('Set $enabled to true to see server info.');
 }
 
-function assertTrue($test, $message) {
+function assertTrue($test, $message)
+{
     if (!$test) {
         echo "Warning: $message\n";
     }

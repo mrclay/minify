@@ -1,27 +1,23 @@
 <?php
 
-$finder = Symfony\CS\Finder\DefaultFinder::create()
-	->in(__DIR__ . '/lib')
-;
+$rules = array(
+    '@PSR2' => true,
+);
 
-return Symfony\CS\Config\Config::create()
-	->level(Symfony\CS\FixerInterface::PSR2_LEVEL)
-	->setUsingCache(true)
-	->fixers(array(
-		'linefeed',
-		'trailing_spaces',
-		'unused_use',
-		'short_tag',
-		'return',
-		'visibility',
-		'php_closing_tag',
-		'extra_empty_lines',
-		'function_declaration',
-		'include',
-		'controls_spaces',
-		'elseif',
-		'-eof_ending',
-		'-method_argument_space',
-	))
-	->finder($finder)
-;
+$config = PhpCsFixer\Config::create();
+$finder = $config->getFinder();
+
+$finder
+    ->in(array('.', 'builder/', 'lib/', 'tests/', 'min_extras/', 'static/'))
+    ->name('*.php')
+    ->ignoreDotFiles(true)
+    ->ignoreVCS(true);
+
+return $config
+    ->setUsingCache(true)
+    ->setRiskyAllowed(true)
+    ->setRules($rules)
+    ->setIndent('    ')
+    ->setLineEnding("\n");
+
+// vim:ft=php

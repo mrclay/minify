@@ -1,7 +1,7 @@
 <?php
 /**
  * AJAX checks for zlib.output_compression
- * 
+ *
  * @package Minify
  */
 
@@ -29,7 +29,6 @@ if ($app->env->get('hello')) {
     ));
     $he->encode();
     $he->sendAll();
-
 } else {
     // echo status "0" or "1"
     header('Content-Type: text/plain');
