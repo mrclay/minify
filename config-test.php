@@ -4,7 +4,6 @@
  *
  * To test config options, place them in this file and add "&test" to your Minify URL.
  * Note that if this is on a public server, anyone can execute your test.
- * 
+ *
  * @package Minify
  */
-

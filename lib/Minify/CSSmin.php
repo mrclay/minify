@@ -73,16 +73,16 @@ class Minify_CSSmin
         }
         if ($options['currentDir']) {
             return Minify_CSS_UriRewriter::rewrite(
-                $css
-                ,$options['currentDir']
-                ,$options['docRoot']
-                ,$options['symlinks']
+                $css,
+                $options['currentDir'],
+                $options['docRoot'],
+                $options['symlinks']
             );
         }
 
         return Minify_CSS_UriRewriter::prepend(
-            $css
-            ,$options['prependRelativePath']
+            $css,
+            $options['prependRelativePath']
         );
     }
 }

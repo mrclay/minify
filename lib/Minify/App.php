@@ -82,8 +82,7 @@ class App extends Container
 
             $varDefined = get_defined_vars();
 
-            $varNames = array_filter($varNames, function($name) use($varDefined)
-            {
+            $varNames = array_filter($varNames, function ($name) use ($varDefined) {
                 return array_key_exists($name, $varDefined);
             });
 

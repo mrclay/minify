@@ -62,8 +62,8 @@ class MinifyTest extends TestCase
 
         $content = preg_replace('/\\r\\n?/', "\n", file_get_contents($minifyTestPath . '/minified.js'));
         $lastModified = max(
-            filemtime($minifyTestPath . '/email.js')
-            , filemtime($minifyTestPath . '/QueryString.js')
+            filemtime($minifyTestPath . '/email.js'),
+            filemtime($minifyTestPath . '/QueryString.js')
         );
         $expected = array(
             'success' => true,
@@ -153,8 +153,10 @@ class MinifyTest extends TestCase
         ));
         $output = $output['content'];
 
-        $this->assertFalse(strpos($output, $defaultOptions['importWarning']),
-            'Issue 89 : don\'t warn about valid imports');
+        $this->assertFalse(
+            strpos($output, $defaultOptions['importWarning']),
+            'Issue 89 : don\'t warn about valid imports'
+        );
 
         // Test Issue 132
         if (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2)) {
@@ -164,8 +166,11 @@ class MinifyTest extends TestCase
                 'encodeOutput' => false,
             ));
 
-            $this->assertEquals(77, $output['headers']['Content-Length'],
-                'Issue 132 : mbstring.func_overload shouldn\'t cause incorrect Content-Length');
+            $this->assertEquals(
+                77,
+                $output['headers']['Content-Length'],
+                'Issue 132 : mbstring.func_overload shouldn\'t cause incorrect Content-Length'
+            );
         }
 
         // Test minifying CSS and responding with Etag/Last-Modified

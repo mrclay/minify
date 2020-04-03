@@ -195,13 +195,13 @@ class Minify_JS_ClosureCompiler
             curl_close($ch);
         } else {
             throw new Minify_JS_ClosureCompiler_Exception(
-               "Could not make HTTP request: allow_url_open is false and cURL not available"
+                "Could not make HTTP request: allow_url_open is false and cURL not available"
             );
         }
 
         if (false === $contents) {
             throw new Minify_JS_ClosureCompiler_Exception(
-               "No HTTP response from server"
+                "No HTTP response from server"
             );
         }
 

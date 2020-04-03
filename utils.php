@@ -48,7 +48,7 @@ function Minify_getUri($keyOrFiles, $opts = array())
  *
  * Since this makes a bunch of stat() calls, you might not want to check this
  * on every request.
- * 
+ *
  * @param array $keysAndFiles group keys and/or file paths/URIs.
  * @return int latest modification time of all given keys/files
  */
