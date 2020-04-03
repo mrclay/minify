@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.10] - 2020-04-02
 
-- Exclude SSI Comments from HTML minify, [#670]
+- Exclude SSI Comments from HTML minify, [#670], [#671]
 
-[3.0.10]: https://github.com/mrclay/minify/compare/3.0.8...3.0.10
+[3.0.10]: https://github.com/mrclay/minify/compare/3.0.9...3.0.10
 [#671]: https://github.com/mrclay/minify/issues/671
 [#670]: https://github.com/mrclay/minify/pull/670
 
