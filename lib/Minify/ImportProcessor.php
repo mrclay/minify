@@ -182,7 +182,7 @@ class Minify_ImportProcessor
     private function truepath($path)
     {
         // whether $path is unix or not
-        $unipath = ('' === $path) || ($path{0} !== '/');
+        $unipath = ('' === $path) || ($path[0] !== '/');
 
         // attempts to detect if path is relative in which case, add cwd
         if (strpos($path, ':') === false && $unipath) {
