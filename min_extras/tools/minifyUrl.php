@@ -17,7 +17,7 @@ function getPost($key)
     if (! isset($_POST[$key])) {
         return null;
     }
-    return get_magic_quotes_gpc()
+    return (PHP_VERSION_ID < 50400 && get_magic_quotes_gpc())
         ? stripslashes($_POST[$key])
         : $_POST[$key];
 }
