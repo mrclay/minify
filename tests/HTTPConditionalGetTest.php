@@ -127,7 +127,7 @@ class HTTPConditionalGetTest extends TestCase
         if (null === $inm) {
             unset($_SERVER['HTTP_IF_NONE_MATCH']);
         } else {
-            $_SERVER['HTTP_IF_NONE_MATCH'] = get_magic_quotes_gpc()
+            $_SERVER['HTTP_IF_NONE_MATCH'] = PHP_VERSION_ID < 50400 && get_magic_quotes_gpc()
                 ? addslashes($inm) :
                 $inm;
         }
