@@ -29,7 +29,7 @@
 		"sort-packages": true
 	},
 	"require": {
-		"php": "^5.3.0 || ^7.0",
+		"php": "^5.3.0 || ^7.0 || ^8.0",
 		"ext-pcre": "*",
 		"intervention/httpauth": "^2.0|^3.0",
 		"marcusschwarz/lesserphp": "^0.5.1",
