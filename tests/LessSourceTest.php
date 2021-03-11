@@ -6,6 +6,7 @@ use Minify_HTML_Helper;
 
 /**
  * @requires php < 7.3
+ * @see https://github.com/mrclay/minify/pull/685
  */
 class LessSourceTest extends TestCase
 {
