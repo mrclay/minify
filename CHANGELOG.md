@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.11] - 2021-03-11
+
+- PHP 8.0 support, [#685], [#682], [#677]
+
+[3.0.11]: https://github.com/mrclay/minify/compare/3.0.10...3.0.11
+[#685]: https://github.com/mrclay/minify/pull/685
+[#682]: https://github.com/mrclay/minify/pull/682
+[#677]: https://github.com/mrclay/minify/pull/677
+
 ## [3.0.10] - 2020-04-02
 
 - Exclude SSI Comments from HTML minify, [#670], [#671]
