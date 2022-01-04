@@ -153,8 +153,8 @@ by Minify. E.g. <code>@import "<span class=minRoot>/min/?</span>g=css2";</code><
  list</a>.</p>
  <p><small>Powered by Minify <?php echo Minify::VERSION; ?></small></p>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.3/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="jquery-1.6.3.min.js"><\/script>')</script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="jquery-1.12.4.min.js"><\/script>')</script>
 <script>
 (function () {
     // workaround required to test when /min isn't child of web root
