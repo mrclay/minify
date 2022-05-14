@@ -259,7 +259,7 @@ class Minify_CSS_Compressor
     {
         // Issue 210: must not eliminate WS between words in unquoted families
         $flags = PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY;
-        $pieces = preg_split('/(\'[^\']+\'|"[^"]+")/', $m[1], null, $flags);
+        $pieces = preg_split('/(\'[^\']+\'|"[^"]+")/', $m[1], -1, $flags);
         $out = 'font-family:';
 
         while (null !== ($piece = array_shift($pieces))) {
