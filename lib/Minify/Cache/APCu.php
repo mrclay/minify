@@ -1,26 +1,24 @@
 <?php
 /**
- * Class Minify_Cache_APC
+ * Class Minify_Cache_APCu
  * @package Minify
  */
 
 /**
- * APC-based cache class for Minify
+ * APCu-based cache class for Minify
  *
  * <code>
- * Minify::setCache(new Minify_Cache_APC());
+ * Minify::setCache(new Minify_Cache_APCu());
  * </code>
  *
  * @package Minify
  * @author Chris Edwards
- * 
- * @deprecated Use Minify_Cache_APCu
  **/
-class Minify_Cache_APC implements Minify_CacheInterface
+class Minify_Cache_APCu implements Minify_CacheInterface
 {
 
     /**
-     * Create a Minify_Cache_APC object, to be passed to
+     * Create a Minify_Cache_APCu object, to be passed to
      * Minify::setCache().
      *
      *
@@ -45,7 +43,7 @@ class Minify_Cache_APC implements Minify_CacheInterface
      */
     public function store($id, $data)
     {
-        return apc_store($id, "{$_SERVER['REQUEST_TIME']}|{$data}", $this->_exp);
+        return apcu_store($id, "{$_SERVER['REQUEST_TIME']}|{$data}", $this->_exp);
     }
 
     /**
@@ -112,7 +110,7 @@ class Minify_Cache_APC implements Minify_CacheInterface
     private $_id = null;
 
     /**
-     * Fetch data and timestamp from apc, store in instance
+     * Fetch data and timestamp from apcu, store in instance
      *
      * @param string $id
      *
@@ -123,7 +121,7 @@ class Minify_Cache_APC implements Minify_CacheInterface
         if ($this->_id === $id) {
             return true;
         }
-        $ret = apc_fetch($id);
+        $ret = apcu_fetch($id);
         if (false === $ret) {
             $this->_id = null;
 
