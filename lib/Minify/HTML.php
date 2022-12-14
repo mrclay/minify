@@ -22,6 +22,11 @@ class Minify_HTML
      * @var boolean
      */
     protected $_jsCleanComments = true;
+    
+    /**
+     * @var string
+     */
+    protected $_html;
 
     /**
      * "Minify" an HTML page
