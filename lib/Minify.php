@@ -118,6 +118,7 @@ class Minify
             'quiet' => false, // serve() will send headers and output
             'debug' => false,
             'concatOnly' => false,
+            'invalidate' => false,
 
             // if you override these, the response codes MUST be directly after
             // the first space.
@@ -284,6 +285,7 @@ class Minify
             'lastModifiedTime' => $this->options['lastModifiedTime'],
             'isPublic' => $this->options['isPublic'],
             'encoding' => $this->options['encodeMethod'],
+            'invalidate' => $this->options['invalidate'],
         );
 
         if ($this->options['maxAge'] > 0) {
