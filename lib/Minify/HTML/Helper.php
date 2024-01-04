@@ -52,7 +52,7 @@ class Minify_HTML_Helper
         }
         $uri = $h->getRawUri($opts['farExpires'], $opts['debug']);
 
-        return htmlspecialchars($uri, ENT_QUOTES, $opts['charset']);
+        return htmlspecialchars($uri, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, $opts['charset']);
     }
 
     /**

@@ -471,7 +471,7 @@ class Minify
      */
     public function errorExit($header, $url = '', $msgHtml = '')
     {
-        $url = htmlspecialchars($url, ENT_QUOTES);
+        $url = htmlspecialchars($url);
         list(, $h1) = explode(' ', $header, 2);
         $h1 = htmlspecialchars($h1);
         // FastCGI environments require 3rd arg to header() to be set
