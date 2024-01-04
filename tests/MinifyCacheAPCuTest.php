@@ -6,7 +6,7 @@ use Minify_Cache_APCu;
 
 class MinifyCacheAPCuTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         if (!function_exists('apcu_store')) {
             $this->markTestSkipped("To test this component, install APCu extension");

@@ -188,7 +188,7 @@ class Minify_ClosureCompiler
      */
     protected function checkTempdir($tempDir)
     {
-        if (!is_dir($tempDir)) {
+        if ($tempDir === null || !is_dir($tempDir)) {
             throw new Minify_ClosureCompiler_Exception('$tempDir(' . $tempDir . ') is not a valid direcotry.');
         }
         if (!is_writable($tempDir)) {

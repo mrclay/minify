@@ -7,7 +7,7 @@ use Minify_ClosureCompiler;
 
 class MinifyClosureCompilerTest extends TestCase
 {
-    public static function setupBeforeClass()
+    public static function setupBeforeClass(): void
     {
         parent::setupBeforeClass();
         Minify_ClosureCompiler::$isDebug = true;

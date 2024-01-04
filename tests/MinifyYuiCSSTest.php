@@ -7,7 +7,7 @@ use Minify_YUICompressor;
 
 class MinifyYuiCSSTest extends TestCase
 {
-    public static function setupBeforeClass()
+    public static function setupBeforeClass(): void
     {
         parent::setupBeforeClass();
 
@@ -18,7 +18,7 @@ class MinifyYuiCSSTest extends TestCase
         Minify_YUICompressor::$tempDir = sys_get_temp_dir();
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->assertHasJar();
     }

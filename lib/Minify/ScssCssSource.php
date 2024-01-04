@@ -156,8 +156,8 @@ class Minify_ScssCssSource extends Minify_Source
         $elapsed = round((microtime(true) - $start), 4);
 
         $v = Version::VERSION;
-        $ts = date('r', $start);
-        $css = "/* compiled by scssphp $v on $ts (${elapsed}s) */\n\n" . $css;
+        $ts = date('r', (int) $start);
+        $css = "/* compiled by scssphp $v on $ts ({$elapsed}s) */\n\n" . $css;
 
         $imports = $scss->getParsedFiles();
 
