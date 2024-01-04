@@ -6,7 +6,7 @@ use Minify_Cache_WinCache;
 
 class MinifyCacheWinCacheTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         if (!function_exists('wincache_ucache_info')) {
             $this->markTestSkipped("To test this component, install WinCache extension");

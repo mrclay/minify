@@ -6,7 +6,9 @@ use Minify_HTML_Helper;
 
 class ScssSourceTest extends TestCase
 {
-    public function setUp()
+    public string $realDocRoot;
+
+    public function setUp(): void
     {
         $this->realDocRoot = $_SERVER['DOCUMENT_ROOT'];
         $_SERVER['DOCUMENT_ROOT'] = self::$document_root;

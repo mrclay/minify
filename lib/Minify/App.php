@@ -122,7 +122,7 @@ class App extends Container
 
             $type = $that->typeOf($ctrl);
             throw new RuntimeException('$min_factories["controller"] callable must return an implementation'
-                ." of Minify_CacheInterface. Returned $type");
+                . " of Minify_CacheInterface. Returned $type");
         };
 
         $this->docRoot = function (App $app) {
@@ -188,7 +188,7 @@ class App extends Container
 
             $type = $that->typeOf($value);
             throw new RuntimeException('If set, $min_errorLogger must be a PSR-3 logger or a Monolog handler.'
-                ." Given $type");
+                . " Given $type");
         };
 
         $this->minify = function (App $app) use ($that) {
@@ -205,7 +205,7 @@ class App extends Container
 
             $type = $that->typeOf($minify);
             throw new RuntimeException('$min_factories["minify"] callable must return a Minify object.'
-                ." Returned $type");
+                . " Returned $type");
         };
 
         $this->serveOptions = function (App $app) {
@@ -232,7 +232,7 @@ class App extends Container
             }
 
             // check for URI versioning
-            if ($env->get('v') !== null || preg_match('/&\\d/', $app->env->server('QUERY_STRING'))) {
+            if ($env->get('v') !== null || preg_match('/&\\d/', $app->env->server('QUERY_STRING') ?? '')) {
                 $ret['maxAge'] = 31536000;
             }
 

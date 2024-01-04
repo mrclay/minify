@@ -113,10 +113,12 @@ class HTTPEncoderTest extends TestCase
         );
 
         foreach ($encodingTests as $test) {
-            $e = new HTTP_Encoder(array(
-                'content' => $variedContent,
-                'method' => $test['method'],
-            ));
+            $e = new HTTP_Encoder(
+                array(
+                    'content' => $variedContent,
+                    'method' => $test['method'],
+                )
+            );
             $e->encode(9);
             $ret = $this->countBytes($e->getContent());
 
@@ -153,12 +155,12 @@ function _gzdecode($data)
 }
 
 // http://www.php.net/manual/en/function.gzdecode.php#82930
-function _phpman_gzdecode($data, &$filename='', &$error='', $maxlength=null)
+function _phpman_gzdecode($data, &$filename = '', &$error = '', $maxlength = 0)
 {
     $mbIntEnc = null;
     $hasMbOverload = (function_exists('mb_strlen')
-                      && (ini_get('mbstring.func_overload') !== '')
-                      && ((int)ini_get('mbstring.func_overload') & 2));
+        && (ini_get('mbstring.func_overload') !== '')
+        && ((int) ini_get('mbstring.func_overload') & 2));
     if ($hasMbOverload) {
         $mbIntEnc = mb_internal_encoding();
         mb_internal_encoding('8bit');
@@ -174,7 +176,7 @@ function _phpman_gzdecode($data, &$filename='', &$error='', $maxlength=null)
         return null;  // Not GZIP format (See RFC 1952)
     }
     $method = ord(substr($data, 2, 1));  // Compression method
-    $flags  = ord(substr($data, 3, 1));  // Flags
+    $flags = ord(substr($data, 3, 1));  // Flags
     if ($flags & 31 != $flags) {
         $error = "Reserved bits not allowed.";
         if ($mbIntEnc !== null) {
@@ -185,11 +187,11 @@ function _phpman_gzdecode($data, &$filename='', &$error='', $maxlength=null)
     // NOTE: $mtime may be negative (PHP integer limitations)
     $mtime = unpack("V", substr($data, 4, 4));
     $mtime = $mtime[1];
-    $xfl   = substr($data, 8, 1);
-    $os    = substr($data, 8, 1);
+    $xfl = substr($data, 8, 1);
+    $os = substr($data, 8, 1);
     $headerlen = 10;
-    $extralen  = 0;
-    $extra     = "";
+    $extralen = 0;
+    $extra = "";
     if ($flags & 4) {
         // 2-byte length prefixed EXTRA data in header
         if ($len - $headerlen - 2 < 8) {
@@ -276,7 +278,7 @@ function _phpman_gzdecode($data, &$filename='', &$error='', $maxlength=null)
     $isize = unpack("V", substr($data, -4));
     $isize = $isize[1];
     // decompression:
-    $bodylen = $len-$headerlen-8;
+    $bodylen = $len - $headerlen - 8;
     if ($bodylen < 1) {
         // IMPLEMENTATION BUG!
         if ($mbIntEnc !== null) {
@@ -288,20 +290,20 @@ function _phpman_gzdecode($data, &$filename='', &$error='', $maxlength=null)
     $data = "";
     if ($bodylen > 0) {
         switch ($method) {
-        case 8:
-            // Currently the only supported compression method:
-            $data = gzinflate($body, $maxlength);
-            break;
-        default:
-            $error = "Unknown compression method.";
-            if ($mbIntEnc !== null) {
-                mb_internal_encoding($mbIntEnc);
-            }
-            return false;
+            case 8:
+                // Currently the only supported compression method:
+                $data = gzinflate($body, $maxlength);
+                break;
+            default:
+                $error = "Unknown compression method.";
+                if ($mbIntEnc !== null) {
+                    mb_internal_encoding($mbIntEnc);
+                }
+                return false;
         }
     }  // zero-byte body content is allowed
     // Verifiy CRC32
-    $crc   = sprintf("%u", crc32($data));
+    $crc = sprintf("%u", crc32($data));
     $crcOK = $crc == $datacrc;
     $lenOK = $isize == strlen($data);
     if (!$lenOK || !$crcOK) {

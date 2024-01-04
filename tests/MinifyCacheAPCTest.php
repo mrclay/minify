@@ -6,7 +6,7 @@ use Minify_Cache_APC;
 
 class MinifyCacheAPCTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         if (!function_exists('apc_store')) {
             $this->markTestSkipped("To test this component, install APC extension");

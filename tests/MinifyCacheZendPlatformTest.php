@@ -6,7 +6,7 @@ use Minify_Cache_ZendPlatform;
 
 class MinifyCacheZendPlatformTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         if (!function_exists('output_cache_put')) {
             // FIXME: be specific what to actually install

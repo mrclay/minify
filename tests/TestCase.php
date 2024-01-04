@@ -11,7 +11,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /** @var string */
     protected static $test_files;
 
-    public static function setupBeforeClass()
+    public static function setupBeforeClass(): void
     {
         self::$document_root = __DIR__;
         self::$test_files = __DIR__ . '/_test_files';
@@ -25,7 +25,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      */
     protected function countBytes($str)
     {
-        return (function_exists('mb_strlen') && ((int)ini_get('mbstring.func_overload') & 2))
+        return (function_exists('mb_strlen') && ((int) ini_get('mbstring.func_overload') & 2))
             ? mb_strlen($str, '8bit')
             : strlen($str);
     }

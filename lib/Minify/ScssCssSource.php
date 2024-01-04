@@ -1,7 +1,6 @@
 <?php
-use Leafo\ScssPhp\Compiler;
-use Leafo\ScssPhp\Server;
-use Leafo\ScssPhp\Version;
+use ScssPhp\ScssPhp\Compiler;
+use ScssPhp\ScssPhp\Version;
 
 /**
  * Class for using SCSS files
@@ -152,12 +151,12 @@ class Minify_ScssCssSource extends Minify_Source
         // and will treat the @import line as css import
         $scss->setImportPaths(dirname($filename));
 
-        $css = $scss->compile(file_get_contents($filename), $filename);
+        $css = $scss->compileString(file_get_contents($filename), $filename)->getCss();
         $elapsed = round((microtime(true) - $start), 4);
 
         $v = Version::VERSION;
-        $ts = date('r', $start);
-        $css = "/* compiled by scssphp $v on $ts (${elapsed}s) */\n\n" . $css;
+        $ts = date('r', (int) $start);
+        $css = "/* compiled by scssphp $v on $ts ({$elapsed}s) */\n\n" . $css;
 
         $imports = $scss->getParsedFiles();
 

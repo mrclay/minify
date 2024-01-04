@@ -17,32 +17,36 @@
 		"wiki": "https://github.com/mrclay/minify/blob/master/docs"
 	},
 	"autoload": {
-		"classmap": ["lib/"]
+		"classmap": [
+			"lib/"
+		]
 	},
 	"autoload-dev": {
-		"psr-4": {"Minify\\Test\\": "tests/"}
+		"psr-4": {
+			"Minify\\Test\\": "tests/"
+		}
 	},
 	"config": {
 		"platform": {
-			"php": "5.3.29"
+			"php": "8.1.0"
 		},
 		"sort-packages": true
 	},
 	"require": {
-		"php": "^5.3.0 || ^7.0 || ^8.0",
+		"php": "^8.1",
 		"ext-pcre": "*",
 		"intervention/httpauth": "^2.0|^3.0",
 		"marcusschwarz/lesserphp": "^0.5.5",
 		"monolog/monolog": "~1.1|~2.0|~3.0",
 		"mrclay/jsmin-php": "~2",
-		"mrclay/props-dic": "^2.2|^3.0",
+		"mrclay/props-dic": "^4",
 		"tubalmartin/cssmin": "~4"
 	},
 	"require-dev": {
 		"firephp/firephp-core": "~0.4.0",
-		"leafo/scssphp": "^0.3 || ^0.6 || ^0.7",
 		"meenie/javascript-packer": "~1.1",
-		"phpunit/phpunit": "^4.8.36",
+		"phpunit/phpunit": "^8",
+		"scssphp/scssphp": "^1.12",
 		"tedivm/jshrink": "~1.1.0"
 	},
 	"suggest": {

@@ -10,7 +10,7 @@ class MinifyCacheMemcacheTest extends TestCase
     /** @var Memcache */
     private $mc;
 
-    public function setUp()
+    public function setUp(): void
     {
         if (!function_exists('memcache_set')) {
             $this->markTestSkipped("To test this component, install memcache in PHP");
