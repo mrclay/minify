@@ -1,4 +1,10 @@
-# Welcome to Minify!
+## Minify is no longer regularly maintained
+
+The original authors no longer recommend using Minify, especially previous versions, which were not designed to handle modern JS and CSS syntax. Instead, use an up-to-date performance measurement tool like [Lighthouse](https://developer.chrome.com/docs/lighthouse/overview) and follow its recommendations.
+
+In 2010, Minify offered a fine improvement for some websites, but browsers and HTTP servers are now much better, and Minify may offer only a marginal performance benefit in narrow cases. Also both JS and CSS now change rapidly, and new syntaxes are likely to lead to broken code being served through Minify.
+
+## About
 
 Minify is an HTTP server for JS and CSS assets. It compresses and combines files
 and serves it with appropriate headers, allowing conditional GET or long-Expires.
