@@ -38,7 +38,7 @@ abstract class Minify_Controller_Base implements Minify_ControllerInterface
      * @param Minify_Source_Factory $sourceFactory
      * @param LoggerInterface       $logger
      */
-    public function __construct(Minify_Env $env, Minify_Source_Factory $sourceFactory, LoggerInterface $logger = null)
+    public function __construct(Minify_Env $env, Minify_Source_Factory $sourceFactory, ?LoggerInterface $logger = null)
     {
         $this->env = $env;
         $this->sourceFactory = $sourceFactory;

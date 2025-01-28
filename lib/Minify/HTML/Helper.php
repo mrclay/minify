@@ -163,7 +163,7 @@ class Minify_HTML_Helper
      * @return \Minify\App
      * @internal
      */
-    public static function app(\Minify\App $app = null)
+    public static function app(?\Minify\App $app = null)
     {
         static $cached;
         if ($app) {

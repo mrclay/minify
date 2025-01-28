@@ -108,7 +108,7 @@ class Cli
      * @return Arg
      * @throws InvalidArgumentException
      */
-    public function addArgument($letter, $required, Arg $arg = null)
+    public function addArgument($letter, $required, ?Arg $arg = null)
     {
         if (! preg_match('/^[a-zA-Z]$/', $letter)) {
             throw new InvalidArgumentException('$letter must be in [a-zA-Z]');

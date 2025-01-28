@@ -85,7 +85,7 @@ class Minify
      * @param Minify_CacheInterface $cache
      * @param LoggerInterface       $logger
      */
-    public function __construct(Minify_CacheInterface $cache, LoggerInterface $logger = null)
+    public function __construct(Minify_CacheInterface $cache, ?LoggerInterface $logger = null)
     {
         $this->cache = $cache;
         $this->logger = $logger;
