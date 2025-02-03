@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [4.0.1] - 2025-02-03
+
+- Recommend against use, [#711]
+- Fix htmlspecialchars incompatibility with php 8.1, [#693]
+- Support PHP 8.4, [#714]
+
+[4.0.1]: https://github.com/mrclay/minify/compare/4.0.0...4.0.1
+[#711]: https://github.com/mrclay/minify/pull/711
+[#693]: https://github.com/mrclay/minify/issues/693
+[#714]: https://github.com/mrclay/minify/pull/714
+
 ## [4.0.0] - 2024-01-04
 
 - Support PHP 8.1+
