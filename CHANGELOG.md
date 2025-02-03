@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update PHPUnit to 8.x
 - Replace `leafo/scssphp` with `scssphp/scssphp`
 
+[4.0.0]: https://github.com/mrclay/minify/compare/3.0.14...4.0.0
+
 ## [3.0.14] - 2023-05-05
 
 - Support monolog v3, [#705]
