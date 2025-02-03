@@ -29,7 +29,7 @@ class Minify_Cache_File implements Minify_CacheInterface
      * @param bool            $fileLocking
      * @param LoggerInterface $logger
      */
-    public function __construct($path = '', $fileLocking = false, LoggerInterface $logger = null)
+    public function __construct($path = '', $fileLocking = false, ?LoggerInterface $logger = null)
     {
         if (! $path) {
             $path = sys_get_temp_dir();
